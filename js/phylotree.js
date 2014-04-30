@@ -71,7 +71,7 @@ d3.layout.phylotree = function () {
                                                 
         draw_scale_bar          = null,
         rescale_node_span       = 1,
-        count_listener          = null,
+        count_listener_object          = undefined,
         shown_font_size         = font_size,
         label_width             = 0;
  
@@ -195,6 +195,36 @@ d3.layout.phylotree = function () {
         return phylotree;
     };
     
+    phylotree.get_newick = function (annotator) {
+        function node_display (n) {
+            if (!d3_phylotree_is_leafnode (n)) {
+                element_array.push ("(");
+                n.children.forEach (function (d, i) {
+                    if (i) {
+                        element_array.push (",");
+                    }
+                    node_display (d);
+                });
+                element_array.push (")");
+            }
+            element_array.push (node_label (n));
+            if (n.selected) {
+                element_array.push (annotator);
+            }
+            var bl = branch_length_accessor (n);
+            if (bl) {
+                element_array.push (":" + bl);
+            }
+            
+        }
+    
+    
+        var element_array = [],
+        annotator = annotator || "";  
+        node_display (nodes[0]);
+        return element_array.join ("");
+    }
+    
     phylotree.modify_selection = function (callback) {
     
         if (options["selectable"]) {
@@ -212,17 +242,17 @@ d3.layout.phylotree = function () {
         
             if (do_refresh) {
                 d3_phylotree_trigger_refresh      (phylotree);
-                if (phylotree.count_listener) {
-                    d3_phylotree_trigger_count_update ({'selected' : links.reduce (function (p, c) { return p + (d.selected ? 1 : 0);}, 0)}, phylotree.count_listener);
+                if (phylotree.count_listener()) {
+                    d3_phylotree_trigger_count_update ({'selected' : links.reduce (function (p, c) { return p + (c.selected ? 1 : 0);}, 0)}, phylotree.count_listener());
                 }
             }    
         }
     }
     
     phylotree.count_listener = function (attr) {
-        if (!arguments.length) return count_listener;
-        count_listener = attr;
-        count_listener.addEventListener(d3_layout_phylotree_event_id,null,false)
+        if (!arguments.length) return count_listener_object;
+        count_listener_object = attr;
+        count_listener_object.addEventListener(d3_layout_phylotree_event_id,null,false)
         return phylotree;
     }
     
