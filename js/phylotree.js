@@ -86,6 +86,7 @@ d3.layout.phylotree = function () {
         function tree_layout (a_node) {
             // returns the x coordinate of the node (where the branch ends)
             a_node.y =  "parent" in a_node ? ((options['scaling'] ? branch_length_accessor (a_node) : 1.0) + a_node.parent.y) : 0.0;
+            
             if (!d3_phylotree_is_leafnode (a_node)) {
                 a_node.x = a_node.children.map (tree_layout).reduce (function (a,b) {return a+b;}, 0.0) / a_node.children.length;
             } else {
@@ -161,7 +162,6 @@ d3.layout.phylotree = function () {
                 
         phylotree.placenodes();
         links = phylotree.links (nodes);
-        //d3_phylotree_resize_svg (phylotree, svg);
         return phylotree;
     }
     
@@ -186,6 +186,25 @@ d3.layout.phylotree = function () {
     phylotree.pad_width = function (){
         //console.log (offsets, label_width);
         return offsets[1] + label_width;
+    }
+    
+    phylotree.descendants = function (n) {
+        var desc = [];
+        function recurse_d (nd) {
+            if (d3_phylotree_is_leafnode (nd)) {
+                desc.push (nd);
+            } else {
+                nd.children.forEach (recurse_nd);
+            }
+        }
+        recurse_d (n);
+        return desc;
+    }
+    
+    phylotree.collapse_node = function (n) {
+        if (!d3_phylotree_node_collapsed (n)) {
+            n.collapsed = true;
+        }
     }
     
 
@@ -499,7 +518,7 @@ d3.layout.phylotree = function () {
             .data(nodes, function (d) { return d.id || (d.id = ++node_id);})
             .enter().append("g").attr("transform", function(d) { return "translate(" + x_coord (d) + "," + y_coord(d) + ")"; })
             .attr("class", function (d) {  
-                    if (d.collapsed) {
+                    if (d3_phylotree_node_collapsed (d)) {
                         return css_classes ['collapsed-node'];
                     }
                     if (!d3_phylotree_is_leafnode (d)) { 
@@ -637,6 +656,10 @@ function d3_phylotree_edge_selected (edge) {
 
 function d3_phylotree_edge_tagged (edge) {
     return (edge.tag || false);
+};
+
+function d3_phylotree_node_collapsed (node) {
+    return (node.collapsed || false);
 };
 
 function d3_phylotree_resize_svg (tree, svg) {
