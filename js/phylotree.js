@@ -359,8 +359,6 @@ d3.layout.phylotree = function () {
                                          .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.reroot (node).update (true);});
             }
 
-            console.log (d3.event);                      
-                                  
             menu_object.style ("position", "absolute")
                 .style ("left", "" + d3.event.pageX + "px")
                 .style ("top", "" + d3.event.pageY + "px")
@@ -413,6 +411,22 @@ d3.layout.phylotree = function () {
         return element_array.join ("");
     }
     
+    phylotree.sync_edge_labels = function () {
+        
+        links.forEach (function (d) {
+                d.selected = d.target.selected || false;
+                d.tag = d.target.tag || false;
+        });
+            
+        d3_phylotree_trigger_refresh      (phylotree);
+        if (phylotree.count_handler()) {
+            d3_phylotree_trigger_count_update (phylotree, 
+            {'selected' : links.reduce (function (p, c) { return p + (c.selected ? 1 : 0);}, 0),
+              'filtered' : links.reduce (function (p, c) { return p + (d3_phylotree_item_tagged(c) ? 1 : 0);}, 0)
+            }, phylotree.count_handler());
+        }     
+    };
+
     phylotree.modify_selection = function (callback) {
             
         if (options["selectable"]) {
@@ -605,6 +619,7 @@ d3.layout.phylotree = function () {
             nodes.forEach (function (d) { d.id = null;});
             phylotree.placenodes();
             links = phylotree.links (nodes);
+            phylotree.sync_edge_labels ();
         }
         return phylotree;
         
