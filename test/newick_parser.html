@@ -334,7 +334,7 @@ $("#branch_filter").on ("input propertychange", function (e) {
    var filter_value = $(this).val();
    
    var selected_count = (tree.tag (function (n) { 
-    return filter_value.length && (tree.branch_name () (n).search (filter_value)) != -1; 
+    return filter_value.length && (tree.branch_name () (n).search (new RegExp (filter_value,"i"))) != -1; 
    }));
       
 });
