@@ -359,10 +359,11 @@ d3.layout.phylotree = function () {
                                          .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.reroot (node).update (true);});
             }
 
+            console.log (d3.event);                      
                                   
             menu_object.style ("position", "absolute")
-                .style ("left", "" + d3.event.x + "px")
-                .style ("top", "" + d3.event.y + "px")
+                .style ("left", "" + d3.event.pageX + "px")
+                .style ("top", "" + d3.event.pageY + "px")
                 .style ("display", "block");
         } else {
             menu_object.style ("display", "none");
