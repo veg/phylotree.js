@@ -443,7 +443,8 @@ d3.layout.phylotree = function () {
                 
                 d3_phylotree_trigger_refresh      (phylotree);
                 if (phylotree.count_handler()) {
-                    d3_phylotree_trigger_count_update (phylotree, {'selected' : links.reduce (function (p, c) { return p + (c.selected ? 1 : 0);}, 0)}, phylotree.count_handler());
+                    d3_phylotree_trigger_count_update (phylotree, 
+                    {'selected' : links.reduce (function (p, c) { return p + (c.selected ? 1 : 0);}, 0)}, phylotree.count_handler());
                 }
             }    
         }
@@ -706,6 +707,10 @@ d3.layout.phylotree = function () {
         links.forEach (function (d) { selected_count += (d.tag = d.source.tag || d.target.tag); });
         if (do_refresh) {
             d3_phylotree_trigger_refresh (phylotree);
+                if (phylotree.count_handler()) {
+                    d3_phylotree_trigger_count_update (phylotree, 
+                    {'filtered' : links.reduce (function (p, c) { return p + (d3_phylotree_item_tagged(c) ? 1 : 0);}, 0)}, phylotree.count_handler());
+                }
         }
         return selected_count;
          
