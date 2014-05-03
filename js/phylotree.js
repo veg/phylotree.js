@@ -558,25 +558,38 @@ d3.layout.phylotree = function () {
     
     phylotree.reroot = function (node) {
         if (node.parent) {
+        
             new_json = {'name' : 'new_root',
-                        'children' : [node, node.parent]};
+                        'children' : [node]};
                  
                         
             var remove_me    = node,
                 current_node = node.parent;
                 
-            while (current_node.parent) {
+            if (!current_node.parent) {
                 var remove_idx = current_node.children.indexOf (remove_me);
-                current_node.children.splice (remove_idx,1,current_node.parent);                
-                remove_me = current_node;
-                current_node = current_node.parent;
+                current_node.children.splice (remove_idx,1);
+                new_json.children = new_json.children.concat (current_node.children);
+            } else {
+                new_json.children.push (node.parent);
+                while (current_node.parent) {
+                    var remove_idx = current_node.children.indexOf (remove_me);
+                    if (current_node.parent.parent) {
+                        current_node.children.splice (remove_idx,1,current_node.parent);
+                    } else {
+                         current_node.children.splice (remove_idx,1);
+                    }                
+                    remove_me = current_node;
+                    current_node = current_node.parent;
+                }
+                var remove_idx = current_node.children.indexOf (remove_me);
+                current_node.children.splice (remove_idx,1);
+                remove_me.children = remove_me.children.concat (current_node.children);
             }
             
-            var remove_idx = remove_me.children.indexOf (current_node);
-            remove_me.children.splice (remove_idx,1);
-            console.log (remove_me.children);
-            remove_me.children.concat (current_node.children);
-            console.log (remove_me.children);
+            // current_node is now old root, and remove_me is the root child we came up
+            // the tree through
+            
 
             function echo (d) {
                 console.log (d.name, d.children);
@@ -585,9 +598,9 @@ d3.layout.phylotree = function () {
                 }
             }
             
-            echo (new_json);
             
             nodes = d3_hierarchy.call (this, new_json);
+            nodes.forEach (function (d) { d.id = null;});
             phylotree.placenodes();
             links = phylotree.links (nodes);
         }
@@ -923,7 +936,10 @@ d3.layout.phylotree = function () {
         var new_branch_path = draw_branch ([edge.source, edge.target]);
                  
         if (transition) {
-            container.attr("d", function (d) { return d.existing_path;}).transition().attr("d", new_branch_path);
+           if (container.datum().existing_path) {
+                container.attr("d", function (d) { return d.existing_path;});
+           }
+           container.transition().attr("d", new_branch_path);
         } else {
             container.attr("d", new_branch_path);
         }
