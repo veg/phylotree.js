@@ -135,7 +135,7 @@
             <li><a href="#" data-toggle="modal" data-target="#newick_export_modal">Export</a></li>
           </ul>
         </li>
-        <li class="dropdown">
+        <!--<li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Display options <b class="caret"></b></a>
           <ul class="dropdown-menu">
             <li><a href="#" id = 'display_dengrogram'>Dendrogram</a></li>
@@ -144,7 +144,7 @@
             <li><a href="#">Horizontal</a></li>
             <li><a href="#">Vertical</a></li>
           </ul>
-        </li>
+        </li>-->
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -281,11 +281,11 @@ $("#mp_label").on ("click", function (e) {
 });
 
 $("#expand_spacing").on ("click", function (e) {
-    tree.spacing_x (tree.spacing_x() + 1).layout();
+    tree.spacing_x (tree.spacing_x() + 1).update(true);
 });
 
 $("#compress_spacing").on ("click", function (e) {
-    tree.spacing_x (tree.spacing_x() - 1).layout();
+    tree.spacing_x (tree.spacing_x() - 1).update(true);
 });
 
 $("#and_label").on ("click", function (e) {
