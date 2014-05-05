@@ -20,90 +20,8 @@
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="../js/phylotree.js"></script>
 
-    <style>
-
-        .tree-scale-bar text {
-          font: 10px sans-serif;
-        }
-
-        .tree-scale-bar line,
-        .tree-scale-bar path {
-          fill: none;
-          stroke: #000;
-          shape-rendering: crispEdges;
-        }
-
-    .node circle, .node ellipse, .node rect {
-      fill: steelblue;
-      stroke: black;
-      stroke-width: 0.5px;
-    }
-    
-    body { 
-        padding-top: 70px; 
-    }
-
-    .internal-node circle, .internal-node ellipse, .internal-node rect{
-      fill: #CCC;
-      stroke: black;
-      stroke-width: 0.5px;
-    }
-
-    .node {
-      font: 10px sans-serif;
-    }
-    
-    .node-selected {
-        fill: #f00 !important;     
-    }
-
-    .node-collapsed {
-        fill: black !important;     
-    }
-    
-    .node-tagged {
-        fill: #00f; 
-    }
-
-    .branch {
-      fill: none;
-      stroke: #bbb;
-      stroke-width: 2px;
-    }
-
-    .clade {
-      fill: #1f77b4;
-      stroke: #444;
-      stroke-width: 2px;
-      opacity: 0.5;
-    }
-
-    .branch-selected {
-      stroke: #f00 !important; 
-      stroke-width: 3px;
-    }
-
-    .branch-tagged {
-      stroke: #00f;
-      stroke-dasharray: 10,5;
-      stroke-width: 2px;
-    }
-
-    .branch:hover {
-        stroke-width: 10px;
-    }
-    
-    .internal-node circle:hover, .internal-node ellipse:hover, .internal-node rect:hover {
-        fill: black;
-        stroke: #CCC;
-    }
-    
-    .tree-widget {
-    }
-    
-    
-
-    </style>
+    <link href="../css/phylotree.css" rel="stylesheet">
+   </style>
 </head>
 
 <body>
@@ -131,7 +49,9 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Newick <b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <li><a href="#" data-toggle="modal" data-target="#newick_modal">Input</a></li>
+            <li><a href="#" data-toggle="modal" data-target="#newick_modal">Input Text</a></li>
+            <li><a href="#"><input type="file" id="newick_file"/></a></li>
+            <li class="divider"></li>
             <li><a href="#" data-toggle="modal" data-target="#newick_export_modal">Export</a></li>
           </ul>
         </li>
@@ -178,7 +98,11 @@
             <li><a href="#" id = "mp_label">Label internal nodes using maximum parsimony</a></li>
             <li><a href="#" id = "and_label">Label internal nodes using conjunction (AND) </a></li>
             <li><a href="#" id = "or_label">Label internal nodes using disjunction (OR) </a></li>
-          </ul>
+            <!--
+            <li class="divider"></li>
+            <li><a href="#" id = "name_and_save">Name and save current selection</a></li>
+            -->
+         </ul>
         </li>
       </ul>
     </div><!-- /.navbar-collapse -->
@@ -224,7 +148,7 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div class = 'container'>
+<div class = 'container' id = "main_display">
         
     <div class = 'row'>
         <div class = 'col-md-12'>
@@ -265,6 +189,47 @@ var tree = d3.layout.phylotree()
     .count_handler (function (count) { $("#selected_branch_counter").text (count.selected) ; $("#selected_filtered_counter").text (count.filtered)});
     //.node_span (function (a) {if (a.children && a.children.length) return 1; return isNaN (parseFloat (a["attribute"]) * 100) ? 1 : parseFloat (a["attribute"]) * 100; });
 
+
+$("#newick_file").on ("change", function (e) {
+    var files = e.target.files; // FileList object
+
+    if (files.length == 1) {
+      var f = files[0];
+      var reader = new FileReader();
+
+      reader.onload = (function(theFile) {
+        return function(e) {
+            var res = d3_phylotree_newick_parser (e.target.result);
+            
+            if (res["json"]) {
+                if (!("children" in res["json"])) {
+                    res["error"] = "Empty tree";
+                } 
+            }
+            
+            var warning_div = d3.select ("#main_display").insert ("div", ":first-child");
+            if (res["error"]) {
+                warning_div.attr ("class", "alert alert-danger alert-dismissable")
+                            .html ("<strong>Newick parser error for file " + f.name +": </strong> In file " + res["error"]);
+
+            } else {
+                default_tree_settings ();
+                tree (res).svg (svg).layout();
+                warning_div.attr ("class", "alert alert-success alert-dismissable")
+                            .html ("Loaded a tree from  file <strong>" + f.name +": </strong>");
+            }          
+            warning_div.append ("button")
+                       .attr ("type", "button")
+                       .attr ("class", "close")
+                       .attr ("data-dismiss", "alert")
+                       .attr ("aria-hidden", "true")
+                       .html ("&times;");
+        };
+      })(f);
+
+      reader.readAsText(f);
+    }
+});
 
 $("#display_tree").on ("click", function (e) {
     tree.options ({'branches' : 'straight'}, true);
