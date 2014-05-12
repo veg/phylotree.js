@@ -99,8 +99,10 @@
                             <li class="divider"></li>
                          </ul>
                     </span>
-                    <input type="text" class="form-control" value = "Foreground" id = "selection_name_box" disabled>
-                    <span class="input-group-btn" id = "save_selection_name" style = "display: none">
+
+                    <input type="text" class="form-control" value = "Foreground" id = "selection_name_box" disabled>               
+                    
+                    <span class="input-group-btn" id = "save_selection_name" style = "display: none" >
                         <button type="button" class="btn btn-default" >
                             Save
                         </button>
@@ -153,19 +155,10 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-body" id = 'newick_body'>
-        <form class="form-horizontal" role="form">
-          <div class="form-group">
-            <label for="newick_export_annotate" class="col-sm-5 control-label">Label marked branches with</label>
-            <div class="col-sm-7">
-              <input class="form-control" id="newick_export_annotate" value = "{FG}">
-            </div>
-          </div>
-        </form>
          <textarea id = 'nwk_export_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20></textarea>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id = 'export_newick'>Get annotated string</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -203,26 +196,21 @@
 
 <script>
 
-var width  = 800, //$(container_id).width(),
-    height = 600, //$(container_id).height()
-    selection_set = ['Foreground'],
-    current_selection_name = $("#selection_name_box").val(),
-    current_selection_id = 0,
-    color_scheme = colorbrewer.RdBu[9];
-    
 
-
-var tree = d3.layout.phylotree()
-    .size([height, width])
-    .separation (function (a,b) {return 0;})
-    .count_handler (function (count) { 
-            $("#selected_branch_counter").text (count.selected); 
-            $("#selected_filtered_counter").text (count.tag);
-        }
+$('#newick_export_modal').on('show.bs.modal', function (e) {
+    $('textarea[id$="nwk_export_spec"]').val(
+        tree.get_newick (
+            function (node) {
+                var tags = [];
+                selection_set.forEach (function (d) { if (node[d]) {tags.push(d)}; });
+                if (tags.length) {
+                    return "{" + tags.join (",") + "}";
+                }
+                return "";
+            }  
+        )
     );
-    //.node_span (function (a) {if (a.children && a.children.length) return 1; return isNaN (parseFloat (a["attribute"]) * 100) ? 1 : parseFloat (a["attribute"]) * 100; });
-
-var selection_names = [];
+})
 
 $("#newick_file").on ("change", function (e) {
     var files = e.target.files; // FileList object
@@ -288,16 +276,16 @@ $("#compress_spacing").on ("click", function (e) {
 });
 
 $("#and_label").on ("click", function (e) {
-    tree.internal_label (function (d) { return d.reduce (function (prev, curr) { return curr.selected && prev; }, true)}, true);
+    tree.internal_label (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] && prev; }, true)}, true);
 });
 
 $("#or_label").on ("click", function (e) {
-    tree.internal_label (function (d) { return d.reduce (function (prev, curr) { return curr.selected || prev; }, false)}, true);
+    tree.internal_label (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] || prev; }, false)}, true);
 });
 
 
 $("#filter_add").on ("click", function (e) {
-    tree.modify_selection (function (d) { return d.tag;}, current_selection_name, false, true)
+    tree.modify_selection (function (d) { return d.tag || d[current_selection_name];}, current_selection_name, false, true)
         .modify_selection (function (d) { return false; }, "tag", false, false);
 });
 
@@ -323,11 +311,11 @@ $("#select_none").on ("click", function (e) {
 });
 
 $("#clear_internal").on ("click", function (e) {
-    tree.modify_selection (function (d) { return d3_phylotree_is_leafnode (d.target) ? d.target.selected : false;});
+    tree.modify_selection (function (d) { return d3_phylotree_is_leafnode (d.target) ? d.target[current_selection_name] : false;});
 });
 
 $("#clear_leaves").on ("click", function (e) {
-    tree.modify_selection (function (d) { return !d3_phylotree_is_leafnode (d.target) ? d.target.selected : false;});
+    tree.modify_selection (function (d) { return !d3_phylotree_is_leafnode (d.target) ? d.target[current_selection_name] : false;});
 });
 
 
@@ -363,12 +351,6 @@ $("#validate_newick").on ("click", function (e) {
     }
 });
 
-$("#export_newick").on ("click", function (e) {
-    $('textarea[id$="nwk_export_spec"]').val(
-        tree.get_newick ($("#newick_export_annotate").val())
-    );
-});
-
 function default_tree_settings () {
     tree.branch_length (null);
     tree.branch_name (null);
@@ -376,6 +358,7 @@ function default_tree_settings () {
     tree.options ({'draw-size-bubbles' : false}, false);
     tree.style_nodes (node_colorizer);
     tree.style_edges (edge_colorizer);
+    tree.selection_label (current_selection_name);
 }
 
 $("#example_hiv_scaled").on ("click", function (e) {
@@ -434,30 +417,49 @@ $("#example_NGS").on ("click", function (e) {
 
 
 
-var test_string = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)";
-var container_id = '#tree_container';
 
-//window.setInterval (function () {});
-   
-var svg = d3.select(container_id).append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
-
-default_tree_settings();
-tree (test_string).svg (svg).layout();
-update_selection_names();   
 
 function node_colorizer (element, data) {
-   if (data[current_selection_name]) {
-        d3.select(element).style ("fill", color_scheme[current_selection_id]);
-   }
+try{
+   var count_class = 0,
+       element =  d3.select(element);
+       
+    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("fill", color_scheme[i], i == current_selection_id ?  "important" : null);}});
+   
+    if (count_class > 1) {
+    
+    } else {
+        if (count_class == 0) {        
+            element.style ("fill", null);
+       }
+    }
+} 
+catch (e) {
+
+}
+
 }
 
 function edge_colorizer (element, data) {
-   if (data[current_selection_name]) {
-        d3.select(element).style ("stroke", color_scheme[current_selection_id]);
-   }
+   //console.log (data[current_selection_name]);
+try {
+   
+   var count_class = 0,
+       element =  d3.select(element);
+       
+    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("stroke", color_scheme[i], i == current_selection_id ?  "important" : null);}});
+   
+    if (count_class > 1) {
+        element.classed ("branch-multiple", true);
+    } else 
+    if (count_class == 0) {        
+             element.style ("stroke", null)
+                   .classed ("branch-multiple", false);
+    }
+} 
+catch (e) {
+}
+    
 }
 
 var valid_id = new RegExp ("^[\\w]+$");
@@ -470,57 +472,137 @@ $("#selection_name_box").on ("input propertychange", function (e) {
                      
    d3.select ("#save_selection_name > button").classed ("disabled", accept_name ? null : true ); 
 });
+
+$("#selection_rename > a").on ("click", function (e) {
+
+    var name_box = d3.select ("#selection_name_box")
+                      .property ("disabled", false),
+                    
+       other_items = d3.selectAll ("#selection_delete,#selection_new,.selection_set");
+   
+    other_items.classed ("disabled", true);
+    
+    selection_set[current_selection_id] = "";
+    var save_button = d3.select ("#save_selection_name").style ("display", null);
+    $("#save_selection_name").tooltip ({'title' : 'Enter a unique name consisting of letters, numbers and the underscore character', 'placement' : 'bottom'});
+    
+    save_button.selectAll ("button")
+               .classed ("disabled",true)
+               .on ("click", function (e) { // save selection handler
+                    var old_selection_name = current_selection_name;
+                    selection_set[current_selection_id] = current_selection_name = $("#selection_name_box").val();
+                    d3.select ("#save_selection_name").style ("display", "none");
+                    name_box.property ("disabled", true);
+                    other_items.classed ("disabled", false);
+                    
+                    if (old_selection_name != current_selection_name) {
+                        tree.update_key_name (old_selection_name, current_selection_name);
+                        update_selection_names (current_selection_id);
+                    }
+               });
+      
+    e.preventDefault    (); 
+});
    
 $("#selection_new > a").on ("click", function (e) {
     
+    color_scheme = colorbrewer.Set1[Math.max (3,selection_set.length+1)];
+
     var name_box = d3.select ("#selection_name_box")
                       .property ("disabled", false)
                       .property ("value", "new_selection_name")
-                      .style ("color",  color_scheme[selection_set.length + 1]);
+                      .style ("color",  color_scheme[selection_set.length]);
 
     var other_items = d3.selectAll ("#selection_delete,#selection_rename,.selection_set");
     other_items.classed ("disabled", true);
     
     var save_button = d3.select ("#save_selection_name").style ("display", null);
+    $("#save_selection_name").tooltip ({'title' : 'Enter a unique name consisting of letters, numbers and the underscore character', 'placement' : 'bottom'});
+    
     save_button.selectAll ("button")
                .classed ("disabled",true)
-               .on ("click", function (e) {
+               .on ("click", function (e) { // save selection handler
                     current_selection_name = $("#selection_name_box").val();
+                    current_selection_id = selection_set.length;
                     selection_set.push (current_selection_name);
-                    update_selection_names (selection_set.length-1);
-                    d3.select (this).style ("display", "none");
+                    d3.select ("#save_selection_name").style ("display", "none");
                     name_box.property ("disabled", true);
                     other_items.classed ("disabled", false);
+                    update_selection_names (current_selection_id);
                });
       
     e.preventDefault    ();
        
 });  
+
    
-function update_selection_names (id) {
+function update_selection_names (id, skip_rebuild) {
+
+    skip_rebuild = skip_rebuild || false;
     id = id || 0;
     
-    console.log (id, selection_set[id], color_scheme[id], current_selection_name);
     
-    d3.selectAll (".selection_name_box").remove();
+    current_selection_name = selection_set[id];
+    current_selection_id = id;
     
-    d3.select ("#selection_name_dropdown")
-      .selectAll (".selection_set")
-      .data (selection_set)
-      .enter()
-      .append ("li")
-      .attr ("class", "selection_set")
-      .append ("a")
-      .attr ("href", "#")
-      .text (function (d) { return d;})
-      .attr ("data-selection-id", function (d,i) {return i;})
-      .on ("click", function (d,i) {set_selection_to (i);});
+    if (!skip_rebuild) {
+        d3.selectAll (".selection_set").remove();
+    
+        d3.select ("#selection_name_dropdown")
+          .selectAll (".selection_set")
+          .data (selection_set)
+          .enter()
+          .append ("li")
+          .attr ("class", "selection_set")
+          .append ("a")
+          .attr ("href", "#")
+          .text (function (d) { return d;})
+          .on ("click", function (d,i) {update_selection_names (i,true);});
+          
+    }
+      
       
     d3.select ("#selection_name_box")
-      .style ("color",  color_scheme[id]);
+      .style ("color",  color_scheme[id])
+      .property ("value", current_selection_name);
     
     tree.selection_label (selection_set[id]);
 }
+
+var width  = 800, //$(container_id).width(),
+    height = 600, //$(container_id).height()
+    selection_set = ['Foreground'],
+    current_selection_name = $("#selection_name_box").val(),
+    current_selection_id = 0,
+    max_selections       = 9;
+    color_scheme = colorbrewer.Set1[max_selections];
+    
+var tree = d3.layout.phylotree()
+    .size([height, width])
+    .separation (function (a,b) {return 0;})
+    .count_handler (function (count) { 
+            $("#selected_branch_counter").text (function (d) {return count[current_selection_name];}); 
+            $("#selected_filtered_counter").text (count.tag);
+        }
+    );
+    //.node_span (function (a) {if (a.children && a.children.length) return 1; return isNaN (parseFloat (a["attribute"]) * 100) ? 1 : parseFloat (a["attribute"]) * 100; });
+
+var test_string = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)";
+var container_id = '#tree_container';
+
+//window.setInterval (function () {});
+   
+var svg = d3.select(container_id).append("svg")
+    .attr("width", width)
+    .attr("height", height),
+    svg_defs = svg.append ("defs");
+
+
+$( document ).ready( function () {
+    default_tree_settings();
+    tree (test_string).svg (svg).layout();
+    update_selection_names();   
+});
 
 </script>
 

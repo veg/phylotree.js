@@ -71,6 +71,11 @@ stroke-dasharray: 10,5;
 stroke-width: 2px;
 }
 
+.branch-multiple {
+stroke-dasharray: 5, 5, 1, 5;
+stroke-width: 3px;
+}
+
 .branch:hover {
 stroke-width: 10px;
 }
