@@ -19,6 +19,7 @@
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="../js/phylotree.js"></script>
+    <script src="../js/colorbrewer.js"></script>
 
     <link href="../css/phylotree.css" rel="stylesheet">
    </style>
@@ -81,30 +82,52 @@
           <input type="text" id = 'branch_filter' class="form-control" placeholder="Filter branches on">
         </div>
       </form>
-      <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Selection <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id = "filter_add">Add filtered nodes to selection</a></li>
-            <li><a href="#" id = "filter_remove">Remove filtered nodes from selection</a></li>
-            <li class="divider"></li>
-            <li><a href="#" id = "select_all">Select all</a></li>
-            <li><a href="#" id = "select_all_internal">Select all internal nodes</a></li>
-            <li><a href="#" id = "select_all_leaves">Select all leaf nodes</a></li>
-            <li><a href="#" id = "clear_internal">Clear all internal nodes</a></li>
-            <li><a href="#" id = "clear_leaves">Clear all leaves</a></li>
-            <li><a href="#" id = "select_none">Clear selection</a></li>
-            <li class="divider"></li>
-            <li><a href="#" id = "mp_label">Label internal nodes using maximum parsimony</a></li>
-            <li><a href="#" id = "and_label">Label internal nodes using conjunction (AND) </a></li>
-            <li><a href="#" id = "or_label">Label internal nodes using disjunction (OR) </a></li>
-            <!--
-            <li class="divider"></li>
-            <li><a href="#" id = "name_and_save">Name and save current selection</a></li>
-            -->
-         </ul>
-        </li>
-      </ul>
+            
+      
+      <div class="row">
+        <div class="col-md-5 navbar-right">
+            <form class="navbar-form " role="search">
+                 <div class="input-group">
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            Tag <span class="caret"></span>
+                        </button>
+                          <ul class="dropdown-menu" id = "selection_name_dropdown">
+                            <li id = "selection_new"><a href="#">New selection set</a></li>
+                            <li id = "selection_delete"><a href="#">Delete selection set</a></li>
+                            <li id = "selection_rename"><a href="#">Rename selection set</a></li>
+                            <li class="divider"></li>
+                         </ul>
+                    </span>
+                    <input type="text" class="form-control" value = "Foreground" id = "selection_name_box" disabled>
+                    <span class="input-group-btn" id = "save_selection_name" style = "display: none">
+                        <button type="button" class="btn btn-default" >
+                            Save
+                        </button>
+                    </span>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Selection <span class="caret"></span></button>
+                          <ul class="dropdown-menu">
+                            <li><a href="#" id = "filter_add">Add filtered nodes to selection</a></li>
+                            <li><a href="#" id = "filter_remove">Remove filtered nodes from selection</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" id = "select_all">Select all</a></li>
+                            <li><a href="#" id = "select_all_internal">Select all internal nodes</a></li>
+                            <li><a href="#" id = "select_all_leaves">Select all leaf nodes</a></li>
+                            <li><a href="#" id = "clear_internal">Clear all internal nodes</a></li>
+                            <li><a href="#" id = "clear_leaves">Clear all leaves</a></li>
+                            <li><a href="#" id = "select_none">Clear selection</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" id = "mp_label">Label internal nodes using maximum parsimony</a></li>
+                            <li><a href="#" id = "and_label">Label internal nodes using conjunction (AND) </a></li>
+                            <li><a href="#" id = "or_label">Label internal nodes using disjunction (OR) </a></li>
+                         </ul>
+                    </span>
+                  </div>
+            </form>
+        </div>
+    </div>
+      
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
@@ -181,14 +204,25 @@
 <script>
 
 var width  = 800, //$(container_id).width(),
-    height = 600; //$(container_id).height();
+    height = 600, //$(container_id).height()
+    selection_set = ['Foreground'],
+    current_selection_name = $("#selection_name_box").val(),
+    current_selection_id = 0,
+    color_scheme = colorbrewer.RdBu[9];
+    
+
 
 var tree = d3.layout.phylotree()
     .size([height, width])
     .separation (function (a,b) {return 0;})
-    .count_handler (function (count) { $("#selected_branch_counter").text (count.selected) ; $("#selected_filtered_counter").text (count.filtered)});
+    .count_handler (function (count) { 
+            $("#selected_branch_counter").text (count.selected); 
+            $("#selected_filtered_counter").text (count.tag);
+        }
+    );
     //.node_span (function (a) {if (a.children && a.children.length) return 1; return isNaN (parseFloat (a["attribute"]) * 100) ? 1 : parseFloat (a["attribute"]) * 100; });
 
+var selection_names = [];
 
 $("#newick_file").on ("change", function (e) {
     var files = e.target.files; // FileList object
@@ -231,14 +265,19 @@ $("#newick_file").on ("change", function (e) {
     }
 });
 
+
+$("#expand_spacing").on ("click", function (e) {
+    tree.spacing_x (tree.spacing_x() + 1).update(true);
+});
+
 $("#display_tree").on ("click", function (e) {
     tree.options ({'branches' : 'straight'}, true);
 });
 
-
 $("#mp_label").on ("click", function (e) {
     tree.max_parsimony (true);
 });
+
 
 $("#expand_spacing").on ("click", function (e) {
     tree.spacing_x (tree.spacing_x() + 1).update(true);
@@ -258,7 +297,8 @@ $("#or_label").on ("click", function (e) {
 
 
 $("#filter_add").on ("click", function (e) {
-    tree.modify_selection (function (d) { return d.tag;});
+    tree.modify_selection (function (d) { return d.tag;}, current_selection_name, false, true)
+        .modify_selection (function (d) { return false; }, "tag", false, false);
 });
 
 $("#filter_remove").on ("click", function (e) {
@@ -295,12 +335,17 @@ $("#display_dengrogram").on ("click", function (e) {
     tree.options ({'branches' : 'step'}, true);
 });
 
+//    phylotree.modify_selection = function (callback, attr, place, skip_refresh, mode) {
+
+
 $("#branch_filter").on ("input propertychange", function (e) {  
    var filter_value = $(this).val();
    
-   var selected_count = (tree.tag (function (n) { 
-    return filter_value.length && (tree.branch_name () (n).search (new RegExp (filter_value,"i"))) != -1; 
-   }));
+   var rx = new RegExp (filter_value,"i");
+   
+  tree.modify_selection (function (n) { 
+    return filter_value.length && (tree.branch_name () (n.target).search (rx)) != -1; 
+   },"tag");
       
 });
 
@@ -329,7 +374,8 @@ function default_tree_settings () {
     tree.branch_name (null);
     tree.node_span ('equal');
     tree.options ({'draw-size-bubbles' : false}, false);
-    tree.style_nodes (null);
+    tree.style_nodes (node_colorizer);
+    tree.style_edges (edge_colorizer);
 }
 
 $("#example_hiv_scaled").on ("click", function (e) {
@@ -360,6 +406,7 @@ $("#example_influenza_color").on ("click", function (e) {
         if (m.length > 1) {
             element.style ("fill", color_scale(m[0]));
         }
+        node_colorizer (element, data);
     });
 
 
@@ -368,6 +415,7 @@ $("#example_influenza_color").on ("click", function (e) {
         if (m.length > 1) {
             element.style ("stroke", color_scale(m[0]));
         }
+        edge_colorizer (element, data);
     });
 
     tree (res).svg (svg).layout();
@@ -394,12 +442,85 @@ var container_id = '#tree_container';
 var svg = d3.select(container_id).append("svg")
     .attr("width", width)
     .attr("height", height);
-    //.style ("border", "1px solid black");
 
 
- tree (test_string).svg (svg).layout();
+default_tree_settings();
+tree (test_string).svg (svg).layout();
+update_selection_names();   
+
+function node_colorizer (element, data) {
+   if (data[current_selection_name]) {
+        d3.select(element).style ("fill", color_scheme[current_selection_id]);
+   }
+}
+
+function edge_colorizer (element, data) {
+   if (data[current_selection_name]) {
+        d3.select(element).style ("stroke", color_scheme[current_selection_id]);
+   }
+}
+
+var valid_id = new RegExp ("^[\\w]+$");
+
+$("#selection_name_box").on ("input propertychange", function (e) {  
+   var name = $(this).val();         
    
+   var accept_name = (selection_set.indexOf (name) < 0) &&
+                     valid_id.exec (name) ;
+                     
+   d3.select ("#save_selection_name > button").classed ("disabled", accept_name ? null : true ); 
+});
+   
+$("#selection_new > a").on ("click", function (e) {
+    
+    var name_box = d3.select ("#selection_name_box")
+                      .property ("disabled", false)
+                      .property ("value", "new_selection_name")
+                      .style ("color",  color_scheme[selection_set.length + 1]);
 
+    var other_items = d3.selectAll ("#selection_delete,#selection_rename,.selection_set");
+    other_items.classed ("disabled", true);
+    
+    var save_button = d3.select ("#save_selection_name").style ("display", null);
+    save_button.selectAll ("button")
+               .classed ("disabled",true)
+               .on ("click", function (e) {
+                    current_selection_name = $("#selection_name_box").val();
+                    selection_set.push (current_selection_name);
+                    update_selection_names (selection_set.length-1);
+                    d3.select (this).style ("display", "none");
+                    name_box.property ("disabled", true);
+                    other_items.classed ("disabled", false);
+               });
+      
+    e.preventDefault    ();
+       
+});  
+   
+function update_selection_names (id) {
+    id = id || 0;
+    
+    console.log (id, selection_set[id], color_scheme[id], current_selection_name);
+    
+    d3.selectAll (".selection_name_box").remove();
+    
+    d3.select ("#selection_name_dropdown")
+      .selectAll (".selection_set")
+      .data (selection_set)
+      .enter()
+      .append ("li")
+      .attr ("class", "selection_set")
+      .append ("a")
+      .attr ("href", "#")
+      .text (function (d) { return d;})
+      .attr ("data-selection-id", function (d,i) {return i;})
+      .on ("click", function (d,i) {set_selection_to (i);});
+      
+    d3.select ("#selection_name_box")
+      .style ("color",  color_scheme[id]);
+    
+    tree.selection_label (selection_set[id]);
+}
 
 </script>
 
