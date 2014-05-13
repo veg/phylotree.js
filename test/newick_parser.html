@@ -421,8 +421,7 @@ $("#example_NGS").on ("click", function (e) {
 
 function node_colorizer (element, data) {
 try{
-   var count_class = 0,
-       element =  d3.select(element);
+   var count_class = 0;
        
     selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("fill", color_scheme(i), i == current_selection_id ?  "important" : null);}});
    
@@ -443,9 +442,7 @@ catch (e) {
 function edge_colorizer (element, data) {
    //console.log (data[current_selection_name]);
 try {
-   
-   var count_class = 0,
-       element =  d3.select(element);
+    var count_class = 0;
        
     selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("stroke", color_scheme(i), i == current_selection_id ?  "important" : null);}});
    

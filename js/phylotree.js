@@ -1004,14 +1004,14 @@ d3.layout.phylotree = function () {
         edges.attr("class", phylotree.reclass_edge);
         
         if (edge_styler) {
-            edges.each (function (d) {edge_styler (this,d);});
+            edges.each (function (d) {edge_styler (d3.select(this),d);});
         }           
                           
         var nodes = enclosure.selectAll(d3_phylotree_node_css_selectors(css_classes));
         nodes.attr ("class", phylotree.reclass_node);
         
         if (node_styler) {
-            nodes.each (function (d) {node_styler (this,d);});
+            nodes.each (function (d) {node_styler (d3.select(this),d);});
         }        
     }
 
@@ -1080,19 +1080,21 @@ d3.layout.phylotree = function () {
                   
         var new_branch_path = draw_branch ([edge.source, edge.target]);
                  
+        if (edge_styler) {
+             edge_styler (container, edge);
+        }
+
         if (transition) {
            if (container.datum().existing_path) {
                 container.attr("d", function (d) { return d.existing_path;});
            }
-           container.transition().attr("d", new_branch_path);
+           container = container.transition().attr("d", new_branch_path);
         } else {
             container.attr("d", new_branch_path);
         }
         edge.existing_path = new_branch_path;
                 
-        if (edge_styler) {
-            edge_styler (container, edge);
-        }
+        
 
         return phylotree;
     }
