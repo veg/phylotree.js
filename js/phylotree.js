@@ -721,7 +721,9 @@ d3.layout.phylotree = function () {
     phylotree.update_key_name = function (old_key, new_key) {
         nodes.forEach (function (n) {
             if (old_key in n) {
-                n[new_key] = n[old_key];
+                if (new_key) {
+                    n[new_key] = n[old_key];
+                }
                 delete n[old_key];
             }
         });

@@ -77,16 +77,14 @@
      </ul>
       
       
-      <form class="navbar-form navbar-right" role="search">
-        <div class="form-group">
+        <div class="form-group navbar-form navbar-right">
           <input type="text" id = 'branch_filter' class="form-control" placeholder="Filter branches on">
         </div>
-      </form>
             
       
       <div class="row">
-        <div class="col-md-5 navbar-right">
-            <form class="navbar-form " role="search">
+        <div class="col-md-5 navbar-right ">
+            <div class="navbar-form " role="search">
                  <div class="input-group">
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -94,7 +92,7 @@
                         </button>
                           <ul class="dropdown-menu" id = "selection_name_dropdown">
                             <li id = "selection_new"><a href="#">New selection set</a></li>
-                            <li id = "selection_delete"><a href="#">Delete selection set</a></li>
+                            <li id = "selection_delete" class = "disabled"><a href="#">Delete selection set</a></li>
                             <li id = "selection_rename"><a href="#">Rename selection set</a></li>
                             <li class="divider"></li>
                          </ul>
@@ -103,7 +101,10 @@
                     <input type="text" class="form-control" value = "Foreground" id = "selection_name_box" disabled>               
                     
                     <span class="input-group-btn" id = "save_selection_name" style = "display: none" >
-                        <button type="button" class="btn btn-default" >
+                        <button type="button" class="btn btn-default" id = "cancel_selection_button" >
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-default" id = "save_selection_button">
                             Save
                         </button>
                     </span>
@@ -126,7 +127,7 @@
                          </ul>
                     </span>
                   </div>
-            </form>
+            </div>
         </div>
     </div>
       
@@ -470,71 +471,95 @@ $("#selection_name_box").on ("input propertychange", function (e) {
    var accept_name = (selection_set.indexOf (name) < 0) &&
                      valid_id.exec (name) ;
                      
-   d3.select ("#save_selection_name > button").classed ("disabled", accept_name ? null : true ); 
+   d3.select ("#save_selection_button").classed ("disabled", accept_name ? null : true ); 
 });
 
 $("#selection_rename > a").on ("click", function (e) {
 
-    var name_box = d3.select ("#selection_name_box")
-                      .property ("disabled", false),
-                    
-       other_items = d3.selectAll ("#selection_delete,#selection_new,.selection_set");
-   
-    other_items.classed ("disabled", true);
-    
-    selection_set[current_selection_id] = "";
-    var save_button = d3.select ("#save_selection_name").style ("display", null);
-    $("#save_selection_name").tooltip ({'title' : 'Enter a unique name consisting of letters, numbers and the underscore character', 'placement' : 'bottom'});
-    
-    save_button.selectAll ("button")
-               .classed ("disabled",true)
-               .on ("click", function (e) { // save selection handler
-                    var old_selection_name = current_selection_name;
-                    selection_set[current_selection_id] = current_selection_name = $("#selection_name_box").val();
-                    d3.select ("#save_selection_name").style ("display", "none");
-                    name_box.property ("disabled", true);
-                    other_items.classed ("disabled", false);
-                    
-                    if (old_selection_name != current_selection_name) {
-                        tree.update_key_name (old_selection_name, current_selection_name);
-                        update_selection_names (current_selection_id);
-                    }
-               });
+    d3.select ("#save_selection_button")
+           .classed ("disabled",true)
+           .on ("click", function (e) { // save selection handler
+                var old_selection_name = current_selection_name;
+                selection_set[current_selection_id] = current_selection_name = $("#selection_name_box").val();
+                 
+                if (old_selection_name != current_selection_name) {
+                    tree.update_key_name (old_selection_name, current_selection_name);
+                    update_selection_names (current_selection_id);
+                }
+                send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                             {'detail' : ['save', this]}));
+           });
       
+    d3.select ("#cancel_selection_button")
+               .classed ("disabled",false)
+               .on ("click", function (e) { // save selection handler
+                    $("#selection_name_box").val(current_selection_name);
+                    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['cancel', this]}));
+              });
+
+    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['rename', this]}));
     e.preventDefault    (); 
 });
+
+$("#selection_delete > a").on ("click", function (e) {
+    
+    color_scheme = colorbrewer.Set1[Math.max (3,selection_set.length-1)];
+    tree.update_key_name (selection_set[current_selection_id], null)
+    selection_set.splice (current_selection_id, 1);
+    
+    if (current_selection_id > 0) {
+        current_selection_id --;
+    }
+    current_selection_name = selection_set[current_selection_id];
+    update_selection_names (current_selection_id)
+    $("#selection_name_box").val(current_selection_name)
+    
+                            
+    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['save', this]}));
+    e.preventDefault    ();
+       
+});  
    
 $("#selection_new > a").on ("click", function (e) {
     
     color_scheme = colorbrewer.Set1[Math.max (3,selection_set.length+1)];
-
-    var name_box = d3.select ("#selection_name_box")
-                      .property ("disabled", false)
-                      .property ("value", "new_selection_name")
-                      .style ("color",  color_scheme[selection_set.length]);
-
-    var other_items = d3.selectAll ("#selection_delete,#selection_rename,.selection_set");
-    other_items.classed ("disabled", true);
     
-    var save_button = d3.select ("#save_selection_name").style ("display", null);
-    $("#save_selection_name").tooltip ({'title' : 'Enter a unique name consisting of letters, numbers and the underscore character', 'placement' : 'bottom'});
-    
-    save_button.selectAll ("button")
+    d3.select ("#save_selection_button")
                .classed ("disabled",true)
                .on ("click", function (e) { // save selection handler
                     current_selection_name = $("#selection_name_box").val();
                     current_selection_id = selection_set.length;
                     selection_set.push (current_selection_name);
-                    d3.select ("#save_selection_name").style ("display", "none");
-                    name_box.property ("disabled", true);
-                    other_items.classed ("disabled", false);
                     update_selection_names (current_selection_id);
-               });
-      
+                    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['save', this]}));
+              });
+ 
+     d3.select ("#cancel_selection_button")
+               .classed ("disabled",false)
+               .on ("click", function (e) { // save selection handler
+                    $("#selection_name_box").val(current_selection_name);
+                    color_scheme = colorbrewer.Set1[Math.max (3,selection_set.length)];
+                    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['cancel', this]}));
+              });
+                            
+    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['new', this]}));
     e.preventDefault    ();
        
 });  
 
+function send_click_event_to_menu_objects (e) {
+    $("#selection_new, #selection_delete, #selection_rename, #save_selection_name, #selection_name_box, #selection_name_dropdown").get().forEach (
+        function (d) {
+            d.dispatchEvent (e);
+        }
+    );
+}
    
 function update_selection_names (id, skip_rebuild) {
 
@@ -575,7 +600,8 @@ var width  = 800, //$(container_id).width(),
     current_selection_name = $("#selection_name_box").val(),
     current_selection_id = 0,
     max_selections       = 9;
-    color_scheme = colorbrewer.Set1[max_selections];
+    color_scheme = colorbrewer.Set1[max_selections],
+    selection_menu_element_action = "phylotree_menu_element_action";
     
 var tree = d3.layout.phylotree()
     .size([height, width])
@@ -597,10 +623,93 @@ var svg = d3.select(container_id).append("svg")
     .attr("height", height),
     svg_defs = svg.append ("defs");
 
+function selection_handler_name_box (e) {
+    var name_box = d3.select (this);
+     switch (e.detail[0]) {
+        case 'save':
+        case 'cancel':
+            name_box.property ("disabled", true)
+                    .style ("color",  color_scheme[current_selection_id]);
+
+            break;
+        case 'new':
+            name_box.property ("disabled", false)
+                    .property ("value", "new_selection_name")
+                    .style ("color",  color_scheme[selection_set.length]);
+            break;
+        case 'rename':
+           name_box.property ("disabled", false);
+           break;
+    }
+    
+}
+
+function selection_handler_new (e) {
+    var element = d3.select (this);
+    $(this).data('tooltip', false);         
+    switch (e.detail[0]) {
+        case 'save':
+        case 'cancel':
+            if (selection_set.length == max_selections) {
+                element.classed ("disabled", true);
+                    $(this).tooltip ({'title' : 'Up to ' + max_selections + ' are allowed', 'placement' : 'left'});
+            } else {
+                element.classed ("disabled", null);
+            }
+            break;
+        default:
+            element.classed ("disabled", true);
+            break;
+            
+    }
+}
+
+function selection_handler_rename (e) {
+    var element = d3.select (this);
+    element.classed ("disabled", (e.detail[0] == "save" || e.detail[0] == "cancel") ? null : true);
+}
+
+function selection_handler_save_selection_name (e) {
+    var element = d3.select (this);
+    element.style ("display", (e.detail[0] == "save" || e.detail[0] == "cancel") ? "none" : null);
+}
+
+function selection_handler_name_dropdown (e) {
+    var element = d3.select (this).selectAll (".selection_set");
+    element.classed ("disabled", (e.detail[0] == "save" || e.detail[0] == "cancel") ? null : true);
+}
+
+function selection_handler_delete (e) {
+    var element = d3.select (this);
+    $(this).tooltip('destroy');         
+    switch (e.detail[0]) {
+        case 'save':
+        case 'cancel':
+            if (selection_set.length == 1) {
+                element.classed ("disabled", true);
+                    $(this).tooltip ({'title' : 'At least one named selection set <br> is required;<br>it can be empty, however', 'placement' : 'bottom', 'html': true});
+            } else {
+                element.classed ("disabled", null);
+            }
+            break;
+        default:
+            element.classed ("disabled", true);
+            break;
+            
+    }}
+
 
 $( document ).ready( function () {
     default_tree_settings();
     tree (test_string).svg (svg).layout();
+    $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
+    $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
+    $("#selection_delete").get(0).addEventListener(selection_menu_element_action,selection_handler_delete,false);
+    $("#selection_delete").get(0).dispatchEvent (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['cancel', null]}));
+    $("#selection_name_box").get(0).addEventListener(selection_menu_element_action,selection_handler_name_box,false);
+    $("#save_selection_name").get(0).addEventListener(selection_menu_element_action,selection_handler_save_selection_name,false);
+    $("#selection_name_dropdown").get(0).addEventListener(selection_menu_element_action,selection_handler_name_dropdown,false);
     update_selection_names();   
 });
 
