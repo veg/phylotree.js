@@ -19,7 +19,6 @@
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="../js/phylotree.js"></script>
-    <script src="../js/colorbrewer.js"></script>
 
     <link href="../css/phylotree.css" rel="stylesheet">
    </style>
@@ -425,7 +424,7 @@ try{
    var count_class = 0,
        element =  d3.select(element);
        
-    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("fill", color_scheme[i], i == current_selection_id ?  "important" : null);}});
+    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("fill", color_scheme(i), i == current_selection_id ?  "important" : null);}});
    
     if (count_class > 1) {
     
@@ -448,7 +447,7 @@ try {
    var count_class = 0,
        element =  d3.select(element);
        
-    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("stroke", color_scheme[i], i == current_selection_id ?  "important" : null);}});
+    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("stroke", color_scheme(i), i == current_selection_id ?  "important" : null);}});
    
     if (count_class > 1) {
         element.classed ("branch-multiple", true);
@@ -505,7 +504,6 @@ $("#selection_rename > a").on ("click", function (e) {
 
 $("#selection_delete > a").on ("click", function (e) {
     
-    color_scheme = colorbrewer.Set1[Math.max (3,selection_set.length-1)];
     tree.update_key_name (selection_set[current_selection_id], null)
     selection_set.splice (current_selection_id, 1);
     
@@ -525,8 +523,6 @@ $("#selection_delete > a").on ("click", function (e) {
    
 $("#selection_new > a").on ("click", function (e) {
     
-    color_scheme = colorbrewer.Set1[Math.max (3,selection_set.length+1)];
-    
     d3.select ("#save_selection_button")
                .classed ("disabled",true)
                .on ("click", function (e) { // save selection handler
@@ -542,7 +538,6 @@ $("#selection_new > a").on ("click", function (e) {
                .classed ("disabled",false)
                .on ("click", function (e) { // save selection handler
                     $("#selection_name_box").val(current_selection_name);
-                    color_scheme = colorbrewer.Set1[Math.max (3,selection_set.length)];
                     send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
                                  {'detail' : ['cancel', this]}));
               });
@@ -582,13 +577,14 @@ function update_selection_names (id, skip_rebuild) {
           .append ("a")
           .attr ("href", "#")
           .text (function (d) { return d;})
+          .style ("color", function (d,i) {return color_scheme(i);})
           .on ("click", function (d,i) {update_selection_names (i,true);});
           
     }
       
       
     d3.select ("#selection_name_box")
-      .style ("color",  color_scheme[id])
+      .style ("color",  color_scheme(id))
       .property ("value", current_selection_name);
     
     tree.selection_label (selection_set[id]);
@@ -599,8 +595,8 @@ var width  = 800, //$(container_id).width(),
     selection_set = ['Foreground'],
     current_selection_name = $("#selection_name_box").val(),
     current_selection_id = 0,
-    max_selections       = 9;
-    color_scheme = colorbrewer.Set1[max_selections],
+    max_selections       = 10;
+    color_scheme = d3.scale.category10(),
     selection_menu_element_action = "phylotree_menu_element_action";
     
 var tree = d3.layout.phylotree()
@@ -629,13 +625,13 @@ function selection_handler_name_box (e) {
         case 'save':
         case 'cancel':
             name_box.property ("disabled", true)
-                    .style ("color",  color_scheme[current_selection_id]);
+                    .style ("color",  color_scheme(current_selection_id));
 
             break;
         case 'new':
             name_box.property ("disabled", false)
                     .property ("value", "new_selection_name")
-                    .style ("color",  color_scheme[selection_set.length]);
+                    .style ("color",  color_scheme(selection_set.length));
             break;
         case 'rename':
            name_box.property ("disabled", false);
