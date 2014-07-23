@@ -596,7 +596,7 @@ var width  = 800, //$(container_id).width(),
     color_scheme = d3.scale.category10(),
     selection_menu_element_action = "phylotree_menu_element_action";
     
-var tree = d3.layout.phylotree()
+var tree = d3.layout.phylotree("body")
     .size([height, width])
     .separation (function (a,b) {return 0;})
     .count_handler (function (count) { 
@@ -694,7 +694,7 @@ function selection_handler_delete (e) {
 
 $( document ).ready( function () {
     default_tree_settings();
-    tree (test_string).svg (svg).layout();
+    tree(test_string).svg (svg).layout();
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
     $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
     $("#selection_delete").get(0).addEventListener(selection_menu_element_action,selection_handler_delete,false);
