@@ -21,10 +21,6 @@ stroke: black;
 stroke-width: 0.5px;
 }
 
-body { 
-padding-top: 70px; 
-}
-
 .internal-node circle, .internal-node ellipse, .internal-node rect{
 fill: #CCC;
 stroke: black;

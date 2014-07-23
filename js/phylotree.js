@@ -730,11 +730,13 @@ d3.layout.phylotree = function () {
         phylotree.sync_edge_labels();
     };
         
-    phylotree.spacing_x = function(attr) {
+    phylotree.spacing_x = function(attr, skip_render) {
         if (!arguments.length) return fixed_width[0];
         if (fixed_width[0] != attr && attr >= 2 && attr <= 100) {
             fixed_width[0] = attr;
-            phylotree.placenodes();
+            if (!skip_render) {
+                phylotree.placenodes();
+            }
         }
         return phylotree;
     };
