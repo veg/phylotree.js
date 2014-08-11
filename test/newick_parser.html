@@ -254,9 +254,7 @@ $("#newick_file").on ("change", function (e) {
 });
 
 
-$("#expand_spacing").on ("click", function (e) {
-    tree.spacing_x (tree.spacing_x() + 1).update(true);
-});
+
 
 $("#display_tree").on ("click", function (e) {
     tree.options ({'branches' : 'straight'}, true);
@@ -613,8 +611,9 @@ var container_id = '#tree_container';
    
 var svg = d3.select(container_id).append("svg")
     .attr("width", width)
-    .attr("height", height),
-    svg_defs = svg.append ("defs");
+    .attr("height", height);
+                    
+                
 
 function selection_handler_name_box (e) {
     var name_box = d3.select (this);

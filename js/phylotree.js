@@ -68,7 +68,8 @@ d3.layout.phylotree = function (container) {
         y_coord                 = function (d) {return d.x},
         scales                  = [1,1],
         fixed_width             = [15,100],
-        font_size               = 10,
+        font_size               = 12,
+        scale_bar_font_size     = 12,
         offsets                 = [0,font_size],
                 
         draw_branch             = d3.svg.line ()
@@ -289,7 +290,7 @@ d3.layout.phylotree = function (container) {
     
     phylotree.pad_height = function () {
         if (draw_scale_bar) {
-            return 35;
+            return scale_bar_font_size + 25;
         }
         return 0;
     }
@@ -811,6 +812,11 @@ d3.layout.phylotree = function (container) {
       return phylotree;
   }
 
+  phylotree.font_size = function (attr) {
+      if (!arguments.length) return font_size;
+      font_size = attr ? attr : 10;
+      return phylotree;
+  }
 
 
 
@@ -819,6 +825,7 @@ d3.layout.phylotree = function (container) {
       if (!( svg === svg_element)) {
           svg = svg_element;
           svg.selectAll ("*").remove();
+          svg_defs = svg.append ("defs");
           d3.select(self.container).on("click", function (d) {phylotree.handle_node_click(null);}, true);
       }
       return phylotree;
@@ -876,6 +883,7 @@ d3.layout.phylotree = function (container) {
           var scale_bar = svg.selectAll ("." + css_classes["tree-scale-bar"]).data ([0]);
           scale_bar.enter().append("g");
           scale_bar.attr ("class", css_classes["tree-scale-bar"])
+                   .style ("font-size", "" + scale_bar_font_size)
                    .attr ("transform", function (d) { return "translate(" + offsets[1] + "," + (phylotree.pad_height()-10) + ")";}) 
                    .call (draw_scale_bar);
           scale_bar.selectAll ("text")
