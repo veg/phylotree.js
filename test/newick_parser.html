@@ -71,6 +71,7 @@
             <li><a href="#" id = "example_hiv_scaled" >HIV-1 RT</a></li>
             <li><a href="#" id = "example_influenza_color">Unscaled IAV HA colored by host</a></li>
             <li><a href="#" id = "example_NGS" >NGS copy diversity</a></li>
+            <li><a href="#" id = "example_GVZ" >Compare NGS consensus</a></li>
           </ul>
         </li>
      </ul>
@@ -142,7 +143,7 @@
         <h4 class="modal-title">Newick string to render</h4>
       </div>
       <div class="modal-body" id = 'newick_body'>
-         <textarea id = 'nwk_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20 selectionStart = 1 selectionEnd = 1000>(a : 0.1, (b : 0.2, c : 0.4) : 0.5)</textarea>
+         <textarea id = 'nwk_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20 selectionStart = 1 selectionEnd = 1000>(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)</textarea>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" id = 'validate_newick'>Display this tree</button>
@@ -170,11 +171,20 @@
         <div class = 'col-md-12'>
             <div class="btn-toolbar" role="toolbar">
               <div class="btn-group">
-                <button type="button" class="btn btn-default btn-sm" id = "expand_spacing">
+                <button type="button" class="btn btn-default btn-sm" id = "expand_spacing" title = "Expand spacing">
                     <i class="fa fa-expand" ></i>
                 </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "compress_spacing">
+                 <button type="button" class="btn btn-default btn-sm" id = "compress_spacing" title = "Compress spacing">
                     <i class="fa fa-compress" ></i>
+                </button>
+                 <button type="button" class="btn btn-default btn-sm" id = "sort_ascending" title = "Sort deepest clades to the bototm">
+                    <i class="fa fa-sort-amount-asc" ></i>
+                </button>
+                 <button type="button" class="btn btn-default btn-sm" id = "sort_descending" title = "Sort deepsest clades to the top">
+                    <i class="fa fa-sort-amount-desc" ></i>
+                </button>
+                 <button type="button" class="btn btn-default btn-sm" id = "sort_original" title = "Restore original order">
+                    <i class="fa fa-sort" ></i>
                 </button>
               </div>
                <label class = "pull-right">Selected <span class="badge" id = "selected_branch_counter">0</span> and filtered <span class="badge" id = "selected_filtered_counter">0</span> branches</label>
@@ -271,6 +281,33 @@ $("#expand_spacing").on ("click", function (e) {
 
 $("#compress_spacing").on ("click", function (e) {
     tree.spacing_x (tree.spacing_x() - 1).update(true);
+});
+
+function sort_nodes (asc) {
+    tree.traverse_and_compute (function (n) {
+            var d = 1;
+            if (n.children && n.children.length) {
+                d += d3.max (n.children, function (d) { return d["count_depth"];});
+            }
+            n["count_depth"] = d;
+        }); 
+        tree.resort_children (function (a,b) {
+            return (a["count_depth"] - b["count_depth"]) * (asc ? 1 : -1);
+        });
+}
+
+$("#sort_original").on ("click", function (e) {
+    tree.resort_children (function (a,b) {
+        return a["original_child_order"] - b["original_child_order"];
+    });
+});
+
+$("#sort_ascending").on ("click", function (e) {
+    sort_nodes (true);
+});
+
+$("#sort_descending").on ("click", function (e) {
+    sort_nodes (false);
 });
 
 $("#and_label").on ("click", function (e) {
@@ -410,6 +447,40 @@ $("#example_NGS").on ("click", function (e) {
     default_tree_settings ();
     tree.node_span (function (a) { var m = re.exec (a.name); try {return Math.sqrt(parseFloat (m[1]))} catch (e) {} return null;});
     tree.options ({'draw-size-bubbles' : true}, false);
+    
+    tree (res).svg (svg).layout();
+});
+
+
+$("#example_GVZ").on ("click", function (e) {
+    default_tree_settings ();
+
+    function GVZ_colorizer (element, data) {
+        element.style ('stroke-width', 4)
+               .style ('stroke-linejoin', 'round')
+               .style ('stroke-linecap', 'round');
+    }
+    var GVZ = "(((A300_20090507_rt_PGM:0.00763,((A300_20090507_rt_miSeqR2:0.0,A300_20090507_rt_miSeqR1:0.0):0.00055,A300:0.00055)0.979:0.00055)1.000:0.03978,(A202_20081001_rt_PGM:0.00582,((A202_20081001_rt_miSeqR2:0.0,A202_20081001_rt_miSeqR1:0.0):0.00055,A202:0.00055)0.988:0.00054)0.984:0.01883)0.868:0.00764,((A158_20080617_rt_miSeqR2:0.0,A158_20080617_rt_miSeqR1:0.0,A158_20080617_rt_PGM:0.0,A158:0.0):0.03547,(((A207_20081020_rt_miSeqR2:0.0,A207_20081020_rt_miSeqR1:0.0,A207:0.0):0.00055,A207_20081020_rt_PGM:0.00055)1.000:0.03874,(A124:0.00055,((A124_20080207_rt_miSeqR2:0.0,A124_20080207_rt_miSeqR1:0.0):0.00055,A124_20080207_rt_PGM:0.00383)0.910:0.00054)0.980:0.01829)0.025:0.00507)0.737:0.00225,((((A326_20090902_rt_miSeqR2:0.0,A326_20090902_rt_miSeqR1:0.0,A326_20090902_rt_PGM:0.0):0.03017,((A364_20100120_rt_PGM:0.00585,((A364_20100120_rt_miSeqR2:0.0,A364_20100120_rt_miSeqR1:0.0):0.00055,A364:0.00055)0.829:0.00357)0.996:0.02199,(((A297_20090526_rt_miSeqR2:0.0,A297_20090526_rt_miSeqR1:0.0,A297:0.0):0.00055,A297_20090526_rt_PGM:0.00189)1.000:0.04029,((A313:0.00055,((A313_20090715_rt_miSeqR2:0.0,A313_20090715_rt_miSeqR1:0.0):0.00053,A313_20090715_rt_PGM:0.00577)0.891:0.00055)1.000:0.04241,(A318:0.00055,((A318_20090728_rt_miSeqR2:0.0,A318_20090728_rt_miSeqR1:0.0):0.00053,A318_20090728_rt_PGM:0.00582)0.884:0.00055)0.999:0.03273)0.917:0.01184)0.658:0.00196)0.923:0.00824)0.525:0.00054,((((A144_20080513_rt_miSeqR2:0.0,A144_20080513_rt_miSeqR1:0.0,A144:0.0):0.00055,A144_20080513_rt_PGM:0.00188)0.998:0.02715,(A157:0.00055,((A157_20080617_rt_miSeqR2:0.0,A157_20080617_rt_miSeqR1:0.0):0.00055,A157_20080617_rt_PGM:0.00194)0.825:0.00053)1.000:0.03065)0.912:0.01106,(((A137_20080318_rt_miSeqR2:0.0,A137_20080318_rt_miSeqR1:0.0,A137:0.0):0.00054,A137_20080318_rt_PGM:0.00575)1.000:0.05302,((A302_20090604_rt_miSeqR2:0.0,A302_20090604_rt_miSeqR1:0.0,A302:0.0):0.00054,A302_20090604_rt_PGM:0.00574)1.000:0.03598)0.745:0.00848)0.465:0.00054)0.785:0.00274,((A312_20090702_rt_miSeqR2:0.0,A312_20090702_rt_miSeqR1:0.0,A312:0.0):0.00055,A312_20090702_rt_PGM:0.00571)0.999:0.02550)0.884:0.00629)";
+    var res = d3_phylotree_newick_parser ( GVZ );
+    var colorizer = d3.scale.category10 (); 
+
+    tree.branch_name (function (d) {
+        var n = d.name.split ('_');
+        if (n.length > 1) {
+             return n[0] + "(" + n[n.length-1] + ")";
+        } 
+        return n + " (Sanger)";
+    });
+    
+    tree.node_span ('equal');
+    tree.options ({'draw-size-bubbles' : false}, false);
+    tree.font_size (14);
+    tree.scale_bar_font_size (12);
+    tree.node_circle_size (4);
+    tree.spacing_x (16, true);
+    tree.style_edges (GVZ_colorizer);
+   
+    tree.options ({'draw-size-bubbles' : false}, false);
     tree (res).svg (svg).layout();
 });
 

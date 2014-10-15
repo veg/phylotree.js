@@ -3,8 +3,10 @@ var d3_layout_phylotree_event_id = "d3.layout.phylotree.event",
 
 
 d3.layout.phylotree = function (container) {
+    
     var self = this;
         self.container = container;
+        
     var d3_hierarchy            = d3.layout.hierarchy().sort(null).value(null),
         size                    = [1,1],
         newick_string           = null,
@@ -70,6 +72,7 @@ d3.layout.phylotree = function (container) {
         fixed_width             = [15,100],
         font_size               = 12,
         scale_bar_font_size     = 12,
+        node_circle_size        = 3,
         offsets                 = [0,font_size],
                 
         draw_branch             = d3.svg.line ()
@@ -466,6 +469,16 @@ d3.layout.phylotree = function (container) {
         return element_array.join ("");
     }
     
+    phylotree.update_layout = function (new_json, do_hierarchy) {
+        if (do_hierarchy) {
+            nodes = d3_hierarchy.call (this, new_json);
+            nodes.forEach (function (d) { d.id = null;});
+        }
+        phylotree.placenodes();
+        links = phylotree.links (nodes);
+        phylotree.sync_edge_labels ();
+    }
+    
     phylotree.sync_edge_labels = function () {
         
         links.forEach (function (d) {
@@ -668,55 +681,116 @@ d3.layout.phylotree = function (container) {
     /*phylotree.reroot = function (node) {
 
     }*/
+ 
+    phylotree.resort_children = function (comparator) {
+        function sort_children (node) {
+            if (node.children) {
+                for (var k = 0; k < node.children.length; k++) {
+                    sort_children (node.children[k]);
+                }
+                node.children.sort (comparator);
+            }
+        }
+        
+        sort_children (nodes[0]);
+        phylotree.update_layout (nodes);
+        phylotree.update(true);
+    }
+    
+    phylotree.traverse_and_compute = function (callback, traversal_type) {
+        traversal_type = traversal_type || "post-order";
+        
+        function post_order (node) {
+            if (node.children) {
+                for (var k = 0; k < node.children.length; k++) {
+                    post_order (node.children[k]);
+                }
+            }
+            callback (node);
+        }
+        
+        if (traversal_type == 'post-order') {
+            traversal_type = post_order; 
+        }
+        
+        traversal_type (nodes[0]);
+    }
     
     phylotree.reroot = function (node) {
         if (node.parent) {
         
             new_json = {'name' : 'new_root',
+                        '__mapped_bl' : undefined,
                         'children' : [node]};
                  
+            nodes.forEach (function (n) {n.__mapped_bl = branch_length_accessor(n);});
+            phylotree.branch_length (function (n) {return n.__mapped_bl;});
                         
             var remove_me    = node,
-                current_node = node.parent;
+                current_node = node.parent,
+                parent_length = current_node.__mapped_bl,
+                stashed_bl = undefined;
                 
-            if (!current_node.parent) {
-                var remove_idx = current_node.children.indexOf (remove_me);
-                current_node.children.splice (remove_idx,1);
-                new_json.children = new_json.children.concat (current_node.children);
-            } else {
-                new_json.children.push (node.parent);
+               
+            if (current_node.parent) {
+                node.__mapped_bl = node.__mapped_bl === undefined  ? undefined : node.__mapped_bl * 0.5;
+                stashed_bl = current_node.__mapped_bl;
+                current_node.__mapped_bl = node.__mapped_bl;
+                new_json.children.push (current_node);
                 while (current_node.parent) {
                     var remove_idx = current_node.children.indexOf (remove_me);
                     if (current_node.parent.parent) {
                         current_node.children.splice (remove_idx,1,current_node.parent);
                     } else {
                          current_node.children.splice (remove_idx,1);
-                    }                
+                    }               
+                    
+                    var t = current_node.parent.__mapped_bl;
+                    if (! (t === undefined)) {
+                        current_node.parent.__mapped_bl = stashed_bl;
+                        stashed_bl = t;
+                    }
                     remove_me = current_node;
                     current_node = current_node.parent;
                 }
                 var remove_idx = current_node.children.indexOf (remove_me);
                 current_node.children.splice (remove_idx,1);
-                remove_me.children = remove_me.children.concat (current_node.children);
+           } else {
+                var remove_idx = current_node.children.indexOf (remove_me);
+                current_node.children.splice (remove_idx,1);
+                remove_me = new_json;
+                
             }
-            
-            // current_node is now old root, and remove_me is the root child we came up
-            // the tree through
-            
+                
+           // current_node is now old root, and remove_me is the root child we came up
+           // the tree through
+  
+            if (current_node.children.length == 1) {
+                if (stashed_bl) {
+                    current_node.children[0].__mapped_bl += stashed_bl;
+                }
+                remove_me.children = remove_me.children.concat (current_node.children);
+            } else {
+                var new_node = {"name" : "__reroot_top_clade"};
+                new_node.__mapped_bl = stashed_bl;
+                new_node.children  = current_node.children.map (function (n) {return n;});
+                remove_me.children.push (new_node);
 
-            function echo (d) {
+            }
+            /*if (parent_length) {
+                remove_me.__mapped_bl += parent_length;
+            }*/
+            
+            
+            /*function echo (d) {
                 console.log (d.name, d.children);
                 if (d.children) {
                     d.children.forEach (echo);
                 }
-            }
+            }*/
             
+            phylotree.update_layout (new_json, true);
             
-            nodes = d3_hierarchy.call (this, new_json);
-            nodes.forEach (function (d) { d.id = null;});
-            phylotree.placenodes();
-            links = phylotree.links (nodes);
-            phylotree.sync_edge_labels ();
         }
         return phylotree;
         
@@ -814,7 +888,20 @@ d3.layout.phylotree = function (container) {
 
   phylotree.font_size = function (attr) {
       if (!arguments.length) return font_size;
-      font_size = attr ? attr : 10;
+      font_size = attr ? attr : 12;
+      return phylotree;
+  }
+  
+   phylotree.scale_bar_font_size = function (attr) {
+      if (!arguments.length) return scale_bar_font_size;
+      scale_bar_font_size = attr ? attr : 12;
+      return phylotree;
+  }
+
+ 
+   phylotree.node_circle_size = function (attr) {
+      if (!arguments.length) return node_circle_size;
+      node_circle_size = attr ? attr : 3;
       return phylotree;
   }
 
@@ -1097,8 +1184,19 @@ d3.layout.phylotree = function (container) {
           container.attr("d", new_branch_path);
       }
       edge.existing_path = new_branch_path;
+      
+      var bl = branch_length_accessor (edge.target);
+      if (! (bl === undefined)) {
+        var haz_title = container.selectAll ("title");
+        if (haz_title.empty()) {
+            haz_title = container.append ("title");
+        }
+        haz_title.text("Length = " + bl);
+      } else {
+        container.selectAll ("title").remove();
+      }
               
-       if (edge_styler) {
+      if (edge_styler) {
            edge_styler (container, edge);
       }
      
@@ -1163,7 +1261,7 @@ d3.layout.phylotree = function (container) {
       } else {
           var circles = container.selectAll("circle").data ([node]);
           circles.enter().append ("circle");
-          circles.attr ("r", function (d) { return Math.min (shown_font_size * 0.75, 3);})
+          circles.attr ("r", function (d) { return Math.min (shown_font_size * 0.75, node_circle_size);})
               .on ("click", function (d) { phylotree.handle_node_click(d); });
       }
       
@@ -1176,6 +1274,10 @@ d3.layout.phylotree = function (container) {
       return max_x;
 
   }
+  
+    phylotree.get_nodes = function () {
+        return nodes;
+    }
     
 
     d3.rebind(phylotree, d3_hierarchy, "sort", "children", "value");
@@ -1264,6 +1366,7 @@ d3.layout.phylotree = function (container) {
         }
         clade_stack.push (new_level);
         the_parent["children"].push (clade_stack[clade_stack.length-1]);
+        clade_stack[clade_stack.length-1]["original_child_order"] = the_parent["children"].length;
     }
 
     function finish_node_definition () {
@@ -1274,8 +1377,10 @@ d3.layout.phylotree = function (container) {
             this_node["name"]      = current_node_name;
        }
        this_node["attribute"] = current_node_attribute;
+       this_node["annotation"] = current_node_annotation;
        current_node_name = '';
        current_node_attribute = '';
+       current_node_annotation = '';
     }
 
     
@@ -1286,6 +1391,9 @@ d3.layout.phylotree = function (container) {
     var automaton_state        = 0; 
     var current_node_name      = '';
     var current_node_attribute = '';
+    var current_node_annotation = '';
+    var quote_delimiter        = null;
+    var name_quotes            = {"'" : 1, "\"" : 1};
     
     var tree_json = {"name": "root"};
     clade_stack.push  (tree_json);
@@ -1294,78 +1402,99 @@ d3.layout.phylotree = function (container) {
     
     for (var char_index = 0; char_index < nwk_str.length; char_index++) {
         try {
-        var current_char = nwk_str[char_index];
-        switch (automaton_state) {
-            case 0: {
-                // look for the first opening parenthesis
-                if (current_char == '(') {
-                    add_new_tree_level ();
-                    automaton_state = 1; // expecting node name 
-                }
-                break;
-            }
-            case 1:
-            case 3: 
-            {
-                // reading name
-                if (current_char == ':') {
-                    if (automaton_state == 3) {
-                        return generate_error (char_index);
-                    }
-                    automaton_state = 3; 
-                } else if (current_char == ',' || current_char == ')') {
-                    try {
-                        finish_node_definition ();  
-                        automaton_state = 1;
-                        if (current_char == ',') {
-                            add_new_tree_level();
-                        }
-                    } 
-                    catch (e) {
-                        return generate_error (char_index);
-                    }
-                } else if (current_char == '(') {
-                    if (current_node_name.length > 0) {
-                        return generate_error (char_index);
-                     } else {
+            var current_char = nwk_str[char_index];
+            switch (automaton_state) {
+                case 0: {
+                    // look for the first opening parenthesis
+                    if (current_char == '(') {
                         add_new_tree_level ();
+                        automaton_state = 1; // expecting node name 
                     }
-                } else if (current_char == "'") {
-                    if (automaton_state == 1 && current_node_name.length == 0 && current_node_attribute.length == 0) {
-                        automaton_state = 2;
-                        continue;
-                    }
-                    return generate_error (char_index);
-                } else {
-                    if (automaton_state == 3) {
-                        current_node_attribute += current_char;
-                    } else {
-                        if (space.test(current_char)) {
+                    break;
+                }
+                case 1: // name 
+                case 3: // branch length
+                {
+                    // reading name
+                    if (current_char == ':') {
+                        if (automaton_state == 3) {
+                            return generate_error (char_index);
+                        }
+                        automaton_state = 3; 
+                    } else if (current_char == ',' || current_char == ')') {
+                        try {
+                            finish_node_definition ();  
+                            automaton_state = 1;
+                            if (current_char == ',') {
+                                add_new_tree_level();
+                            }
+                        } 
+                        catch (e) {
+                            return generate_error (char_index);
+                        }
+                    } else if (current_char == '(') {
+                        if (current_node_name.length > 0) {
+                            return generate_error (char_index);
+                         } else {
+                            add_new_tree_level ();
+                        }
+                    } else if (current_char in name_quotes) {
+                        if (automaton_state == 1 && current_node_name.length == 0 && current_node_attribute.length == 0 && current_node_annotation.length == 0) {
+                            automaton_state = 2;
+                            quote_delimiter = current_char;
                             continue;
                         }
+                        return generate_error (char_index);
+                    } else {
+                        if (current_char == '[') {
+                            if (current_node_annotation.length) {
+                                return generate_error (char_index);
+                            } else {
+                                automaton_state = 4;
+                            }
+                        } else {
+                            if (automaton_state == 3) {
+                                current_node_attribute += current_char;
+                            } else {
+                                if (space.test(current_char)) {
+                                    continue;
+                                }
+                                current_node_name += current_char;
+                            }
+                        }
+                    }
+                
+                    break;
+                }
+                case 2: {
+                    if (current_char == quote_delimiter) {
+                        if (char_index < nwk_str.length - 1) {
+                            if (nwk_str[char_index+1] == quote_delimiter) {
+                                char_index ++;
+                                current_node_name += quote_delimiter;
+                                continue;
+                            }
+                        }
+                        quote_delimiter = 0;
+                        automaton_state = 1;
+                        continue;
+                    } else {
                         current_node_name += current_char;
                     }
-                }   
-                
-                break;
-            }
-            case 2: {
-                if (current_char == "'") {
-                    if (char_index < nwk_str.length - 1) {
-                        if (nwk_str[char_index+1] == "'") {
-                            char_index ++;
-                            current_node_name += "'";
-                            continue;
-                        }
-                    }
-                    automaton_state = 1;
-                    continue;
-                } else {
-                    current_node_name += current_char;
+                    break;
                 }
-                break;
+                case 4: {
+                    if (current_char == ']') {
+                        automaton_state = 3;
+                    } else {
+                        if (current_char == '[')  {
+                            return generate_error (char_index);
+                        }
+                        current_node_annotation += current_char;
+                    }
+                    break;
+                }
             }
-        }
         } 
         catch (e) {
             return generate_error (char_index);
