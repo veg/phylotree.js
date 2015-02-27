@@ -417,6 +417,29 @@ d3.layout.phylotree = function (container) {
                                              .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.modify_selection (phylotree.select_all_descendants (node, true, true), "notshown", true, true, "false").update_has_hidden_nodes().update(true);});
             }
 
+            // now see if we need to add user defined menus
+                
+            var has_user_elements = [];
+            if ("menu_items" in node && typeof node["menu_items"] === "object") {
+                node["menu_items"].forEach (function (d) {
+                    if (d.length == 3) {
+                        if (!d[2] || d[2](node)) {
+                            has_user_elements.push ([d[0], d[1]]);
+                        } 
+                    }
+                });
+            }
+
+            if (has_user_elements.length) {
+                menu_object.append ("li").attr ("class", "divider");
+                has_user_elements.forEach (function (d) {
+                        menu_object.append ("li").append ("a")
+                                   .attr ("tabindex", "-1")
+                                   .text (d[0] (node))
+                                   .on ("click", d[1]);                
+                });              
+            }
+            
             var tree_container = $(container);
             var coordinates = d3.mouse(tree_container[0]);
             menu_object.style ("position", "absolute")
@@ -774,6 +797,35 @@ d3.layout.phylotree = function (container) {
         phylotree.update(true);
     }
     
+    phylotree.graft_a_node = function (graft_at, new_child, new_parent, lengths) {
+        if (graft_at.parent) {
+            var node_index = nodes.indexOf (graft_at);
+            if (node_index >= 0) {
+                var parent_index = graft_at.parent.children.indexOf (graft_at);
+                
+                var new_split = {"name" : new_parent,
+                                 "parent": graft_at.parent,
+                                 "attribute": lengths ? lengths[2] : null,
+                                 "original_child_order" : graft_at["original_child_order"]},
+                                 
+                    new_node  = {"name" : new_child,
+                                 "parent": new_split,
+                                 "attribute": lengths ? lengths[1] : null,
+                                 "original_child_order" : 2};
+                                 
+                new_split["children"] = [graft_at, new_node];
+                graft_at["parent"].children [parent_index] = new_split;
+                graft_at.parent = new_split;
+                graft_at["attribute"] = lengths ? lengths [0]: null;
+                graft_at["original_child_order"] = 1;
+                
+                                
+                phylotree.update_layout (nodes[0], true);
+            }   
+        }
+        return phylotree;
+    }
+        
     phylotree.traverse_and_compute = function (callback, traversal_type) {
         traversal_type = traversal_type || "post-order";
         
@@ -1052,6 +1104,8 @@ d3.layout.phylotree = function (container) {
                    .call (draw_scale_bar);
           scale_bar.selectAll ("text")
                    .style ("text-anchor", "end");
+      }   else {
+        svg.selectAll ("." + css_classes["tree-scale-bar"]).remove();
       }    
       
 
@@ -1585,6 +1639,15 @@ d3.layout.phylotree = function (container) {
     }
     
     return {"json": tree_json, "error": null};
+  }
+
+  function d3_add_custom_menu (node, name, callback, condition) {
+    if (!("menu_items" in node)) {
+        node["menu_items"] = [];
+    }
+    if (! node["menu_items"].some (function (d) {return d[0] == name && d[1] == callback && d[2] == condition;})) {
+        node["menu_items"].push ([name, callback, condition]);
+    } 
   }
 
   function d3_phylotree_rootpath (attr_name, store_name) {
