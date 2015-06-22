@@ -397,11 +397,12 @@ d3.layout.phylotree = function (container) {
 
        if (options['show-scale'] && do_scaling) {
            if (phylotree.radial()) {   
+             var unit_scalar =  _extents[1][1]/10;
              var scale = d3.scale.linear ()
-                 .domain ([0, _extents[1][1]/10])
+                 .domain ([0, unit_scalar])
                  .range  ([0, (size[1] - offsets[1])/10]),
                  scaleTickFormatter = d3.format (".1r");    
-             draw_scale_bar  =  d3.svg.axis().scale(scale).orient ("top").tickValues([_extents[1][1]/10])
+             draw_scale_bar  =  d3.svg.axis().scale(scale).orient ("top").tickValues([unit_scalar])
                                   .tickFormat (function (d) { if (d == 0) {return ""}; return scaleTickFormatter(d); });
             } else {
               var scale = d3.scale.linear ()
