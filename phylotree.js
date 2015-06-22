@@ -50,7 +50,8 @@ d3.layout.phylotree = function (container) {
                                     'draw-size-bubbles': false,
                                     'binary-selectable': false,
                                     'is-radial' : false, 
-                                    'attribute-list': []
+                                    'attribute-list': [],
+                                    'max-radius' : 512
                                   },
                                   
         css_classes             = {'tree-container': 'phylotree-container',
@@ -105,6 +106,7 @@ d3.layout.phylotree = function (container) {
         popover_displayed       = null,
         label_width             = 0,
         radial_center           = 0,
+        radial_root_offset      = 0,
         radial_mapper           = function (r,a) {
             return { 'x' : radial_center + r * Math.sin (a),
                      'y' : radial_center + r * Math.cos (a)};
@@ -253,10 +255,27 @@ d3.layout.phylotree = function (container) {
          // map the nodes to polar coordinates
          draw_branch   = draw_arc;
          
+         console.log (offsets);
+         
          var last_child_angle       = null,
              last_circ_position     = null,
              last_child_radius      = null,
-             min_radius             = 0;        
+             min_radius             = 0,
+             zero_length            = null; 
+             
+        var compute_distance = function (r1,r2,a1,a2) {
+        
+            var angle_diff = a1 - a2,
+                x1    = r1 * Math.sin (angle_diff),
+                x2    = r1 * Math.cos (angle_diff) - r2;
+                
+            return Math.sqrt (x1*x1 + x2*x2);
+                
+        }     
+                 
+         radial_root_offset = 0;
+         
+         var radius_distribution = [];
                  
          nodes.forEach (function (d) {
             var my_circ_position = d.x * scales[0];
@@ -267,34 +286,61 @@ d3.layout.phylotree = function (container) {
             d.text_angle = (d.text_angle ? 180 : 0) + d.angle * 180 / Math.PI;
             d.radius = d.y * scales[1] / size[1];
             if (!d.children) {
+                radius_distribution.push (d.radius);
+            }
+        });
+        
+        radius_distribution = radius_distribution.sort ();
+        radius_distribution = [radius_distribution[0], radius_distribution[radius_distribution.length-1]];
+        //radial_root_offset = (radius_distribution[1] - radius_distribution[0]) * 0.1;
+        
+        console.log (radius_distribution, radial_root_offset);
+                
+        var relative_radial_offset = 0;
+
+        if (radius_distribution[0] > 0) {
+            if ((radius_distribution[1]-radius_distribution[0])/radius_distribution[0] > 10) {
+                relative_radial_offset = (radius_distribution[1]-radius_distribution[0]) * 0.1;
+                console.log ("Too big", relative_radial_offset);
+            }
+        }
+        
+        var absolute_radial_offset = 0;
+                
+        nodes.forEach (function (d) {
+            d.radius += relative_radial_offset;
+            if (!d.children) {
+                var my_circ_position = d.x * scales[0];
                 if (!(last_child_angle === null)) {
-                    var angle_diff = d.angle - last_child_angle,
-                        x1    = d.radius * Math.sin (angle_diff),
-                        x2    = d.radius * Math.cos (angle_diff) - last_child_radius,
-                        dist  = Math.sqrt (x1*x1 + x2*x2),
-                        spacing = my_circ_position - last_circ_position;
+                        var spacing = my_circ_position - last_circ_position,
+                            dist    = compute_distance (d.radius, last_child_radius, 
+                                                        d.angle, last_child_angle);
                         
                         if (dist > 0.) {
                             min_radius = Math.max (spacing/dist, min_radius);
+                        } else { 
+                            dist               = compute_distance (1, 1, d.angle, last_child_angle);
+                            absolute_radial_offset = Math.max (spacing/dist, absolute_radial_offset);
                         }
                     
                 }
-                last_child_angle = d.angle;
+                last_child_angle   = d.angle;
                 last_circ_position = my_circ_position;
-                last_child_radius = d.radius;
+                last_child_radius  = d.radius + radial_root_offset;
             }
          });
          
-         var radius = Math.max (size[0] / 2 / Math.PI, min_radius);
-         radial_center = radius;
+                  
+         var radius = Math.min (options['max-radius'],Math.max (size[0] / 2 / Math.PI, min_radius));
          
-         console.log (radius, radial_center, size);
+         radial_root_offset = Math.max (absolute_radial_offset / radius, relative_radial_offset);   
+         radial_center = radius;
                      
          nodes.forEach (function (d) { 
              
                 d.x         *= scales[0]; 
                 d.y         *= scales[1];
-                d.radius     = radius * d.y / size[1]; 
+                d.radius     = radius * (d.y / size[1]  + radial_root_offset); 
             
                 //console.log (d);
                 
@@ -1481,8 +1527,14 @@ d3.layout.phylotree = function (container) {
                         phylotree.handle_node_click(d);
                      })
                     .attr("dy", function(d) { return shown_font_size * 0.33; })
-                    .text(function(d) { var lbl = node_label (d); max_x = lbl.length * shown_font_size * 0.6; return lbl;})
-                    .style ("font-size", function (d) {return shown_font_size;});
+                    .text(function(d) {    
+                        var lbl = node_label (d); 
+                        max_x = lbl.length * shown_font_size * 0.6;
+                        if (d.angle !== null) {
+                            max_x *= Math.max (Math.abs (Math.cos (max_x)), Math.abs(Math.cos (max_x)));
+                        } 
+                        return lbl;
+                    }).style ("font-size", function (d) {return shown_font_size;});
             
           if (phylotree.radial()) {
             labels.attr ("transform", function (d) {return "rotate (" + d.text_angle + ")"; })
@@ -1503,8 +1555,7 @@ d3.layout.phylotree = function (container) {
               circles.attr ("r", function (d) { return d;});
 
               if (shown_font_size >= 5) {
-                  labels.attr("dx", function(d) { return shift + shown_font_size * 0.33; })
-                    
+                  labels.attr("dx", function(d) { return (d.text_align == "end" ? -1 : 1 ) * (shift + shown_font_size * 0.33); });
               }
                 
           } else {
