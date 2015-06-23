@@ -51,7 +51,8 @@ d3.layout.phylotree = function (container) {
                                     'binary-selectable': false,
                                     'is-radial' : false, 
                                     'attribute-list': [],
-                                    'max-radius' : 512
+                                    'max-radius' : 512,
+                                    'compression': 0.2
                                   },
                                   
         css_classes             = {'tree-container': 'phylotree-container',
@@ -110,6 +111,23 @@ d3.layout.phylotree = function (container) {
         radial_mapper           = function (r,a) {
             return { 'x' : radial_center + r * Math.sin (a),
                      'y' : radial_center + r * Math.cos (a)};
+        },
+        cartesian_to_polar = function (node, radius, radial_root_offset) {
+            
+            node.x *= scales[0];
+            node.y *= scales[1];
+            node.radius = radius * (node.y / size[1] + radial_root_offset);
+            
+            if (!node.angle) {
+                node.angle = 2 * Math.PI * node.x / size[0];
+            }
+            
+            var radial = radial_mapper (node.radius, node.angle); 
+               
+            node.x = radial.x;
+            node.y = radial.y;
+            
+            return node;  
         };
  
  
@@ -118,7 +136,9 @@ d3.layout.phylotree = function (container) {
         var x          = 0.,
             _extents     = [[0,0],[0,0]],
             last_node  = null,
-            last_span  = 0;
+            last_span  = 0,
+            save_x     = x,
+            save_span  = last_span*0.5;
     
         var do_scaling = options ["scaling"],
             undef_BL   = false,
@@ -169,33 +189,40 @@ d3.layout.phylotree = function (container) {
                a_node.y   = 0.;
             }
 
+
             if (is_leaf) {
                 var _node_span = node_span (a_node) / rescale_node_span;
+                
                 x = a_node.x = x + separation (last_node, a_node) + (last_span + _node_span) * 0.5;
-                last_node = a_node;
-                _extents[0][1] = Math.max (_extents[0][1], x + _node_span * 0.5 + separation (last_node, a_node));
                 _extents[1][1] = Math.max (_extents[1][1], a_node.y);
                 _extents[1][0] = Math.min (_extents[1][0], a_node.y - _node_span * 0.5);
+                
+                if (is_under_collapsed_parent) {
+                    _extents[0][1] = Math.max (_extents[0][1], (save_x + (a_node.x - save_x) * options['compression'] + save_span) + (_node_span * 0.5 + separation (last_node, a_node)) * options['compression']);
+                } else {
+                    _extents[0][1] = Math.max (_extents[0][1], x + _node_span * 0.5 + separation (last_node, a_node));
+                }
+                last_node = a_node;                
                 last_span = _node_span;     
             } else {
                 var count_undefined = 0;
-                if (d3_phylotree_is_node_collapsed (a_node) && !is_under_collapsed_parent) {
-                    var save_x = x, 
-                        compression = 0.2,
-                        save_span = last_span*0.5;
-                                            
+                if (d3_phylotree_is_node_collapsed (a_node) && !is_under_collapsed_parent) {  
+                
+                    save_x    = x;
+                    save_span = last_span*0.5;
+                                  
                     is_under_collapsed_parent = true;
                     process_internal_node (a_node);
                     is_under_collapsed_parent = false;
                     if (typeof a_node.x === "number") {
                     
-                        a_node.x = save_x + (a_node.x - save_x) * compression + save_span;
+                        a_node.x = save_x + (a_node.x - save_x) * options['compression'] + save_span;
                         a_node.collapsed = [[a_node.x, a_node.y]];
                     
                         function map_me (n) {
                             n.hidden = true;
                             if (d3_phylotree_is_leafnode (n)) {
-                                x = n.x = save_x + (n.x - save_x) * compression + save_span;
+                                x = n.x = save_x + (n.x - save_x) * options['compression'] + save_span;
                                 a_node.collapsed.push ([n.x, n.y]);
                             } else {
                                 n.children.map (map_me);
@@ -229,7 +256,6 @@ d3.layout.phylotree = function (container) {
             nodes[0].x = tree_layout (nodes[0]);
         }
         
-       
         if (options['y-spacing'] == 'fixed-width') {
             size[1] = _extents[1][1] * fixed_width[1];
             scales[1] = fixed_width[1];
@@ -251,11 +277,8 @@ d3.layout.phylotree = function (container) {
         
        shown_font_size = Math.min (font_size, scales[0]);
        
-       if (phylotree.radial ()) {
-         // map the nodes to polar coordinates
+       if (phylotree.radial ()) { // map the nodes to polar coordinates
          draw_branch   = draw_arc;
-         
-         console.log (offsets);
          
          var last_child_angle       = null,
              last_circ_position     = null,
@@ -292,16 +315,13 @@ d3.layout.phylotree = function (container) {
         
         radius_distribution = radius_distribution.sort ();
         radius_distribution = [radius_distribution[0], radius_distribution[radius_distribution.length-1]];
-        //radial_root_offset = (radius_distribution[1] - radius_distribution[0]) * 0.1;
         
-        console.log (radius_distribution, radial_root_offset);
-                
         var relative_radial_offset = 0;
 
         if (radius_distribution[0] > 0) {
             if ((radius_distribution[1]-radius_distribution[0])/radius_distribution[0] > 10) {
                 relative_radial_offset = (radius_distribution[1]-radius_distribution[0]) * 0.1;
-                console.log ("Too big", relative_radial_offset);
+                //console.log ("Too big", relative_radial_offset);
             }
         }
         
@@ -338,24 +358,20 @@ d3.layout.phylotree = function (container) {
                      
          nodes.forEach (function (d) { 
              
-                d.x         *= scales[0]; 
-                d.y         *= scales[1];
-                d.radius     = radius * (d.y / size[1]  + radial_root_offset); 
-            
-                //console.log (d);
-                
-                radial = radial_mapper (d.radius, d.angle);    
-            
-                d.x = radial.x;
-                d.y = radial.y;
-                
+                cartesian_to_polar (d, radius, radial_root_offset);               
                 if (d.collapsed) {
-                    d.collapsed.map (function (p) { return [p[0] *= scales[0], p[1] *= scales[1]]; });
-                    var last_x = d.collapsed[1][0];
+                    d.collapsed = d.collapsed.map (function (p) { 
+                        var z = {}; 
+                        z.x = p[0]; z.y = p[1]; 
+                        z = cartesian_to_polar (z, radius, radial_root_offset); 
+                        return [z.x,z.y];
+                    });
+                    
+                    var last_point = d.collapsed[1];
                     d.collapsed = d.collapsed.filter (function (p, i) { 
                         if (i < 3 || i > d.collapsed.length - 4) return true;
-                        if (p[0] - last_x > 3) {
-                            last_x = p[0];
+                        if (Math.sqrt (Math.pow(p[0]-last_point[0],2) + Math.pow(p[1]-last_point[1],2)) > 3) {
+                            last_point = p;
                             return true;
                         }
                         return false;
@@ -365,11 +381,9 @@ d3.layout.phylotree = function (container) {
             
         size [0] = radial_center + radius;
         size [1] = radial_center + radius;
-            
-         
+                 
        } else {   
-            
-           //console.log (size); 
+               
            draw_branch = draw_line;
            nodes.forEach (function (d) { 
                 d.x *= scales[0]; 
@@ -378,7 +392,7 @@ d3.layout.phylotree = function (container) {
                 d.text_angle = null;
                 d.text_align = null;
                 d.radius     = null; 
-           
+                d.angle      = null;     
                        
                 if (d.collapsed) {
                     d.collapsed.map (function (p) { return [p[0] *= scales[0], p[1] *= scales[1]]; });
@@ -1641,7 +1655,7 @@ d3.layout.phylotree = function (container) {
         if (tr) {
             svg = svg.transition (100);
         }
-    
+     
         svg.attr ("height", sizes[1])
            .attr ("width" , sizes[0]);
     }
