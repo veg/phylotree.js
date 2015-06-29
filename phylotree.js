@@ -112,6 +112,9 @@ d3.layout.phylotree = function (container) {
             return { 'x' : radial_center + r * Math.sin (a),
                      'y' : radial_center + r * Math.cos (a)};
         },
+        cartesian_mapper        = function (x, y) {
+            return polar_to_cartesian(x - radial_center, y - radial_center);
+        },
         cartesian_to_polar = function (node, radius, radial_root_offset) {
             
             node.x *= scales[0];
@@ -128,13 +131,18 @@ d3.layout.phylotree = function (container) {
             node.y = radial.y;
             
             return node;  
+        },
+        polar_to_cartesian = function(x, y) {
+          r = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+          a = Math.atan2(y,x);
+          return [r, a];
         };
  
  
     phylotree.placenodes = function () {
     
         var x          = 0.,
-            _extents     = [[0,0],[0,0]],
+            _extents   = [[0,0],[0,0]],
             last_node  = null,
             last_span  = 0,
             save_x     = x,
@@ -278,6 +286,7 @@ d3.layout.phylotree = function (container) {
        shown_font_size = Math.min (font_size, scales[0]);
        
        if (phylotree.radial ()) { // map the nodes to polar coordinates
+
          draw_branch   = draw_arc;
          
          var last_child_angle       = null,
@@ -1313,14 +1322,66 @@ d3.layout.phylotree = function (container) {
       var collapsed_clades = enclosure.selectAll(d3_phylotree_clade_css_selectors(css_classes))
         .data(nodes.filter (d3_phylotree_is_node_collapsed), function (d) {return d.id || (d.id = ++node_id);});
      
-      var spline = d3.svg.line()
+
+       var spline   = function(){};
+       var spline_f = undefined;
+
+       // Collapse radial differently
+       if (phylotree.radial()) {
+
+          // create interpolator
+          var interpolator = function (points) {
+
+            points.pop();
+            
+            var center_node = points.shift();
+            var path_string = points.join("L");
+
+            var polar_coords = cartesian_mapper(center_node[0], center_node[1]);
+
+            var first_angle = cartesian_mapper(points[0][0], points[0][1])[1]
+            var last_angle = cartesian_mapper(points[points.length - 1][0], points[points.length - 1][1])[1]
+
+            var connecting_arc = "A " + polar_coords[0] + " " + polar_coords[0] + " " + (first_angle > last_angle ? 1 : 0) + " 0 0 " + points[0].join(',');
+
+            return path_string + connecting_arc;
+
+          }
+
+          spline = d3.svg.line()
+            .interpolate(interpolator)
+            .y(function(d) { return d[0]; })
+            .x(function(d) { return d[1]; });
+
+         spline_f = function (coord, i, d, init_0, init_1) { 
+           if (i) {
+             return [d.screen_y + (coord[0] - init_0) / 50, d.screen_x + (coord[1] - init_1) / 50];
+           } else {
+             return [d.screen_y, d.screen_x]
+           }
+         }
+
+       } else {
+
+          spline = d3.svg.line()
           .interpolate("basis")
           .y(function(d) { return d[0]; })
           .x(function(d) { return d[1]; });
+
+         spline_f = function (coord, i, d, init_0, init_1) { 
+           if (i) {
+             return [d.screen_y + (coord[0] - init_0) / 50, d.screen_x + (coord[1] - init_1) / 50];
+           } else {
+             return [d.screen_y, d.screen_x]
+           }
+         }
+       }
           
       var cce = collapsed_clades.exit().each(function (d) {d.collapsed_clade = null;}).remove();
      
       if (transitions) {
+
+
          collapsed_clades.enter().insert("path",":first-child");
          collapsed_clades.attr ("class", css_classes ["clade"])
                          .attr ("d", function (d) {
@@ -1329,18 +1390,10 @@ d3.layout.phylotree = function (container) {
                               }
                               init_0 = d.collapsed[0][0];
                               init_1 = d.collapsed[0][1];
-                          
-                              return spline (d.collapsed.map (
-                                  function (coord,i) { 
-                                      if (i) {
-                                          return [d.screen_y + (coord[0] - init_0) / 50,
-                                                  d.screen_x + (coord[1] - init_1) / 50];
-                                      }; 
-                                      return [d.screen_y, d.screen_x];}))
-                                  } )
+                              return spline(d.collapsed.map(spline_f, d, init_0, init_1));
+                          })
                          .transition()
-                         .attr ("d", function (d) { return d.collapsed_clade = spline (d.collapsed); })
-                         ;
+                         .attr ("d", function (d) { return d.collapsed_clade = spline (d.collapsed); });
       } else {
          collapsed_clades.enter().insert("path",":first-child")
                                  .attr ("class", css_classes ["clade"])
