@@ -45,7 +45,7 @@ fill: #00f;
 
 .branch {
 fill: none;
-stroke: #bbb;
+stroke: #999;
 stroke-width: 2px;
 }
 
@@ -66,6 +66,13 @@ stroke: #00f;
 stroke-dasharray: 10,5;
 stroke-width: 2px;
 }
+
+.branch-tracer {
+stroke: #bbb;
+stroke-dasharray: 3,4;
+stroke-width: 1px;
+}
+
 
 .branch-multiple {
 stroke-dasharray: 5, 5, 1, 5;

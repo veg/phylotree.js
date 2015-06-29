@@ -189,13 +189,29 @@
               </div>
             <div class="btn-group" data-toggle="buttons">
               <label class="btn btn-default active btn-sm">
-                <input type="radio" name="options" id="layout_linear" autocomplete="off" checked title = "Layout left-to-right"> Linear
+                <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "linear" autocomplete="off" checked title = "Layout left-to-right"> Linear
               </label>
               <label class="btn btn-default btn-sm">
-                <input type="radio" name="options" id="layout_radial" autocomplete="off" title = "Layout radially"> Radial
+                <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "radial" autocomplete="off" title = "Layout radially"> Radial
               </label>
             </div>
-               <label class = "pull-right">Selected <span class="badge" id = "selected_branch_counter">0</span> and filtered <span class="badge" id = "selected_filtered_counter">0</span> branches</label>
+            
+            <div class="btn-group" data-toggle="buttons">
+              <label class="btn btn-default active btn-sm">
+                <input type="radio" class = "phylotree-align-toggler" data-align = "left" name="options-align" autocomplete="off" checked title = "Align tips labels to branches"> 
+                    <i class="fa fa-align-left" ></i>
+                </input>
+                
+              </label>
+              <label class="btn btn-default btn-sm">
+               <input type="radio" class = "phylotree-align-toggler" data-align = "right" name="options-align" autocomplete="off" title = "Align tips labels to the edge of the plot"> 
+                    <i class="fa fa-align-right" ></i>
+                </input>
+              </label>
+            </div>
+            
+            <label class = "pull-right">Selected <span class="badge" id = "selected_branch_counter">0</span> and filtered <span class="badge" id = "selected_filtered_counter">0</span> branches</label>
+           
            </div>
         </div>
     </div>
@@ -287,21 +303,24 @@ $("#expand_spacing").on ("click", function (e) {
 });
 
 
-$("#layout_linear").on ("change", function (e) {
+$(".phylotree-layout-mode").on ("change", function (e) {
     if ($(this).is(':checked')) {
-        if (tree.radial (false)) {
+        if (tree.radial ($(this).data ("mode") == "radial")) {
             tree.placenodes().update (true);
         }
     }
 });
 
-$("#layout_radial").on ("change", function (e) {
+$(".phylotree-align-toggler").on ("change", function (e) {
     if ($(this).is(':checked')) {
-        if (tree.radial (true)) {
+        if (tree.align_tips ($(this).data ("align") == "right")) {
             tree.placenodes().update (true);
         }
     }
 });
+
+
+
 
 $("#compress_spacing").on ("click", function (e) {
     tree.spacing_x (tree.spacing_x() - 1).update(true);
