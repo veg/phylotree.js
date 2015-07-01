@@ -299,14 +299,14 @@ $("#mp_label").on ("click", function (e) {
 });
 
 $("#expand_spacing").on ("click", function (e) {
-    tree.spacing_x (tree.spacing_x() + 1).update(true);
+    tree.spacing_x (tree.spacing_x() + 1).update();
 });
 
 
 $(".phylotree-layout-mode").on ("change", function (e) {
     if ($(this).is(':checked')) {
         if (tree.radial ($(this).data ("mode") == "radial")) {
-            tree.placenodes().update (true);
+            tree.placenodes().update ();
         }
     }
 });
@@ -314,7 +314,7 @@ $(".phylotree-layout-mode").on ("change", function (e) {
 $(".phylotree-align-toggler").on ("change", function (e) {
     if ($(this).is(':checked')) {
         if (tree.align_tips ($(this).data ("align") == "right")) {
-            tree.placenodes().update (true);
+            tree.placenodes().update ();
         }
     }
 });
@@ -323,7 +323,7 @@ $(".phylotree-align-toggler").on ("change", function (e) {
 
 
 $("#compress_spacing").on ("click", function (e) {
-    tree.spacing_x (tree.spacing_x() - 1).update(true);
+    tree.spacing_x (tree.spacing_x() - 1).update();
 });
 
 function sort_nodes (asc) {

@@ -1,4 +1,4 @@
-var d3_layout_phylotree_event_id = "d3.layout.phylotree.event",
+var d3_layout_phylotree_event_id        = "d3.layout.phylotree.event",
     d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
 
 
@@ -54,7 +54,8 @@ d3.layout.phylotree = function (container) {
                                     'attribute-list': [],
                                     'max-radius' : 512,
                                     'compression': 0.2,
-                                    'align-tips' : false
+                                    'align-tips' : false,
+                                    'transitions' : false
                                   },
                                   
         css_classes             = {'tree-container': 'phylotree-container',
@@ -1024,7 +1025,7 @@ d3.layout.phylotree = function (container) {
         
         sort_children (nodes[0]);
         phylotree.update_layout (nodes);
-        phylotree.update(true);
+        phylotree.update();
     }
     
     phylotree.graft_a_node = function (graft_at, new_child, new_parent, lengths) {
@@ -1315,6 +1316,8 @@ d3.layout.phylotree = function (container) {
   phylotree.update = function (transitions) {
       if (!phylotree.svg) 
           return phylotree;
+          
+      transitions = transitions ||  options['transitions'];   
           
       var node_id = 0;
       
