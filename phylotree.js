@@ -559,7 +559,7 @@ d3.layout.phylotree = function (container) {
                     menu_object.append ("li").append ("a")
                                              .attr ("tabindex", "-1")
                                              .text (d3_phylotree_is_node_collapsed (node) ? "Expand Subtree" : "Collapse Subtree")
-                                             .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.toggle_collapse (node).update (true);});
+                                             .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.toggle_collapse (node).update ();});
                     menu_object.append ("li").attr ("class", "divider");
                     menu_object.append ("li").attr ("class", "dropdown-header").text ("Toggle selection");
                 }
@@ -601,14 +601,14 @@ d3.layout.phylotree = function (container) {
                 menu_object.append ("li").append ("a")
                                          .attr ("tabindex", "-1")
                                          .text ("Reroot on this node")
-                                         .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.reroot (node).update (true);});
+                                         .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.reroot (node).update ();});
                                          
                 menu_object.append ("li").attr ("class", "divider");
                 
                 menu_object.append ("li").append ("a")
                                          .attr ("tabindex", "-1")
                                          .text ("Hide this " + (d3_phylotree_is_leafnode (node)? "node":"subtree"))
-                                         .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.modify_selection ([node], "notshown", true, true).update_has_hidden_nodes().update(true);});
+                                         .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.modify_selection ([node], "notshown", true, true).update_has_hidden_nodes().update();});
                                          
                 
                                          
@@ -618,7 +618,7 @@ d3.layout.phylotree = function (container) {
                     menu_object.append ("li").append ("a")
                                              .attr ("tabindex", "-1")
                                              .text ("Show all descendant nodes")
-                                             .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.modify_selection (phylotree.select_all_descendants (node, true, true), "notshown", true, true, "false").update_has_hidden_nodes().update(true);});
+                                             .on ("click", function (d) {menu_object.style ("display", "none"); phylotree.modify_selection (phylotree.select_all_descendants (node, true, true), "notshown", true, true, "false").update_has_hidden_nodes().update();});
             }
 
             // now see if we need to add user defined menus
