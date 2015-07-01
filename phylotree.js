@@ -52,7 +52,7 @@ d3.layout.phylotree = function (container) {
                                     'binary-selectable': false,
                                     'is-radial' : false, 
                                     'attribute-list': [],
-                                    'max-radius' : 512,
+                                    'max-radius' : 768,
                                     'compression': 0.2,
                                     'align-tips' : false,
                                     'transitions' : false
@@ -441,22 +441,40 @@ d3.layout.phylotree = function (container) {
         }
 
        if (options['show-scale'] && do_scaling) {
-           if (phylotree.radial()) {   
-             var unit_scalar =  _extents[1][1]/10;
-             var scale = d3.scale.linear ()
-                 .domain ([0, unit_scalar])
-                 .range  ([0, (size[1] - offsets[1])/10]),
-                 scaleTickFormatter = d3.format (".1r");    
-             draw_scale_bar  =  d3.svg.axis().scale(scale).orient ("top").tickValues([unit_scalar])
-                                  .tickFormat (function (d) { if (d == 0) {return ""}; return scaleTickFormatter(d); });
+ 
+            var domain_limit,
+                range_limit;
+       
+            if (phylotree.radial()) {
+                range_limit  =  Math.min (radius/5, 50);
+                domain_limit =  Math.pow (10,Math.ceil (Math.log (_extents[1][1] * range_limit/radius)/Math.log (10))); 
+                range_limit  = domain_limit * (radius/_extents[1][1]);
+                if (range_limit < 30) {
+                    var stretch = Math.ceil (30/range_limit);
+                    //console.log (stretch, domain_limit, radius, _extents[1][1], range_limit, domain_limit);
+                    range_limit  *= stretch;
+                    domain_limit *= stretch;
+                }
+                               
             } else {
-              var scale = d3.scale.linear ()
-                 .domain ([0, _extents[1][1]])
-                 .range  ([0, size[1] - offsets[1]]),
-                 scaleTickFormatter = d3.format ("1r");    
-              draw_scale_bar  =  d3.svg.axis().scale(scale).orient ("top")
-                                 .tickFormat (function (d) { if (d == 0) {return ""}; return scaleTickFormatter(d); });
+                domain_limit = _extents[1][1];
+                range_limit  = (size[1] - offsets[1]);
             }
+       
+            var scale = d3.scale.linear ()
+                 .domain ([0, domain_limit])
+                 .range  ([0, range_limit]),
+                 scaleTickFormatter = d3.format (".2g");    
+                 draw_scale_bar  =  d3.svg.axis().scale(scale).orient ("top")
+                                   .tickFormat (function (d) { if (d == 0) {return ""}; return scaleTickFormatter(d); });
+        
+           if (phylotree.radial()) {
+              draw_scale_bar.tickValues([domain_limit]);
+           } else {
+                
+              draw_scale_bar.ticks (Math.min (10, d3.round (range_limit / 40,0)));
+           }
+            
 
             //_extentsconsole.log (scale.domain(), scale.range());
         } else {
