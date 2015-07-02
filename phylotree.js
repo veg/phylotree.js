@@ -380,11 +380,13 @@ d3.layout.phylotree = function (container) {
                      
          nodes.forEach (function (d) { 
              
-                if (options['draw-size-bubbles']) {
-                    radius_pad_for_bubbles = Math.max (radius_pad_for_bubbles, radius + phylotree.node_bubble_size(d));
-                }
              
                 cartesian_to_polar (d, radius, radial_root_offset);               
+
+                if (options['draw-size-bubbles']) {
+                    radius_pad_for_bubbles = Math.max (radius_pad_for_bubbles, d.radius + phylotree.node_bubble_size(d));
+                }
+
                 if (d.collapsed) {
                     d.collapsed = d.collapsed.map (function (p) { 
                         var z = {}; 
