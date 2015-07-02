@@ -21,6 +21,25 @@
     <script src="phylotree.js"></script>
 
     <link href="phylotree.css" rel="stylesheet">
+    
+    <style>
+    
+        .fa-rotate-45 {
+          -webkit-transform: rotate(45deg);
+          -moz-transform: rotate(45deg);
+          -ms-transform: rotate(45deg);
+          -o-transform: rotate(45deg);
+          transform: rotate(45deg);
+        }
+
+        .fa-rotate-135 {
+          -webkit-transform: rotate(135deg);
+          -moz-transform: rotate(135deg);
+          -ms-transform: rotate(135deg);
+          -o-transform: rotate(135deg);
+          transform: rotate(135deg);
+        }
+
    </style>
 </head>
 
@@ -171,11 +190,17 @@
         <div class = 'col-md-12'>
             <div class="btn-toolbar" role="toolbar">
               <div class="btn-group">
-                <button type="button" class="btn btn-default btn-sm" id = "expand_spacing" title = "Expand spacing">
-                    <i class="fa fa-expand" ></i>
+                <button type="button" class="btn btn-default btn-sm" data-direction = 'vertical' data-amount = '1' title = "Expand vertical spacing">
+                    <i class="fa fa-arrows-v" ></i>
                 </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "compress_spacing" title = "Compress spacing">
-                    <i class="fa fa-compress" ></i>
+                 <button type="button" class="btn btn-default btn-sm" data-direction = 'vertical' data-amount = '-1' title = "Compress vertical spacing">
+                    <i class="fa  fa-compress fa-rotate-135" ></i>
+                </button>
+                <button type="button" class="btn btn-default btn-sm" data-direction = 'horizontal' data-amount = '1' title = "Expand horizonal spacing">
+                    <i class="fa fa-arrows-h" ></i>
+                </button>
+                 <button type="button" class="btn btn-default btn-sm" data-direction = 'horizontal' data-amount = '-1' title = "Compress horizonal spacing">
+                    <i class="fa  fa-compress fa-rotate-45" ></i>
                 </button>
                  <button type="button" class="btn btn-default btn-sm" id = "sort_ascending" title = "Sort deepest clades to the bototm">
                     <i class="fa fa-sort-amount-asc" ></i>
@@ -298,9 +323,12 @@ $("#mp_label").on ("click", function (e) {
     tree.max_parsimony (true);
 });
 
-$("#expand_spacing").on ("click", function (e) {
-    tree.spacing_x (tree.spacing_x() + 1).update();
-});
+$ ("[data-direction]").on ("click", function (e) {
+    var which_function = $(this).data ("direction") == 'vertical' ? tree.spacing_x : tree.spacing_y;
+    which_function (which_function () + (+ $(this).data ("amount"))).update();
+}); 
+
+
 
 
 $(".phylotree-layout-mode").on ("change", function (e) {
@@ -322,9 +350,6 @@ $(".phylotree-align-toggler").on ("change", function (e) {
 
 
 
-$("#compress_spacing").on ("click", function (e) {
-    tree.spacing_x (tree.spacing_x() - 1).update();
-});
 
 function sort_nodes (asc) {
     tree.traverse_and_compute (function (n) {

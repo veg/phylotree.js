@@ -44,7 +44,7 @@ d3.layout.phylotree = function (container) {
                                     'internal-names': false,
                                     'selectable'    : true,
                                     'collapsible'   : true,
-                                    'y-spacing' : 'fit-to-size',
+                                    'y-spacing' : 'fixed-width', //'fit-to-size',
                                     'x-spacing' : 'fixed-width',
                                     'show-scale' : 'top', 
                                         // currently not implemented to support any other positioning
@@ -55,7 +55,11 @@ d3.layout.phylotree = function (container) {
                                     'max-radius' : 768,
                                     'compression': 0.2,
                                     'align-tips' : false,
-                                    'transitions' : false
+                                    'maximim-per-node-spacing' : 100,
+                                    'minimum-per-node-spacing' : 2,
+                                    'maximim-per-level-spacing' : 100,
+                                    'minimum-per-level-spacing' : 10,
+                                    'transitions' : true
                                   },
                                   
         css_classes             = {'tree-container': 'phylotree-container',
@@ -78,7 +82,7 @@ d3.layout.phylotree = function (container) {
         x_coord                 = function (d) {return d.y},
         y_coord                 = function (d) {return d.x},
         scales                  = [1,1],
-        fixed_width             = [15,100],
+        fixed_width             = [15,20],
         font_size               = 12,
         scale_bar_font_size     = 12,
         node_circle_size        = 3,
@@ -265,22 +269,22 @@ d3.layout.phylotree = function (container) {
          
         nodes[0].x = tree_layout (nodes[0], do_scaling);
          
+        max_depth = d3.max (nodes, (function (n) { return n.depth; }));
         if (do_scaling && undef_BL) {
             do_scaling = false;
-            max_depth = nodes.reduce (function (p, c) { return Math.max (p,c.depth); }, 0);
-            nodes[0].x = tree_layout (nodes[0]);
+             nodes[0].x = tree_layout (nodes[0]);
+        }
+
+        if (options['x-spacing'] == 'fixed-width') {
+             offsets [1] = Math.max (font_size, -_extents[1][0] * fixed_width[0]);
         }
                 
         if (options['y-spacing'] == 'fixed-width') {
-            size[1] = _extents[1][1] * fixed_width[1];
-            scales[1] = fixed_width[1];
+            size[1]   = max_depth * fixed_width[1];
+            scales[1] = (size[1] - offsets [1])/_extents[1][1];
         } else {
-            if (options['x-spacing'] == 'fixed-width') {
-                 offsets [1] = Math.max (font_size, -_extents[1][0] * fixed_width[0]);
-                 scales  [1] = (size[1] - offsets [1])  / _extents[1][1];                 
-            } else {
-                scales[1] = (size[1])  / _extents[1][1];
-            }
+            scales  [1] = (size[1] - offsets [1])  / _extents[1][1];                 
+            scales[1]   = (size[1])  / _extents[1][1];
         }
         
         if (options['x-spacing'] == 'fixed-width') {
@@ -471,8 +475,9 @@ d3.layout.phylotree = function (container) {
            if (phylotree.radial()) {
               draw_scale_bar.tickValues([domain_limit]);
            } else {
-                
-              draw_scale_bar.ticks (Math.min (10, d3.round (range_limit / 40,0)));
+              var my_ticks = scale.ticks();
+              my_ticks = my_ticks.length > 1 ? my_ticks[1] : my_ticks[0];
+              draw_scale_bar.ticks (Math.min (10, d3.round (range_limit / (shown_font_size * scaleTickFormatter(my_ticks).length * 0.8),0)));
            }
             
 
@@ -1188,8 +1193,19 @@ d3.layout.phylotree = function (container) {
         
     phylotree.spacing_x = function(attr, skip_render) {
         if (!arguments.length) return fixed_width[0];
-        if (fixed_width[0] != attr && attr >= 2 && attr <= 100) {
+        if (fixed_width[0] != attr && attr >= options['minimum-per-node-spacing'] && attr <= options['maximim-per-node-spacing']) {
             fixed_width[0] = attr;
+            if (!skip_render) {
+                phylotree.placenodes();
+            }
+        }
+        return phylotree;
+    };
+
+    phylotree.spacing_y = function(attr, skip_render) {
+        if (!arguments.length) return fixed_width[1];
+        if (fixed_width[1] != attr && attr >= options['minimum-per-level-spacing'] && attr <= options['maximim-per-level-spacing']) {
+            fixed_width[1] = attr;
             if (!skip_render) {
                 phylotree.placenodes();
             }
