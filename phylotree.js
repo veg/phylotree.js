@@ -59,7 +59,7 @@ d3.layout.phylotree = function (container) {
                                     'minimum-per-node-spacing' : 2,
                                     'maximim-per-level-spacing' : 100,
                                     'minimum-per-level-spacing' : 10,
-                                    'transitions' : true
+                                    'transitions' : null
                                   },
                                   
         css_classes             = {'tree-container': 'phylotree-container',
@@ -1347,11 +1347,22 @@ d3.layout.phylotree = function (container) {
       return phylotree;
   }
 
+  phylotree.transitions = function (arg) {
+    if (arg) {
+        return arg;
+    }
+    if (options['transitions'] !== null) {
+        return options['transitions'];
+    }
+    
+    return nodes.length <= 150;
+  }
+    
   phylotree.update = function (transitions) {
       if (!phylotree.svg) 
           return phylotree;
           
-      transitions = transitions ||  options['transitions'];   
+      transitions =  phylotree.transitions  (transitions);   
           
       var node_id = 0;
       
