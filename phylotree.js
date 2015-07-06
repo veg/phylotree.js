@@ -1361,7 +1361,7 @@ d3.layout.phylotree = function (container) {
         return options['transitions'];
     }
     
-    return nodes.length <= 150;
+    return nodes.length <= 300;
   }
     
   phylotree.update = function (transitions) {
