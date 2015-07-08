@@ -5,7 +5,7 @@ A JavaScript interactive viewer of [phylogenetic trees](https://en.wikipedia.org
 ## Examples
 
 1. A [gallery of examples](http://bl.ocks.org/spond) is a good place to learn different ways that phylotree.js can be used to display and annotate the trees. 
-2. A [full featured web application](//veg.github.io/phylotree.js/index.html), implemented in (index.html), provides an overview
+2. A [full featured web application](//veg.github.io/phylotree.js/index.html), implemented in [[index.html]], provides an overview
 3. phylotree.js is also used by the 2015 revision of the [datamonkey.org server](//test.datamonkey.org) for molecular sequence analyis. 
 
 ## Dependencies 
