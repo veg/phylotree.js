@@ -1,12 +1,13 @@
 ## phylotree.js
 
-A JavaScript interactive viewer of [phylogenetic trees](https://en.wikipedia.org/wiki/Phylogenetic_tree), written as an extension of the [D3](http://d3js.org) [hierarchy layout](https://github.com/mbostock/d3/wiki/Hierarchy-Layout). It generates high quality SVG vector graphics, allows a high degree of customizability (via writing some JavaScript code), and comes with a lot of *automatic* convenicence features. 
+A JavaScript interactive viewer of [phylogenetic trees](https://en.wikipedia.org/wiki/Phylogenetic_tree), written as an extension of the [D3](http://d3js.org) [hierarchy layout](https://github.com/mbostock/d3/wiki/Hierarchy-Layout). It generates high quality SVG vector graphics, allows a great degree of customizability (CSS or JavaScript callbacks), and comes with a lot of *built-in* convenicence features. 
 
 Key features
 
 * Runs entirely in the browser, including Newick parsing. 
 * Can easily handle trees with thousands of tips.
-* Supports linear, radial, scaled branch, tip-aligned, and scaled tip size views
+* Supports linear, radial, scaled branch, tip-aligned, and scaled tip size views.
+* 
 * The viewer can be constrained to fit in a given SVG box, or scale based on the size of the tree.
 * Numerous interactive features, including
    * Scaling 
@@ -17,6 +18,7 @@ Key features
 * Style customizations based on CSS and JavaScript callbacks
    * Color branches and tips, including gradient shading for continuous traits. 
    * Customize the way tip names are displayed
+   * Transform branch lengths based on branch attributes (e.g. a non-linear scale).
    * Redefine the way a tree is displayed by writing custom CSS
   
 
