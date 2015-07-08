@@ -7,7 +7,6 @@ Key features
 * Runs entirely in the browser, including Newick parsing. 
 * Can easily handle trees with thousands of tips.
 * Supports linear, radial, scaled branch, tip-aligned, and scaled tip size views.
-* 
 * The viewer can be constrained to fit in a given SVG box, or scale based on the size of the tree.
 * Numerous interactive features, including
    * Scaling 
