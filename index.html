@@ -334,8 +334,8 @@ $ ("[data-direction]").on ("click", function (e) {
 
 $(".phylotree-layout-mode").on ("change", function (e) {
     if ($(this).is(':checked')) {
-        if (tree.radial ($(this).data ("mode") == "radial")) {
-            tree.placenodes().update ();
+        if (tree.radial () != ($(this).data ("mode") == "radial")) {
+            tree.radial (!tree.radial ()).placenodes().update ();
         }
     }
 });
@@ -442,7 +442,7 @@ $("#branch_filter").on ("input propertychange", function (e) {
 });
 
 $("#validate_newick").on ("click", function (e) {
-    var res = d3_phylotree_newick_parser ( $('textarea[id$="nwk_spec"]').val());
+    var res = d3_phylotree_newick_parser ( $('textarea[id$="nwk_spec"]').val(), true);
     if (res["error"] || ! res["json"]) {
         var warning_div = d3.select ("#newick_body").selectAll ("div  .alert-danger").data ([res["error"]])
         warning_div.enter ().append ("div");
