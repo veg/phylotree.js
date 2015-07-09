@@ -91,6 +91,7 @@
             <li><a href="#" id = "example_influenza_color">Unscaled IAV HA colored by host</a></li>
             <li><a href="#" id = "example_NGS" >NGS copy diversity</a></li>
             <li><a href="#" id = "example_GVZ" >Compare NGS consensus</a></li>
+            <li><a href="#" id = "example_hiv_compartments" >HIV-1 env multiple timepoints and compartments</a></li>
           </ul>
         </li>
      </ul>
@@ -216,7 +217,7 @@
               <label class="btn btn-default active btn-sm">
                 <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "linear" autocomplete="off" checked title = "Layout left-to-right"> Linear
               </label>
-              <label class="btn btn-default btn-sm">
+              <label class="btn btn-default  btn-sm">
                 <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "radial" autocomplete="off" title = "Layout radially"> Radial
               </label>
             </div>
@@ -333,8 +334,8 @@ $ ("[data-direction]").on ("click", function (e) {
 
 $(".phylotree-layout-mode").on ("change", function (e) {
     if ($(this).is(':checked')) {
-        if (tree.radial ($(this).data ("mode") == "radial")) {
-            tree.placenodes().update ();
+        if (tree.radial () != ($(this).data ("mode") == "radial")) {
+            tree.radial (!tree.radial ()).placenodes().update ();
         }
     }
 });
@@ -441,7 +442,7 @@ $("#branch_filter").on ("input propertychange", function (e) {
 });
 
 $("#validate_newick").on ("click", function (e) {
-    var res = d3_phylotree_newick_parser ( $('textarea[id$="nwk_spec"]').val());
+    var res = d3_phylotree_newick_parser ( $('textarea[id$="nwk_spec"]').val(), true);
     if (res["error"] || ! res["json"]) {
         var warning_div = d3.select ("#newick_body").selectAll ("div  .alert-danger").data ([res["error"]])
         warning_div.enter ().append ("div");
@@ -470,6 +471,34 @@ $("#example_hiv_scaled").on ("click", function (e) {
     var res = d3_phylotree_newick_parser ( hiv_tree );
     default_tree_settings ();
     tree (res).svg (svg).layout();
+});
+
+function update_controls () {
+    $("[data-mode='" + (tree.radial()      ? 'radial' : 'linear') + "']").click();
+    $("[data-align='"  + (tree.align_tips () ? 'right' : 'left') + "']").click();
+}
+
+$("#example_hiv_compartments").on ("click", function (e) {
+
+    var hiv_tree = "((((NM487|20020117|CSF|1|env|21|1.05:0.00293,(NM487|20020117|CSF|1|env|0|22.65:0.00055,((NM487|20020128|CSF|2|env|3074|1.36:0.0,NM487|20020128|CSF|1|env|3057|1.24:0.0):0.00055,NM487|20020103|PBMC|1|env|81|1.01:0.00055)0.896:0.00055)0.840:0.00409)0.656:0.00587,NM487|20020117|CSF|1|env|13|0.95:0.00300)0.255:0.00053,NM487|20020117|CSF|1|env|4|1.10:0.00300)0.331:0.00055,NM487|20020128|CSF-PELLET|1|env|0|37.88:0.00055,((NM487|20020128|CSF|2|env|0|10.49:0.0,NM487|20020128|CSF|1|env|0|10.60:0.0):0.00055,((((NM487|20020128|CSF|2|env|111|1.28:0.0,NM487|20020128|CSF|1|env|111|1.27:0.0):0.00829,((NM487|20020128|CSF|2|env|41|4.05:0.0,NM487|20020128|CSF|1|env|41|4.15:0.0):0.00054,(NM487|20020128|CSF-PELLET|1|env|40|4.21:0.0,NM487|20020117|CSF|1|env|5|1.20:0.0):0.00055)0.978:0.00050)0.890:0.00303,(((NM487|20020128|CSF|2|env|54|1.22:0.0,NM487|20020128|CSF|1|env|54|1.21:0.0):0.00055,NM487|20020117|CSF|1|env|19|2.76:0.00055)0.904:0.00278,(NM487|20020103|PBMC|1|env|26|2.32:0.00303,((NM487|20020128|CSF|1|env|59|0.93:0.00055,(((NM487|20020128|BP|1|env|40|2.31:0.00055,NM487|20020128|BP|1|env|20|1.72:0.00279)0.993:0.01716,NM487|20020128|BP|1|env|27|0.56:0.00243)0.702:0.01285,NM487|20020128|CSF-PELLET|1|env|56|0.78:0.00548)0.979:0.00051)0.315:0.00053,(NM487|20020117|CSF|1|env|20|1.05:0.00303,((NM487|20020117|BP|1|env|59|0.45:0.0,NM487|20020117|CSF|1|env|6|15.58:0.0):0.00055,(NM487|20020128|CSF|2|env|59|0.87:0.00055,(((NM487|20020128|CSF|2|env|82|1.75:0.0,NM487|20020128|CSF|1|env|82|1.80:0.0):0.00055,(((NM487|20020128|BP|1|env|2749|0.61:0.00055,NM487|20020117|BP|1|env|8|1.02:0.00301)0.851:0.00279,(NM487|20020128|BP|1|env|2790|0.94:0.00281,(NM487|20020128|CSF-PELLET|1|env|66|0.87:0.00055,(((NM487|20020103|PBMC|1|env|55|1.33:0.00055,NM487|20020128|CSF-PELLET|1|env|62|0.82:0.00055)0.861:0.00282,(((NM487|20020128|PBMC|1|env|8|8.33:0.00349,((NM487|20020128|PBMC|1|env|31|1.70:0.02485,NM487|20020128|PBMC|1|env|34|0.78:0.00054)0.940:0.01527,NM487|20020128|PBMC|1|env|33|0.79:0.03194)0.754:0.00402)0.941:0.02781,((NM487|20020128|PBMC|1|env|92|1.19:0.00316,NM487|20020128|PBMC|1|env|43|1.00:0.00303)0.935:0.01805,NM487|20020128|PBMC|1|env|10|6.24:0.01423)0.878:0.02383)0.999:0.07655,(NM487|20020128|PBMC|1|env|38|0.91:0.01340,(NM487|20020128|PBMC|1|env|9|4.34:0.00055,NM487|20020128|PBMC|1|env|0|0.70:0.01863)0.883:0.01055)0.984:0.04877)1.000:0.09435)1.000:0.00053,((((NM487|20020103|PBMC|1|env|23|1.64:0.01157,(((NM487|20020128|CSF-PELLET|1|env|37|0.75:0.0,NM487|20020117|BP|1|env|21|0.65:0.0):0.00908,((NM487|20020103|PBMC|1|env|99|0.66:0.00054,((((NM487|20020128|CSF-PELLET|1|env|12|1.09:0.0,NM487|20020117|BP|1|env|9|0.54:0.0):0.00055,(NM487|20020128|BP|1|env|2767|1.72:0.00055,NM487|20020128|BP|1|env|28|1.44:0.00866)0.913:0.00055)0.965:0.01080,NM487|20020117|BP|1|env|24|0.68:0.00055)0.124:0.00054,(NM487|20020128|CSF-PELLET|1|env|38|1.33:0.0,NM487|20020117|BP|1|env|18|3.46:0.0,NM487|20020117|CSF|1|env|15|1.10:0.0):0.00302)0.828:0.00355)0.833:0.00354,NM487|20020103|PBMC|1|env|106|0.98:0.00055)0.854:0.00353)0.115:0.00053,NM487|20020103|PBMC|1|env|2|1.62:0.00055)0.829:0.00354)0.948:0.00054,NM487|20020103|PBMC|1|env|255|0.57:0.00055)0.919:0.00055,((((NM487|20020128|CSF|2|env|62|2.60:0.0,NM487|20020128|CSF|1|env|62|2.64:0.0):0.00055,((NM487|20020128|CSF|2|env|36|1.14:0.0,NM487|20020128|CSF|1|env|36|1.13:0.0):0.00221,(NM487|20020117|BP|1|env|10|4.48:0.0,NM487|20020117|CSF|1|env|1|2.71:0.0):0.00055)0.321:0.00059)0.635:0.01578,(NM487|20020117|BP|1|env|97|0.45:0.00604,NM487|20020117|BP|1|env|13|0.40:0.00055)0.762:0.00300)0.232:0.00055,((NM487|20020117|BP|1|env|14|0.43:0.00301,(NM487|20020128|BP|1|env|2752|3.14:0.00054,NM487|20020128|CSF-PELLET|1|env|1|8.27:0.00055)0.699:0.00069)0.622:0.00158,NM487|20020128|BP|1|env|13|2.81:0.00055)0.999:0.00051)0.960:0.01011)0.831:0.00264,(NM487|20020103|PBMC|1|env|152|0.55:0.01500,NM487|20020103|PBMC|1|env|4|0.87:0.01185)0.903:0.00055)0.859:0.00265)0.827:0.00263)0.825:0.00263)1.000:0.00054)0.801:0.00298,NM487|20020128|BP|1|env|2773|0.76:0.00288)0.988:0.01722)0.297:0.00051,NM487|20020128|CSF-PELLET|1|env|15|2.48:0.00055)0.260:0.00055)0.367:0.00050)0.444:0.00051)0.489:0.01342)0.749:0.00341)0.937:0.00055)0.845:0.00055)0.648:0.00055,(NM487|20020128|CSF|2|env|33|16.42:0.0,NM487|20020128|CSF|1|env|33|16.53:0.0):0.00055)0.874:0.00051)0.231:0.00055)";
+    default_tree_settings ();
+    tree.radial           (true);
+    tree.align_tips       (true);
+    
+    tree.branch_name      (function (data) {
+           if (data.children) {
+                return "";
+           } else {
+               bits = data.name.split ('|');        
+               if (bits.length >= 6) {
+                 return bits[0] + " [" + bits[1] + "] " + bits[2];
+               }     
+               return data.name;
+          }
+    });
+           
+    tree (d3_phylotree_newick_parser (hiv_tree)).svg (svg).layout();
+    update_controls ();
 });
 
 $("#example_influenza_color").on ("click", function (e) {
