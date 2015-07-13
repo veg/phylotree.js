@@ -530,7 +530,7 @@ d3.layout.phylotree = function (container) {
 
         var _node_data = (typeof nwk == "string") ? d3_phylotree_newick_parser (nwk, bootstrap_values) : nwk;
                         // this builds children and links;
-                    
+                        
         if  (!_node_data ['json']) {
             nodes = [];
         }   else {        
@@ -1415,7 +1415,7 @@ d3.layout.phylotree = function (container) {
   }
 
   phylotree.transitions = function (arg) {
-    if (arg) {
+    if (arg !== undefined) {
         return arg;
     }
     if (options['transitions'] !== null) {
@@ -1871,8 +1871,7 @@ d3.layout.phylotree = function (container) {
         
         var pad_radius      = tree.pad_width (),
             vertical_offset =  (tree.options()['top-bottom-spacing'] != 'fit-to-size' ? tree.pad_height() : 0);
-        console.log (vertical_offset);
-
+        
     
         sizes = [sizes[1] + 2*pad_radius,
                  sizes[0] + 2*pad_radius + vertical_offset];
