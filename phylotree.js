@@ -4,8 +4,7 @@ var d3_layout_phylotree_event_id        = "d3.layout.phylotree.event",
 
 d3.layout.phylotree = function (container) {
     
-    var self = this;
-        self.container = container || "body",
+    var self                    = new Object,
         d3_hierarchy            = d3.layout.hierarchy().sort(null).value(null),
         size                    = [1,1],
         newick_string           = null,
@@ -147,7 +146,8 @@ d3.layout.phylotree = function (container) {
           return [r, a];
         };
 
-
+       self.container          = container || "body";
+           
  
  /*--------------------------------------------------------------------------------------*/
  
@@ -600,6 +600,7 @@ d3.layout.phylotree = function (container) {
     };
         
     phylotree.handle_node_click = function (node) {
+    
          var menu_object = d3.select(self.container).select("#" + d3_layout_phylotree_context_menu_id);
         
         
