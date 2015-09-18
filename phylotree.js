@@ -2026,6 +2026,7 @@ d3.layout.phylotree = function(container) {
                 }
 
             } else {
+                var circles = container.selectAll("circle").remove();
                 if (shown_font_size >= 5) {
                     labels.attr("dx", function(d) {
                         return (d.text_align == "end" ? -1 : 1) * shown_font_size * 0.33;
