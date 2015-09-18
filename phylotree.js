@@ -52,6 +52,7 @@ d3.layout.phylotree = function(container) {
             'show-scale': 'top',
             // currently not implemented to support any other positioning
             'draw-size-bubbles': false,
+            'shift-nodes': true,
             'binary-selectable': false,
             'is-radial': false,
             'attribute-list': [],
@@ -1589,8 +1590,11 @@ d3.layout.phylotree = function(container) {
         enclosure.enter().append("g")
             .attr("class", css_classes["tree-container"]);
 
+        var no_offset = (options['draw-size-bubbles'] && options['shift-nodes'] && (!options['is-radial']));
+        var left_offset = no_offset ? 0 : offsets[1];
+
         enclosure.attr("transform", function(d) {
-            return d3_phylotree_svg_translate([offsets[1], phylotree.pad_height()]);
+            return d3_phylotree_svg_translate([left_offset, phylotree.pad_height()]);
         });
 
         if (draw_scale_bar) {
@@ -1599,7 +1603,7 @@ d3.layout.phylotree = function(container) {
             scale_bar.attr("class", css_classes["tree-scale-bar"])
                 .style("font-size", "" + scale_bar_font_size)
                 .attr("transform", function(d) {
-                    return d3_phylotree_svg_translate([offsets[1], phylotree.pad_height() - 10]);
+                    return d3_phylotree_svg_translate([left_offset, phylotree.pad_height() - 10]);
                 })
                 .call(draw_scale_bar);
             scale_bar.selectAll("text")
@@ -2008,10 +2012,16 @@ d3.layout.phylotree = function(container) {
                 circles.attr("r", function(d) {
                     return d;
                 });
+                if (options['shift-nodes']) {
+                    circles.attr("transform", function(d) {
+                        return d3_phylotree_svg_translate([d, 0]);
+                    });
+                }
 
                 if (shown_font_size >= 5) {
                     labels.attr("dx", function(d) {
-                        return (d.text_align == "end" ? -1 : 1) * ((phylotree.align_tips() ? 0 : shift) + shown_font_size * 0.33);
+
+                        return (d.text_align == "end" ? -1 : 1) * ((phylotree.align_tips() ? 0 : shift) + (options['shift-nodes'] ? shift : 0) + shown_font_size * 0.33);
                     });
                 }
 
