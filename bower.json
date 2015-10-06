@@ -1,7 +1,7 @@
 {
   "name": "phylotree",
   "version": "0.1.2",
-  "main": "phylotree.js",
+  "main": ["phylotree.js", "phylotree.css"],
   "keywords": ["phylogenetics", "phylogeny", "d3", "branching", "tree"],
   "ignore" : ["index.html"],
   "dependencies": {
