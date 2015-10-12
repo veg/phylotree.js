@@ -7,6 +7,7 @@ d3.layout.phylotree = function(container) {
     var self = new Object,
         d3_hierarchy = d3.layout.hierarchy().sort(null).value(null),
         size = [1, 1],
+        phylo_attr = [1, 1],
         newick_string = null,
         separation = function(_node, _previos) {
             return 0;
@@ -39,6 +40,7 @@ d3.layout.phylotree = function(container) {
         scale_attribute = "y_scaled",
         needs_redraw = true,
         svg = null,
+
         options = {
             'layout': 'left-to-right',
             'branches': 'step',
@@ -52,7 +54,6 @@ d3.layout.phylotree = function(container) {
             'show-scale': 'top',
             // currently not implemented to support any other positioning
             'draw-size-bubbles': false,
-            'shift-nodes': true,
             'binary-selectable': false,
             'is-radial': false,
             'attribute-list': [],
@@ -97,7 +98,6 @@ d3.layout.phylotree = function(container) {
         font_size = 12,
         scale_bar_font_size = 12,
         offsets = [0, font_size],
-
 
         draw_line = d3.svg.line()
         .x(function(d) {
@@ -591,13 +591,21 @@ d3.layout.phylotree = function(container) {
     }
 
     phylotree.size = function(attr) {
-        if (!arguments.length) return size;
+        if (arguments.length) {
+          phylo_attr = attr;
+        }
+
         if (options['top-bottom-spacing'] != 'fixed-step') {
-            size[0] = attr[0];
+            size[0] = phylo_attr[0];
         }
         if (options['left-right-spacing'] != 'fixed-step') {
-            size[1] = attr[1];
+            size[1] = phylo_attr[1];
         }
+
+        if (!arguments.length) {
+          return size;
+        }
+
         return phylotree;
     };
 
@@ -631,7 +639,6 @@ d3.layout.phylotree = function(container) {
             n.collapsed = true;
         }
     }
-
 
     phylotree.separation = function(attr) {
         if (!arguments.length) return separation;
@@ -1578,6 +1585,7 @@ d3.layout.phylotree = function(container) {
     }
 
     phylotree.update = function(transitions) {
+
         if (!phylotree.svg)
             return phylotree;
 
@@ -1590,11 +1598,8 @@ d3.layout.phylotree = function(container) {
         enclosure.enter().append("g")
             .attr("class", css_classes["tree-container"]);
 
-        var no_offset = (options['draw-size-bubbles'] && options['shift-nodes'] && (!options['is-radial']));
-        var left_offset = no_offset ? 0 : offsets[1];
-
         enclosure.attr("transform", function(d) {
-            return d3_phylotree_svg_translate([left_offset, phylotree.pad_height()]);
+            return d3_phylotree_svg_translate([offsets[1], phylotree.pad_height()]);
         });
 
         if (draw_scale_bar) {
@@ -1603,7 +1608,7 @@ d3.layout.phylotree = function(container) {
             scale_bar.attr("class", css_classes["tree-scale-bar"])
                 .style("font-size", "" + scale_bar_font_size)
                 .attr("transform", function(d) {
-                    return d3_phylotree_svg_translate([left_offset, phylotree.pad_height() - 10]);
+                    return d3_phylotree_svg_translate([offsets[1], phylotree.pad_height() - 10]);
                 })
                 .call(draw_scale_bar);
             scale_bar.selectAll("text")
@@ -2012,21 +2017,14 @@ d3.layout.phylotree = function(container) {
                 circles.attr("r", function(d) {
                     return d;
                 });
-                if (options['shift-nodes']) {
-                    circles.attr("transform", function(d) {
-                        return d3_phylotree_svg_translate([d, 0]);
-                    });
-                }
 
                 if (shown_font_size >= 5) {
                     labels.attr("dx", function(d) {
-
-                        return (d.text_align == "end" ? -1 : 1) * ((phylotree.align_tips() ? 0 : shift) + (options['shift-nodes'] ? shift : 0) + shown_font_size * 0.33);
+                        return (d.text_align == "end" ? -1 : 1) * ((phylotree.align_tips() ? 0 : shift) + shown_font_size * 0.33);
                     });
                 }
 
             } else {
-                var circles = container.selectAll("circle").remove();
                 if (shown_font_size >= 5) {
                     labels.attr("dx", function(d) {
                         return (d.text_align == "end" ? -1 : 1) * shown_font_size * 0.33;
