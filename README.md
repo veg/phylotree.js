@@ -29,4 +29,4 @@ Key features
 
 ## Dependencies 
 
-See [bower.json](bower.json) for dependancies. 
+See [bower.json](bower.json) for dependencies. 
