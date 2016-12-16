@@ -1748,8 +1748,8 @@
                       if (d.collapsed_clade) {
                           return d.collapsed_clade;
                       }
-                      init_0 = d.collapsed[0][0];
-                      init_1 = d.collapsed[0][1];
+                      var init_0 = d.collapsed[0][0];
+                      var init_1 = d.collapsed[0][1];
                       return spline(d.collapsed.map(spline_f, d, init_0, init_1));
                   })
                   .transition()
