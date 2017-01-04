@@ -1750,7 +1750,10 @@
                       }
                       var init_0 = d.collapsed[0][0];
                       var init_1 = d.collapsed[0][1];
-                      return spline(d.collapsed.map(spline_f, d, init_0, init_1));
+                      //#1 return spline(d.collapsed.map(spline_f, d, init_0, init_1));
+                      return spline(d.collapsed.map(function (coord, i) {
+                          return spline_f(coord, i, d, init_0, init_1);
+                      }));
                   })
                   .transition()
                   .attr("d", function(d) {
