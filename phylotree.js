@@ -172,7 +172,7 @@
               node.x *= scales[0];
               node.y *= scales[1];
               node.radius = radius * (node.y / size[1] + radial_root_offset);
-   
+
               if (!node.angle) {
                   node.angle = 2 * Math.PI * node.x * scales[0] / size[0];
               }
@@ -385,7 +385,7 @@
                   }
 
                   scales[1] = (size[1] - offsets[1] - options["left-offset"] - label_width) / _extents[1][1];
-                  
+
               }
           }
 
@@ -454,17 +454,17 @@
               });
 
               radius = Math.min(options['max-radius'], Math.max(effective_span / 2 / Math.PI, min_radius));
-          
+
               if (annular_shift) {
                   var scaler = 1;
-                  
+
                    nodes.forEach(function(d) {
                       d.radius = d.y*scales[1]/size[1] + annular_shift;
                       scaler = Math.max (scaler, d.radius);
-                      
+
                   });
-                  
-                  
+
+
                   if (scaler > 1) {
                       scales[0] /= scaler;
                       scales[1] /= scaler;
@@ -1750,17 +1750,20 @@
                       }
                       var init_0 = d.collapsed[0][0];
                       var init_1 = d.collapsed[0][1];
-                      return spline(d.collapsed.map(spline_f, d, init_0, init_1));
+                      //#1 return spline(d.collapsed.map(spline_f, d, init_0, init_1));
+                      return spline(d.collapsed.map(function (coord, i) {
+                          return spline_f(coord, i, d, init_0, init_1);
+                      }));
                   })
                   .transition()
                   .attr("d", function(d) {
                       return d.collapsed_clade = spline(d.collapsed);
                   });
           } else {
-              collapsed_clades.enter().insert("path", ":first-child")
-                  .attr("class", css_classes["clade"])
-                  .attr("d", function(d) {
-                      return spline(d.collapsed);
+              collapsed_clades.enter().insert("path", ":first-child");
+              collapsed_clades.attr("class", css_classes["clade"])
+                  .attr("d", function (d) {
+                      return d.collapsed_clade = spline(d.collapsed);
                   });
           }
 
@@ -1776,7 +1779,7 @@
               //drawn_nodes.exit().transition ().style ("opacity", "0").remove();
               drawn_nodes.exit().transition().remove();
               drawn_nodes = drawn_nodes.attr("transform", function(d) {
-                  if(!_.isUndefined(d.screen_x) && !_.isUndefined(d.screen_y)) { 
+                  if(!_.isUndefined(d.screen_x) && !_.isUndefined(d.screen_y)) {
                     return "translate(" + d.screen_x + "," + d.screen_y + ")";
                   }
               }).transition();
