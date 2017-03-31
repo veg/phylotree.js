@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset="utf-8">
+
+    <link type="text/css" href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+    <link type="text/css"rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="//veg.github.io/phylotree.js/phylotree.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    
+    <style>
+        .bootstrap {
+            font-size: 12px;
+            background-fill: #cccccc;
+        }
+        
+        .cluster-text {
+            padding: 0.25em;
+            text-align: center;
+        }
+
+    
+        @media print
+            {    
+                .no-print, .no-print *
+                {
+                    display: none !important;
+                }
+            }
+    </style>
+</head>
+
+<body>
+    <div class = "container">
+    <div class = "row no-print">
+        <div class = "col-md-6">
+
+            <div>
+                <form>
+                    <label>Radial layout </label>
+                        <input type="checkbox" id="layout"/>
+                    <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#newick_modal">Input Newick</button>
+                    <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#clustering_modal">Input clustering</button>
+                 </form>
+            </div>
+
+        </div>
+    </div>
+    
+    <div class = "row">
+        <div class = "col-md-12" id = "tree-container">
+            <svg id="tree_display"></svg>
+        </div>
+    </div>
+    
+    <div class = "row">
+        <div class = "col-md-2" id="cluster-legend">
+        </div>
+    </div>
+    
+    <div class="modal" id = 'newick_modal'>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Newick string to render</h4>
+          </div>
+          <div class="modal-body" id = 'newick_body'>
+             <textarea id = 'nwk_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20 selectionStart = 1 selectionEnd = 1000>(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)</textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id = 'validate_newick'>Display this tree</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div class="modal" id = 'clustering_modal'>
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Clustering CSV</h4>
+          </div>
+          <div class="modal-body" id = 'clustering_body'>
+             <textarea id = 'csv_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20 selectionStart = 1 selectionEnd = 1000>
+Seq1,Seq2,Seq3
+A,B,A
+             </textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id = 'validate_csv'>Use this labeling</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <script>
+        // the global tree variable
+        var tree;
+
+        // the dictionary mapping node names to clusters
+        var clustering = {};
+        
+        // default scheme to color by date    
+        var coloring_scheme = d3.scale.category10();
+        
+        // this will be used to map bootstrap support values to edge thickness
+        var bootstrap_scale = d3.scale.linear().domain ([0,0.5,0.7,0.9,0.95,1]).range ([1,2,3,4,5,6]).interpolate (d3.interpolateRound);
+        
+        function edgeStyler (dom_element, edge_object) {
+            if ("bootstrap" in edge_object.target) {
+                dom_element.style ("stroke-width", bootstrap_scale (edge_object.target.bootstrap) + "pt");
+            }
+            dom_element.style ("stroke", "cluster" in edge_object.target ? coloring_scheme (edge_object.target.cluster) : null);
+            
+        }
+ 
+        function nodeStyler (dom_element, node_object) {
+            if ("bootstrap" in node_object && node_object.bootstrap) { 
+                var label = dom_element.selectAll (".bootstrap");
+                if (label.empty()) {
+                    dom_element.append ("text").classed ("bootstrap", true).text (node_object.bootstrap).attr ("dx", ".3em").attr("text-anchor", "start").attr ("alignment-baseline", "middle");
+                } else {
+                    if (tree.radial()) { // do not show internal node labels in radial mode
+                        label.remove();
+                    }
+                }
+            }
+        }    
+
+        function drawATree(newick) {
+        
+            tree = d3.layout.phylotree()
+                .svg(d3.select("#tree_display"))
+                .options({
+                    'selectable': false,
+                    // make nodes and branches not selectable
+                    'collapsible': false,
+                    // turn off the menu on internal nodes
+                })
+                .style_edges(edgeStyler)
+                .style_nodes (nodeStyler)
+                .node_circle_size (0) // do not draw clickable circles for internal nodes
+                ;
+
+
+            /* the next call creates the tree object, and tree nodes */
+            tree(d3_phylotree_newick_parser(newick));
+
+
+            // parse bootstrap support from internal node names
+            _.each (tree.get_nodes(), function (node) {
+                if (node.children) {
+                    node.bootstrap = parseFloat (node.name);
+                }   
+            });
+            
+            tree.spacing_x (25).spacing_y (100);
+
+            if ($("#layout").prop("checked")) {
+                tree.radial (true);
+            }
+            tree.placenodes().layout();
+            
+    
+            // UI handlers
+            $("#layout").on("click", function(e) {
+                tree.radial($(this).prop("checked")).placenodes().update();
+            });
+            
+         }
+
+        function loadTreeFromURL(url) {
+            d3.text(url, function(error, newick) {
+
+                drawATree(newick);
+            });
+        }
+        
+        function applyAnnotation (clustering) {
+            coloring_scheme.domain ([]); // reset the coloring scheme
+            if (tree) {
+                 // refresh cluster assignments for tips
+                /*_.each (tree.get_nodes(), function (node) {
+                    if (node.name in clustering) {
+                        node.cluster = clustering[node.name];
+                    } else {
+                        delete node.cluster;
+                    }
+                });*/
+                
+                tree.traverse_and_compute (function (node) {
+                    if (node.name in clustering) {
+                            node.cluster = clustering[node.name];
+                        } else {
+                            delete node.cluster;
+                            var children_clusters = _.keys(_.countBy (node.children, function (d) {
+                                return d.cluster;
+                            }));
+                            if (children_clusters.length == 1 && children_clusters[0]) {
+                                node.cluster =  children_clusters[0];
+                            }
+                        }
+                    },
+                    "post-order");
+                
+                
+                
+                tree.update();
+                
+                // update the legend
+                
+                d3.select ("#cluster-legend").selectAll (".row").remove();
+                var cluster_colors = d3.select ("#cluster-legend").selectAll (".row").data (coloring_scheme.domain().sort().map (function (d) {return [d];}));
+                cluster_colors.enter().append ("div").classed ("row", true);
+                cluster_colors.exit().remove();
+                cluster_colors = cluster_colors.selectAll ("span").data (function (d) {return d});
+                cluster_colors.enter().append ("span").classed ("cluster-text", true);
+        
+                cluster_colors.each (function (d) {
+                    d3.select(this).style ("color", coloring_scheme (d), "important").classed ("cluster-text", true).text ("Cluster " + d);
+                });
+       
+            }
+        }
+        
+        function loadAnnotationFromURL (url) {
+            d3.csv (url, function (error, csv) {
+                applyAnnotation(csv[0]);
+            });
+        };
+
+        $("#validate_newick").on ("click", function (e) {
+            var res = d3_phylotree_newick_parser ( $('textarea[id$="nwk_spec"]').val(), true);
+            if (res["error"] || ! res["json"]) {
+                var warning_div = d3.select ("#newick_body").selectAll ("div  .alert-danger").data ([res["error"]])
+                warning_div.enter ().append ("div");
+                warning_div.html (function (d) {return d;}).attr ("class", "alert-danger");
+        
+            } else {
+                drawATree ($('textarea[id$="nwk_spec"]').val());
+                $('#newick_modal').modal('hide');
+            }
+        });
+
+        $("#validate_csv").on ("click", function (e) {
+            var res = d3.csv.parse ( $('textarea[id$="csv_spec"]').val());
+            if (!res) {
+                var warning_div = d3.select ("#clustering_body").selectAll ("div  .alert-danger").data ("Failed to parse CSV")
+                warning_div.enter ().append ("div");
+                warning_div.html (function (d) {return d;}).attr ("class", "alert-danger");
+        
+            } else {
+                
+                applyAnnotation (res[0]);
+                $('#clustering_modal').modal('hide');
+            }
+        });
+
+        loadTreeFromURL("tree.nwk");
+        loadAnnotationFromURL ("annotation.csv");
+        
+    </script>
+
+</body>
+
+</html>

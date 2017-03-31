@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<head>
+    <meta charset="utf-8">
+
+    <link type="text/css" href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+    <link type="text/css"rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="//veg.github.io/phylotree.js/phylotree.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    
+   
+</head>
+
+
+<body>
+    <div class = "container">
+        <div class = "row no-print">
+        </div>
+    
+        <div class = "row">
+            <div class = "col-md-12" id = "table-container">
+                <table class = "table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Codon</th>
+                            <th>&omega; entire tree</th>
+                            <th>&omega; internal nodes</th>
+                            <th>&omega; terminal nodes</th>
+                            <th>MEME p</th>
+                            <th>MEME-internal p</th>
+                        </tr>
+                    </thead>
+                    <tbody id = "payload">
+                    </tbody>
+               </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var data_pair = {};
+        
+        var prop_format = d3.format (".2p"),    
+            ratio_format = d3.format (".2f"),
+            p_format = d3.format (".4f");
+            
+        var color_scale = d3.scale.linear().domain ([0,0.1,1]).range (["red","white","blue"]);
+         
+        function display_data (p) {
+        
+            function normalize_ratio (alpha, beta) {
+
+                alpha = +alpha;
+                beta  = +beta;
+                                
+                //beta = beta1 * p + beta2 * (1-p);
+                
+                if (alpha == 0) {
+                    if (beta == 0) {
+                        return "Invariable";
+                    } 
+                    return "&infin;";
+                }
+                
+                return ratio_format (beta/alpha);
+            }
+        
+            function format_omega_distribution (alpha, beta1, beta2, weight) {
+                return normalize_ratio (alpha, beta1) + " (" + prop_format (weight) + "), " + normalize_ratio (alpha, beta2) + " (" + prop_format (1-weight) + ")";
+            }
+        
+            p = p || 0.05;
+            var show_these_codons = {};
+            _.each (data_pair, function (value, key) {
+                _.each (value, function (row, index) {
+                    if (row["p-value"] < p) {
+                        show_these_codons [index] = 1;
+                    }
+                })
+            });
+            
+            show_these_codons = _.keys (show_these_codons).map (function (d) {return +d;});
+            show_these_codons.sort(function (a,b) {return a-b;});
+        
+            var data_to_show_in_table = [];
+            
+            function style_p_value (dom, d) {
+                d3.select (dom).style ("background-color", color_scale (d[0]));
+            }
+        
+            show_these_codons.forEach (function (index) {
+                var result_table_row = [[index+1,null]];
+                result_table_row.push ([format_omega_distribution (data_pair["all"][index]["Length_scaler"],data_pair["all"][index]["beta1"],data_pair["all"][index]["beta2"],data_pair["all"][index]["weight1"]),null]);
+                result_table_row.push ([format_omega_distribution (data_pair["internal"][index]["Length_scaler"],data_pair["internal"][index]["beta1"],data_pair["internal"][index]["beta2"],data_pair["internal"][index]["weight1"]),null]);
+                result_table_row.push ([format_omega_distribution (data_pair["internal"][index]["Length_scaler"],data_pair["internal"][index]["beta1[leaves]"],data_pair["internal"][index]["beta2[leaves]"],data_pair["internal"][index]["weight1[leaves]"]),null]);
+                result_table_row.push ([p_format (data_pair["all"][index]["p-value"]),style_p_value]);
+                result_table_row.push ([p_format (data_pair["internal"][index]["p-value"]),style_p_value]);
+                data_to_show_in_table.push (result_table_row);                                             
+            });
+            
+            //data_to_show_in_table.sort (function (a, b) {return a[5][0]-b[5][0];});
+            
+            var rows        = d3.select ("#payload").selectAll ("tr").data (data_to_show_in_table);
+            rows.enter().append ("tr");
+            var cells = rows.selectAll ("td").data (function (d) {return d;});
+            cells.enter().append ("td");
+            cells.html (function (d) {return d[0];});
+            cells.each (function (d) {if (d[1]) {d[1](this,d)}});
+        }
+
+        function load_file (list, index) {
+            d3.csv(list[index][0], function(error, data) {
+                       if (error) throw error;
+
+                       data_pair[list[index][1] ? "internal" : "all"] = data;
+
+
+                       if (index + 1 < list.length) {
+                           load_file(list, index + 1);
+                       } else {
+                           display_data();
+                           }
+
+                       });
+
+                   /* the first argument to load_file is an array with the following entries (arrays themselves)
+                       [ 
+                         URL for the file,
+                         label for the plot (can be null),
+                         plot splitter      (see plot_some_data),
+                         y-axis range       (can be null to auto-detect),
+                         annotator          (see plot_some_data, can be null)
+                       ]
+                   */
+                }
+
+               load_file([
+                   ["dog.meme-internal.csv", true],
+                   ["dog.meme.csv", false]
+               ], 0);        //d3.json("coverages-csf.json", function(error, data) {
+    </script>
+</body>

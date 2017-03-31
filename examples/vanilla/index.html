@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang = 'en'>
+ 
+<head>
+    <meta charset="utf-8">
+ 
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+    <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+    
+    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="//veg.github.io/phylotree.js/phylotree.js"></script>
+ 
+</head>
+ 
+<body>
+  <svg id = "tree_display"></svg>
+  
+  <script>
+  
+      d3.text ("yokoyama.nwk", function (error, newick) {
+          var height = 400,
+              width  = 400,
+
+              tree = d3.layout.phylotree() 
+                     .svg (d3.select ("#tree_display"))
+                     .options (
+                        {'left-right-spacing'   : 'fit-to-size', 
+                          // fit to given size top-to-bottom
+                         'top-bottom-spacing'   : 'fit-to-size', 
+                          // fit to given size left-to-right
+                         'selectable'  : false, 
+                          // make nodes and branches not selectable
+                         'collapsible' : false, 
+                          // turn off the menu on internal nodes
+                         'transitions' : false 
+                          // turn off d3 animations
+                        }
+                     )
+                     .size([height, width]) 
+                     .node_circle_size (0); // do not show "circles" at internal nodes
+  
+              tree (d3_phylotree_newick_parser (newick)) 
+                   // parse the Newick into a d3 hierarchy object with additional fields
+                   // generate node coordinates
+                   .layout(); 
+                   // render the tree
+               
+      });
+               
+             
+  </script>
+  
+</body>
+</html>
