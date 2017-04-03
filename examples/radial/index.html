@@ -11,13 +11,14 @@
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="//d3js.org/d3.v3.min.js"></script>
-    <script src="//veg.github.io/phylotree.js/phylotree.js"></script>
+    <script src="../../phylotree.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 </head>
  
 <body>
   <div>
       <form>
-        <label>Radial layout
+        <label>Radial layout</label>
         <input type = "checkbox" id = "layout" checked/> 
       </form>
   </div>
@@ -32,7 +33,7 @@
                      .svg (d3.select ("#tree_display"))
                      .radial (true);
   
-              tree (d3_phylotree_newick_parser (newick)) 
+              tree (d3.layout.newick_parser (newick)) 
                    .layout(); 
                
                $("#layout").on ("click", function (e) {

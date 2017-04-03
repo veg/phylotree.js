@@ -12,7 +12,7 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="//d3js.org/d3.v3.min.js"></script>
     <script src="//veg.github.io/phylotree.js/phylotree.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
 </head>
  
 <body>
@@ -29,7 +29,7 @@
              .svg (d3.select ("#tree_display")); 
              // render to this SVG element
   
-  tree (d3_phylotree_newick_parser (example_tree)) 
+  tree (d3.layout.newick_parser (example_tree)) 
        // parse the Newick into a d3 hierarchy object with additional fields
        .layout(); 
        // layout and render the tree

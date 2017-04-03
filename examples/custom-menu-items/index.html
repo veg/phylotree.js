@@ -11,7 +11,8 @@
     <script src="//code.jquery.com/jquery.js"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="//d3js.org/d3.v3.min.js"></script>
-    <script src="//veg.github.io/phylotree.js/phylotree.js"></script>
+    <script src="../../phylotree.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
 
 </head>
 
@@ -31,7 +32,7 @@
 
    function my_node_style_text (node) {
         node['text-italic'] = ! node['text-italic'];
-        d3_phylotree_trigger_refresh (tree);
+        d3.layout.phylotree.trigger_refresh (tree);
    }
 
    function my_menu_title (node) {
@@ -44,7 +45,7 @@
    function my_style_nodes (element, node) {
         element.style ("font-style", node['text-italic'] ? "italic" : "normal");
    }
-  tree (d3_phylotree_newick_parser (example_tree))
+  tree (d3.layout.newick_parser (example_tree))
        // parse the Newick into a d3 hierarchy object with additional fields
        .style_nodes (my_style_nodes)
        // handle custom node styling
@@ -54,11 +55,11 @@
    // add a custom menu for (in this case) terminal nodes
 
    tree.get_nodes().forEach (function (tree_node) {
-            d3_add_custom_menu (tree_node, // add to this node
+            d3.layout.phylotree.add_custom_menu (tree_node, // add to this node
                                 my_menu_title, // display this text for the menu
                                 function () { my_node_style_text (tree_node);},
                                         // on-click callback include a reference to tree_node via transitive closure
-                                d3_phylotree_is_leafnode // condition on when to display the menu
+                                d3.layout.phylotree.is_leafnode // condition on when to display the menu
                                                          // a function that takes node as an argument
                                 );
    });

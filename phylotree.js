@@ -2,7 +2,12 @@
 
   var d3_layout_phylotree_event_id = "d3.layout.phylotree.event",
       d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
-
+/** 
+* @name newick_parser
+* @version 1.0
+* @exports phylotree
+* @namespace phylotree
+*/
   d3.layout.newick_parser = function(nwk_str, bootstrap_values) {
 
       var clade_stack = [];
@@ -1233,6 +1238,8 @@
         trigger_refresh(phylotree);
       };
 
+      phylotree.is_leafnode = d3_phylotree_is_leafnode;
+
       phylotree.radial = function(attr) {
           if (!arguments.length) return options['is-radial'];
           options['is-radial'] = attr;
@@ -2397,7 +2404,11 @@
   function d3_phylotree_newick_parser(nwk_str, bootstrap_values) {
 
       var clade_stack = [];
-
+/** 
+ * @method add_new_tree_level
+ * @memberof phylotree
+ * @returns nothing
+ */
       function add_new_tree_level() {
           var new_level = {
               "name": null
@@ -2411,6 +2422,11 @@
           clade_stack[clade_stack.length - 1]["original_child_order"] = the_parent["children"].length;
       }
 
+ /** 
+ * @method finish_node_definition
+ * @memberof phylotree
+ * @returns nothing
+ */
       function finish_node_definition() {
           var this_node = clade_stack.pop();
           if (bootstrap_values && 'children' in this_node) {
@@ -2638,5 +2654,9 @@
       }
       return "";
   }
+
+  d3.layout.phylotree.is_leafnode = d3_phylotree_is_leafnode;
+  d3.layout.phylotree.add_custom_menu = d3_add_custom_menu;
+  d3.layout.phylotree.trigger_refresh = d3_phylotree_trigger_refresh;
 
 }.call(this));

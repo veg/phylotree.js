@@ -12,7 +12,7 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="//d3js.org/d3.v3.min.js"></script>
     <script src="//veg.github.io/phylotree.js/phylotree.js"></script>
- 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script> 
 </head>
  
 <body>
@@ -42,7 +42,7 @@
                      .size([height, width]) 
                      .node_circle_size (0); // do not show "circles" at internal nodes
   
-              tree (d3_phylotree_newick_parser (newick)) 
+              tree (d3.layout.newick_parser (newick)) 
                    // parse the Newick into a d3 hierarchy object with additional fields
                    // generate node coordinates
                    .layout(); 
