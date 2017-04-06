@@ -2,60 +2,60 @@
 <html lang='en'>
 
 <head>
-    <meta charset="utf-8">
+  <meta charset="utf-8">
 
-    <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+  <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
 
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
 
-    <script src="//code.jquery.com/jquery.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-    <script src="//d3js.org/d3.v3.min.js"></script>
-    <script src="../../phylotree.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    
-    <style>
-        .date-text {
-            padding: 0.25em;
-            text-align: center;
-        }
-        
-        .size-bubble, .size-bubble * {
-            fill: #CCC;
-            shape-rendering: crispEdges;
-            stroke: black;
-            stroke-width: 2px;
-        }
-        
-        .size-label {
-            display: block;
-            text-align : center;
-            font-family: sans-serif;
-            font-size: 12pt;
-        }
-    
-    
-        @media print
-            {    
-                .no-print, .no-print *
-                {
-                    display: none !important;
-                }
-            }
-    </style>
+  <script src="//code.jquery.com/jquery.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="//d3js.org/d3.v3.min.js"></script>
+  <script src="../../phylotree.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+  <style>
+    .date-text {
+      padding: 0.25em;
+      text-align: center;
+    }
+
+    .size-bubble,
+    .size-bubble * {
+      fill: #CCC;
+      shape-rendering: crispEdges;
+      stroke: black;
+      stroke-width: 2px;
+    }
+
+    .size-label {
+      display: block;
+      text-align: center;
+      font-family: sans-serif;
+      font-size: 12pt;
+    }
+
+
+    @media print {
+      .no-print,
+      .no-print * {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div class = "container">
-    <div class = "row no-print">
-        <div class = "col-md-4">
+  <div class="container">
+    <div class="row no-print">
+      <div class="col-md-4">
 
-            <div>
-                <form>
-                    <label>Radial layout </label>
-                        <input type="checkbox" id="layout"/ checked>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newick_modal">Input Newick</button
+        <div>
+          <form>
+            <label>Radial layout </label>
+            <input type="checkbox" id="layout" / checked>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newick_modal">Input Newick</button
                 </form>
             </div>
 
@@ -83,250 +83,269 @@
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
             <h4 class="modal-title">Newick string to render</h4>
-          </div>
-          <div class="modal-body" id = 'newick_body'>
-             <textarea id = 'nwk_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20 selectionStart = 1 selectionEnd = 1000>(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)</textarea>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id = 'validate_newick'>Display this tree</button>
-          </div>
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+        </div>
+        <div class="modal-body" id='newick_body'>
+          <textarea id='nwk_spec' autofocus=t rue placeholder="" style='width: 100%; height: 100%' rows=2 0 selectionStart=1 selectionEnd=1 000>(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)</textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id='validate_newick'>Display this tree</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
 
-    <script>
-        // use these formats for parsing and displaying sampling dates
-        var date_in = d3.time.format("%Y%m%d"),
-            date_out = d3.time.format("%B %d, %Y");
-            
-        // default scheme to color by date    
-        var coloring_scheme = d3.scale.category10();
+  <script>
+    // use these formats for parsing and displaying sampling dates
+    var date_in = d3.time.format("%Y%m%d"),
+      date_out = d3.time.format("%B %d, %Y");
 
-        // different shapes for labeling compartments
-        var compartment_labels = d3.scale.ordinal().range(["circle", "square", "diamond", "triangle-down", "triangle-up"]);
-        
-        // global tree object
-        var tree;
-        
-        
-        // bubble size scale        
-        var size_scale = d3.scale.pow ().exponent (0.4).range ([1,10]).clamp (false).domain ([0,1]);
+    // default scheme to color by date    
+    var coloring_scheme = d3.scale.category10();
 
-        // determines the size of a node "bubble"
+    // different shapes for labeling compartments
+    var compartment_labels = d3.scale.ordinal().range(["circle", "square", "diamond", "triangle-down", "triangle-up"]);
 
-        function bubbleSize(node) {
-            if (node && node.copy_number) {
-                return size_scale(node.copy_number);
-            }
-            return 1;
+    // global tree object
+    var tree;
+
+
+    // bubble size scale        
+    var size_scale = d3.scale.pow().exponent(0.4).range([1, 10]).clamp(false).domain([0, 1]);
+
+    // determines the size of a node "bubble"
+
+    function bubbleSize(node) {
+      if (node && node.copy_number) {
+        return size_scale(node.copy_number);
+      }
+      return 1;
+    }
+
+    function nodeStyler(container, node) {
+      if (d3.layout.phylotree.is_leafnode(node)) {
+
+        var existing_circle = container.selectAll("circle");
+
+        if (existing_circle.size() == 1) {
+          existing_circle.remove();
         }
 
-        function nodeStyler(container, node) {
-            if (d3.layout.phylotree.is_leafnode(node)) {
+        if (node.copy_number) {
+          existing_circle = container.selectAll("path.node_shape").data([node.compartment]);
+          existing_circle.enter().append("path").classed("node_shape", true);
 
-                var existing_circle = container.selectAll("circle");
+          var bubble_size = tree.node_bubble_size(node);
 
-                if (existing_circle.size() == 1) {
-                    existing_circle.remove();
-                }
-                
-                if (node.copy_number) {                
-                    existing_circle = container.selectAll("path.node_shape").data([node.compartment]);
-                    existing_circle.enter().append("path").classed("node_shape", true);
-
-                    var bubble_size = tree.node_bubble_size(node);
-
-                    var label = existing_circle.attr("d", function(d) {
-                        return d3.svg.symbol().type(compartment_labels(d)).size(bubble_size * bubble_size)();
-                    }).selectAll ("title").data ([node.copy_number]);
-                    label.enter().append("title");
-                    label.text ("" + node.copy_number + " copies");
+          var label = existing_circle.attr("d", function(d) {
+            return d3.svg.symbol().type(compartment_labels(d)).size(bubble_size * bubble_size)();
+          }).selectAll("title").data([node.copy_number]);
+          label.enter().append("title");
+          label.text("" + node.copy_number + " copies");
 
 
-                    existing_circle.style("stroke-width", "1px").style("stroke", "black");
-                    if (node.text_angle) {
-                        existing_circle.attr("transform", function(d) {
-                            return "rotate(" + node.text_angle + ") translate(" + (node.text_align == "end" ? -1 : 1) * bubble_size / 2 + ",0)";
-                        });
-                    } else {
-                        existing_circle.attr("transform", function(d) {
-                            return "translate(" + bubble_size / 2 + ",0)";
-                        });
-                    }
-                }
-
-            }
-
-            if (node.date) {
-                var node_color = coloring_scheme (node.date);
-                container.selectAll("circle").style("fill", node_color);
-                container.selectAll("path").style("fill", node_color);
-                container.style("fill", node_color);
-            }
-
+          existing_circle.style("stroke-width", "1px").style("stroke", "black");
+          if (node.text_angle) {
+            existing_circle.attr("transform", function(d) {
+              return "rotate(" + node.text_angle + ") translate(" + (node.text_align == "end" ? -1 : 1) * bubble_size / 2 + ",0)";
+            });
+          } else {
+            existing_circle.attr("transform", function(d) {
+              return "translate(" + bubble_size / 2 + ",0)";
+            });
+          }
         }
 
-        function drawATree(newick) {
-        
-            tree = d3.layout.phylotree()
-                .svg(d3.select("#tree_display"))
-                .options({
-                    'selectable': false,
-                    // make nodes and branches not selectable
-                    'collapsible': false,
-                    // turn off the menu on internal nodes
-                    'transitions': false,
-                    // turn off d3 animations.
-                    'draw-size-bubbles': true,
-                    // draw node size bubbles
-                    'annular-limit': 0.9
-                    // controls how much of the overall diameter can be taken by 
-                    // empty "annular" space
-                })
-                .node_span(bubbleSize)
-                .style_nodes(nodeStyler)
-                .node_circle_size (0) // do not draw clickable circles for internal nodes
-                .branch_name (function () {return ""}) // no leaf names
-                ;
+      }
+
+      if (node.date) {
+        var node_color = coloring_scheme(node.date);
+        container.selectAll("circle").style("fill", node_color);
+        container.selectAll("path").style("fill", node_color);
+        container.style("fill", node_color);
+      }
+
+    }
+
+    function drawATree(newick) {
+
+      tree = d3.layout.phylotree()
+        .svg(d3.select("#tree_display"))
+        .options({
+          'selectable': false,
+          // make nodes and branches not selectable
+          'collapsible': false,
+          // turn off the menu on internal nodes
+          'transitions': false,
+          // turn off d3 animations.
+          'draw-size-bubbles': true,
+          // draw node size bubbles
+          'annular-limit': 0.9
+          // controls how much of the overall diameter can be taken by 
+          // empty "annular" space
+        })
+        .node_span(bubbleSize)
+        .style_nodes(nodeStyler)
+        .node_circle_size(0) // do not draw clickable circles for internal nodes
+        .branch_name(function() {
+          return ""
+        }) // no leaf names
+      ;
 
 
-            /* the next call creates the tree object, and tree nodes */
-            tree(d3.layout.newick_parser(newick));
+      /* the next call creates the tree object, and tree nodes */
+      tree(d3.layout.newick_parser(newick));
 
-            /* parse tip names which are assumed to be like this:
-                     T0104_20140512_env_CSF_319_130
-                 
-                     splitting on '_' yields 
-                 
-                     -- Patient ID (T0104); ignored
-                     -- YYYYMMDD sample date; parsed and used to assign *colors* to edges/nodes
-                     -- gene; ignored
-                     -- compartment; parsed and used to assign *shapes* to nodes
-                     -- clone ID; ignored [any other numeric fields with indices 4 through length-2 will be ignored]
-                     -- copy number; parsed and used to scale "bubbles" on leaves
-                 
-                     tips which do not conform to this naming convention are labeled as "reference",
-                     and annotated using a special character.
-             
-                */
+      /* parse tip names which are assumed to be like this:
+               T0104_20140512_env_CSF_319_130
+           
+               splitting on '_' yields 
+           
+               -- Patient ID (T0104); ignored
+               -- YYYYMMDD sample date; parsed and used to assign *colors* to edges/nodes
+               -- gene; ignored
+               -- compartment; parsed and used to assign *shapes* to nodes
+               -- clone ID; ignored [any other numeric fields with indices 4 through length-2 will be ignored]
+               -- copy number; parsed and used to scale "bubbles" on leaves
+           
+               tips which do not conform to this naming convention are labeled as "reference",
+               and annotated using a special character.
+       
+          */
 
-            var unique_compartments = {},
-                unique_dates = {};
-            
-            var copy_number_range = [1e100,0],
-                attributed_node   = null;
+      var unique_compartments = {},
+        unique_dates = {};
 
-            _.each(tree.get_nodes(), function(value, key) {
-                var attributes = value.name.split('_');
-                if (attributes.length >= 5) {
-                    attributed_node = value;
-                
-                    value.compartment = attributes[3];
-                    value.copy_number = Math.max (1,parseFloat(attributes[attributes.length-1]));
-                    
-                    
-                    copy_number_range[0] = Math.min (copy_number_range[0], value.copy_number);
-                    copy_number_range[1] = Math.max (copy_number_range[1], value.copy_number);
-                    
-                    value.date = date_out(date_in.parse(attributes[1]));
-                    unique_compartments[value.compartment] = 1;
-                    unique_dates[attributes[1]] = 1;
-                } else {
-                    value.is_reference = true;
-                }
-                
-            });
-            
+      var copy_number_range = [1e100, 0],
+        attributed_node = null;
 
-            
-            size_scale.domain (copy_number_range);
-            coloring_scheme.domain (_.keys(unique_dates).sort().map (function (d) {return date_out(date_in.parse(d))}));
-            compartment_labels.domain (_.keys(unique_compartments).sort());
-            
-            
-            if ($("#layout").prop("checked")) {
-                tree.radial (true);
-            }
-            tree.placenodes().layout();
-            
-            var rescale = tree.node_bubble_size(attributed_node) / size_scale (attributed_node.copy_number) * 0.5,
-                rescaled_size = _.compose (function (d) {return d*rescale}, size_scale);
+      _.each(tree.get_nodes(), function(value, key) {
+        var attributes = value.name.split('_');
+        if (attributes.length >= 5) {
+          attributed_node = value;
 
-            // create a legend for sizes
-            // power of 10 ticks
-            
-            var size_bubbles = _.map (d3.range (Math.floor (Math.log(copy_number_range[0])/Math.log (10)), 1+Math.ceil (Math.log(copy_number_range[1])/Math.log (10))),
-                function (v) {return Math.pow (10,v);});
-            
-            d3.select ("#size-legend").selectAll (".row").remove();
-            var reference_sizes = d3.select ("#size-legend").selectAll (".row").data (_.map (size_bubbles, function (d) {return [d];}));
-            reference_sizes.enter().append ("div").classed ("row", true).selectAll (".col-md-2").data (function (d) {return [d];}).enter().append ("div").classed ("col-md-2", true);
-            
-            var max_size = rescaled_size (size_bubbles[size_bubbles.length - 1]);
-            
-            reference_sizes.selectAll (".col-md-2").each (function (d) {
-                    var circle_size = rescaled_size (d);
-                    d3.select (this).append ("svg").attr ("width", 2*max_size + 4).attr ("height", 2*circle_size + 4).append ("circle").classed("size-bubble", true).attr ("r", circle_size).attr ("cx", max_size+2).attr ("cy", circle_size+2);
-                    d3.select (this).append ("span").classed ("size-label", true).style ("width", "" + (2*max_size+4) + "px").text (d);
-            });
-                        
-                    
-            // create a legend for compartments
+          value.compartment = attributes[3];
+          value.copy_number = Math.max(1, parseFloat(attributes[attributes.length - 1]));
 
-            d3.select ("#compartment-legend").selectAll (".row").remove();
-            var compartment_depictions = d3.select ("#compartment-legend").selectAll (".row").data (compartment_labels.domain());
-            compartment_depictions.enter().append ("div").classed ("row", true).selectAll (".col-md-2").data (function (d) {return [d];}).enter().append ("div").classed ("col-md-2", true);
-            compartment_depictions.exit().remove();
-            
-            compartment_depictions.selectAll (".col-md-2").each (function (d) {
-                    d3.select (this).append ("svg").attr ("width", 2*max_size + 4).attr ("height", 2*max_size + 4).append ("path").classed("size-bubble", true).attr("d", function(d) {
-                        return d3.svg.symbol().type(compartment_labels(d)).size(max_size * max_size)();
-                    }).attr ("transform", "translate( " + max_size + "," + max_size + ")");
-                    
-                    d3.select (this).append ("span").classed ("size-label", true).style ("width", "" + (2*max_size+4) + "px").text (d);
-            });
 
-             // create a legend for dates
-            d3.select ("#date-legend").selectAll (".row").remove();
-            var date_colors = d3.select ("#date-legend").selectAll (".row").data (coloring_scheme.domain());
-            date_colors.enter().append ("div").classed ("row", true);
-            date_colors.exit().remove();
-            
-            date_colors.each (function (d) {
-                d3.select(this).style ("background-color", coloring_scheme (d)).classed ("date-text", true).text (d).style ("color", d3.rgb(coloring_scheme (d)).hsl().l < 0.5 ? "white" : "black");
-            });
+          copy_number_range[0] = Math.min(copy_number_range[0], value.copy_number);
+          copy_number_range[1] = Math.max(copy_number_range[1], value.copy_number);
 
-            
-           // UI handlers
-           $("#layout").on("click", function(e) {
-                tree.radial($(this).prop("checked")).placenodes().update();
-            });
-
-            
+          value.date = date_out(date_in.parse(attributes[1]));
+          unique_compartments[value.compartment] = 1;
+          unique_dates[attributes[1]] = 1;
+        } else {
+          value.is_reference = true;
         }
 
-        function loadTreeFromURL(url) {
-            d3.text(url, function(error, newick) {
+      });
 
-                drawATree(newick);
-            });
-        }
 
-        $("#validate_newick").on ("click", function (e) {
-            var res = d3_phylotree_newick_parser ( $('textarea[id$="nwk_spec"]').val(), true);
-            if (res["error"] || ! res["json"]) {
-                var warning_div = d3.select ("#newick_body").selectAll ("div  .alert-danger").data ([res["error"]])
-                warning_div.enter ().append ("div");
-                warning_div.html (function (d) {return d;}).attr ("class", "alert-danger");
-        
-            } else {
-                drawATree ($('textarea[id$="nwk_spec"]').val());
-                $('#newick_modal').modal('hide');
-            }
+
+      size_scale.domain(copy_number_range);
+      coloring_scheme.domain(_.keys(unique_dates).sort().map(function(d) {
+        return date_out(date_in.parse(d))
+      }));
+      compartment_labels.domain(_.keys(unique_compartments).sort());
+
+
+      if ($("#layout").prop("checked")) {
+        tree.radial(true);
+      }
+      tree.placenodes().layout();
+
+      var rescale = tree.node_bubble_size(attributed_node) / size_scale(attributed_node.copy_number) * 0.5,
+        rescaled_size = _.compose(function(d) {
+          return d * rescale
+        }, size_scale);
+
+      // create a legend for sizes
+      // power of 10 ticks
+
+      var size_bubbles = _.map(d3.range(Math.floor(Math.log(copy_number_range[0]) / Math.log(10)), 1 + Math.ceil(Math.log(copy_number_range[1]) / Math.log(10))),
+        function(v) {
+          return Math.pow(10, v);
         });
 
-        loadTreeFromURL("tree.nwk");
-    </script>
+      d3.select("#size-legend").selectAll(".row").remove();
+      var reference_sizes = d3.select("#size-legend").selectAll(".row").data(_.map(size_bubbles, function(d) {
+        return [d];
+      }));
+      reference_sizes.enter().append("div").classed("row", true).selectAll(".col-md-2").data(function(d) {
+        return [d];
+      }).enter().append("div").classed("col-md-2", true);
+
+      var max_size = rescaled_size(size_bubbles[size_bubbles.length - 1]);
+
+      reference_sizes.selectAll(".col-md-2").each(function(d) {
+        var circle_size = rescaled_size(d);
+        d3.select(this).append("svg").attr("width", 2 * max_size + 4).attr("height", 2 * circle_size + 4).append("circle").classed("size-bubble", true).attr("r", circle_size).attr("cx", max_size + 2).attr("cy", circle_size + 2);
+        d3.select(this).append("span").classed("size-label", true).style("width", "" + (2 * max_size + 4) + "px").text(d);
+      });
+
+
+      // create a legend for compartments
+
+      d3.select("#compartment-legend").selectAll(".row").remove();
+      var compartment_depictions = d3.select("#compartment-legend").selectAll(".row").data(compartment_labels.domain());
+      compartment_depictions.enter().append("div").classed("row", true).selectAll(".col-md-2").data(function(d) {
+        return [d];
+      }).enter().append("div").classed("col-md-2", true);
+      compartment_depictions.exit().remove();
+
+      compartment_depictions.selectAll(".col-md-2").each(function(d) {
+        d3.select(this).append("svg").attr("width", 2 * max_size + 4).attr("height", 2 * max_size + 4).append("path").classed("size-bubble", true).attr("d", function(d) {
+          return d3.svg.symbol().type(compartment_labels(d)).size(max_size * max_size)();
+        }).attr("transform", "translate( " + max_size + "," + max_size + ")");
+
+        d3.select(this).append("span").classed("size-label", true).style("width", "" + (2 * max_size + 4) + "px").text(d);
+      });
+
+      // create a legend for dates
+      d3.select("#date-legend").selectAll(".row").remove();
+      var date_colors = d3.select("#date-legend").selectAll(".row").data(coloring_scheme.domain());
+      date_colors.enter().append("div").classed("row", true);
+      date_colors.exit().remove();
+
+      date_colors.each(function(d) {
+        d3.select(this).style("background-color", coloring_scheme(d)).classed("date-text", true).text(d).style("color", d3.rgb(coloring_scheme(d)).hsl().l < 0.5 ? "white" : "black");
+      });
+
+
+      // UI handlers
+      $("#layout").on("click", function(e) {
+        tree.radial($(this).prop("checked")).placenodes().update();
+      });
+
+
+    }
+
+    function loadTreeFromURL(url) {
+      d3.text(url, function(error, newick) {
+
+        drawATree(newick);
+      });
+    }
+
+    $("#validate_newick").on("click", function(e) {
+      var res = d3_phylotree_newick_parser($('textarea[id$="nwk_spec"]').val(), true);
+      if (res["error"] || !res["json"]) {
+        var warning_div = d3.select("#newick_body").selectAll("div  .alert-danger").data([res["error"]])
+        warning_div.enter().append("div");
+        warning_div.html(function(d) {
+          return d;
+        }).attr("class", "alert-danger");
+
+      } else {
+        drawATree($('textarea[id$="nwk_spec"]').val());
+        $('#newick_modal').modal('hide');
+      }
+    });
+
+    loadTreeFromURL("tree.nwk");
+  </script>
 
 </body>
 
