@@ -258,10 +258,10 @@
                 .style_nodes(nodeStyler)
                 .node_circle_size (2) // do not draw clickable circles for internal nodes
                 .branch_name (function () {return ""}) // no leaf names
-                /*.layout_handler (function (tree) { 
+                .layout_handler (function (tree) { 
                         plotRTT (tree, "rtt_display", 350,350)
                     }
-                )*/
+                )
                 ;
 
 
@@ -500,7 +500,7 @@
             var linear_data = [];
             
             tree.traverse_and_compute (function (node) {
-                if (d3_phylotree_is_leafnode (node)) {
+                if (d3.layout.phylotree.is_leafnode (node)) {
                     plot_data.push (node);
                     linear_data.push ([node.numeric_date, node.rtt, 1]);
                 }
