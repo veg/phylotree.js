@@ -1,82 +1,82 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html lang = 'en'>
 
 <head>
-  <meta charset="utf-8">
-  <!-- Latest compiled and minified CSS -->
-  <script src="http://code.jquery.com/jquery.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <meta charset="utf-8">
+    <!-- Latest compiled and minified CSS -->
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
 
-  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
-  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
-  <!-- Optional theme -->
-  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
 
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 
-  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
 
-  <script src="http://d3js.org/d3.v3.min.js"></script>
-  <script src="phylotree.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="phylotree.js"></script>
 
-  <link href="phylotree.css" rel="stylesheet">
+    <link href="phylotree.css" rel="stylesheet">
+    
+    <style>
+    
+        .fa-rotate-45 {
+          -webkit-transform: rotate(45deg);
+          -moz-transform: rotate(45deg);
+          -ms-transform: rotate(45deg);
+          -o-transform: rotate(45deg);
+          transform: rotate(45deg);
+        }
 
-  <style>
-    .fa-rotate-45 {
-      -webkit-transform: rotate(45deg);
-      -moz-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
-      -o-transform: rotate(45deg);
-      transform: rotate(45deg);
-    }
+        .fa-rotate-135 {
+          -webkit-transform: rotate(135deg);
+          -moz-transform: rotate(135deg);
+          -ms-transform: rotate(135deg);
+          -o-transform: rotate(135deg);
+          transform: rotate(135deg);
+        }
 
-    .fa-rotate-135 {
-      -webkit-transform: rotate(135deg);
-      -moz-transform: rotate(135deg);
-      -ms-transform: rotate(135deg);
-      -o-transform: rotate(135deg);
-      transform: rotate(135deg);
-    }
-  </style>
+   </style>
 </head>
 
-<body style='padding-top: 70px;'>
+<body style = 'padding-top: 70px;'>
 
-  <!--
+<!--
 ###############################################################################################################################
 -->
 
-  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-        <a class="navbar-brand" href="#">phylotree.js</a>
-      </div>
+      <a class="navbar-brand" href="#">phylotree.js</a>
+    </div>
 
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Newick <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li><a href="#" data-toggle="modal" data-target="#newick_modal">Input Text</a></li>
-              <li>
-                <a href="#"><input type="file" id="newick_file" /></a>
-              </li>
-              <li class="divider"></li>
-              <li><a href="#" data-toggle="modal" data-target="#newick_export_modal">Export</a></li>
-            </ul>
-          </li>
-          <!--<li class="dropdown">
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Newick <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" data-toggle="modal" data-target="#newick_modal">Input Text</a></li>
+            <li><a href="#"><input type="file" id="newick_file"/></a></li>
+            <li class="divider"></li>
+            <li><a href="#" data-toggle="modal" data-target="#newick_export_modal">Export</a></li>
+          </ul>
+        </li>
+        <!--<li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Display options <b class="caret"></b></a>
           <ul class="dropdown-menu">
             <li><a href="#" id = 'display_dengrogram'>Dendrogram</a></li>
@@ -86,43 +86,43 @@
             <li><a href="#">Vertical</a></li>
           </ul>
         </li>-->
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li><a href="#" id="example_hiv_scaled">HIV-1 RT</a></li>
-              <li><a href="#" id="example_influenza_color">Unscaled IAV HA colored by host</a></li>
-              <li><a href="#" id="example_NGS">NGS copy diversity</a></li>
-              <li><a href="#" id="example_GVZ">Compare NGS consensus</a></li>
-              <li><a href="#" id="example_hiv_compartments">HIV-1 env multiple timepoints and compartments</a></li>
-            </ul>
-          </li>
-        </ul>
-
-
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="#" id = "example_hiv_scaled" >HIV-1 RT</a></li>
+            <li><a href="#" id = "example_influenza_color">Unscaled IAV HA colored by host</a></li>
+            <li><a href="#" id = "example_NGS" >NGS copy diversity</a></li>
+            <li><a href="#" id = "example_GVZ" >Compare NGS consensus</a></li>
+            <li><a href="#" id = "example_hiv_compartments" >HIV-1 env multiple timepoints and compartments</a></li>
+          </ul>
+        </li>
+     </ul>
+      
+      
         <div class="form-group navbar-form navbar-right">
-          <input type="text" id='branch_filter' class="form-control" placeholder="Filter branches on">
+          <input type="text" id = 'branch_filter' class="form-control" placeholder="Filter branches on">
         </div>
-
-
-        <div class="row">
-          <div class="col-md-5 navbar-right ">
+            
+      
+      <div class="row">
+        <div class="col-md-5 navbar-right ">
             <div class="navbar-form " role="search">
-              <div class="input-group">
-                <span class="input-group-btn">
+                 <div class="input-group">
+                    <span class="input-group-btn">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                             Tag <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" id="selection_name_dropdown">
-                  <li id="selection_new"><a href="#">New selection set</a></li>
-                  <li id="selection_delete" class="disabled"><a href="#">Delete selection set</a></li>
-                  <li id="selection_rename"><a href="#">Rename selection set</a></li>
-                  <li class="divider"></li>
-                </ul>
-                </span>
+                        </button>
+                          <ul class="dropdown-menu" id = "selection_name_dropdown">
+                            <li id = "selection_new"><a href="#">New selection set</a></li>
+                            <li id = "selection_delete" class = "disabled"><a href="#">Delete selection set</a></li>
+                            <li id = "selection_rename"><a href="#">Rename selection set</a></li>
+                            <li class="divider"></li>
+                         </ul>
+                    </span>
 
-                <input type="text" class="form-control" value="Foreground" id="selection_name_box" disabled>
-
-                <span class="input-group-btn" id="save_selection_name" style="display: none">
+                    <input type="text" class="form-control" value = "Foreground" id = "selection_name_box" disabled>               
+                    
+                    <span class="input-group-btn" id = "save_selection_name" style = "display: none" >
                         <button type="button" class="btn btn-default" id = "cancel_selection_button" >
                             Cancel
                         </button>
@@ -130,846 +130,759 @@
                             Save
                         </button>
                     </span>
-                <span class="input-group-btn">
+                    <span class="input-group-btn">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Selection <span class="caret"></span></button>
-                <ul class="dropdown-menu">
-                  <li><a href="#" id="filter_add">Add filtered nodes to selection</a></li>
-                  <li><a href="#" id="filter_remove">Remove filtered nodes from selection</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#" id="select_all">Select all</a></li>
-                  <li><a href="#" id="select_all_internal">Select all internal nodes</a></li>
-                  <li><a href="#" id="select_all_leaves">Select all leaf nodes</a></li>
-                  <li><a href="#" id="clear_internal">Clear all internal nodes</a></li>
-                  <li><a href="#" id="clear_leaves">Clear all leaves</a></li>
-                  <li><a href="#" id="select_none">Clear selection</a></li>
-                  <li class="divider"></li>
-                  <li><a href="#" id="mp_label">Label internal nodes using maximum parsimony</a></li>
-                  <li><a href="#" id="and_label">Label internal nodes using conjunction (AND) </a></li>
-                  <li><a href="#" id="or_label">Label internal nodes using disjunction (OR) </a></li>
-                </ul>
-                </span>
-              </div>
+                          <ul class="dropdown-menu">
+                            <li><a href="#" id = "filter_add">Add filtered nodes to selection</a></li>
+                            <li><a href="#" id = "filter_remove">Remove filtered nodes from selection</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" id = "select_all">Select all</a></li>
+                            <li><a href="#" id = "select_all_internal">Select all internal nodes</a></li>
+                            <li><a href="#" id = "select_all_leaves">Select all leaf nodes</a></li>
+                            <li><a href="#" id = "clear_internal">Clear all internal nodes</a></li>
+                            <li><a href="#" id = "clear_leaves">Clear all leaves</a></li>
+                            <li><a href="#" id = "select_none">Clear selection</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#" id = "mp_label">Label internal nodes using maximum parsimony</a></li>
+                            <li><a href="#" id = "and_label">Label internal nodes using conjunction (AND) </a></li>
+                            <li><a href="#" id = "or_label">Label internal nodes using disjunction (OR) </a></li>
+                         </ul>
+                    </span>
+                  </div>
             </div>
-          </div>
         </div>
-
-      </div>
-      <!-- /.navbar-collapse -->
     </div>
-    <!-- /.container-fluid -->
-  </nav>
+      
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
 
-  <div class="modal" id='newick_modal'>
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Newick string to render</h4>
-        </div>
-        <div class="modal-body" id='newick_body'>
-          <textarea id='nwk_spec' autofocus=t rue placeholder="" style='width: 100%; height: 100%' rows=2 0 selectionStart=1 selectionEnd=1 000>(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)</textarea>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id='validate_newick'>Display this tree</button>
-        </div>
+<div class="modal" id = 'newick_modal'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Newick string to render</h4>
       </div>
-      <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-  </div>
-  <!-- /.modal -->
-
-  <div class="modal" id='newick_export_modal'>
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body" id='newick_body'>
-          <textarea id='nwk_export_spec' autofocus=t rue placeholder="" style='width: 100%; height: 100%' rows=2 0></textarea>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
+      <div class="modal-body" id = 'newick_body'>
+         <textarea id = 'nwk_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20 selectionStart = 1 selectionEnd = 1000>(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)</textarea>
       </div>
-      <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-  </div>
-  <!-- /.modal -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id = 'validate_newick'>Display this tree</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
-  <div class='container' id="main_display">
+<div class="modal" id = 'newick_export_modal'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body" id = 'newick_body'>
+         <textarea id = 'nwk_export_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
-    <div class='row'>
-      <div class='col-md-12'>
-        <div class="btn-toolbar" role="toolbar">
-          <div class="btn-group">
-            <button type="button" class="btn btn-default btn-sm" data-direction='vertical' data-amount='1' title="Expand vertical spacing">
+<div class = 'container' id = "main_display">
+        
+    <div class = 'row'>
+        <div class = 'col-md-12'>
+            <div class="btn-toolbar" role="toolbar">
+              <div class="btn-group">
+                <button type="button" class="btn btn-default btn-sm" data-direction = 'vertical' data-amount = '1' title = "Expand vertical spacing">
                     <i class="fa fa-arrows-v" ></i>
                 </button>
-            <button type="button" class="btn btn-default btn-sm" data-direction='vertical' data-amount='-1' title="Compress vertical spacing">
+                 <button type="button" class="btn btn-default btn-sm" data-direction = 'vertical' data-amount = '-1' title = "Compress vertical spacing">
                     <i class="fa  fa-compress fa-rotate-135" ></i>
                 </button>
-            <button type="button" class="btn btn-default btn-sm" data-direction='horizontal' data-amount='1' title="Expand horizonal spacing">
+                <button type="button" class="btn btn-default btn-sm" data-direction = 'horizontal' data-amount = '1' title = "Expand horizonal spacing">
                     <i class="fa fa-arrows-h" ></i>
                 </button>
-            <button type="button" class="btn btn-default btn-sm" data-direction='horizontal' data-amount='-1' title="Compress horizonal spacing">
+                 <button type="button" class="btn btn-default btn-sm" data-direction = 'horizontal' data-amount = '-1' title = "Compress horizonal spacing">
                     <i class="fa  fa-compress fa-rotate-45" ></i>
                 </button>
-            <button type="button" class="btn btn-default btn-sm" id="sort_ascending" title="Sort deepest clades to the bototm">
+                 <button type="button" class="btn btn-default btn-sm" id = "sort_ascending" title = "Sort deepest clades to the bototm">
                     <i class="fa fa-sort-amount-asc" ></i>
                 </button>
-            <button type="button" class="btn btn-default btn-sm" id="sort_descending" title="Sort deepsest clades to the top">
+                 <button type="button" class="btn btn-default btn-sm" id = "sort_descending" title = "Sort deepsest clades to the top">
                     <i class="fa fa-sort-amount-desc" ></i>
                 </button>
-            <button type="button" class="btn btn-default btn-sm" id="sort_original" title="Restore original order">
+                 <button type="button" class="btn btn-default btn-sm" id = "sort_original" title = "Restore original order">
                     <i class="fa fa-sort" ></i>
                 </button>
-          </div>
-          <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default active btn-sm">
+              </div>
+            <div class="btn-group" data-toggle="buttons">
+              <label class="btn btn-default active btn-sm">
                 <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "linear" autocomplete="off" checked title = "Layout left-to-right"> Linear
               </label>
-            <label class="btn btn-default  btn-sm">
+              <label class="btn btn-default  btn-sm">
                 <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "radial" autocomplete="off" title = "Layout radially"> Radial
               </label>
-          </div>
-
-          <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default active btn-sm">
+            </div>
+            <div class="btn-group" data-toggle="buttons">
+              <label class="btn btn-default  btn-sm">
+                <input type="radio" name="options" class = "phylotree-layout-animation" data-mode = "radial" autocomplete="off" title = "Animations off" checked> Animation
+              </label>
+            </div>
+            
+            <div class="btn-group" data-toggle="buttons">
+              <label class="btn btn-default active btn-sm">
                 <input type="radio" class = "phylotree-align-toggler" data-align = "left" name="options-align" autocomplete="off" checked title = "Align tips labels to branches"> 
                     <i class="fa fa-align-left" ></i>
                 </input>
                 
               </label>
-            <label class="btn btn-default btn-sm">
+              <label class="btn btn-default btn-sm">
                <input type="radio" class = "phylotree-align-toggler" data-align = "right" name="options-align" autocomplete="off" title = "Align tips labels to the edge of the plot"> 
                     <i class="fa fa-align-right" ></i>
                 </input>
               </label>
-          </div>
-
-          <label class="pull-right">Selected <span class="badge" id = "selected_branch_counter">0</span> and filtered <span class="badge" id = "selected_filtered_counter">0</span> branches</label>
-
+            </div>
+            
+            <label class = "pull-right">Selected <span class="badge" id = "selected_branch_counter">0</span> and filtered <span class="badge" id = "selected_filtered_counter">0</span> branches</label>
+           
+           </div>
         </div>
-      </div>
     </div>
-
-    <div class='row'>
-      <div class='col-md-12'>
-        <div id='tree_container' class='tree-widget'>
+        
+    <div class = 'row'>
+        <div class = 'col-md-12'>
+            <div id = 'tree_container' class = 'tree-widget'>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 
-  <!--
+<!--
 ###############################################################################################################################
 -->
 
-  <script>
-    $('#newick_export_modal').on('show.bs.modal', function(e) {
-      $('textarea[id$="nwk_export_spec"]').val(
-        tree.get_newick(
-          function(node) {
-            var tags = [];
-            selection_set.forEach(function(d) {
-              if (node[d]) {
-                tags.push(d)
-              };
-            });
-            if (tags.length) {
-              return "{" + tags.join(",") + "}";
-            }
-            return "";
-          }
+<script>
+
+
+$('#newick_export_modal').on('show.bs.modal', function (e) {
+    $('textarea[id$="nwk_export_spec"]').val(
+        tree.get_newick (
+            function (node) {
+                var tags = [];
+                selection_set.forEach (function (d) { if (node[d]) {tags.push(d)}; });
+                if (tags.length) {
+                    return "{" + tags.join (",") + "}";
+                }
+                return "";
+            }  
         )
-      );
-    })
+    );
+})
 
-    $("#newick_file").on("change", function(e) {
-      var files = e.target.files; // FileList object
+$("#newick_file").on ("change", function (e) {
+    var files = e.target.files; // FileList object
 
-      if (files.length == 1) {
-        var f = files[0];
-        var reader = new FileReader();
+    if (files.length == 1) {
+      var f = files[0];
+      var reader = new FileReader();
 
-        reader.onload = (function(theFile) {
-          return function(e) {
-            var res = d3.layout.newick_parser(e.target.result);
-
+      reader.onload = (function(theFile) {
+        return function(e) {
+            var res = d3.layout.newick_parser (e.target.result);
+            
             if (res["json"]) {
-              if (!("children" in res["json"])) {
-                res["error"] = "Empty tree";
-              }
+                if (!("children" in res["json"])) {
+                    res["error"] = "Empty tree";
+                } 
             }
-
-            var warning_div = d3.select("#main_display").insert("div", ":first-child");
+            
+            var warning_div = d3.select ("#main_display").insert ("div", ":first-child");
             if (res["error"]) {
-              warning_div.attr("class", "alert alert-danger alert-dismissable")
-                .html("<strong>Newick parser error for file " + f.name + ": </strong> In file " + res["error"]);
+                warning_div.attr ("class", "alert alert-danger alert-dismissable")
+                            .html ("<strong>Newick parser error for file " + f.name +": </strong> In file " + res["error"]);
 
             } else {
-              default_tree_settings();
-              tree(res).svg(svg).layout();
-              warning_div.attr("class", "alert alert-success alert-dismissable")
-                .html("Loaded a tree from  file <strong>" + f.name + ": </strong>");
+                default_tree_settings ();
+                tree (res).svg (svg).layout();
+                warning_div.attr ("class", "alert alert-success alert-dismissable")
+                            .html ("Loaded a tree from  file <strong>" + f.name +": </strong>");
+            }          
+            warning_div.append ("button")
+                       .attr ("type", "button")
+                       .attr ("class", "close")
+                       .attr ("data-dismiss", "alert")
+                       .attr ("aria-hidden", "true")
+                       .html ("&times;");
+        };
+      })(f);
+
+      reader.readAsText(f);
+    }
+});
+
+
+
+
+$("#display_tree").on ("click", function (e) {
+    tree.options ({'branches' : 'straight'}, true);
+});
+
+$("#mp_label").on ("click", function (e) {
+    tree.max_parsimony (true);
+});
+
+$ ("[data-direction]").on ("click", function (e) {
+    var which_function = $(this).data ("direction") == 'vertical' ? tree.spacing_x : tree.spacing_y;
+    which_function (which_function () + (+ $(this).data ("amount"))).update();
+}); 
+
+
+
+
+$(".phylotree-layout-mode").on ("change", function (e) {
+    if ($(this).is(':checked')) {
+        if (tree.radial () != ($(this).data ("mode") == "radial")) {
+            tree.radial (!tree.radial ()).placenodes().update ();
+        }
+    }
+});
+
+$(".phylotree-align-toggler").on ("change", function (e) {
+    if ($(this).is(':checked')) {
+        if (tree.align_tips ($(this).data ("align") == "right")) {
+            tree.placenodes().update ();
+        }
+    }
+});
+
+
+
+
+
+function sort_nodes (asc) {
+    tree.traverse_and_compute (function (n) {
+            var d = 1;
+            if (n.children && n.children.length) {
+                d += d3.max (n.children, function (d) { return d["count_depth"];});
             }
-            warning_div.append("button")
-              .attr("type", "button")
-              .attr("class", "close")
-              .attr("data-dismiss", "alert")
-              .attr("aria-hidden", "true")
-              .html("&times;");
-          };
-        })(f);
+            n["count_depth"] = d;
+        }); 
+        tree.resort_children (function (a,b) {
+            return (a["count_depth"] - b["count_depth"]) * (asc ? 1 : -1);
+        });
+}
 
-        reader.readAsText(f);
-      }
-    });
-
-
-
-
-    $("#display_tree").on("click", function(e) {
-      tree.options({
-        'branches': 'straight'
-      }, true);
-    });
-
-    $("#mp_label").on("click", function(e) {
-      tree.max_parsimony(true);
-    });
-
-    $("[data-direction]").on("click", function(e) {
-      var which_function = $(this).data("direction") == 'vertical' ? tree.spacing_x : tree.spacing_y;
-      which_function(which_function() + (+$(this).data("amount"))).update();
-    });
-
-
-
-
-    $(".phylotree-layout-mode").on("change", function(e) {
-      if ($(this).is(':checked')) {
-        if (tree.radial() != ($(this).data("mode") == "radial")) {
-          tree.radial(!tree.radial()).placenodes().update();
-        }
-      }
-    });
-
-    $(".phylotree-align-toggler").on("change", function(e) {
-      if ($(this).is(':checked')) {
-        if (tree.align_tips($(this).data("align") == "right")) {
-          tree.placenodes().update();
-        }
-      }
-    });
-
-
-
-
-
-    function sort_nodes(asc) {
-      tree.traverse_and_compute(function(n) {
-        var d = 1;
-        if (n.children && n.children.length) {
-          d += d3.max(n.children, function(d) {
-            return d["count_depth"];
-          });
-        }
-        n["count_depth"] = d;
-      });
-      tree.resort_children(function(a, b) {
-        return (a["count_depth"] - b["count_depth"]) * (asc ? 1 : -1);
-      });
-    }
-
-    $("#sort_original").on("click", function(e) {
-      tree.resort_children(function(a, b) {
+$("#sort_original").on ("click", function (e) {
+    tree.resort_children (function (a,b) {
         return a["original_child_order"] - b["original_child_order"];
-      });
     });
+});
 
-    $("#sort_ascending").on("click", function(e) {
-      sort_nodes(true);
-    });
+$("#sort_ascending").on ("click", function (e) {
+    sort_nodes (true);
+});
 
-    $("#sort_descending").on("click", function(e) {
-      sort_nodes(false);
-    });
+$("#sort_descending").on ("click", function (e) {
+    sort_nodes (false);
+});
 
-    $("#and_label").on("click", function(e) {
-      tree.internal_label(function(d) {
-        return d.reduce(function(prev, curr) {
-          return curr[current_selection_name] && prev;
-        }, true)
-      }, true);
-    });
+$("#and_label").on ("click", function (e) {
+    tree.internal_label (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] && prev; }, true)}, true);
+});
 
-    $("#or_label").on("click", function(e) {
-      tree.internal_label(function(d) {
-        return d.reduce(function(prev, curr) {
-          return curr[current_selection_name] || prev;
-        }, false)
-      }, true);
-    });
+$("#or_label").on ("click", function (e) {
+    tree.internal_label (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] || prev; }, false)}, true);
+});
 
 
-    $("#filter_add").on("click", function(e) {
-      tree.modify_selection(function(d) {
-          return d.tag || d[current_selection_name];
-        }, current_selection_name, false, true)
-        .modify_selection(function(d) {
-          return false;
-        }, "tag", false, false);
-    });
+$("#filter_add").on ("click", function (e) {
+    tree.modify_selection (function (d) { return d.tag || d[current_selection_name];}, current_selection_name, false, true)
+        .modify_selection (function (d) { return false; }, "tag", false, false);
+});
 
-    $("#filter_remove").on("click", function(e) {
-      tree.modify_selection(function(d) {
-        return !d.tag;
-      });
-    });
+$("#filter_remove").on ("click", function (e) {
+    tree.modify_selection (function (d) { return !d.tag;});
+});
 
-    $("#select_all").on("click", function(e) {
-      tree.modify_selection(function(d) {
-        return true;
-      });
-    });
+$("#select_all").on ("click", function (e) {
+    tree.modify_selection (function (d) { return true;});
+});
 
-    $("#select_all_internal").on("click", function(e) {
-      tree.modify_selection(function(d) {
-        return !d3_phylotree_is_leafnode(d.target);
-      });
-    });
+$("#select_all_internal").on ("click", function (e) {
+    tree.modify_selection (function (d) { return !d3_phylotree_is_leafnode (d.target);});
+});
 
-    $("#select_all_leaves").on("click", function(e) {
-      tree.modify_selection(function(d) {
-        return d3_phylotree_is_leafnode(d.target);
-      });
-    });
+$("#select_all_leaves").on ("click", function (e) {
+    tree.modify_selection (function (d) { return d3_phylotree_is_leafnode (d.target);});
+});
 
 
-    $("#select_none").on("click", function(e) {
-      tree.modify_selection(function(d) {
-        return false;
-      });
-    });
+$("#select_none").on ("click", function (e) {
+    tree.modify_selection (function (d) { return false;});
+});
 
-    $("#clear_internal").on("click", function(e) {
-      tree.modify_selection(function(d) {
-        return d3_phylotree_is_leafnode(d.target) ? d.target[current_selection_name] : false;
-      });
-    });
+$("#clear_internal").on ("click", function (e) {
+    tree.modify_selection (function (d) { return d3_phylotree_is_leafnode (d.target) ? d.target[current_selection_name] : false;});
+});
 
-    $("#clear_leaves").on("click", function(e) {
-      tree.modify_selection(function(d) {
-        return !d3_phylotree_is_leafnode(d.target) ? d.target[current_selection_name] : false;
-      });
-    });
+$("#clear_leaves").on ("click", function (e) {
+    tree.modify_selection (function (d) { return !d3_phylotree_is_leafnode (d.target) ? d.target[current_selection_name] : false;});
+});
 
 
-    $("#display_dengrogram").on("click", function(e) {
-      tree.options({
-        'branches': 'step'
-      }, true);
-    });
+$("#display_dengrogram").on ("click", function (e) {
+    tree.options ({'branches' : 'step'}, true);
+});
 
-    //    phylotree.modify_selection = function (callback, attr, place, skip_refresh, mode) {
+//    phylotree.modify_selection = function (callback, attr, place, skip_refresh, mode) {
 
 
-    $("#branch_filter").on("input propertychange", function(e) {
-      var filter_value = $(this).val();
+$("#branch_filter").on ("input propertychange", function (e) {  
+   var filter_value = $(this).val();
+   
+   var rx = new RegExp (filter_value,"i");
+   
+  tree.modify_selection (function (n) { 
+    return filter_value.length && (tree.branch_name () (n.target).search (rx)) != -1; 
+   },"tag");
+      
+});
 
-      var rx = new RegExp(filter_value, "i");
-
-      tree.modify_selection(function(n) {
-        return filter_value.length && (tree.branch_name()(n.target).search(rx)) != -1;
-      }, "tag");
-
-    });
-
-    $("#validate_newick").on("click", function(e) {
-      var res = d3.layout.newick_parser($('textarea[id$="nwk_spec"]').val(), true);
-      if (res["error"] || !res["json"]) {
-        var warning_div = d3.select("#newick_body").selectAll("div  .alert-danger").data([res["error"]])
-        warning_div.enter().append("div");
-        warning_div.html(function(d) {
-          return d;
-        }).attr("class", "alert-danger");
-
-      } else {
-        default_tree_settings();
-        tree(res).svg(svg).layout();
+$("#validate_newick").on ("click", function (e) {
+    var res = d3.layout.newick_parser ( $('textarea[id$="nwk_spec"]').val(), true);
+    if (res["error"] || ! res["json"]) {
+        var warning_div = d3.select ("#newick_body").selectAll ("div  .alert-danger").data ([res["error"]])
+        warning_div.enter ().append ("div");
+        warning_div.html (function (d) {return d;}).attr ("class", "alert-danger");
+        
+    } else {
+        default_tree_settings ();
+         tree (res).svg (svg).layout();
         $('#newick_modal').modal('hide');
-      }
-    });
-
-    function default_tree_settings() {
-      tree.branch_length(null);
-      tree.branch_name(null);
-      tree.node_span('equal');
-      tree.options({
-        'draw-size-bubbles': false
-      }, false);
-      //tree.radial (true);
-      tree.style_nodes(node_colorizer);
-      tree.style_edges(edge_colorizer);
-      tree.selection_label(current_selection_name);
     }
+});
 
-    $("#example_hiv_scaled").on("click", function(e) {
-      var hiv_tree = "(((((((((((((((((T27199905:0,N27199901:0):0.01138620689542192,(((((((T20720000:0.003968279676782308,N20719991:0):0.02819169119458115,(T72200011:0.004803375079803856,N72199903:0):0.02078169546773969):0.009588294103813007,((T13820000:0,N13819981:0):0.02454000402346791,(T90200101:0.01003261820592509,N90199902:0):0.009366526423474558):0.002486401796650966):0.003608278684124558,((T17520011:0.004863164363296617,N17519990:0):0.02628672331630959,((T14220000:0.01315754463342865,N14219990:0.001519794311607769):0.02449019828291938,(T14019990:0.002088622689202597,N14019990:0):0.007953879353380254):0.006120800879169412):0.00481942471568263):0.0017359229333714,((T15820000:0,N15819990:0):0.01461673713319969,((T17020000:0.00362050072666209,N17019990:0):0.01940511449602377,((T23020000:0.006562699546404342,N23019990:0.003247427011686169):0.00488394322968171,(T22619990:0,N22619990:0):0.01135558718170952):0.003333032342735747):0.00157179471462764):0.001658104997854079):0.001761810172585723,(((T11620001:0.00561315030516654,N11619991:0.003402755089605154):0.0257577130981985,(T21219991:0,N21219990:0):0.009744907800835733):0.002579518047089604,((T12920010:0.005593320105206889,N12919991:0):0.01872684105423962,(T11520000:0.004786026883024162,N11519991:0.005765583718663995):0.007465264014310195):0.002965929883419555):0.001562293135319815):0.00105938220833447,(((((((T84200002:0.003345990523889748,N84199903:0.002680850535205825):0.01065618889146285,(T15220010:0.01608491971971904,N15219990:0):0.01957378058014116):0.00191405543755388,(T19620000:0.002405455725653434,N19619990:0):0.01696899072737228):0.005809597312096782,(((N28199901:0.01140445017878757,(((T17319991:0.006344350776006666,N17319990:0.003881614304807318):0.01419708669121811,((T70200202:0,N70199812:0):0.01475779750618346,(T69200009:0,N69199906:0):0.01474471603261629):0.003132562018871871):0,((T19720020:0,N19719990:0):0.008275622280170074,(T11120010:0.009148979641152175,N11119990:0):0.01867834854427819):0.003147486471126614):0):0.003154011239608051,(T45200208:0.01752936738973977,N45200201:0.01259528619045713):0.01164251595415265):0.001443477368485624,(((T24020080:0.00498783299700213,N24020071:0):0.02883967723502238,(T15120020:0.004822646666119094,N15119991:0.001632117708424825):0.009451161081638832):0.006619045612712477,(T36199905:0,N36199901:0):0.006400594973314505):0.002841890047962903):0.002977719159928009):0.00222072529897883,(((((T22320001:0.006495361788551432,N22319990:0):0.01317815291436251,(T14120000:0.002243877297228656,N14119990:0):0.01587130875845443):0.004735006681555895,(T16019991:0,N16019991:0):0.0123200163869548):0.004788728507651177,((((T23620000:0.007650505457257512,N23619991:0):0.01261905699335145,(T19520010:0,N19519990:0):0.0172166946233703):0.00147902917801954,(T13200309:0.0103998130849,N13200010:0):0.008498293184731815):0.004217878717083502,((T22520011:0.006528900349382957,N22519990:0.001535097570603162):0.01314315876153177,(T14200204:0.006794535464214622,N14200012:0.001001870444625211):0.02642389441761086):0.004541025906567333):0.003307383500141235):0.002121575142255389,((((T22220000:0.01482442635332646,N22219991:0):0.01702957945705255,(((T23720060:0.001197389773959699,N23720041:0.00204681570753222):0.01949310510700402,(T16720001:0,N16719991:0):0.01753075218663538):0.006088453827043898,((T21120000:0.003749400710267288,N21119990:0.0004217357442442402):0.01822361322094584,((T12519990:0.005432537277541516,N12519981:0.001635901438333449):0.008362403338384755,(T64199905:0.001717994681106234,N64199904:0):0.02875977622919801):0.004810760531157787):0.002043030103655818):0.00126879098299165):0.003168615608820036,(((((T93200203:0.009674203604406503,N93199906:0):0.01452260411793856,T31200003:0.01339132553747114):0.001687683158487498,((T18819991:0.008171487110636418,N18819990:0.001542877155447621):0.009716771865084455,((T88200112:0,N88199901:0):0.01794106061087249,(T8200310:0,N8199907:0):0.007615432190969022):0.003645360302043741):0.003816829365521996):0,((T21519991:0.001221642297221341,N21519990:0):0.02096922382813168,(T23120000:0.01028772610063305,N23119990:0):0.01211302513853468):0.003144736632287203):0.001144350713432162,((((((((T22720000:0.001606938990565896,N22719990:0):0.0135072438501719,(T66200012:0.01201097532912702,N66199812:0):0.01758562001591768):0.002809861370626026,(T32200007:0.004899653178798034,N32199901:0):0.0303072978438375):0.001456691127862531,((T23320011:0.0064547473447827,N23319990:0.01473463642694258):0.01159534999778127,(T15719991:0,N15719990:0):0.009814649824320539):0.003199078570908704):0.001436512750311689,((((T10920010:0,N10919990:0.003771542793604974):0.007149058894068762,(T97200204:0,N97199901:0.001976292606862045):0.01641811986627809):0.001665945613809078,(T24200309:0,N24200206:0):0.01791325971563653):0.001452225920551971,(T16519991:0.0070108179396303,N16519990:0.001381267691591174):0.01340670625685506):0.002221787175231307):0.001089130217559227,(((((T17920000:0.01141257210013188,N17919990:0):0.021530055154421,(T74200204:0.01194072720280738,(T7199811:0.005075694482849164,N7199611:0.001588182568061762):0.01627743599628613):0.002868014092783148):0.004490992199393568,((T10020000:0.01165498934990082,N10019990:0):0.01426936834212576,(T94200105:0,N94199910:0):0.01673956606945278):0.003536068741389563):0.001504668401914707,((T20620010:0.00323959696546724,N20619990:0):0.01133774167439087,(T25200305:0.008270954378087499,N25200207:0.005597433073758736):0.02560557674387131):0.007192209102197011):0.0005043403493087675,N74199812:0.006703411325933771):0):0,((((T13019990:0,N13019981:0):0.01142714790082963,((T16420011:0,N16419990:0):0.01461757691135204,((T17620000:0.007253048080569019,N17619981:0):0.01324625964712978,(T29200003:0.02717753573160469,N29199901:0.003243201438090061):0.003231362888740946):0.003447880246200589):0):0.00341463301296934,((T18319990:0,N18319990:0):0.02938758726534801,(((T24220020:0.00199411647592395,N24220000:0.00112202845521218):0.0253382036430624,((T85199908:0.0072119265028963,N85199811:0.002473616857759484):0.0424610327349474,T22199809:0.03497383456553265):0.007872328246191563):0.004085321170282965,T17199703:0.01869192584907714):0.003976825915096545):0.002855239740341604):0.001008515849889382,((((T10720000:0.003227618742850984,N10719990:0):0.02207345638497446,T1199908:0.03183196539978755):0.004141039359469669,(T20200108:0,N20200107:0):0.01637110741350244):0.002105305460913564,((T62200201:0.01511677191908654,N62200101:0.001205151929377256):0.02198081451834616,N2199809:0.01533384119334034):0.005303802800317422):0.002025611866809348):0.00105419228419088):0.001055075128100311,((((T14920010:0.002151328918528997,N14919990:0):0.01866346350488356,(T11819990:0.003230563730784564,N11819990:0):0.02235467379529004):0.00462268089066904,((((T23520000:0.008725858650597874,N23519990:0):0.02511527838873102,(T10219990:0,N10219981:0):0.02052135077129327):0.002495959945451691,((T14819991:0.002347351121746907,N14819990:0.003030818208952487):0.02006529821295552,(T6200007:0,N6199906:0):0.01461120429789579):0.003399960894844004):0.002260179052501479,((T13519991:0.003213705282202493,N13519990:0):0.009138919932399344,(T67199909:0,N67199906:0):0.01642874590217443):0.004490976650511992):0):0.001255950277182415,(((T21920000:0.002077503623256982,N21919990:0):0.01499932618538165,(T18520000:0.0105756779613584,N18519990:0):0.02380659627414928):0.004215992470986508,(T14620001:0.006286250814067891,N14619991:0):0.00836634788767401):0.001433687532001357):0.002165162724481749):0.0006622949509149424):0.0007685957182302498):0,((T16219990:0.001166307470703672,N16219990:0):0.01158015396473006,(T16620000:0.008288852164344504,N16619990:0.002034469057633359):0.01242403652286499):0.001040591834944086):0.001019289187582037):0.001014137397049835):0,(((((((T82200102:0.005243643231075758,N82199909:0):0.01985190462790852,((T12719990:0.001722702684307758,N12719990:0):0.02293328699594886,(T76200005:0.006900991175508428,N76199904:0):0.01124106965636261):0.001039762439799288):0.001290293513946146,((T22020000:0,N22019990:0):0.01281680693751211,((T11920000:0,N11919991:0):0.01315167482009004,(T11420000:0,N11419990:0):0.004932254342524447):0.001560858088835868):0):0.001988997381142687,((T23420001:0.004462468854842863,N23419990:0):0.01359517892780569,(T13720000:0.003236337881233812,N13719991:0):0.02161153165440148):0.007049834432141373):0.001046457830237344,((((T78199912:0.003912990885387897,N78199911:0):0.009078721019786578,(T75200101:0,N75199811:0):0.01567628034402805):0.01081011373594941,(((T13620010:0,N13619991:0):0.02162855025025232,(T16200304:0.00264102131587983,N16200103:0.002271128592148868):0.01231782658482129):0.007941706447211936,(T18200309:0,N18200108:0.001126964830894088):0.01555228364009211):0.001601728282527383):0,((T26200211:0.007638482491427252,N26200207:0):0.01663748871906848,((T21420000:0.001270631253314583,N21419990:0):0.01316700945600009,(((T13219990:0.003164928483423403,N13219990:0):0.01425199677802359,N31199901:0.02154250079771052):0.001688409559286078,((T89199904:0,N89199902:0):0.02759372238251245,(T44200204:0.006183684257015383,N44200201:0.003359134001756103):0.02738634477238961):0.005679554173733688):0.003387803272372283):0.001562596542616162):0.001596325959660594):0.001476875500578399):0.001041506483468608,(((((((((T22820001:0.001741290588790207,N22819990:0):0.02159937692167132,(T11200103:0.003377261477184302,N11199911:0.001084548960986736):0.01028655537957128):0.003267256211205573,(T10320000:0.00955588577197615,N10319990:0):0.02991815174108221):0.001191425379681128,((T87200011:0.02458384963302768,N87199903:0.001413539029008268):0.008938325929487938,(T22420000:0.005154856273466776,N22419990:0):0.0157122412995783):0.0009756391222859835):0.001766196075364526,(T15319991:0,N15319990:0.001621173027594102):0.0048360941340705):0,((T16119990:0.001202764355142867,N16119990:0):0.02085384098424043,((T15520000:0.01285816393631002,N15519981:0.001493298078919881):0.01833502747819225,((T20520000:0.002293038009870172,N20519990:0.002237442896162959):0.01505523336505575,((T20419990:0.005849437469014633,N20419990:0):0.01370038899888026,(T15019990:0,N15019990:0):0.003262932162036154):0):0.001606126694809686):0):0.00146629875387522):0.002876394389297475,((T19219990:0.001789942425731976,N19219990:0):0.01462381572950972,(T12020020:0.009073326909212004,N12019991:0):0.01378164802833682):0.004741968647147957):0,(((T63200201:0.007376682404645733,N63200101:0.003635214097718627):0.02647478942497863,((T15920000:0.008753385221217012,N15919990:0):0.01352916435773641,(T19120010:0,N19119990:0):0.01699395400949969):0.003100133987286357):0.004231820075371934,(T17420020:0.002449911623006233,N17419990:0):0.01215760651726252):0):0.002042924642784025,((((T10420000:0.001304207517241176,N10419990:0):0.02781355568859463,(T14720001:0.001624852636530002,N14719991:0):0.02183238003242292):0.005661920441631335,((T81200002:0.001155478329944779,N81199910:0):0.01857670036880732,(T12200101:0,N12200008:0):0.02547622347194146):0.01055825079679811):0.002144069540205392,(T21019991:0.005864094682953118,N21019990:0):0.01035706389815051):0.002648889481350935):0):0.001040248029045173,((((T19020020:0.001627189683674996,N19019990:0.005504263738879666):0.008916226179033067,((T18720000:0.004563007836816283,N18719990:0):0.006839299226695019,((T14320001:0.002010391837363181,N14319990:0):0.01447312369223393,(T11319991:0.003772433012381132,N11319990:0):0.01911342964010822):0.001561301504805701):0):0.002743218854384755,((T99200101:0.005063750415566665,N99199903:0):0.009268253185505618,(T71200006:0.01203043256305302,N71199901:0):0.004980515987089595):0.004140037132269295):0,(((T19420000:0,N19419981:0):0.01458845275329764,(T30199909:0.00491537921234951,N30199901:0.001620997804412069):0.008086336520306842):0.0006684417497470948,((T15419990:0,N15419981:0):0.01772896046361707,(T86200009:0.001151568688107374,N86199901:0.002253496011364783):0.02036574849696872):0.006460181018583656):0.002776051282193876):0):0.001039593057599732):0.001036290275395401,((N22199107:0.0150594445006307,(((T22920001:0,N22919990:0):0.01800615944753592,(T11220000:0.003694188341321368,N11219990:0):0.03240979122860609):0.003610802803488218,(((((N19819990:0.01648615436805628,(T12619990:0,N12619990:0):0.01256331902999928):0.003880315301332986,(T10200305:0.0102576784029276,N10199911:0.002180311905431939):0.009370676134944616):0.002066509771159639,((T19920000:0.008929321265226891,N19919991:0.003124930824081921):0.02252510601273196,(T98199910:0.006650261740915545,N98199901:0.001122480292562983):0.02051843286857218):0.003789804766284507):0.001129290617422858,(N17199606:0.002963089251499418,((((((((((T23220001:0,N23219990:0.001622762107148526):0.01907355363881697,(T15619991:0,N15619990:0):0.01514499962812647):0.003349882266840647,(T17720000:0,N17719990:0):0.01693374603463501):0.005751556310433756,(((T21720000:0.00224934530195341,N21719990:0):0.012111268603245,(T21620020:0.007173339317209659,N21619990:0.002468438621264191):0.01690400913750864):0.0036283152481359,(T33200009:0.01159152937860665,N33199901:0.001575902531374195):0.007675659176678023):0.00423035828838914):0,(((T18420000:0,N18419990:0):0.008083039618346735,((T83200010:0,N83199909:0):0.01062423220334011,(T79200004:0.01040545860216092,N79199912:0.00777761493005692):0.006616573580254857):0.01386400951888534):0,(T12120000:0.01312274961094829,N12119990:0):0.01411714881406484):0.004470530154625396):0.002090814668380807,((T17120000:0.01240001733568181,N17119990:0.003396024475659429):0.005346981382423398,((T12320000:0.01211829205659394,N12319990:0.00459208041560504):0.01522730666709893,(T95200001:0.01562897868307272,N95199908:0):0.01555727967986558):0.003634296760518691):0.002121634915128622):0.001062911283213303,((T37199910:0.001627017804623323,N37199901:0.001612753891805057):0.006552286876884289,(((T20920000:0,N20919990:0):0.007216869836295239,(T18220000:0,N18219990:0):0.009758719903206075):0.004323590811309164,(T35200006:0.01829850406571055,((N35199901:0,N34199901:0.003234990584190891):0,T34199911:0.003270878502833841):0.004119894425484423):0.004032895322055029):0.001414079428906241):0.002855106443076798):0.001039938162628152,(T18120000:0,N18119990:0):0.004906025868668588):0,((T13419991:0.003219097522613962,N13419990:0):0.007300878220383196,(T13119990:0.0018967859189878,N13119990:0):0.009452917611885096):0.007285401429002111):0,((T20319990:0.001840692337998029,N20319990:0):0.01125655653796251,(T21199809:0.02350766702312165,N21199201:0.001322774188203956):0.01882003461395946):0.004581159200305255):0):6.187697318095638e-06):0.002123068792622071,(((T20120010:0.008272172063921385,N20119991:0.001514171528783469):0.0164560631885308,N1199101:0.006973714174390672):0.002303678804379958,((T21319991:0.001846540315155742,N21319990:0.003328472851177257):0.01671621760541486,T28200101:0.02297866871954074):0.004276926118838565):0.001511016822398803):0.0009712731318673794):0):0,(((((T16920011:0.00841079151577326,N16919990:0.001835065836181027):0.01902891630412762,((((T20219990:0,N20219981:0):0.02273754246245133,(T12219990:0.01256805514445486,N12219990:0.0009770570911414754):0.02212030070300188):0.005484298038251241,((T12419991:0,N12419991:0):0.02433590723368837,(T11020000:0,N11019990:0.002656001588941253):0.01884219741840893):0.00429000456358014):0.003476234564183219,((T13920000:0.005924292668696391,N13919981:0.001584336281338829):0.025755742682773,(T43200209:0.006972793051199975,N43200201:0.009183854617632835):0.02376691523924416):0.0084048572234593):0.001286925772646752):0.002493716346841431,((T17820020:0.01137474993913851,N17819990:0):0.02597083382714228,(T12819991:0.009215097835056659,N12819990:0):0.01040411393189935):0.003541618428037471):0.001125700839333055,(((((T18919990:0.001597087091556467,N18919981:0.003232807786025179):0.01482557016022515,(T10120000:0,N10119990:0):0.02364849780893242):0.007033595008115141,(T20020000:0,N20019991:0):0.01105999449451139):0.003304270397026134,(T22120000:0.002185166588987967,N22119990:0):0.02200033777960502):0.005140722405664402,(((T10620010:0,N10619990:0):0.01949998020925844,(T96199911:0,N96199908:0):0.01300276051578456):0,((T68199912:0.002003053796660339,N68199905:0):0.02240248318084861,(T15200201:0.002374826927860651,N15200101:0):0.02172979638620977):0.004394020615838399):0.001415529916500173):0):0.001165180451742041,((((T16820010:0.008674833484536982,N16819990:0):0.02517570262342435,(T11720000:0,N11719991:0):0.02140714510288473):0.005186575202084516,(T92200003:0.001631923524254833,N92199904:0):0.02065205879925294):0.006045124949155488,(T19320000:0.003222706357503945,N19319990:0):0.02883545076714032):0.004137149998998134):0.001185341124573675):0):0.001037789280139744):0.001080876301473554):1.520600434743215e-05,((T9200006:0.003529225831279144,N9199909:0):0.01778770160648235,(T23200207:0,N23200204:0):0.01363938353627047):0.001107080737946442):0,((((T13320000:0.0225359699435503,N13319990:0.004659085655024566):0.01105074494871993,(T5200107:0.001432594694482698,N5199906:0):0.02199377345153633):0.003022127711755209,(((T16320000:0,N16319990:0.003171443039071567):0.02207034793980907,(T14520001:0,N14519991:0):0.01463238218258723):0.002190030254469735,((T91199912:0.003504749190971844,N91199903:0):0.01769504197229954,(T4200608:0.009403607269514809,N4199904:0.0009482024540384741):0.02265063558772306):0.005016900352145219):0.001129022944578108):0.0009157857999393113,((T18620020:0,N18619991:0):0.01468237951739062,(T10819990:0.002751644183116745,N10819981:0):0.01673469177947382):0):0.002232774112040849):0,(T80200007:0,N80199904:0):0.009756287951054326):0.0021406205986139,((T73200108:0,N73199904:0):0.01796026271606089,(((T65200101:0.004180671023536935,N65199902:0):0.01691305889225026,((T19820000:0,(T18020000:0.00210584166201733,N18019990:0):0.01313284947437502):0.0108847637401159,(T17220001:0,N17219990:0):0.01785234871081191):0):0.001612346025238759,(T3200011:0.02086631787547204,N3199901:0.001391396880562797):0.008130682408574466):0.001803392102412584):0.00188228923447055):0.004531932757914264,(T14420000:0,N14419990:0):0.01455623989058554):0.007713180802357153,(T10520000:0,N10519990:0):0.02110795936248715):0.008892237251847226,(((T40199905:0.01493038435227479,N40199903:0.003370106113513746):0.007538613824540713,(T39199907:0.02878871730829442,N39199905:0.01335108975911532):0.008575521017525001):0.002808711897177399,(T38199907:0.008201894162501697,N38199905:0.01342871471145524):0.01024152024941548):0.01878004468463177):0.02484898701852344,(T20820000:0.003170628988853852,N20819990:0.01099089244145558):0.05585452381479408):0.01125420196862354,((T23820090:0.007987161906356555,N23820050:0.006148664406339269):0.01780318484071531,(T77200005:0.003124312396251959,N77199906:0.001459974842618448):0.03198220229268158):0.02584366496709548):0.02597453146759539,T24120081:0.03864241748642894):0.03300294993527012,((T41200107:0.01444818262066288,N41200002:0.003011187586153677):0.02230186869440706,T56200502:0.0335492345123654):0.003174569278850305):0,(T49200502:0,N49200412:0):0.005639920748681588):0.001336776845097499,(T51200502:0,N51200412:0.004153013983007625):0.006706531896977938):0.00205850601190615,((((((T47200502:0.001436153471593556,N47200412:0):0.009679296939631285,((T59200502:0,N59200412:0):0.005540917272322182,(T60200502:0.002885975912464055,N60200412:0):0.006929166077916798):0.001348632201175397):0,((T54200502:0,N54200412:0):0.0152687565969137,(T48200502:0.001627306092507258,N48200412:0.002787914864729637):0.009520192081233947):0.001382070341903565):0.001322034136385744,(((T23920070:0.01395724638660448,N23920060:0.001080318657582804):0.01970848047108213,(T50200502:0,N50200412:0):0.009661260525299144):0.00544024837940175,(T52200502:0,N52200412:0):0.01540546619476677):0.001248385941994731):0.002682413698015078,((((T55200502:0,N55200412:0):0.01682911305926349,(T46200502:0,N46200412:0.001481041368767828):0.01780369748104421):0.001444033407252808,(T61200502:0,N61200412:0.001521800610569573):0.01218535524666058):0.001447163692755628,(T58200502:0,N58200412:0):0.01818019963639847):0.00138263780666507):0.001331405324465266,((T57200502:0.001435097348068635,N57200412:0.001373590247582916):0.01789568017940548,N56200412:0.008850306253259565):0.002422790439468266):0.0007742819013790788):0.02843530646837358,T53200502:0.003017659074615583,N53200412:0.002874117492852019)";
-      var res = d3.layout.newick_parser(hiv_tree);
-      default_tree_settings();
-      tree(res).svg(svg).layout();
-    });
+function default_tree_settings () {
+    tree.branch_length (null);
+    tree.branch_name (null);
+    tree.node_span ('equal');
+    tree.options ({'draw-size-bubbles' : false}, false);
+    //tree.radial (true);
+    tree.style_nodes (node_colorizer);
+    tree.style_edges (edge_colorizer);
+    tree.selection_label (current_selection_name);
+}
 
-    function update_controls() {
-      $("[data-mode='" + (tree.radial() ? 'radial' : 'linear') + "']").click();
-      $("[data-align='" + (tree.align_tips() ? 'right' : 'left') + "']").click();
-    }
+$("#example_hiv_scaled").on ("click", function (e) {
+    var hiv_tree = "(((((((((((((((((T27199905:0,N27199901:0):0.01138620689542192,(((((((T20720000:0.003968279676782308,N20719991:0):0.02819169119458115,(T72200011:0.004803375079803856,N72199903:0):0.02078169546773969):0.009588294103813007,((T13820000:0,N13819981:0):0.02454000402346791,(T90200101:0.01003261820592509,N90199902:0):0.009366526423474558):0.002486401796650966):0.003608278684124558,((T17520011:0.004863164363296617,N17519990:0):0.02628672331630959,((T14220000:0.01315754463342865,N14219990:0.001519794311607769):0.02449019828291938,(T14019990:0.002088622689202597,N14019990:0):0.007953879353380254):0.006120800879169412):0.00481942471568263):0.0017359229333714,((T15820000:0,N15819990:0):0.01461673713319969,((T17020000:0.00362050072666209,N17019990:0):0.01940511449602377,((T23020000:0.006562699546404342,N23019990:0.003247427011686169):0.00488394322968171,(T22619990:0,N22619990:0):0.01135558718170952):0.003333032342735747):0.00157179471462764):0.001658104997854079):0.001761810172585723,(((T11620001:0.00561315030516654,N11619991:0.003402755089605154):0.0257577130981985,(T21219991:0,N21219990:0):0.009744907800835733):0.002579518047089604,((T12920010:0.005593320105206889,N12919991:0):0.01872684105423962,(T11520000:0.004786026883024162,N11519991:0.005765583718663995):0.007465264014310195):0.002965929883419555):0.001562293135319815):0.00105938220833447,(((((((T84200002:0.003345990523889748,N84199903:0.002680850535205825):0.01065618889146285,(T15220010:0.01608491971971904,N15219990:0):0.01957378058014116):0.00191405543755388,(T19620000:0.002405455725653434,N19619990:0):0.01696899072737228):0.005809597312096782,(((N28199901:0.01140445017878757,(((T17319991:0.006344350776006666,N17319990:0.003881614304807318):0.01419708669121811,((T70200202:0,N70199812:0):0.01475779750618346,(T69200009:0,N69199906:0):0.01474471603261629):0.003132562018871871):0,((T19720020:0,N19719990:0):0.008275622280170074,(T11120010:0.009148979641152175,N11119990:0):0.01867834854427819):0.003147486471126614):0):0.003154011239608051,(T45200208:0.01752936738973977,N45200201:0.01259528619045713):0.01164251595415265):0.001443477368485624,(((T24020080:0.00498783299700213,N24020071:0):0.02883967723502238,(T15120020:0.004822646666119094,N15119991:0.001632117708424825):0.009451161081638832):0.006619045612712477,(T36199905:0,N36199901:0):0.006400594973314505):0.002841890047962903):0.002977719159928009):0.00222072529897883,(((((T22320001:0.006495361788551432,N22319990:0):0.01317815291436251,(T14120000:0.002243877297228656,N14119990:0):0.01587130875845443):0.004735006681555895,(T16019991:0,N16019991:0):0.0123200163869548):0.004788728507651177,((((T23620000:0.007650505457257512,N23619991:0):0.01261905699335145,(T19520010:0,N19519990:0):0.0172166946233703):0.00147902917801954,(T13200309:0.0103998130849,N13200010:0):0.008498293184731815):0.004217878717083502,((T22520011:0.006528900349382957,N22519990:0.001535097570603162):0.01314315876153177,(T14200204:0.006794535464214622,N14200012:0.001001870444625211):0.02642389441761086):0.004541025906567333):0.003307383500141235):0.002121575142255389,((((T22220000:0.01482442635332646,N22219991:0):0.01702957945705255,(((T23720060:0.001197389773959699,N23720041:0.00204681570753222):0.01949310510700402,(T16720001:0,N16719991:0):0.01753075218663538):0.006088453827043898,((T21120000:0.003749400710267288,N21119990:0.0004217357442442402):0.01822361322094584,((T12519990:0.005432537277541516,N12519981:0.001635901438333449):0.008362403338384755,(T64199905:0.001717994681106234,N64199904:0):0.02875977622919801):0.004810760531157787):0.002043030103655818):0.00126879098299165):0.003168615608820036,(((((T93200203:0.009674203604406503,N93199906:0):0.01452260411793856,T31200003:0.01339132553747114):0.001687683158487498,((T18819991:0.008171487110636418,N18819990:0.001542877155447621):0.009716771865084455,((T88200112:0,N88199901:0):0.01794106061087249,(T8200310:0,N8199907:0):0.007615432190969022):0.003645360302043741):0.003816829365521996):0,((T21519991:0.001221642297221341,N21519990:0):0.02096922382813168,(T23120000:0.01028772610063305,N23119990:0):0.01211302513853468):0.003144736632287203):0.001144350713432162,((((((((T22720000:0.001606938990565896,N22719990:0):0.0135072438501719,(T66200012:0.01201097532912702,N66199812:0):0.01758562001591768):0.002809861370626026,(T32200007:0.004899653178798034,N32199901:0):0.0303072978438375):0.001456691127862531,((T23320011:0.0064547473447827,N23319990:0.01473463642694258):0.01159534999778127,(T15719991:0,N15719990:0):0.009814649824320539):0.003199078570908704):0.001436512750311689,((((T10920010:0,N10919990:0.003771542793604974):0.007149058894068762,(T97200204:0,N97199901:0.001976292606862045):0.01641811986627809):0.001665945613809078,(T24200309:0,N24200206:0):0.01791325971563653):0.001452225920551971,(T16519991:0.0070108179396303,N16519990:0.001381267691591174):0.01340670625685506):0.002221787175231307):0.001089130217559227,(((((T17920000:0.01141257210013188,N17919990:0):0.021530055154421,(T74200204:0.01194072720280738,(T7199811:0.005075694482849164,N7199611:0.001588182568061762):0.01627743599628613):0.002868014092783148):0.004490992199393568,((T10020000:0.01165498934990082,N10019990:0):0.01426936834212576,(T94200105:0,N94199910:0):0.01673956606945278):0.003536068741389563):0.001504668401914707,((T20620010:0.00323959696546724,N20619990:0):0.01133774167439087,(T25200305:0.008270954378087499,N25200207:0.005597433073758736):0.02560557674387131):0.007192209102197011):0.0005043403493087675,N74199812:0.006703411325933771):0):0,((((T13019990:0,N13019981:0):0.01142714790082963,((T16420011:0,N16419990:0):0.01461757691135204,((T17620000:0.007253048080569019,N17619981:0):0.01324625964712978,(T29200003:0.02717753573160469,N29199901:0.003243201438090061):0.003231362888740946):0.003447880246200589):0):0.00341463301296934,((T18319990:0,N18319990:0):0.02938758726534801,(((T24220020:0.00199411647592395,N24220000:0.00112202845521218):0.0253382036430624,((T85199908:0.0072119265028963,N85199811:0.002473616857759484):0.0424610327349474,T22199809:0.03497383456553265):0.007872328246191563):0.004085321170282965,T17199703:0.01869192584907714):0.003976825915096545):0.002855239740341604):0.001008515849889382,((((T10720000:0.003227618742850984,N10719990:0):0.02207345638497446,T1199908:0.03183196539978755):0.004141039359469669,(T20200108:0,N20200107:0):0.01637110741350244):0.002105305460913564,((T62200201:0.01511677191908654,N62200101:0.001205151929377256):0.02198081451834616,N2199809:0.01533384119334034):0.005303802800317422):0.002025611866809348):0.00105419228419088):0.001055075128100311,((((T14920010:0.002151328918528997,N14919990:0):0.01866346350488356,(T11819990:0.003230563730784564,N11819990:0):0.02235467379529004):0.00462268089066904,((((T23520000:0.008725858650597874,N23519990:0):0.02511527838873102,(T10219990:0,N10219981:0):0.02052135077129327):0.002495959945451691,((T14819991:0.002347351121746907,N14819990:0.003030818208952487):0.02006529821295552,(T6200007:0,N6199906:0):0.01461120429789579):0.003399960894844004):0.002260179052501479,((T13519991:0.003213705282202493,N13519990:0):0.009138919932399344,(T67199909:0,N67199906:0):0.01642874590217443):0.004490976650511992):0):0.001255950277182415,(((T21920000:0.002077503623256982,N21919990:0):0.01499932618538165,(T18520000:0.0105756779613584,N18519990:0):0.02380659627414928):0.004215992470986508,(T14620001:0.006286250814067891,N14619991:0):0.00836634788767401):0.001433687532001357):0.002165162724481749):0.0006622949509149424):0.0007685957182302498):0,((T16219990:0.001166307470703672,N16219990:0):0.01158015396473006,(T16620000:0.008288852164344504,N16619990:0.002034469057633359):0.01242403652286499):0.001040591834944086):0.001019289187582037):0.001014137397049835):0,(((((((T82200102:0.005243643231075758,N82199909:0):0.01985190462790852,((T12719990:0.001722702684307758,N12719990:0):0.02293328699594886,(T76200005:0.006900991175508428,N76199904:0):0.01124106965636261):0.001039762439799288):0.001290293513946146,((T22020000:0,N22019990:0):0.01281680693751211,((T11920000:0,N11919991:0):0.01315167482009004,(T11420000:0,N11419990:0):0.004932254342524447):0.001560858088835868):0):0.001988997381142687,((T23420001:0.004462468854842863,N23419990:0):0.01359517892780569,(T13720000:0.003236337881233812,N13719991:0):0.02161153165440148):0.007049834432141373):0.001046457830237344,((((T78199912:0.003912990885387897,N78199911:0):0.009078721019786578,(T75200101:0,N75199811:0):0.01567628034402805):0.01081011373594941,(((T13620010:0,N13619991:0):0.02162855025025232,(T16200304:0.00264102131587983,N16200103:0.002271128592148868):0.01231782658482129):0.007941706447211936,(T18200309:0,N18200108:0.001126964830894088):0.01555228364009211):0.001601728282527383):0,((T26200211:0.007638482491427252,N26200207:0):0.01663748871906848,((T21420000:0.001270631253314583,N21419990:0):0.01316700945600009,(((T13219990:0.003164928483423403,N13219990:0):0.01425199677802359,N31199901:0.02154250079771052):0.001688409559286078,((T89199904:0,N89199902:0):0.02759372238251245,(T44200204:0.006183684257015383,N44200201:0.003359134001756103):0.02738634477238961):0.005679554173733688):0.003387803272372283):0.001562596542616162):0.001596325959660594):0.001476875500578399):0.001041506483468608,(((((((((T22820001:0.001741290588790207,N22819990:0):0.02159937692167132,(T11200103:0.003377261477184302,N11199911:0.001084548960986736):0.01028655537957128):0.003267256211205573,(T10320000:0.00955588577197615,N10319990:0):0.02991815174108221):0.001191425379681128,((T87200011:0.02458384963302768,N87199903:0.001413539029008268):0.008938325929487938,(T22420000:0.005154856273466776,N22419990:0):0.0157122412995783):0.0009756391222859835):0.001766196075364526,(T15319991:0,N15319990:0.001621173027594102):0.0048360941340705):0,((T16119990:0.001202764355142867,N16119990:0):0.02085384098424043,((T15520000:0.01285816393631002,N15519981:0.001493298078919881):0.01833502747819225,((T20520000:0.002293038009870172,N20519990:0.002237442896162959):0.01505523336505575,((T20419990:0.005849437469014633,N20419990:0):0.01370038899888026,(T15019990:0,N15019990:0):0.003262932162036154):0):0.001606126694809686):0):0.00146629875387522):0.002876394389297475,((T19219990:0.001789942425731976,N19219990:0):0.01462381572950972,(T12020020:0.009073326909212004,N12019991:0):0.01378164802833682):0.004741968647147957):0,(((T63200201:0.007376682404645733,N63200101:0.003635214097718627):0.02647478942497863,((T15920000:0.008753385221217012,N15919990:0):0.01352916435773641,(T19120010:0,N19119990:0):0.01699395400949969):0.003100133987286357):0.004231820075371934,(T17420020:0.002449911623006233,N17419990:0):0.01215760651726252):0):0.002042924642784025,((((T10420000:0.001304207517241176,N10419990:0):0.02781355568859463,(T14720001:0.001624852636530002,N14719991:0):0.02183238003242292):0.005661920441631335,((T81200002:0.001155478329944779,N81199910:0):0.01857670036880732,(T12200101:0,N12200008:0):0.02547622347194146):0.01055825079679811):0.002144069540205392,(T21019991:0.005864094682953118,N21019990:0):0.01035706389815051):0.002648889481350935):0):0.001040248029045173,((((T19020020:0.001627189683674996,N19019990:0.005504263738879666):0.008916226179033067,((T18720000:0.004563007836816283,N18719990:0):0.006839299226695019,((T14320001:0.002010391837363181,N14319990:0):0.01447312369223393,(T11319991:0.003772433012381132,N11319990:0):0.01911342964010822):0.001561301504805701):0):0.002743218854384755,((T99200101:0.005063750415566665,N99199903:0):0.009268253185505618,(T71200006:0.01203043256305302,N71199901:0):0.004980515987089595):0.004140037132269295):0,(((T19420000:0,N19419981:0):0.01458845275329764,(T30199909:0.00491537921234951,N30199901:0.001620997804412069):0.008086336520306842):0.0006684417497470948,((T15419990:0,N15419981:0):0.01772896046361707,(T86200009:0.001151568688107374,N86199901:0.002253496011364783):0.02036574849696872):0.006460181018583656):0.002776051282193876):0):0.001039593057599732):0.001036290275395401,((N22199107:0.0150594445006307,(((T22920001:0,N22919990:0):0.01800615944753592,(T11220000:0.003694188341321368,N11219990:0):0.03240979122860609):0.003610802803488218,(((((N19819990:0.01648615436805628,(T12619990:0,N12619990:0):0.01256331902999928):0.003880315301332986,(T10200305:0.0102576784029276,N10199911:0.002180311905431939):0.009370676134944616):0.002066509771159639,((T19920000:0.008929321265226891,N19919991:0.003124930824081921):0.02252510601273196,(T98199910:0.006650261740915545,N98199901:0.001122480292562983):0.02051843286857218):0.003789804766284507):0.001129290617422858,(N17199606:0.002963089251499418,((((((((((T23220001:0,N23219990:0.001622762107148526):0.01907355363881697,(T15619991:0,N15619990:0):0.01514499962812647):0.003349882266840647,(T17720000:0,N17719990:0):0.01693374603463501):0.005751556310433756,(((T21720000:0.00224934530195341,N21719990:0):0.012111268603245,(T21620020:0.007173339317209659,N21619990:0.002468438621264191):0.01690400913750864):0.0036283152481359,(T33200009:0.01159152937860665,N33199901:0.001575902531374195):0.007675659176678023):0.00423035828838914):0,(((T18420000:0,N18419990:0):0.008083039618346735,((T83200010:0,N83199909:0):0.01062423220334011,(T79200004:0.01040545860216092,N79199912:0.00777761493005692):0.006616573580254857):0.01386400951888534):0,(T12120000:0.01312274961094829,N12119990:0):0.01411714881406484):0.004470530154625396):0.002090814668380807,((T17120000:0.01240001733568181,N17119990:0.003396024475659429):0.005346981382423398,((T12320000:0.01211829205659394,N12319990:0.00459208041560504):0.01522730666709893,(T95200001:0.01562897868307272,N95199908:0):0.01555727967986558):0.003634296760518691):0.002121634915128622):0.001062911283213303,((T37199910:0.001627017804623323,N37199901:0.001612753891805057):0.006552286876884289,(((T20920000:0,N20919990:0):0.007216869836295239,(T18220000:0,N18219990:0):0.009758719903206075):0.004323590811309164,(T35200006:0.01829850406571055,((N35199901:0,N34199901:0.003234990584190891):0,T34199911:0.003270878502833841):0.004119894425484423):0.004032895322055029):0.001414079428906241):0.002855106443076798):0.001039938162628152,(T18120000:0,N18119990:0):0.004906025868668588):0,((T13419991:0.003219097522613962,N13419990:0):0.007300878220383196,(T13119990:0.0018967859189878,N13119990:0):0.009452917611885096):0.007285401429002111):0,((T20319990:0.001840692337998029,N20319990:0):0.01125655653796251,(T21199809:0.02350766702312165,N21199201:0.001322774188203956):0.01882003461395946):0.004581159200305255):0):6.187697318095638e-06):0.002123068792622071,(((T20120010:0.008272172063921385,N20119991:0.001514171528783469):0.0164560631885308,N1199101:0.006973714174390672):0.002303678804379958,((T21319991:0.001846540315155742,N21319990:0.003328472851177257):0.01671621760541486,T28200101:0.02297866871954074):0.004276926118838565):0.001511016822398803):0.0009712731318673794):0):0,(((((T16920011:0.00841079151577326,N16919990:0.001835065836181027):0.01902891630412762,((((T20219990:0,N20219981:0):0.02273754246245133,(T12219990:0.01256805514445486,N12219990:0.0009770570911414754):0.02212030070300188):0.005484298038251241,((T12419991:0,N12419991:0):0.02433590723368837,(T11020000:0,N11019990:0.002656001588941253):0.01884219741840893):0.00429000456358014):0.003476234564183219,((T13920000:0.005924292668696391,N13919981:0.001584336281338829):0.025755742682773,(T43200209:0.006972793051199975,N43200201:0.009183854617632835):0.02376691523924416):0.0084048572234593):0.001286925772646752):0.002493716346841431,((T17820020:0.01137474993913851,N17819990:0):0.02597083382714228,(T12819991:0.009215097835056659,N12819990:0):0.01040411393189935):0.003541618428037471):0.001125700839333055,(((((T18919990:0.001597087091556467,N18919981:0.003232807786025179):0.01482557016022515,(T10120000:0,N10119990:0):0.02364849780893242):0.007033595008115141,(T20020000:0,N20019991:0):0.01105999449451139):0.003304270397026134,(T22120000:0.002185166588987967,N22119990:0):0.02200033777960502):0.005140722405664402,(((T10620010:0,N10619990:0):0.01949998020925844,(T96199911:0,N96199908:0):0.01300276051578456):0,((T68199912:0.002003053796660339,N68199905:0):0.02240248318084861,(T15200201:0.002374826927860651,N15200101:0):0.02172979638620977):0.004394020615838399):0.001415529916500173):0):0.001165180451742041,((((T16820010:0.008674833484536982,N16819990:0):0.02517570262342435,(T11720000:0,N11719991:0):0.02140714510288473):0.005186575202084516,(T92200003:0.001631923524254833,N92199904:0):0.02065205879925294):0.006045124949155488,(T19320000:0.003222706357503945,N19319990:0):0.02883545076714032):0.004137149998998134):0.001185341124573675):0):0.001037789280139744):0.001080876301473554):1.520600434743215e-05,((T9200006:0.003529225831279144,N9199909:0):0.01778770160648235,(T23200207:0,N23200204:0):0.01363938353627047):0.001107080737946442):0,((((T13320000:0.0225359699435503,N13319990:0.004659085655024566):0.01105074494871993,(T5200107:0.001432594694482698,N5199906:0):0.02199377345153633):0.003022127711755209,(((T16320000:0,N16319990:0.003171443039071567):0.02207034793980907,(T14520001:0,N14519991:0):0.01463238218258723):0.002190030254469735,((T91199912:0.003504749190971844,N91199903:0):0.01769504197229954,(T4200608:0.009403607269514809,N4199904:0.0009482024540384741):0.02265063558772306):0.005016900352145219):0.001129022944578108):0.0009157857999393113,((T18620020:0,N18619991:0):0.01468237951739062,(T10819990:0.002751644183116745,N10819981:0):0.01673469177947382):0):0.002232774112040849):0,(T80200007:0,N80199904:0):0.009756287951054326):0.0021406205986139,((T73200108:0,N73199904:0):0.01796026271606089,(((T65200101:0.004180671023536935,N65199902:0):0.01691305889225026,((T19820000:0,(T18020000:0.00210584166201733,N18019990:0):0.01313284947437502):0.0108847637401159,(T17220001:0,N17219990:0):0.01785234871081191):0):0.001612346025238759,(T3200011:0.02086631787547204,N3199901:0.001391396880562797):0.008130682408574466):0.001803392102412584):0.00188228923447055):0.004531932757914264,(T14420000:0,N14419990:0):0.01455623989058554):0.007713180802357153,(T10520000:0,N10519990:0):0.02110795936248715):0.008892237251847226,(((T40199905:0.01493038435227479,N40199903:0.003370106113513746):0.007538613824540713,(T39199907:0.02878871730829442,N39199905:0.01335108975911532):0.008575521017525001):0.002808711897177399,(T38199907:0.008201894162501697,N38199905:0.01342871471145524):0.01024152024941548):0.01878004468463177):0.02484898701852344,(T20820000:0.003170628988853852,N20819990:0.01099089244145558):0.05585452381479408):0.01125420196862354,((T23820090:0.007987161906356555,N23820050:0.006148664406339269):0.01780318484071531,(T77200005:0.003124312396251959,N77199906:0.001459974842618448):0.03198220229268158):0.02584366496709548):0.02597453146759539,T24120081:0.03864241748642894):0.03300294993527012,((T41200107:0.01444818262066288,N41200002:0.003011187586153677):0.02230186869440706,T56200502:0.0335492345123654):0.003174569278850305):0,(T49200502:0,N49200412:0):0.005639920748681588):0.001336776845097499,(T51200502:0,N51200412:0.004153013983007625):0.006706531896977938):0.00205850601190615,((((((T47200502:0.001436153471593556,N47200412:0):0.009679296939631285,((T59200502:0,N59200412:0):0.005540917272322182,(T60200502:0.002885975912464055,N60200412:0):0.006929166077916798):0.001348632201175397):0,((T54200502:0,N54200412:0):0.0152687565969137,(T48200502:0.001627306092507258,N48200412:0.002787914864729637):0.009520192081233947):0.001382070341903565):0.001322034136385744,(((T23920070:0.01395724638660448,N23920060:0.001080318657582804):0.01970848047108213,(T50200502:0,N50200412:0):0.009661260525299144):0.00544024837940175,(T52200502:0,N52200412:0):0.01540546619476677):0.001248385941994731):0.002682413698015078,((((T55200502:0,N55200412:0):0.01682911305926349,(T46200502:0,N46200412:0.001481041368767828):0.01780369748104421):0.001444033407252808,(T61200502:0,N61200412:0.001521800610569573):0.01218535524666058):0.001447163692755628,(T58200502:0,N58200412:0):0.01818019963639847):0.00138263780666507):0.001331405324465266,((T57200502:0.001435097348068635,N57200412:0.001373590247582916):0.01789568017940548,N56200412:0.008850306253259565):0.002422790439468266):0.0007742819013790788):0.02843530646837358,T53200502:0.003017659074615583,N53200412:0.002874117492852019)";
+    var res = d3.layout.newick_parser( hiv_tree );
+    default_tree_settings ();
+    tree (res).svg (svg).layout();
+});
 
-    $("#example_hiv_compartments").on("click", function(e) {
+function update_controls () {
+    $("[data-mode='" + (tree.radial()      ? 'radial' : 'linear') + "']").click();
+    $("[data-align='"  + (tree.align_tips () ? 'right' : 'left') + "']").click();
+}
 
-      var hiv_tree = "((((NM487|20020117|CSF|1|env|21|1.05:0.00293,(NM487|20020117|CSF|1|env|0|22.65:0.00055,((NM487|20020128|CSF|2|env|3074|1.36:0.0,NM487|20020128|CSF|1|env|3057|1.24:0.0):0.00055,NM487|20020103|PBMC|1|env|81|1.01:0.00055)0.896:0.00055)0.840:0.00409)0.656:0.00587,NM487|20020117|CSF|1|env|13|0.95:0.00300)0.255:0.00053,NM487|20020117|CSF|1|env|4|1.10:0.00300)0.331:0.00055,NM487|20020128|CSF-PELLET|1|env|0|37.88:0.00055,((NM487|20020128|CSF|2|env|0|10.49:0.0,NM487|20020128|CSF|1|env|0|10.60:0.0):0.00055,((((NM487|20020128|CSF|2|env|111|1.28:0.0,NM487|20020128|CSF|1|env|111|1.27:0.0):0.00829,((NM487|20020128|CSF|2|env|41|4.05:0.0,NM487|20020128|CSF|1|env|41|4.15:0.0):0.00054,(NM487|20020128|CSF-PELLET|1|env|40|4.21:0.0,NM487|20020117|CSF|1|env|5|1.20:0.0):0.00055)0.978:0.00050)0.890:0.00303,(((NM487|20020128|CSF|2|env|54|1.22:0.0,NM487|20020128|CSF|1|env|54|1.21:0.0):0.00055,NM487|20020117|CSF|1|env|19|2.76:0.00055)0.904:0.00278,(NM487|20020103|PBMC|1|env|26|2.32:0.00303,((NM487|20020128|CSF|1|env|59|0.93:0.00055,(((NM487|20020128|BP|1|env|40|2.31:0.00055,NM487|20020128|BP|1|env|20|1.72:0.00279)0.993:0.01716,NM487|20020128|BP|1|env|27|0.56:0.00243)0.702:0.01285,NM487|20020128|CSF-PELLET|1|env|56|0.78:0.00548)0.979:0.00051)0.315:0.00053,(NM487|20020117|CSF|1|env|20|1.05:0.00303,((NM487|20020117|BP|1|env|59|0.45:0.0,NM487|20020117|CSF|1|env|6|15.58:0.0):0.00055,(NM487|20020128|CSF|2|env|59|0.87:0.00055,(((NM487|20020128|CSF|2|env|82|1.75:0.0,NM487|20020128|CSF|1|env|82|1.80:0.0):0.00055,(((NM487|20020128|BP|1|env|2749|0.61:0.00055,NM487|20020117|BP|1|env|8|1.02:0.00301)0.851:0.00279,(NM487|20020128|BP|1|env|2790|0.94:0.00281,(NM487|20020128|CSF-PELLET|1|env|66|0.87:0.00055,(((NM487|20020103|PBMC|1|env|55|1.33:0.00055,NM487|20020128|CSF-PELLET|1|env|62|0.82:0.00055)0.861:0.00282,(((NM487|20020128|PBMC|1|env|8|8.33:0.00349,((NM487|20020128|PBMC|1|env|31|1.70:0.02485,NM487|20020128|PBMC|1|env|34|0.78:0.00054)0.940:0.01527,NM487|20020128|PBMC|1|env|33|0.79:0.03194)0.754:0.00402)0.941:0.02781,((NM487|20020128|PBMC|1|env|92|1.19:0.00316,NM487|20020128|PBMC|1|env|43|1.00:0.00303)0.935:0.01805,NM487|20020128|PBMC|1|env|10|6.24:0.01423)0.878:0.02383)0.999:0.07655,(NM487|20020128|PBMC|1|env|38|0.91:0.01340,(NM487|20020128|PBMC|1|env|9|4.34:0.00055,NM487|20020128|PBMC|1|env|0|0.70:0.01863)0.883:0.01055)0.984:0.04877)1.000:0.09435)1.000:0.00053,((((NM487|20020103|PBMC|1|env|23|1.64:0.01157,(((NM487|20020128|CSF-PELLET|1|env|37|0.75:0.0,NM487|20020117|BP|1|env|21|0.65:0.0):0.00908,((NM487|20020103|PBMC|1|env|99|0.66:0.00054,((((NM487|20020128|CSF-PELLET|1|env|12|1.09:0.0,NM487|20020117|BP|1|env|9|0.54:0.0):0.00055,(NM487|20020128|BP|1|env|2767|1.72:0.00055,NM487|20020128|BP|1|env|28|1.44:0.00866)0.913:0.00055)0.965:0.01080,NM487|20020117|BP|1|env|24|0.68:0.00055)0.124:0.00054,(NM487|20020128|CSF-PELLET|1|env|38|1.33:0.0,NM487|20020117|BP|1|env|18|3.46:0.0,NM487|20020117|CSF|1|env|15|1.10:0.0):0.00302)0.828:0.00355)0.833:0.00354,NM487|20020103|PBMC|1|env|106|0.98:0.00055)0.854:0.00353)0.115:0.00053,NM487|20020103|PBMC|1|env|2|1.62:0.00055)0.829:0.00354)0.948:0.00054,NM487|20020103|PBMC|1|env|255|0.57:0.00055)0.919:0.00055,((((NM487|20020128|CSF|2|env|62|2.60:0.0,NM487|20020128|CSF|1|env|62|2.64:0.0):0.00055,((NM487|20020128|CSF|2|env|36|1.14:0.0,NM487|20020128|CSF|1|env|36|1.13:0.0):0.00221,(NM487|20020117|BP|1|env|10|4.48:0.0,NM487|20020117|CSF|1|env|1|2.71:0.0):0.00055)0.321:0.00059)0.635:0.01578,(NM487|20020117|BP|1|env|97|0.45:0.00604,NM487|20020117|BP|1|env|13|0.40:0.00055)0.762:0.00300)0.232:0.00055,((NM487|20020117|BP|1|env|14|0.43:0.00301,(NM487|20020128|BP|1|env|2752|3.14:0.00054,NM487|20020128|CSF-PELLET|1|env|1|8.27:0.00055)0.699:0.00069)0.622:0.00158,NM487|20020128|BP|1|env|13|2.81:0.00055)0.999:0.00051)0.960:0.01011)0.831:0.00264,(NM487|20020103|PBMC|1|env|152|0.55:0.01500,NM487|20020103|PBMC|1|env|4|0.87:0.01185)0.903:0.00055)0.859:0.00265)0.827:0.00263)0.825:0.00263)1.000:0.00054)0.801:0.00298,NM487|20020128|BP|1|env|2773|0.76:0.00288)0.988:0.01722)0.297:0.00051,NM487|20020128|CSF-PELLET|1|env|15|2.48:0.00055)0.260:0.00055)0.367:0.00050)0.444:0.00051)0.489:0.01342)0.749:0.00341)0.937:0.00055)0.845:0.00055)0.648:0.00055,(NM487|20020128|CSF|2|env|33|16.42:0.0,NM487|20020128|CSF|1|env|33|16.53:0.0):0.00055)0.874:0.00051)0.231:0.00055)";
-      default_tree_settings();
-      tree.radial(true);
-      tree.align_tips(true);
+$("#example_hiv_compartments").on ("click", function (e) {
 
-      tree.branch_name(function(data) {
-        if (data.children) {
-          return "";
-        } else {
-          bits = data.name.split('|');
-          if (bits.length >= 6) {
-            return bits[0] + " [" + bits[1] + "] " + bits[2];
+    var hiv_tree = "((((NM487|20020117|CSF|1|env|21|1.05:0.00293,(NM487|20020117|CSF|1|env|0|22.65:0.00055,((NM487|20020128|CSF|2|env|3074|1.36:0.0,NM487|20020128|CSF|1|env|3057|1.24:0.0):0.00055,NM487|20020103|PBMC|1|env|81|1.01:0.00055)0.896:0.00055)0.840:0.00409)0.656:0.00587,NM487|20020117|CSF|1|env|13|0.95:0.00300)0.255:0.00053,NM487|20020117|CSF|1|env|4|1.10:0.00300)0.331:0.00055,NM487|20020128|CSF-PELLET|1|env|0|37.88:0.00055,((NM487|20020128|CSF|2|env|0|10.49:0.0,NM487|20020128|CSF|1|env|0|10.60:0.0):0.00055,((((NM487|20020128|CSF|2|env|111|1.28:0.0,NM487|20020128|CSF|1|env|111|1.27:0.0):0.00829,((NM487|20020128|CSF|2|env|41|4.05:0.0,NM487|20020128|CSF|1|env|41|4.15:0.0):0.00054,(NM487|20020128|CSF-PELLET|1|env|40|4.21:0.0,NM487|20020117|CSF|1|env|5|1.20:0.0):0.00055)0.978:0.00050)0.890:0.00303,(((NM487|20020128|CSF|2|env|54|1.22:0.0,NM487|20020128|CSF|1|env|54|1.21:0.0):0.00055,NM487|20020117|CSF|1|env|19|2.76:0.00055)0.904:0.00278,(NM487|20020103|PBMC|1|env|26|2.32:0.00303,((NM487|20020128|CSF|1|env|59|0.93:0.00055,(((NM487|20020128|BP|1|env|40|2.31:0.00055,NM487|20020128|BP|1|env|20|1.72:0.00279)0.993:0.01716,NM487|20020128|BP|1|env|27|0.56:0.00243)0.702:0.01285,NM487|20020128|CSF-PELLET|1|env|56|0.78:0.00548)0.979:0.00051)0.315:0.00053,(NM487|20020117|CSF|1|env|20|1.05:0.00303,((NM487|20020117|BP|1|env|59|0.45:0.0,NM487|20020117|CSF|1|env|6|15.58:0.0):0.00055,(NM487|20020128|CSF|2|env|59|0.87:0.00055,(((NM487|20020128|CSF|2|env|82|1.75:0.0,NM487|20020128|CSF|1|env|82|1.80:0.0):0.00055,(((NM487|20020128|BP|1|env|2749|0.61:0.00055,NM487|20020117|BP|1|env|8|1.02:0.00301)0.851:0.00279,(NM487|20020128|BP|1|env|2790|0.94:0.00281,(NM487|20020128|CSF-PELLET|1|env|66|0.87:0.00055,(((NM487|20020103|PBMC|1|env|55|1.33:0.00055,NM487|20020128|CSF-PELLET|1|env|62|0.82:0.00055)0.861:0.00282,(((NM487|20020128|PBMC|1|env|8|8.33:0.00349,((NM487|20020128|PBMC|1|env|31|1.70:0.02485,NM487|20020128|PBMC|1|env|34|0.78:0.00054)0.940:0.01527,NM487|20020128|PBMC|1|env|33|0.79:0.03194)0.754:0.00402)0.941:0.02781,((NM487|20020128|PBMC|1|env|92|1.19:0.00316,NM487|20020128|PBMC|1|env|43|1.00:0.00303)0.935:0.01805,NM487|20020128|PBMC|1|env|10|6.24:0.01423)0.878:0.02383)0.999:0.07655,(NM487|20020128|PBMC|1|env|38|0.91:0.01340,(NM487|20020128|PBMC|1|env|9|4.34:0.00055,NM487|20020128|PBMC|1|env|0|0.70:0.01863)0.883:0.01055)0.984:0.04877)1.000:0.09435)1.000:0.00053,((((NM487|20020103|PBMC|1|env|23|1.64:0.01157,(((NM487|20020128|CSF-PELLET|1|env|37|0.75:0.0,NM487|20020117|BP|1|env|21|0.65:0.0):0.00908,((NM487|20020103|PBMC|1|env|99|0.66:0.00054,((((NM487|20020128|CSF-PELLET|1|env|12|1.09:0.0,NM487|20020117|BP|1|env|9|0.54:0.0):0.00055,(NM487|20020128|BP|1|env|2767|1.72:0.00055,NM487|20020128|BP|1|env|28|1.44:0.00866)0.913:0.00055)0.965:0.01080,NM487|20020117|BP|1|env|24|0.68:0.00055)0.124:0.00054,(NM487|20020128|CSF-PELLET|1|env|38|1.33:0.0,NM487|20020117|BP|1|env|18|3.46:0.0,NM487|20020117|CSF|1|env|15|1.10:0.0):0.00302)0.828:0.00355)0.833:0.00354,NM487|20020103|PBMC|1|env|106|0.98:0.00055)0.854:0.00353)0.115:0.00053,NM487|20020103|PBMC|1|env|2|1.62:0.00055)0.829:0.00354)0.948:0.00054,NM487|20020103|PBMC|1|env|255|0.57:0.00055)0.919:0.00055,((((NM487|20020128|CSF|2|env|62|2.60:0.0,NM487|20020128|CSF|1|env|62|2.64:0.0):0.00055,((NM487|20020128|CSF|2|env|36|1.14:0.0,NM487|20020128|CSF|1|env|36|1.13:0.0):0.00221,(NM487|20020117|BP|1|env|10|4.48:0.0,NM487|20020117|CSF|1|env|1|2.71:0.0):0.00055)0.321:0.00059)0.635:0.01578,(NM487|20020117|BP|1|env|97|0.45:0.00604,NM487|20020117|BP|1|env|13|0.40:0.00055)0.762:0.00300)0.232:0.00055,((NM487|20020117|BP|1|env|14|0.43:0.00301,(NM487|20020128|BP|1|env|2752|3.14:0.00054,NM487|20020128|CSF-PELLET|1|env|1|8.27:0.00055)0.699:0.00069)0.622:0.00158,NM487|20020128|BP|1|env|13|2.81:0.00055)0.999:0.00051)0.960:0.01011)0.831:0.00264,(NM487|20020103|PBMC|1|env|152|0.55:0.01500,NM487|20020103|PBMC|1|env|4|0.87:0.01185)0.903:0.00055)0.859:0.00265)0.827:0.00263)0.825:0.00263)1.000:0.00054)0.801:0.00298,NM487|20020128|BP|1|env|2773|0.76:0.00288)0.988:0.01722)0.297:0.00051,NM487|20020128|CSF-PELLET|1|env|15|2.48:0.00055)0.260:0.00055)0.367:0.00050)0.444:0.00051)0.489:0.01342)0.749:0.00341)0.937:0.00055)0.845:0.00055)0.648:0.00055,(NM487|20020128|CSF|2|env|33|16.42:0.0,NM487|20020128|CSF|1|env|33|16.53:0.0):0.00055)0.874:0.00051)0.231:0.00055)";
+    default_tree_settings ();
+    tree.radial           (true);
+    tree.align_tips       (true);
+    
+    tree.branch_name      (function (data) {
+           if (data.children) {
+                return "";
+           } else {
+               bits = data.name.split ('|');        
+               if (bits.length >= 6) {
+                 return bits[0] + " [" + bits[1] + "] " + bits[2];
+               }     
+               return data.name;
           }
-          return data.name;
-        }
-      });
-
-      tree(d3.layout.newick_parser(hiv_tree)).svg(svg).layout();
-      update_controls();
     });
+           
+    tree (d3.layout.newick_parser(hiv_tree)).svg (svg).layout();
+    update_controls ();
+});
 
-    $("#example_influenza_color").on("click", function(e) {
-      var flu_tree = "(gi_5805286_gb_AF144305_1_Influenza_A_virus_A_Goose_Guangdong_1_96_H5N1_hemagglutinin_HA_gene:0,(gi_13676824_gb_AF364334_1_AF364334_Influenza_A_virus_A_Goose_Guangdong_3_97_H5N1_segment_4_hemagglutinin_HA_gene:0.003460330275528673,((((gi_115343521_gb_DQ997087_1_Influenza_A_virus_A_chicken_Hubei_wf_2002_H5N1_hemagglutinin_HA_gene:0.005691285111443731,gi_115343549_gb_DQ997102_1_Influenza_A_virus_A_chicken_Hubei_wh_1997_H5N1_hemagglutinin_HA_gene:0.01044062060744143):0,gi_115382807_gb_DQ997122_1_Influenza_A_virus_A_chicken_Hubei_wj_1997_H5N1_segment_4:0.005146282229630558):0.003458892023492166,((((((((((((((((((((((((((((((gi_116271104_gb_DQ992733_1_Influenza_A_virus_A_duck_Guangxi_4830_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271096_gb_DQ992729_1_Influenza_A_virus_A_goose_Guangxi_4289_2005_H5N1_hemagglutinin_HA_gene:0.001731367416891582):0,(gi_116271110_gb_DQ992736_1_Influenza_A_virus_A_duck_Guangxi_5165_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271100_gb_DQ992731_1_Influenza_A_virus_A_goose_Guangxi_4513_2005_H5N1_hemagglutinin_HA_gene:0):0):0,gi_116271112_gb_DQ992737_1_Influenza_A_virus_A_duck_Guangxi_5270_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271098_gb_DQ992730_1_Influenza_A_virus_A_duck_Guangxi_4428_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271106_gb_DQ992734_1_Influenza_A_virus_A_chicken_Guangxi_4989_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271138_gb_DQ992750_1_Influenza_A_virus_A_duck_Guangxi_804_2006_H5N1_hemagglutinin_HA_gene:0):0,(gi_116271132_gb_DQ992747_1_Influenza_A_virus_A_goose_Guangxi_582_2006_H5N1_hemagglutinin_HA_gene:0.001844537761868173,gi_116664738_gb_DQ999872_1_Influenza_A_virus_A_chicken_Thailand_NP_172_2006_H5N1_hemagglutinin_gene:0.01148521138314443):0):0,(gi_116271212_gb_DQ992787_1_Influenza_A_virus_A_duck_Hunan_5106_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271214_gb_DQ992788_1_Influenza_A_virus_A_duck_Hunan_5152_2005_H5N1_hemagglutinin_HA_gene:0):0.003460794024231023):0,((gi_116271116_gb_DQ992739_1_Influenza_A_virus_A_duck_Guangxi_5457_2005_H5N1_hemagglutinin_HA_gene:0.001722809077664727,gi_116271122_gb_DQ992742_1_Influenza_A_virus_A_duck_Guangxi_150_2006_H5N1_hemagglutinin_HA_gene:0):0.001719134242840447,(gi_116271310_gb_DQ992836_1_Influenza_A_virus_A_chicken_Hong_Kong_282_2006_H5N1_hemagglutinin_HA_gene:0.001740861832069726,gi_116271320_gb_DQ992841_1_Influenza_A_virus_A_chicken_Hong_Kong_947_2006_H5N1_hemagglutinin_HA_gene:0):0.001721140743888223):0):0,((((gi_116271690_gb_DQ993026_1_Influenza_A_virus_A_chicken_Guangxi_1951_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271692_gb_DQ993027_1_Influenza_A_virus_A_goose_Guangxi_1458_2006_H5N1_hemagglutinin_HA_gene:0.003492498390440192):0.003468421626776727,gi_116271124_gb_DQ992743_1_Influenza_A_virus_A_goose_Guangxi_224_2006_H5N1_hemagglutinin_HA_gene:0):0,((((gi_116271128_gb_DQ992745_1_Influenza_A_virus_A_chicken_Guangxi_463_2006_H5N1_hemagglutinin_HA_gene:0,(gi_116271126_gb_DQ992744_1_Influenza_A_virus_A_duck_Guangxi_288_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271686_gb_DQ993024_1_Influenza_A_virus_A_goose_Guangxi_1898_2006_H5N1_hemagglutinin_HA_gene:0):0):0,gi_116271682_gb_DQ993022_1_Influenza_A_virus_A_duck_Guangxi_2143_2006_H5N1_hemagglutinin_HA_gene:0.003465325984019963):0,((gi_116271684_gb_DQ993023_1_Influenza_A_virus_A_duck_Guangxi_1830_2006_H5N1_hemagglutinin_HA_gene:0.003461661165967627,gi_116271688_gb_DQ993025_1_Influenza_A_virus_A_goose_Guangxi_1633_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271130_gb_DQ992746_1_Influenza_A_virus_A_duck_Guangxi_392_2006_H5N1_hemagglutinin_HA_gene:0.001856906294832496):0):0,gi_116271136_gb_DQ992749_1_Influenza_A_virus_A_duck_Guangxi_744_2006_H5N1_hemagglutinin_HA_gene:0.001857439720249489):0):0.001731549330460619,gi_116271164_gb_DQ992763_1_Influenza_A_virus_A_chicken_Guiyang_29_2006_H5N1_hemagglutinin_HA_gene:0.003496658145480596):0):0,((((((gi_116271156_gb_DQ992759_1_Influenza_A_virus_A_chicken_Guiyang_3721_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271162_gb_DQ992762_1_Influenza_A_virus_A_chicken_Guiyang_4059_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271166_gb_DQ992764_1_Influenza_A_virus_A_duck_Guiyang_293_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271172_gb_DQ992767_1_Influenza_A_virus_A_duck_Guiyang_497_2006_H5N1_hemagglutinin_HA_gene:0.001721140743888223):0):0):0,(gi_116271158_gb_DQ992760_1_Influenza_A_virus_A_duck_Guiyang_3834_2005_H5N1_hemagglutinin_HA_gene:0.001847390505740832,gi_116271160_gb_DQ992761_1_Influenza_A_virus_A_duck_Guiyang_3996_2005_H5N1_hemagglutinin_HA_gene:0):0):0.001720137493364335,(gi_116271302_gb_DQ992832_1_Influenza_A_virus_A_duck_Fujian_668_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271304_gb_DQ992833_1_Influenza_A_virus_A_duck_Fujian_671_2006_H5N1_hemagglutinin_HA_gene:0):0.003496949847231326):0,gi_116271316_gb_DQ992839_1_Influenza_A_virus_A_common_magpie_Hong_Kong_645_2006_H5N1_hemagglutinin_HA_gene:0.003486465671281922):0,(gi_116271222_gb_DQ992792_1_Influenza_A_virus_A_duck_Hunan_856_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271224_gb_DQ992793_1_Influenza_A_virus_A_duck_Hunan_988_2006_H5N1_hemagglutinin_HA_gene:0):0.001722809077664727):0,(gi_116271872_gb_DQ993117_1_Influenza_A_virus_A_goose_Guangxi_532_2006_H5N1_hemagglutinin_HA_gene:0,(gi_116271204_gb_DQ992783_1_Influenza_A_virus_A_goose_Shantou_3265_2006_H5N1_hemagglutinin_HA_gene:0.001732986459249654,gi_116271206_gb_DQ992784_1_Influenza_A_virus_A_goose_Shantou_3295_2006_H5N1_hemagglutinin_HA_gene:0.001721805827140838):0.005190868402890893):0.001720137493364335):0):0,(((gi_116271282_gb_DQ992822_1_Influenza_A_virus_A_chicken_Fujian_10039_2005_H5N1_hemagglutinin_HA_gene:0,((gi_116271288_gb_DQ992825_1_Influenza_A_virus_A_duck_Fujian_10934_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271292_gb_DQ992827_1_Influenza_A_virus_A_duck_Fujian_11311_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271290_gb_DQ992826_1_Influenza_A_virus_A_duck_Fujian_11094_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271296_gb_DQ992829_1_Influenza_A_virus_A_duck_Fujian_12032_2005_H5N1_hemagglutinin_HA_gene:0):0):0):0,((gi_116271280_gb_DQ992821_1_Influenza_A_virus_A_chicken_Fujian_9821_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271276_gb_DQ992819_1_Influenza_A_virus_A_duck_Fujian_9651_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271278_gb_DQ992820_1_Influenza_A_virus_A_duck_Fujian_9713_2005_H5N1_hemagglutinin_HA_gene:0):0):0):0,((gi_116271294_gb_DQ992828_1_Influenza_A_virus_A_chicken_Fujian_11933_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271298_gb_DQ992830_1_Influenza_A_virus_A_chicken_Fujian_12239_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271300_gb_DQ992831_1_Influenza_A_virus_A_chicken_Fujian_584_2006_H5N1_hemagglutinin_HA_gene:0):0.001731983208725766):0.01235111046553835,(gi_116271208_gb_DQ992785_1_Influenza_A_virus_A_chicken_Shantou_3840_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271210_gb_DQ992786_1_Influenza_A_virus_A_chicken_Shantou_3923_2006_H5N1_hemagglutinin_HA_gene:0):0.001722809077664727):0):0,(gi_116271190_gb_DQ992776_1_Influenza_A_virus_A_duck_Shantou_13323_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271196_gb_DQ992779_1_Influenza_A_virus_A_chicken_Shantou_1233_2006_H5N1_hemagglutinin_HA_gene:0.006916223581789416):0.001718514203919168):0.001720137493364335):0,(((gi_116271218_gb_DQ992790_1_Influenza_A_virus_A_duck_Hunan_324_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271220_gb_DQ992791_1_Influenza_A_virus_A_duck_Hunan_344_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271314_gb_DQ992838_1_Influenza_A_virus_A_crested_myna_Hong_Kong_540_2006_H5N1_hemagglutinin_HA_gene:0.003469728163064682):0,((((gi_116271322_gb_DQ992842_1_Influenza_A_virus_A_Japanese_white_eye_Hong_Kong_1038_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271318_gb_DQ992840_1_Influenza_A_virus_A_little_egret_Hong_Kong_718_2006_H5N1_hemagglutinin_HA_gene:0):0.001736616249742598,(((gi_116271324_gb_DQ992843_1_Influenza_A_virus_A_common_magpie_Hong_Kong_2125_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271328_gb_DQ992845_1_Influenza_A_virus_A_munia_Hong_Kong_2454_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271338_gb_DQ992850_1_Influenza_A_virus_A_common_magpie_Hong_Kong_3033_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271330_gb_DQ992846_1_Influenza_A_virus_A_white_backed_munia_Hong_Kong_2469_2006_H5N1_hemagglutinin_HA_gene:0):0.0017187003645753):0,gi_116271326_gb_DQ992844_1_Influenza_A_virus_A_common_magpie_Hong_Kong_2256_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271332_gb_DQ992847_1_Influenza_A_virus_A_large_billed_crow_Hong_Kong_2512_2006_H5N1_hemagglutinin_HA_gene:0):0.003449554482991331):0):0,gi_116271114_gb_DQ992738_1_Influenza_A_virus_A_goose_Guangxi_5414_2005_H5N1_hemagglutinin_HA_gene:0.007168451271311083):0.01254688926380664,(gi_116271148_gb_DQ992755_1_Influenza_A_virus_A_chicken_Guiyang_3055_2005_H5N1_hemagglutinin_HA_gene:0,((gi_116271154_gb_DQ992758_1_Influenza_A_virus_A_chicken_Guiyang_3570_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271152_gb_DQ992757_1_Influenza_A_virus_A_goose_Guiyang_3422_2005_H5N1_hemagglutinin_HA_gene:0):0.001745987560952093,gi_116271150_gb_DQ992756_1_Influenza_A_virus_A_duck_Guiyang_3242_2005_H5N1_hemagglutinin_HA_gene:0):0):0.00364056800620153):0.001609132453519785,((gi_41207462_gb_AY518362_1_Influenza_A_virus_A_duck_China_E319_2_03_H5N1_hemagglutinin_subtype_H5_H5_gene:0.003460923098550844,((gi_57916028_gb_AY737296_1_Influenza_A_virus_A_chicken_Guangdong_178_04_H5N1_segment_4:0.003504518642431752,((gi_84797179_gb_DQ320898_1_Influenza_A_virus_A_chicken_Guangxi_604_2005_H5N1_hemagglutinin_HA_gene:0,gi_84797177_gb_DQ320897_1_Influenza_A_virus_A_quail_Guangxi_575_2005_H5N1_hemagglutinin_HA_gene:0.003507468039006941):0,gi_84797181_gb_DQ320899_1_Influenza_A_virus_A_duck_Guangxi_793_2005_H5N1_hemagglutinin_HA_gene:0):0.003505713585118946):0,((((((((((gi_116271074_gb_DQ992718_1_Influenza_A_virus_A_chicken_Guangxi_3154_2005_H5N1_hemagglutinin_HA_gene:0.003492056678231004,((gi_116271086_gb_DQ992724_1_Influenza_A_virus_A_chicken_Guangxi_3791_2005_H5N1_hemagglutinin_HA_gene:0.005244386268594013,(gi_116271072_gb_DQ992717_1_Influenza_A_virus_A_duck_Guangxi_3085_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271084_gb_DQ992723_1_Influenza_A_virus_A_duck_Guangxi_3741_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271088_gb_DQ992725_1_Influenza_A_virus_A_duck_Guangxi_3819_2005_H5N1_hemagglutinin_HA_gene:0.00174062564237789):0.001741051570312646):0):0,gi_116271234_gb_DQ992798_1_Influenza_A_virus_A_goose_Yunnan_4494_2005_H5N1_hemagglutinin_HA_gene:0.003506246058869184):0):0,gi_116271238_gb_DQ992800_1_Influenza_A_virus_A_goose_Yunnan_4804_2005_H5N1_hemagglutinin_HA_gene:0.001734090925302022):0,((((((gi_116271140_gb_DQ992751_1_Influenza_A_virus_A_chicken_Guiyang_2147_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271142_gb_DQ992752_1_Influenza_A_virus_A_chicken_Guiyang_2173_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271230_gb_DQ992796_1_Influenza_A_virus_A_goose_Yunnan_4129_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271244_gb_DQ992803_1_Influenza_A_virus_A_duck_Yunnan_5251_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271236_gb_DQ992799_1_Influenza_A_virus_A_duck_Yunnan_4589_2005_H5N1_hemagglutinin_HA_gene:0.001726182062582588):0.001734383374482937,gi_116271254_gb_DQ992808_1_Influenza_A_virus_A_goose_Yunnan_6027_2005_H5N1_hemagglutinin_HA_gene:0.001837329801065454):0,gi_116271252_gb_DQ992807_1_Influenza_A_virus_A_duck_Yunnan_5877_2005_H5N1_hemagglutinin_HA_gene:0):0):0,gi_116271070_gb_DQ992716_1_Influenza_A_virus_A_goose_Guangxi_3017_2005_H5N1_hemagglutinin_HA_gene:0.001742768846430097):0,((gi_116271078_gb_DQ992720_1_Influenza_A_virus_A_duck_Guangxi_3364_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271092_gb_DQ992727_1_Influenza_A_virus_A_duck_Guangxi_4184_2005_H5N1_hemagglutinin_HA_gene:0.003491075058688987,gi_116271094_gb_DQ992728_1_Influenza_A_virus_A_duck_Guangxi_4196_2005_H5N1_hemagglutinin_HA_gene:0.003487199649459728):0):0,(gi_116271102_gb_DQ992732_1_Influenza_A_virus_A_duck_Guangxi_4665_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271120_gb_DQ992741_1_Influenza_A_virus_A_duck_Guangxi_89_2006_H5N1_hemagglutinin_HA_gene:0.005216214682668413):0):0.003488705422378522):0,gi_116271080_gb_DQ992721_1_Influenza_A_virus_A_duck_Guangxi_3548_2005_H5N1_hemagglutinin_HA_gene:0.003476000461681531):0.00349298803704163,gi_84797175_gb_DQ320896_1_Influenza_A_virus_A_goose_Guangxi_345_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_84797183_gb_DQ320900_1_Influenza_A_virus_A_duck_Guangxi_951_2005_H5N1_hemagglutinin_HA_gene:0.003508232560535233):0,((gi_116271076_gb_DQ992719_1_Influenza_A_virus_A_goose_Guangxi_3316_2005_H5N1_hemagglutinin_HA_gene:0.001742838231854784,((gi_116070383_gb_CY017051_1_Influenza_A_virus_A_quail_Viet_Nam_15_2005_H5N1_segment_4:0.00174656797544696,gi_116070364_gb_CY017059_1_Influenza_A_virus_A_chicken_Viet_Nam_17_2005_H5N1_segment_4:0.001737729919792751):0.001747752139180657,gi_115951804_gb_CY016883_1_Influenza_A_virus_A_duck_Viet_Nam_12_2005_H5N1_segment_4:0):0):0.007002541202113411,gi_115953503_gb_CY016867_1_Influenza_A_virus_A_chicken_Viet_Nam_10_2005_H5N1_segment_4:0.001775134289606655):0.005273592074853607):0,(gi_116271090_gb_DQ992726_1_Influenza_A_virus_A_duck_Guangxi_4016_2005_H5N1_hemagglutinin_HA_gene:0,((gi_84797205_gb_DQ320911_1_Influenza_A_virus_A_duck_Hunan_1265_2005_H5N1_hemagglutinin_HA_gene:0.001745539503253515,(gi_84797207_gb_DQ320912_1_Influenza_A_virus_A_duck_Hunan_1608_2005_H5N1_hemagglutinin_HA_gene:0,gi_84797209_gb_DQ320913_1_Influenza_A_virus_A_duck_Hunan_1652_2005_H5N1_hemagglutinin_HA_gene:0):0.003507231073277777):0.003500834024181884,gi_116271202_gb_DQ992782_1_Influenza_A_virus_A_pheasant_Shantou_2239_2006_H5N1_hemagglutinin_HA_gene:0.005641833103278633):0):0):0.003490204404840275):0.003538784804755077):0.001862991816476043,(gi_57915979_gb_AY737289_1_Influenza_A_virus_A_chicken_Guangdong_191_04_H5N1_segment_4:0.01598362221225046,gi_84797203_gb_DQ320910_1_Influenza_A_virus_A_chicken_Hunan_999_2005_H5N1_hemagglutinin_HA_gene:0.007034379432321841):0):0):0.00703139748397562,((((((((((gi_115608030_gb_CY016787_1_Influenza_A_virus_A_chicken_Afghanistan_1207_2006_H5N1_segment_4:0.003511449664033359,gi_133983148_gb_CY020637_1_Influenza_A_virus_A_chicken_Afghanistan_1573_92_2006_H5N1_segment_4:0.001754494339595659):0,gi_133982943_gb_CY020621_1_Influenza_A_virus_A_chicken_Afghanistan_1573_47_2006_H5N1_segment_4:0):0,gi_134048315_gb_CY021373_1_Influenza_A_virus_A_chicken_Afghanistan_1573_7_2006_H5N1_segment_4:0):0,(gi_118495726_dbj_AB284324_1_Influenza_A_virus_A_common_goldeneye_Mongolia_12_2006_H5N1_HA_gene_for_haemagglutinin:0,gi_109809721_dbj_AB263752_1_Influenza_A_virus_A_whooper_swan_Mongolia_2_06_H5N1_genomic_RNA:0):0.001751550733838528):0,gi_133983049_gb_CY020629_1_Influenza_A_virus_A_chicken_Afghanistan_1573_65_2006_H5N1_segment_4:0):0.001758565238909,gi_115608011_gb_CY016779_1_Influenza_A_virus_A_cygnus_cygnus_Iran_754_2006_H5N1_segment_4:0.001771683307730219):0.001745909746397546,((((((((((gi_91984128_gb_DQ095621_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_12_05_H5N1_hemagglutinin_HA_gene:0,gi_91984122_gb_DQ095616_2_Influenza_A_virus_A_Brown_headed_Gull_Qinghai_3_05_H5N1_hemagglutinin_HA_gene:0):0,gi_70955425_gb_DQ095615_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_60_05_H5N1_hemagglutinin_HA_gene:0):0,gi_91984126_gb_DQ095618_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_61_05_H5N1_hemagglutinin_HA_gene:0):0,gi_70955436_gb_DQ095623_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_67_05_H5N1_hemagglutinin_HA_gene:0):0.001740820029756551,((gi_91984124_gb_DQ095617_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_5_05_H5N1_hemagglutinin_HA_gene:0,gi_91984117_gb_DQ095612_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_59_05_H5N1_hemagglutinin_HA_gene:0):0,gi_91984119_gb_DQ095613_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_68_05_H5N1_hemagglutinin_HA_gene:0):0):0,gi_75911269_gb_DQ137873_1_Influenza_A_virus_A_bar_headed_goose_Qinghai_0510_05_H5N1_hemagglutinin_HA_gene:0.008948779051035626):0.001748530742438644,gi_70955434_gb_DQ095622_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_65_05_H5N1_hemagglutinin_HA_gene:0.001748849136493507):2.430208080900173e-05,(gi_84797225_gb_DQ320921_1_Influenza_A_virus_A_migratory_duck_Jiangxi_2300_2005_H5N1_hemagglutinin_HA_gene:0.001750882519308859,(gi_116271198_gb_DQ992780_1_Influenza_A_virus_A_Guinea_fowl_Shantou_1341_2006_H5N1_hemagglutinin_HA_gene:0.001746411978623663,((gi_81687114_dbj_AB233319_1_Influenza_A_virus_A_bar_headed_goose_Mongolia_1_05_H5N1_HA_gene_for_hemagglutinin:0.005299777309901594,(gi_148340550_gb_EF619980_1_Influenza_A_virus_A_turkey_Turkey_1_2005_H5N1_segment_4_hemagglutinin_HA_gene:0,gi_89475499_gb_DQ407519_1_Influenza_A_virus_A_turkey_Turkey_1_2005_H5N1_hemagglutinin_HA_gene:0):0.003506592037900718):0,gi_81687118_dbj_AB233320_1_Influenza_A_virus_A_whooper_swan_Mongolia_3_05_H5N1_HA_gene_for_hemagglutinin:0.00174313565797341):0.001744001646625024):0):0):0,gi_70955429_gb_DQ095619_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_75_05_H5N1_hemagglutinin_HA_gene:0):0,gi_70955431_gb_DQ095620_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_62_05_H5N1_hemagglutinin_HA_gene:0):0):0,gi_70955423_gb_DQ095614_1_Influenza_A_virus_A_Great_Black_headed_Gull_Qinghai_2_05_H5N1_hemagglutinin_HA_gene:0):0.0143400964840308,((((gi_115526929_gb_DQ997163_1_Influenza_A_virus_A_duck_Hubei_wp_2003_H5N1_segment_4:0,gi_116490085_gb_DQ997172_1_Influenza_A_virus_A_duck_Hubei_wq_2003_H5N1_segment_4:0):0.001747870699263072,gi_47716772_gb_AY609312_1_Influenza_A_virus_A_chicken_Guangdong_174_04_H5N1_segment_4:0.00882635445876988):0,((((gi_58531138_dbj_AB188824_1_Influenza_A_virus_A_chicken_Kyoto_3_2004_H5N1_HA_gene_for_hemagglutinin:0,gi_58531156_dbj_AB189053_1_Influenza_A_virus_A_crow_Kyoto_53_2004_H5N1_HA_gene_for_hemagglutinin:0):0.001745244159294016,gi_58531088_dbj_AB166862_1_Influenza_A_virus_A_chicken_Yamaguchi_7_2004_H5N1_HA_gene_for_hemagglutinin:0.001745244159294016):0,gi_58531174_dbj_AB189061_1_Influenza_A_virus_A_crow_Osaka_102_2004_H5N1_HA_gene_for_hemagglutinin:0.001747870699263072):0,(gi_58531120_dbj_AB188816_1_Influenza_A_virus_A_chicken_Oita_8_2004_H5N1_HA_gene_for_hemagglutinin:0.00351509482326328,(gi_56548875_gb_AY676035_1_Influenza_A_virus_A_chicken_Korea_ES_03_H5N1_hemagglutinin_HA_gene:0.00176284034995723,gi_56548877_gb_AY676036_1_Influenza_A_virus_A_duck_Korea_ESD1_03_H5N1_hemagglutinin_HA_gene:0.001757740891130333):0.00174887394978696):0.001750990387508705):0.005285677271026387):0,(gi_115527022_gb_DQ997276_1_Influenza_A_virus_A_goose_Jilin_hb_2003_H5N1_segment_4:0,(gi_116271200_gb_DQ992781_1_Influenza_A_virus_A_goose_Shantou_2086_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271194_gb_DQ992778_1_Influenza_A_virus_A_goose_Shantou_239_2006_H5N1_hemagglutinin_HA_gene:0.001790841868806692):0.02386659091534147):0.005301266756554381):0.001794716682841031):0.003468852192565371,((gi_86753761_gb_DQ366330_1_Influenza_A_virus_A_chicken_Guangxi_12_2004_H5N1_hemagglutinin_mRNA:0,gi_86753763_gb_DQ366338_1_Influenza_A_virus_A_duck_Guangxi_13_2004_H5N1_hemagglutinin_mRNA:0):0.01256241508045397,(((gi_50296026_gb_AY651321_1_Influenza_A_virus_A_Ck_Indonesia_BL_2003_H5N1_hemagglutinin_HA_gene:0,gi_50296028_gb_AY651322_1_Influenza_A_virus_A_Dk_Indonesia_MS_2004_H5N1_hemagglutinin_HA_gene:0):0,gi_50296024_gb_AY651320_1_Influenza_A_virus_A_Ck_Indonesia_PA_2003_H5N1_hemagglutinin_HA_gene:0):0,(((gi_93008282_gb_DQ497667_1_Influenza_A_virus_A_chicken_Dairi_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0,gi_93008278_gb_DQ497665_1_Influenza_A_virus_A_chicken_Simalanggang_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0.005271934201278639):0,(gi_93008284_gb_DQ497668_1_Influenza_A_virus_A_chicken_Deli_Serdang_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0,(gi_93008286_gb_DQ497669_1_Influenza_A_virus_A_chicken_Tarutung_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0.001750794214619565,gi_93008280_gb_DQ497666_1_Influenza_A_virus_A_chicken_Tebing_Tinggi_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0):0.001750497239232128):0):0.007283613623137076,((((gi_93008250_gb_DQ497651_1_Influenza_A_virus_A_chicken_Gunung_Kidal_BBVW_2005_H5N1_hemagglutinin_HA_gene:0.00349233927623722,gi_93008234_gb_DQ497643_1_Influenza_A_virus_A_chicken_Magetan_BBVW_2005_H5N1_hemagglutinin_HA_gene:0):0.003493450654475125,gi_93008266_gb_DQ497659_1_Influenza_A_virus_A_duck_Parepare_BBVM_2005_H5N1_hemagglutinin_HA_gene:0.005235145270217313):0,gi_113494600_gb_CY014185_1_Influenza_A_virus_A_chicken_Indonesia_CDC25_2005_H5N1_segment_4_sequence:0.001856775200055526):0.00536109450307212,gi_93008244_gb_DQ497648_1_Influenza_A_virus_A_chicken_Purworejo_BBVW_2005_H5N1_hemagglutinin_HA_gene:0.00717066861369088):0.003555063307150324):0.005153039596277611):0.005273602859159524):0):0):0.002348210859726875,gi_57916076_gb_AY737304_1_Influenza_A_virus_A_duck_Guangdong_173_04_H5N1_segment_4:0.01778012982633171):0.001168066004265154,(gi_56548873_gb_AY676034_1_Influenza_A_virus_A_egret_Hong_Kong_757_2_03_H5N1_hemagglutinin_HA_gene:0.001776352376955264,((((((((gi_54873457_gb_AY770991_1_Influenza_A_virus_A_chicken_Ayutthaya_Thailand_CU_23_04_H5N1_hemagglutinin_gene:0,(gi_48431281_gb_AY590568_2_Influenza_A_virus_A_chicken_Nakorn_Patom_Thailand_CU_K2_2004_H5N1_hemagglutinin_gene:0.001722594452666358,(gi_116664740_gb_DQ999880_1_Influenza_A_virus_A_chicken_Thailand_PC_168_2006_H5N1_hemagglutinin_gene:0.005191391777814957,(gi_50296070_gb_AY651343_1_Influenza_A_virus_A_Ck_Viet_Nam_C57_2004_H5N1_hemagglutinin_HA_gene:0,gi_58618439_gb_AY818136_1_Influenza_A_virus_A_chicken_Vietnam_C58_04_H5N1_hemagglutinin_HA_gene:0):0.005172019605630252):0):0.001718586608544867):0,gi_126568051_gb_AY553802_2_Influenza_A_virus_A_little_grebe_Thailand_Phichit_01_2004_H5N1_hemagglutinin_HA_gene:0.001717095230686608):0,(gi_50296040_gb_AY651328_1_Influenza_A_virus_A_Ck_Thailand_9_1_2004_H5N1_hemagglutinin_HA_gene:0,gi_50296042_gb_AY651329_1_Influenza_A_virus_A_Qa_Thailand_57_2004_H5N1_hemagglutinin_HA_gene:0.003455373081744809):0):0,gi_50296044_gb_AY651330_1_Influenza_A_virus_A_bird_Thailand_3_1_2004_H5N1_hemagglutinin_HA_gene:0):0,gi_119368941_gb_DQ989969_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD0404F_2004_H5N1_hemagglutinin_HA_gene:0):0,(((gi_119368922_gb_DQ989961_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD0104F_2004_H5N1_hemagglutinin_HA_gene:0,gi_119368964_gb_DQ989979_1_Influenza_A_virus_A_open_billed_stork_Suphanburi_TSD0912F_2004_H5N1_hemagglutinin_HA_gene:0):0,((gi_85062766_gb_DQ334760_1_Influenza_A_virus_A_chicken_Thailand_Kanchanaburi_CK_160_2005_H5N1_hemagglutinin_gene:0,gi_85062798_gb_DQ334776_1_Influenza_A_virus_A_chicken_Thailand_Nontaburi_CK_162_2005_H5N1_hemagglutinin_gene:0.001736070028232976):0.001736070028232976,(gi_85062782_gb_DQ334768_1_Influenza_A_virus_A_quail_Thailand_Nakhon_Pathom_QA_161_2005_H5N1_hemagglutinin_gene:0.001737422291339462,gi_116664736_gb_DQ999887_1_Influenza_A_virus_A_chicken_Thailand_PC_170_2006_H5N1_hemagglutinin_gene:0.00711789381930134):0):0.001727537941145114):0.001719018028398754,((((gi_115609697_gb_CY016827_1_Influenza_A_virus_A_duck_Viet_Nam_1_2005_H5N1_segment_4:0.001728975069934149,gi_115952217_gb_CY016875_1_Influenza_A_virus_A_chicken_Viet_Nam_11_2005_H5N1_segment_4:0):0,(gi_115609756_gb_CY016891_1_Influenza_A_virus_A_duck_Viet_Nam_20_2005_H5N1_segment_4:0,gi_117571349_gb_CY017187_1_Influenza_A_virus_A_duck_Viet_Nam_19_2005_H5N1_segment_4:0):0.001729978320458038):0,(gi_115953078_gb_CY016835_1_Influenza_A_virus_A_chicken_Viet_Nam_2_2005_H5N1_segment_4:0.001727971819410261,((gi_115952998_gb_CY016843_1_Influenza_A_virus_A_chicken_Viet_Nam_6_2005_H5N1_segment_4:0,gi_115952885_gb_CY016851_1_Influenza_A_virus_A_chicken_Viet_Nam_8_2005_H5N1_segment_4:0):0,gi_115952786_gb_CY016859_1_Influenza_A_virus_A_chicken_Viet_Nam_9_2005_H5N1_segment_4:0):0.001730338025698383):0):0,gi_116070093_gb_CY017067_1_Influenza_A_virus_A_duck_Viet_Nam_18_2005_H5N1_segment_4:0.003470454620237002):0.00346227322945086):0):0,((gi_119369021_gb_DQ990003_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBA3011M_2005_H5N1_hemagglutinin_HA_gene:0.006930334787652858,gi_119368983_gb_DQ989987_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD1521J_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_119369002_gb_DQ989995_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD2616F_2005_H5N1_hemagglutinin_HA_gene:0):0.00171769596142812):0,(((((gi_50296060_gb_AY651338_1_Influenza_A_virus_A_Ck_Viet_Nam_35_2004_H5N1_hemagglutinin_HA_gene:0,gi_72398640_gb_DQ099755_1_Influenza_A_virus_A_chicken_Viet_Nam_TN_025_2004_H5N1_segment_4_hemagglutinin_HA_gene:0):0,(gi_50296062_gb_AY651339_1_Influenza_A_virus_A_Ck_Viet_Nam_36_2004_H5N1_hemagglutinin_HA_gene:0,gi_58618441_gb_AY818137_1_Influenza_A_virus_A_quail_Vietnam_36_04_H5N1_hemagglutinin_HA_gene:0):0):0,gi_50296066_gb_AY651341_1_Influenza_A_virus_A_Ck_Viet_Nam_38_2004_H5N1_hemagglutinin_HA_gene:0.001723898787024601):0,(gi_50296064_gb_AY651340_1_Influenza_A_virus_A_Ck_Viet_Nam_37_2004_H5N1_hemagglutinin_HA_gene:0,gi_72398646_gb_DQ099758_1_Influenza_A_virus_A_chicken_Viet_Nam_TG_023_2004_H5N1_segment_4_hemagglutinin_HA_gene:0):0):0,(gi_50296058_gb_AY651337_1_Influenza_A_virus_A_chicken_Viet_Nam_33_2004_H5N1_hemagglutinin_HA_gene:0,gi_72398650_gb_DQ099760_1_Influenza_A_virus_A_chicken_Viet_Nam_LD_080_2004_H5N1_segment_4_hemagglutinin_HA_gene:0.001717095230686608):0):0.001720021278922643):0.01055766215265053):0.005358448309668883):0.001761840501632868,(((gi_115526951_gb_DQ997531_1_Influenza_A_virus_A_duck_Shanghai_xj_2002_H5N1_segment_4:0.005278794819343816,gi_84797211_gb_DQ320914_1_Influenza_A_virus_A_duck_Shantou_4610_2003_H5N1_hemagglutinin_HA_gene:0.01284488324698502):0.001757640774884637,(((gi_61698017_gb_AY950232_1_Influenza_A_virus_A_Chicken_Henan_12_2004_H5N1_segment_4:0,(gi_61698021_gb_AY950234_1_Influenza_A_virus_A_Chicken_Henan_16_2004_H5N1_segment_4:0.001735066777709088,gi_61698013_gb_AY950230_1_Influenza_A_virus_A_chicken_Henan_01_2004_H5N1_segment_4:0.008978464942589802):0):0,gi_61698019_gb_AY950233_1_Influenza_A_virus_A_Chicken_Henan_13_2004_H5N1_segment_4:0):0.001751797465143454,(((gi_61698015_gb_AY950231_1_Influenza_A_virus_A_Chicken_Henan_210_2004_H5N1_segment_4:0,gi_115382756_gb_DQ997219_1_Influenza_A_virus_A_chicken_Henan_wu_2004_H5N1_hemagglutinin_HA_gene:0):0,((gi_50956627_gb_AY684706_1_Influenza_A_virus_A_chicken_Hubei_327_2004_H5N1_hemagglutinin_HA_gene:0.005217432951488556,gi_55233227_gb_AY770079_1_Influenza_A_virus_A_chicken_Hubei_489_2004_H5N1_hemagglutinin_HA_gene:0):0,gi_61698025_gb_AY950236_1_Influenza_A_virus_A_swan_Guangxi_307_2004_H5N1_segment_4:0):0):0,(gi_115527053_gb_DQ997218_1_Influenza_A_virus_A_mallard_Guangxi_wt_2004_H5N1_segment_4:0,gi_61698023_gb_AY950235_1_Influenza_A_virus_A_WildDuck_Guangdong_314_2004_H5N1_segment_4:0):0):0.001750850272480137):0.001728264706498331):0,((((gi_84797135_gb_DQ320876_1_Influenza_A_virus_A_chicken_Fujian_1042_2005_H5N1_hemagglutinin_HA_gene:0,gi_84797133_gb_DQ320875_1_Influenza_A_virus_A_duck_Fujian_897_2005_H5N1_hemagglutinin_HA_gene:0.003528528430078331):0.00176015440510442,gi_84797213_gb_DQ320915_1_Influenza_A_virus_A_goose_Shantou_2216_2005_H5N1_hemagglutinin_HA_gene:0.003526004140535911):0.001770926944004256,(gi_116271066_gb_DQ992714_1_Influenza_A_virus_A_duck_Guangxi_2775_2005_H5N1_hemagglutinin_HA_gene:0.005386569420247741,gi_84797185_gb_DQ320901_1_Influenza_A_virus_A_duck_Guangzhou_20_2005_H5N1_hemagglutinin_HA_gene:0.01072223777210778):0.001717835561053442):0,gi_50296108_gb_AY651362_1_Influenza_A_virus_A_peregrine_falcon_HK_D0028_2004_H5N1_hemagglutinin_HA_gene:0.00177682351679038):0.005290923206695382):0):0.003536628933780002,(gi_115502972_gb_DQ997283_1_Influenza_A_virus_A_chicken_Jilin_hd_2002_H5N1_segment_4:0,gi_50365728_gb_AY653200_1_Influenza_A_virus_A_chicken_Jilin_9_2004_H5N1_segment_4:0):0.001720594756813111):0.001780878816563647,(((((((gi_85062566_gb_DQ343151_1_Influenza_A_virus_A_chicken_Hebei_718_2001_H5N1_hemagglutinin_HA_gene:0.006438546315122176,gi_115526911_gb_DQ997513_1_Influenza_A_virus_A_duck_Guangxi_xa_2001_H5N1_segment_4:0.005474178307851131):0.001575023537889367,(gi_115526992_gb_DQ997405_1_Influenza_A_virus_A_goose_Fujian_bb_2003_H5N1_segment_4:0.01068132475604614,(((gi_116271170_gb_DQ992766_1_Influenza_A_virus_A_chicken_Guiyang_441_2006_H5N1_hemagglutinin_HA_gene:0.001789803345977126,gi_116271168_gb_DQ992765_1_Influenza_A_virus_A_goose_Guiyang_337_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271144_gb_DQ992753_1_Influenza_A_virus_A_duck_Guiyang_2231_2005_H5N1_hemagglutinin_HA_gene:0.003614908465910373):0.02017560843466733,gi_47834879_gb_AY575875_1_Influenza_A_virus_A_Ck_HK_31_4_02_H5N1_hemagglutinin_HA_gene:0):0):0.008906830791496819):0,gi_19697773_gb_AY059482_1_Influenza_A_virus_A_Goose_Hong_Kong_3014_8_2000_H5N1_segment_4_hemagglutinin_HA_gene:0.008822165717130889):0.001750850272480137,((gi_19697771_gb_AY059481_1_Influenza_A_virus_A_Duck_Hong_Kong_2986_1_2000_H5N1_segment_4_hemagglutinin_HA_gene:0.003510650328248212,(gi_28810752_gb_AY221529_1_Influenza_A_virus_A_Chicken_HongKong_YU562_01_H5N1_hemagglutinin_HA_gene:0.002990908644525998,(gi_28810155_gb_AY221528_1_Influenza_A_virus_A_Chicken_HongKong_YU822_2_01_H5N1_hemagglutinin_HA_gene:0,gi_28809438_gb_AY221527_1_Influenza_A_virus_A_Chicken_HongKong_YU822_2_01_MB_H5N1_hemagglutinin_HA_gene:0.001733606498170934):0.002541251581346716):0.00148601536196278):0,((((gi_28807565_gb_AY221524_1_Influenza_A_virus_A_Chicken_HongKong_FY150_01_H5N1_hemagglutinin_HA_gene:0,gi_28807284_gb_AY221523_1_Influenza_A_virus_A_Chicken_HongKong_FY150_01_MB_H5N1_hemagglutinin_HA_gene:0):0.001746003867343182,gi_28808108_gb_AY221525_1_Influenza_A_virus_A_Pheasant_HongKong_FY155_01_MB_H5N1_hemagglutinin_HA_gene:0):0,gi_28808463_gb_AY221526_1_Influenza_A_virus_A_Pheasant_HongKong_FY155_01_H5N1_hemagglutinin_HA_gene:0):0.001748101923847095,(gi_28806384_gb_AY221522_1_Influenza_A_virus_A_Chicken_HongKong_NT873_3_01_H5N1_hemagglutinin_HA_gene:0,gi_28805557_gb_AY221521_1_Influenza_A_virus_A_Chicken_HongKong_NT873_3_01_MB_H5N1_hemagglutinin_HA_gene:0):0.005295685193056846):0):0):0,gi_115526968_gb_DQ997410_1_Influenza_A_virus_A_duck_Zhejiang_bj_2002_H5N1_segment_4:0.02872234987509528):0.003338659947999436,(gi_115382881_gb_DQ997182_1_Influenza_A_virus_A_chicken_Jiangsu_cz1_2002_H5N1_segment_4:0.00549839256281252,(gi_115502990_gb_DQ997377_1_Influenza_A_virus_A_chicken_Jilin_hf_2002_H5N1_segment_4:0.003730202066910738,(gi_115502941_gb_DQ997156_1_Influenza_A_virus_A_chicken_Hubei_wo_2003_H5N1_segment_4:0.01412399896869351,((gi_85062564_gb_DQ343150_1_Influenza_A_virus_A_chicken_Hebei_326_2005_H5N1_hemagglutinin_HA_gene:0.0119832032416233,gi_117414797_gb_DQ914814_1_Influenza_A_virus_A_chicken_Shanxi_2_2006_H5N1_segment_4:0.02646581670056432):0.01769230714106282,(gi_116271242_gb_DQ992802_1_Influenza_A_virus_A_duck_Yunnan_5236_2005_H5N1_hemagglutinin_HA_gene:0.009792926891152985,gi_116271226_gb_DQ992794_1_Influenza_A_virus_A_goose_Yunnan_3315_2005_H5N1_hemagglutinin_HA_gene:0.005533019462053305):0.005744816263230659):0):0.007231174873218021):0.006995706222144872):0.001737446897022598):0.002021056990540436,(((gi_84797149_gb_DQ320883_1_Influenza_A_virus_A_duck_Guangxi_1311_2004_H5N1_hemagglutinin_HA_gene:0,gi_84797161_gb_DQ320889_1_Influenza_A_virus_A_goose_Guangxi_2112_2004_H5N1_hemagglutinin_HA_gene:0):0.001754122782637976,gi_84797157_gb_DQ320887_1_Influenza_A_virus_A_duck_Guangxi_1793_2004_H5N1_hemagglutinin_HA_gene:0):0.009191254905631475,gi_71000185_dbj_AB212280_1_Influenza_A_virus_A_duck_Yokohama_aq10_2003_H5N1_HA_gene_for_hemagglutinin:0.007412816692354494):0.003236971178251705):0):0,gi_115397012_gb_DQ997308_1_Influenza_A_virus_A_chicken_Jilin_hh_2002_H5N1_hemagglutinin_HA_gene:0.001753119532114087):0.001816732100401747,(gi_101918580_dbj_AB259712_1_Influenza_A_virus_A_duck_Hokkaido_Vac_1_04_H5N1_genomic_RNA:0.005232751641785671,gi_109452300_dbj_AB263192_1_Influenza_A_virus_A_R_duck_Mongolia_54_01_duck_Mongolia_47_01_H5N1_genomic_RNA:0):0.07044093106693458):0.001723190782503228,gi_115502957_gb_DQ997268_1_Influenza_A_virus_A_chicken_Jilin_ha_2003_H5N1_segment_4:0.008922628548613474):0.00170676096400408,(gi_19697757_gb_AY059474_1_Influenza_A_virus_A_Goose_Hong_Kong_ww26_2000_H5N1_segment_4_hemagglutinin_HA_gene:0.001713731003501752,gi_19697759_gb_AY059475_1_Influenza_A_virus_A_Goose_Hong_Kong_ww28_2000_H5N1_segment_4_hemagglutinin_HA_gene:0):0.003450010292730959):0,((((gi_21359659_gb_AF468837_1_Influenza_A_virus_A_Duck_Anyang_AVL_1_2001_H5N1_hemagglutinin_H5_H5_gene:0.003500645154619918,gi_115527004_gb_DQ997522_1_Influenza_A_virus_A_goose_Guangdong_xb_2001_H5N1_segment_4:0.006873622954156017):0.001712727752977863,gi_85062568_gb_DQ343152_1_Influenza_A_virus_A_chicken_Hebei_108_02_H5N1_hemagglutinin_HA_gene:0.01228531746654179):0,gi_58374179_gb_AY854190_1_Influenza_A_virus_A_duck_Shandong_093_2004_H5N1_segment_4:0.005238169550378956):0.003443369809696002,gi_116583103_gb_DQ997538_1_Influenza_A_virus_A_chicken_Jilin_xv_2002_H5N1_hemagglutinin_HA_gene:0):0.003479506662947322):0.00181199504389235,(((gi_9863931_gb_AF216737_1_AF216737_Influenza_A_virus_A_Environment_Hong_Kong_437_10_99_H5N1_hemagglutinin_5_gene:0.001725835220679303,gi_9863913_gb_AF216729_1_AF216729_Influenza_A_virus_A_Environment_Hong_Kong_437_8_99_H5N1_hemagglutinin_5_gene:0.003478758783969347):0,gi_9863876_gb_AF216713_1_AF216713_Influenza_A_virus_A_Environment_Hong_Kong_437_4_99_H5N1_hemagglutinin_5_gene:0.001726021381335435):0,gi_9863895_gb_AF216721_1_AF216721_Influenza_A_virus_A_Environment_Hong_Kong_437_6_99_H5N1_hemagglutinin_5_gene:0.001725835220679303):0.007059043784511681):0.003388649089806319,gi_115503009_gb_DQ997547_1_Influenza_A_virus_A_chicken_Jilin_xw_2003_H5N1_segment_4:0):0.001721598007336999,gi_115382830_gb_DQ997133_1_Influenza_A_virus_A_chicken_Hubei_wl_1997_H5N1_segment_4:0.00521837847365329):0.003474838797059389):0,(((gi_4240437_gb_AF082035_1_Influenza_A_virus_A_Chicken_Hong_Kong_786_97_H5N1_hemagglutinin_H5_mRNA:0,gi_4240435_gb_AF082034_1_Influenza_A_virus_A_Chicken_Hong_Kong_728_97_H5N1_hemagglutinin_H5_mRNA:0.001733707092688165):0,((gi_3068720_gb_AF057291_1_AF057291_Influenza_A_virus_A_chicken_Hong_Kong_258_97_H5N1_hemagglutinin_mRNA:0.001733707092688165,(gi_86753755_gb_DQ366306_1_Influenza_A_virus_A_duck_Vietnam_1_2005_H5N1_hemagglutinin_mRNA:0.01506376995644411,gi_86753759_gb_DQ366322_1_Influenza_A_virus_A_duck_Vietnam_8_05_H5N1_hemagglutinin_mRNA:0.03873457055623361):0.009942760047882547):0,gi_86753757_gb_DQ366314_1_Influenza_A_virus_A_goose_Vietnam_3_05_H5N1_hemagglutinin_mRNA:0.001735713593735941):0.00173131949665679):0.001874828124024311,(gi_6048756_gb_AF098543_1_AF098543_Influenza_A_virus_A_Duck_Hong_Kong_p46_97_H5N1_hemagglutinin_gene:0,gi_6048760_gb_AF098545_1_AF098545_Influenza_A_virus_A_Goose_Hong_Kong_w355_97_H5N1_hemagglutinin_gene:0.00173842554186335):0.00159343086596657):0.01069237564731552):0.005156783435137814):0.)";
-      var res = d3.layout.newick_parser(flu_tree);
-      default_tree_settings();
-      tree.branch_length(function(n) {
-        return undefined;
-      });
-      var year_re = new RegExp("_virus_A_([^_]+)"),
+$("#example_influenza_color").on ("click", function (e) {
+    var flu_tree = "(gi_5805286_gb_AF144305_1_Influenza_A_virus_A_Goose_Guangdong_1_96_H5N1_hemagglutinin_HA_gene:0,(gi_13676824_gb_AF364334_1_AF364334_Influenza_A_virus_A_Goose_Guangdong_3_97_H5N1_segment_4_hemagglutinin_HA_gene:0.003460330275528673,((((gi_115343521_gb_DQ997087_1_Influenza_A_virus_A_chicken_Hubei_wf_2002_H5N1_hemagglutinin_HA_gene:0.005691285111443731,gi_115343549_gb_DQ997102_1_Influenza_A_virus_A_chicken_Hubei_wh_1997_H5N1_hemagglutinin_HA_gene:0.01044062060744143):0,gi_115382807_gb_DQ997122_1_Influenza_A_virus_A_chicken_Hubei_wj_1997_H5N1_segment_4:0.005146282229630558):0.003458892023492166,((((((((((((((((((((((((((((((gi_116271104_gb_DQ992733_1_Influenza_A_virus_A_duck_Guangxi_4830_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271096_gb_DQ992729_1_Influenza_A_virus_A_goose_Guangxi_4289_2005_H5N1_hemagglutinin_HA_gene:0.001731367416891582):0,(gi_116271110_gb_DQ992736_1_Influenza_A_virus_A_duck_Guangxi_5165_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271100_gb_DQ992731_1_Influenza_A_virus_A_goose_Guangxi_4513_2005_H5N1_hemagglutinin_HA_gene:0):0):0,gi_116271112_gb_DQ992737_1_Influenza_A_virus_A_duck_Guangxi_5270_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271098_gb_DQ992730_1_Influenza_A_virus_A_duck_Guangxi_4428_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271106_gb_DQ992734_1_Influenza_A_virus_A_chicken_Guangxi_4989_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271138_gb_DQ992750_1_Influenza_A_virus_A_duck_Guangxi_804_2006_H5N1_hemagglutinin_HA_gene:0):0,(gi_116271132_gb_DQ992747_1_Influenza_A_virus_A_goose_Guangxi_582_2006_H5N1_hemagglutinin_HA_gene:0.001844537761868173,gi_116664738_gb_DQ999872_1_Influenza_A_virus_A_chicken_Thailand_NP_172_2006_H5N1_hemagglutinin_gene:0.01148521138314443):0):0,(gi_116271212_gb_DQ992787_1_Influenza_A_virus_A_duck_Hunan_5106_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271214_gb_DQ992788_1_Influenza_A_virus_A_duck_Hunan_5152_2005_H5N1_hemagglutinin_HA_gene:0):0.003460794024231023):0,((gi_116271116_gb_DQ992739_1_Influenza_A_virus_A_duck_Guangxi_5457_2005_H5N1_hemagglutinin_HA_gene:0.001722809077664727,gi_116271122_gb_DQ992742_1_Influenza_A_virus_A_duck_Guangxi_150_2006_H5N1_hemagglutinin_HA_gene:0):0.001719134242840447,(gi_116271310_gb_DQ992836_1_Influenza_A_virus_A_chicken_Hong_Kong_282_2006_H5N1_hemagglutinin_HA_gene:0.001740861832069726,gi_116271320_gb_DQ992841_1_Influenza_A_virus_A_chicken_Hong_Kong_947_2006_H5N1_hemagglutinin_HA_gene:0):0.001721140743888223):0):0,((((gi_116271690_gb_DQ993026_1_Influenza_A_virus_A_chicken_Guangxi_1951_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271692_gb_DQ993027_1_Influenza_A_virus_A_goose_Guangxi_1458_2006_H5N1_hemagglutinin_HA_gene:0.003492498390440192):0.003468421626776727,gi_116271124_gb_DQ992743_1_Influenza_A_virus_A_goose_Guangxi_224_2006_H5N1_hemagglutinin_HA_gene:0):0,((((gi_116271128_gb_DQ992745_1_Influenza_A_virus_A_chicken_Guangxi_463_2006_H5N1_hemagglutinin_HA_gene:0,(gi_116271126_gb_DQ992744_1_Influenza_A_virus_A_duck_Guangxi_288_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271686_gb_DQ993024_1_Influenza_A_virus_A_goose_Guangxi_1898_2006_H5N1_hemagglutinin_HA_gene:0):0):0,gi_116271682_gb_DQ993022_1_Influenza_A_virus_A_duck_Guangxi_2143_2006_H5N1_hemagglutinin_HA_gene:0.003465325984019963):0,((gi_116271684_gb_DQ993023_1_Influenza_A_virus_A_duck_Guangxi_1830_2006_H5N1_hemagglutinin_HA_gene:0.003461661165967627,gi_116271688_gb_DQ993025_1_Influenza_A_virus_A_goose_Guangxi_1633_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271130_gb_DQ992746_1_Influenza_A_virus_A_duck_Guangxi_392_2006_H5N1_hemagglutinin_HA_gene:0.001856906294832496):0):0,gi_116271136_gb_DQ992749_1_Influenza_A_virus_A_duck_Guangxi_744_2006_H5N1_hemagglutinin_HA_gene:0.001857439720249489):0):0.001731549330460619,gi_116271164_gb_DQ992763_1_Influenza_A_virus_A_chicken_Guiyang_29_2006_H5N1_hemagglutinin_HA_gene:0.003496658145480596):0):0,((((((gi_116271156_gb_DQ992759_1_Influenza_A_virus_A_chicken_Guiyang_3721_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271162_gb_DQ992762_1_Influenza_A_virus_A_chicken_Guiyang_4059_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271166_gb_DQ992764_1_Influenza_A_virus_A_duck_Guiyang_293_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271172_gb_DQ992767_1_Influenza_A_virus_A_duck_Guiyang_497_2006_H5N1_hemagglutinin_HA_gene:0.001721140743888223):0):0):0,(gi_116271158_gb_DQ992760_1_Influenza_A_virus_A_duck_Guiyang_3834_2005_H5N1_hemagglutinin_HA_gene:0.001847390505740832,gi_116271160_gb_DQ992761_1_Influenza_A_virus_A_duck_Guiyang_3996_2005_H5N1_hemagglutinin_HA_gene:0):0):0.001720137493364335,(gi_116271302_gb_DQ992832_1_Influenza_A_virus_A_duck_Fujian_668_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271304_gb_DQ992833_1_Influenza_A_virus_A_duck_Fujian_671_2006_H5N1_hemagglutinin_HA_gene:0):0.003496949847231326):0,gi_116271316_gb_DQ992839_1_Influenza_A_virus_A_common_magpie_Hong_Kong_645_2006_H5N1_hemagglutinin_HA_gene:0.003486465671281922):0,(gi_116271222_gb_DQ992792_1_Influenza_A_virus_A_duck_Hunan_856_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271224_gb_DQ992793_1_Influenza_A_virus_A_duck_Hunan_988_2006_H5N1_hemagglutinin_HA_gene:0):0.001722809077664727):0,(gi_116271872_gb_DQ993117_1_Influenza_A_virus_A_goose_Guangxi_532_2006_H5N1_hemagglutinin_HA_gene:0,(gi_116271204_gb_DQ992783_1_Influenza_A_virus_A_goose_Shantou_3265_2006_H5N1_hemagglutinin_HA_gene:0.001732986459249654,gi_116271206_gb_DQ992784_1_Influenza_A_virus_A_goose_Shantou_3295_2006_H5N1_hemagglutinin_HA_gene:0.001721805827140838):0.005190868402890893):0.001720137493364335):0):0,(((gi_116271282_gb_DQ992822_1_Influenza_A_virus_A_chicken_Fujian_10039_2005_H5N1_hemagglutinin_HA_gene:0,((gi_116271288_gb_DQ992825_1_Influenza_A_virus_A_duck_Fujian_10934_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271292_gb_DQ992827_1_Influenza_A_virus_A_duck_Fujian_11311_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271290_gb_DQ992826_1_Influenza_A_virus_A_duck_Fujian_11094_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271296_gb_DQ992829_1_Influenza_A_virus_A_duck_Fujian_12032_2005_H5N1_hemagglutinin_HA_gene:0):0):0):0,((gi_116271280_gb_DQ992821_1_Influenza_A_virus_A_chicken_Fujian_9821_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271276_gb_DQ992819_1_Influenza_A_virus_A_duck_Fujian_9651_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271278_gb_DQ992820_1_Influenza_A_virus_A_duck_Fujian_9713_2005_H5N1_hemagglutinin_HA_gene:0):0):0):0,((gi_116271294_gb_DQ992828_1_Influenza_A_virus_A_chicken_Fujian_11933_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271298_gb_DQ992830_1_Influenza_A_virus_A_chicken_Fujian_12239_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271300_gb_DQ992831_1_Influenza_A_virus_A_chicken_Fujian_584_2006_H5N1_hemagglutinin_HA_gene:0):0.001731983208725766):0.01235111046553835,(gi_116271208_gb_DQ992785_1_Influenza_A_virus_A_chicken_Shantou_3840_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271210_gb_DQ992786_1_Influenza_A_virus_A_chicken_Shantou_3923_2006_H5N1_hemagglutinin_HA_gene:0):0.001722809077664727):0):0,(gi_116271190_gb_DQ992776_1_Influenza_A_virus_A_duck_Shantou_13323_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271196_gb_DQ992779_1_Influenza_A_virus_A_chicken_Shantou_1233_2006_H5N1_hemagglutinin_HA_gene:0.006916223581789416):0.001718514203919168):0.001720137493364335):0,(((gi_116271218_gb_DQ992790_1_Influenza_A_virus_A_duck_Hunan_324_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271220_gb_DQ992791_1_Influenza_A_virus_A_duck_Hunan_344_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271314_gb_DQ992838_1_Influenza_A_virus_A_crested_myna_Hong_Kong_540_2006_H5N1_hemagglutinin_HA_gene:0.003469728163064682):0,((((gi_116271322_gb_DQ992842_1_Influenza_A_virus_A_Japanese_white_eye_Hong_Kong_1038_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271318_gb_DQ992840_1_Influenza_A_virus_A_little_egret_Hong_Kong_718_2006_H5N1_hemagglutinin_HA_gene:0):0.001736616249742598,(((gi_116271324_gb_DQ992843_1_Influenza_A_virus_A_common_magpie_Hong_Kong_2125_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271328_gb_DQ992845_1_Influenza_A_virus_A_munia_Hong_Kong_2454_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271338_gb_DQ992850_1_Influenza_A_virus_A_common_magpie_Hong_Kong_3033_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271330_gb_DQ992846_1_Influenza_A_virus_A_white_backed_munia_Hong_Kong_2469_2006_H5N1_hemagglutinin_HA_gene:0):0.0017187003645753):0,gi_116271326_gb_DQ992844_1_Influenza_A_virus_A_common_magpie_Hong_Kong_2256_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271332_gb_DQ992847_1_Influenza_A_virus_A_large_billed_crow_Hong_Kong_2512_2006_H5N1_hemagglutinin_HA_gene:0):0.003449554482991331):0):0,gi_116271114_gb_DQ992738_1_Influenza_A_virus_A_goose_Guangxi_5414_2005_H5N1_hemagglutinin_HA_gene:0.007168451271311083):0.01254688926380664,(gi_116271148_gb_DQ992755_1_Influenza_A_virus_A_chicken_Guiyang_3055_2005_H5N1_hemagglutinin_HA_gene:0,((gi_116271154_gb_DQ992758_1_Influenza_A_virus_A_chicken_Guiyang_3570_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271152_gb_DQ992757_1_Influenza_A_virus_A_goose_Guiyang_3422_2005_H5N1_hemagglutinin_HA_gene:0):0.001745987560952093,gi_116271150_gb_DQ992756_1_Influenza_A_virus_A_duck_Guiyang_3242_2005_H5N1_hemagglutinin_HA_gene:0):0):0.00364056800620153):0.001609132453519785,((gi_41207462_gb_AY518362_1_Influenza_A_virus_A_duck_China_E319_2_03_H5N1_hemagglutinin_subtype_H5_H5_gene:0.003460923098550844,((gi_57916028_gb_AY737296_1_Influenza_A_virus_A_chicken_Guangdong_178_04_H5N1_segment_4:0.003504518642431752,((gi_84797179_gb_DQ320898_1_Influenza_A_virus_A_chicken_Guangxi_604_2005_H5N1_hemagglutinin_HA_gene:0,gi_84797177_gb_DQ320897_1_Influenza_A_virus_A_quail_Guangxi_575_2005_H5N1_hemagglutinin_HA_gene:0.003507468039006941):0,gi_84797181_gb_DQ320899_1_Influenza_A_virus_A_duck_Guangxi_793_2005_H5N1_hemagglutinin_HA_gene:0):0.003505713585118946):0,((((((((((gi_116271074_gb_DQ992718_1_Influenza_A_virus_A_chicken_Guangxi_3154_2005_H5N1_hemagglutinin_HA_gene:0.003492056678231004,((gi_116271086_gb_DQ992724_1_Influenza_A_virus_A_chicken_Guangxi_3791_2005_H5N1_hemagglutinin_HA_gene:0.005244386268594013,(gi_116271072_gb_DQ992717_1_Influenza_A_virus_A_duck_Guangxi_3085_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271084_gb_DQ992723_1_Influenza_A_virus_A_duck_Guangxi_3741_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271088_gb_DQ992725_1_Influenza_A_virus_A_duck_Guangxi_3819_2005_H5N1_hemagglutinin_HA_gene:0.00174062564237789):0.001741051570312646):0):0,gi_116271234_gb_DQ992798_1_Influenza_A_virus_A_goose_Yunnan_4494_2005_H5N1_hemagglutinin_HA_gene:0.003506246058869184):0):0,gi_116271238_gb_DQ992800_1_Influenza_A_virus_A_goose_Yunnan_4804_2005_H5N1_hemagglutinin_HA_gene:0.001734090925302022):0,((((((gi_116271140_gb_DQ992751_1_Influenza_A_virus_A_chicken_Guiyang_2147_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271142_gb_DQ992752_1_Influenza_A_virus_A_chicken_Guiyang_2173_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271230_gb_DQ992796_1_Influenza_A_virus_A_goose_Yunnan_4129_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271244_gb_DQ992803_1_Influenza_A_virus_A_duck_Yunnan_5251_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271236_gb_DQ992799_1_Influenza_A_virus_A_duck_Yunnan_4589_2005_H5N1_hemagglutinin_HA_gene:0.001726182062582588):0.001734383374482937,gi_116271254_gb_DQ992808_1_Influenza_A_virus_A_goose_Yunnan_6027_2005_H5N1_hemagglutinin_HA_gene:0.001837329801065454):0,gi_116271252_gb_DQ992807_1_Influenza_A_virus_A_duck_Yunnan_5877_2005_H5N1_hemagglutinin_HA_gene:0):0):0,gi_116271070_gb_DQ992716_1_Influenza_A_virus_A_goose_Guangxi_3017_2005_H5N1_hemagglutinin_HA_gene:0.001742768846430097):0,((gi_116271078_gb_DQ992720_1_Influenza_A_virus_A_duck_Guangxi_3364_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271092_gb_DQ992727_1_Influenza_A_virus_A_duck_Guangxi_4184_2005_H5N1_hemagglutinin_HA_gene:0.003491075058688987,gi_116271094_gb_DQ992728_1_Influenza_A_virus_A_duck_Guangxi_4196_2005_H5N1_hemagglutinin_HA_gene:0.003487199649459728):0):0,(gi_116271102_gb_DQ992732_1_Influenza_A_virus_A_duck_Guangxi_4665_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271120_gb_DQ992741_1_Influenza_A_virus_A_duck_Guangxi_89_2006_H5N1_hemagglutinin_HA_gene:0.005216214682668413):0):0.003488705422378522):0,gi_116271080_gb_DQ992721_1_Influenza_A_virus_A_duck_Guangxi_3548_2005_H5N1_hemagglutinin_HA_gene:0.003476000461681531):0.00349298803704163,gi_84797175_gb_DQ320896_1_Influenza_A_virus_A_goose_Guangxi_345_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_84797183_gb_DQ320900_1_Influenza_A_virus_A_duck_Guangxi_951_2005_H5N1_hemagglutinin_HA_gene:0.003508232560535233):0,((gi_116271076_gb_DQ992719_1_Influenza_A_virus_A_goose_Guangxi_3316_2005_H5N1_hemagglutinin_HA_gene:0.001742838231854784,((gi_116070383_gb_CY017051_1_Influenza_A_virus_A_quail_Viet_Nam_15_2005_H5N1_segment_4:0.00174656797544696,gi_116070364_gb_CY017059_1_Influenza_A_virus_A_chicken_Viet_Nam_17_2005_H5N1_segment_4:0.001737729919792751):0.001747752139180657,gi_115951804_gb_CY016883_1_Influenza_A_virus_A_duck_Viet_Nam_12_2005_H5N1_segment_4:0):0):0.007002541202113411,gi_115953503_gb_CY016867_1_Influenza_A_virus_A_chicken_Viet_Nam_10_2005_H5N1_segment_4:0.001775134289606655):0.005273592074853607):0,(gi_116271090_gb_DQ992726_1_Influenza_A_virus_A_duck_Guangxi_4016_2005_H5N1_hemagglutinin_HA_gene:0,((gi_84797205_gb_DQ320911_1_Influenza_A_virus_A_duck_Hunan_1265_2005_H5N1_hemagglutinin_HA_gene:0.001745539503253515,(gi_84797207_gb_DQ320912_1_Influenza_A_virus_A_duck_Hunan_1608_2005_H5N1_hemagglutinin_HA_gene:0,gi_84797209_gb_DQ320913_1_Influenza_A_virus_A_duck_Hunan_1652_2005_H5N1_hemagglutinin_HA_gene:0):0.003507231073277777):0.003500834024181884,gi_116271202_gb_DQ992782_1_Influenza_A_virus_A_pheasant_Shantou_2239_2006_H5N1_hemagglutinin_HA_gene:0.005641833103278633):0):0):0.003490204404840275):0.003538784804755077):0.001862991816476043,(gi_57915979_gb_AY737289_1_Influenza_A_virus_A_chicken_Guangdong_191_04_H5N1_segment_4:0.01598362221225046,gi_84797203_gb_DQ320910_1_Influenza_A_virus_A_chicken_Hunan_999_2005_H5N1_hemagglutinin_HA_gene:0.007034379432321841):0):0):0.00703139748397562,((((((((((gi_115608030_gb_CY016787_1_Influenza_A_virus_A_chicken_Afghanistan_1207_2006_H5N1_segment_4:0.003511449664033359,gi_133983148_gb_CY020637_1_Influenza_A_virus_A_chicken_Afghanistan_1573_92_2006_H5N1_segment_4:0.001754494339595659):0,gi_133982943_gb_CY020621_1_Influenza_A_virus_A_chicken_Afghanistan_1573_47_2006_H5N1_segment_4:0):0,gi_134048315_gb_CY021373_1_Influenza_A_virus_A_chicken_Afghanistan_1573_7_2006_H5N1_segment_4:0):0,(gi_118495726_dbj_AB284324_1_Influenza_A_virus_A_common_goldeneye_Mongolia_12_2006_H5N1_HA_gene_for_haemagglutinin:0,gi_109809721_dbj_AB263752_1_Influenza_A_virus_A_whooper_swan_Mongolia_2_06_H5N1_genomic_RNA:0):0.001751550733838528):0,gi_133983049_gb_CY020629_1_Influenza_A_virus_A_chicken_Afghanistan_1573_65_2006_H5N1_segment_4:0):0.001758565238909,gi_115608011_gb_CY016779_1_Influenza_A_virus_A_cygnus_cygnus_Iran_754_2006_H5N1_segment_4:0.001771683307730219):0.001745909746397546,((((((((((gi_91984128_gb_DQ095621_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_12_05_H5N1_hemagglutinin_HA_gene:0,gi_91984122_gb_DQ095616_2_Influenza_A_virus_A_Brown_headed_Gull_Qinghai_3_05_H5N1_hemagglutinin_HA_gene:0):0,gi_70955425_gb_DQ095615_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_60_05_H5N1_hemagglutinin_HA_gene:0):0,gi_91984126_gb_DQ095618_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_61_05_H5N1_hemagglutinin_HA_gene:0):0,gi_70955436_gb_DQ095623_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_67_05_H5N1_hemagglutinin_HA_gene:0):0.001740820029756551,((gi_91984124_gb_DQ095617_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_5_05_H5N1_hemagglutinin_HA_gene:0,gi_91984117_gb_DQ095612_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_59_05_H5N1_hemagglutinin_HA_gene:0):0,gi_91984119_gb_DQ095613_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_68_05_H5N1_hemagglutinin_HA_gene:0):0):0,gi_75911269_gb_DQ137873_1_Influenza_A_virus_A_bar_headed_goose_Qinghai_0510_05_H5N1_hemagglutinin_HA_gene:0.008948779051035626):0.001748530742438644,gi_70955434_gb_DQ095622_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_65_05_H5N1_hemagglutinin_HA_gene:0.001748849136493507):2.430208080900173e-05,(gi_84797225_gb_DQ320921_1_Influenza_A_virus_A_migratory_duck_Jiangxi_2300_2005_H5N1_hemagglutinin_HA_gene:0.001750882519308859,(gi_116271198_gb_DQ992780_1_Influenza_A_virus_A_Guinea_fowl_Shantou_1341_2006_H5N1_hemagglutinin_HA_gene:0.001746411978623663,((gi_81687114_dbj_AB233319_1_Influenza_A_virus_A_bar_headed_goose_Mongolia_1_05_H5N1_HA_gene_for_hemagglutinin:0.005299777309901594,(gi_148340550_gb_EF619980_1_Influenza_A_virus_A_turkey_Turkey_1_2005_H5N1_segment_4_hemagglutinin_HA_gene:0,gi_89475499_gb_DQ407519_1_Influenza_A_virus_A_turkey_Turkey_1_2005_H5N1_hemagglutinin_HA_gene:0):0.003506592037900718):0,gi_81687118_dbj_AB233320_1_Influenza_A_virus_A_whooper_swan_Mongolia_3_05_H5N1_HA_gene_for_hemagglutinin:0.00174313565797341):0.001744001646625024):0):0):0,gi_70955429_gb_DQ095619_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_75_05_H5N1_hemagglutinin_HA_gene:0):0,gi_70955431_gb_DQ095620_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_62_05_H5N1_hemagglutinin_HA_gene:0):0):0,gi_70955423_gb_DQ095614_1_Influenza_A_virus_A_Great_Black_headed_Gull_Qinghai_2_05_H5N1_hemagglutinin_HA_gene:0):0.0143400964840308,((((gi_115526929_gb_DQ997163_1_Influenza_A_virus_A_duck_Hubei_wp_2003_H5N1_segment_4:0,gi_116490085_gb_DQ997172_1_Influenza_A_virus_A_duck_Hubei_wq_2003_H5N1_segment_4:0):0.001747870699263072,gi_47716772_gb_AY609312_1_Influenza_A_virus_A_chicken_Guangdong_174_04_H5N1_segment_4:0.00882635445876988):0,((((gi_58531138_dbj_AB188824_1_Influenza_A_virus_A_chicken_Kyoto_3_2004_H5N1_HA_gene_for_hemagglutinin:0,gi_58531156_dbj_AB189053_1_Influenza_A_virus_A_crow_Kyoto_53_2004_H5N1_HA_gene_for_hemagglutinin:0):0.001745244159294016,gi_58531088_dbj_AB166862_1_Influenza_A_virus_A_chicken_Yamaguchi_7_2004_H5N1_HA_gene_for_hemagglutinin:0.001745244159294016):0,gi_58531174_dbj_AB189061_1_Influenza_A_virus_A_crow_Osaka_102_2004_H5N1_HA_gene_for_hemagglutinin:0.001747870699263072):0,(gi_58531120_dbj_AB188816_1_Influenza_A_virus_A_chicken_Oita_8_2004_H5N1_HA_gene_for_hemagglutinin:0.00351509482326328,(gi_56548875_gb_AY676035_1_Influenza_A_virus_A_chicken_Korea_ES_03_H5N1_hemagglutinin_HA_gene:0.00176284034995723,gi_56548877_gb_AY676036_1_Influenza_A_virus_A_duck_Korea_ESD1_03_H5N1_hemagglutinin_HA_gene:0.001757740891130333):0.00174887394978696):0.001750990387508705):0.005285677271026387):0,(gi_115527022_gb_DQ997276_1_Influenza_A_virus_A_goose_Jilin_hb_2003_H5N1_segment_4:0,(gi_116271200_gb_DQ992781_1_Influenza_A_virus_A_goose_Shantou_2086_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271194_gb_DQ992778_1_Influenza_A_virus_A_goose_Shantou_239_2006_H5N1_hemagglutinin_HA_gene:0.001790841868806692):0.02386659091534147):0.005301266756554381):0.001794716682841031):0.003468852192565371,((gi_86753761_gb_DQ366330_1_Influenza_A_virus_A_chicken_Guangxi_12_2004_H5N1_hemagglutinin_mRNA:0,gi_86753763_gb_DQ366338_1_Influenza_A_virus_A_duck_Guangxi_13_2004_H5N1_hemagglutinin_mRNA:0):0.01256241508045397,(((gi_50296026_gb_AY651321_1_Influenza_A_virus_A_Ck_Indonesia_BL_2003_H5N1_hemagglutinin_HA_gene:0,gi_50296028_gb_AY651322_1_Influenza_A_virus_A_Dk_Indonesia_MS_2004_H5N1_hemagglutinin_HA_gene:0):0,gi_50296024_gb_AY651320_1_Influenza_A_virus_A_Ck_Indonesia_PA_2003_H5N1_hemagglutinin_HA_gene:0):0,(((gi_93008282_gb_DQ497667_1_Influenza_A_virus_A_chicken_Dairi_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0,gi_93008278_gb_DQ497665_1_Influenza_A_virus_A_chicken_Simalanggang_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0.005271934201278639):0,(gi_93008284_gb_DQ497668_1_Influenza_A_virus_A_chicken_Deli_Serdang_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0,(gi_93008286_gb_DQ497669_1_Influenza_A_virus_A_chicken_Tarutung_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0.001750794214619565,gi_93008280_gb_DQ497666_1_Influenza_A_virus_A_chicken_Tebing_Tinggi_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0):0.001750497239232128):0):0.007283613623137076,((((gi_93008250_gb_DQ497651_1_Influenza_A_virus_A_chicken_Gunung_Kidal_BBVW_2005_H5N1_hemagglutinin_HA_gene:0.00349233927623722,gi_93008234_gb_DQ497643_1_Influenza_A_virus_A_chicken_Magetan_BBVW_2005_H5N1_hemagglutinin_HA_gene:0):0.003493450654475125,gi_93008266_gb_DQ497659_1_Influenza_A_virus_A_duck_Parepare_BBVM_2005_H5N1_hemagglutinin_HA_gene:0.005235145270217313):0,gi_113494600_gb_CY014185_1_Influenza_A_virus_A_chicken_Indonesia_CDC25_2005_H5N1_segment_4_sequence:0.001856775200055526):0.00536109450307212,gi_93008244_gb_DQ497648_1_Influenza_A_virus_A_chicken_Purworejo_BBVW_2005_H5N1_hemagglutinin_HA_gene:0.00717066861369088):0.003555063307150324):0.005153039596277611):0.005273602859159524):0):0):0.002348210859726875,gi_57916076_gb_AY737304_1_Influenza_A_virus_A_duck_Guangdong_173_04_H5N1_segment_4:0.01778012982633171):0.001168066004265154,(gi_56548873_gb_AY676034_1_Influenza_A_virus_A_egret_Hong_Kong_757_2_03_H5N1_hemagglutinin_HA_gene:0.001776352376955264,((((((((gi_54873457_gb_AY770991_1_Influenza_A_virus_A_chicken_Ayutthaya_Thailand_CU_23_04_H5N1_hemagglutinin_gene:0,(gi_48431281_gb_AY590568_2_Influenza_A_virus_A_chicken_Nakorn_Patom_Thailand_CU_K2_2004_H5N1_hemagglutinin_gene:0.001722594452666358,(gi_116664740_gb_DQ999880_1_Influenza_A_virus_A_chicken_Thailand_PC_168_2006_H5N1_hemagglutinin_gene:0.005191391777814957,(gi_50296070_gb_AY651343_1_Influenza_A_virus_A_Ck_Viet_Nam_C57_2004_H5N1_hemagglutinin_HA_gene:0,gi_58618439_gb_AY818136_1_Influenza_A_virus_A_chicken_Vietnam_C58_04_H5N1_hemagglutinin_HA_gene:0):0.005172019605630252):0):0.001718586608544867):0,gi_126568051_gb_AY553802_2_Influenza_A_virus_A_little_grebe_Thailand_Phichit_01_2004_H5N1_hemagglutinin_HA_gene:0.001717095230686608):0,(gi_50296040_gb_AY651328_1_Influenza_A_virus_A_Ck_Thailand_9_1_2004_H5N1_hemagglutinin_HA_gene:0,gi_50296042_gb_AY651329_1_Influenza_A_virus_A_Qa_Thailand_57_2004_H5N1_hemagglutinin_HA_gene:0.003455373081744809):0):0,gi_50296044_gb_AY651330_1_Influenza_A_virus_A_bird_Thailand_3_1_2004_H5N1_hemagglutinin_HA_gene:0):0,gi_119368941_gb_DQ989969_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD0404F_2004_H5N1_hemagglutinin_HA_gene:0):0,(((gi_119368922_gb_DQ989961_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD0104F_2004_H5N1_hemagglutinin_HA_gene:0,gi_119368964_gb_DQ989979_1_Influenza_A_virus_A_open_billed_stork_Suphanburi_TSD0912F_2004_H5N1_hemagglutinin_HA_gene:0):0,((gi_85062766_gb_DQ334760_1_Influenza_A_virus_A_chicken_Thailand_Kanchanaburi_CK_160_2005_H5N1_hemagglutinin_gene:0,gi_85062798_gb_DQ334776_1_Influenza_A_virus_A_chicken_Thailand_Nontaburi_CK_162_2005_H5N1_hemagglutinin_gene:0.001736070028232976):0.001736070028232976,(gi_85062782_gb_DQ334768_1_Influenza_A_virus_A_quail_Thailand_Nakhon_Pathom_QA_161_2005_H5N1_hemagglutinin_gene:0.001737422291339462,gi_116664736_gb_DQ999887_1_Influenza_A_virus_A_chicken_Thailand_PC_170_2006_H5N1_hemagglutinin_gene:0.00711789381930134):0):0.001727537941145114):0.001719018028398754,((((gi_115609697_gb_CY016827_1_Influenza_A_virus_A_duck_Viet_Nam_1_2005_H5N1_segment_4:0.001728975069934149,gi_115952217_gb_CY016875_1_Influenza_A_virus_A_chicken_Viet_Nam_11_2005_H5N1_segment_4:0):0,(gi_115609756_gb_CY016891_1_Influenza_A_virus_A_duck_Viet_Nam_20_2005_H5N1_segment_4:0,gi_117571349_gb_CY017187_1_Influenza_A_virus_A_duck_Viet_Nam_19_2005_H5N1_segment_4:0):0.001729978320458038):0,(gi_115953078_gb_CY016835_1_Influenza_A_virus_A_chicken_Viet_Nam_2_2005_H5N1_segment_4:0.001727971819410261,((gi_115952998_gb_CY016843_1_Influenza_A_virus_A_chicken_Viet_Nam_6_2005_H5N1_segment_4:0,gi_115952885_gb_CY016851_1_Influenza_A_virus_A_chicken_Viet_Nam_8_2005_H5N1_segment_4:0):0,gi_115952786_gb_CY016859_1_Influenza_A_virus_A_chicken_Viet_Nam_9_2005_H5N1_segment_4:0):0.001730338025698383):0):0,gi_116070093_gb_CY017067_1_Influenza_A_virus_A_duck_Viet_Nam_18_2005_H5N1_segment_4:0.003470454620237002):0.00346227322945086):0):0,((gi_119369021_gb_DQ990003_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBA3011M_2005_H5N1_hemagglutinin_HA_gene:0.006930334787652858,gi_119368983_gb_DQ989987_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD1521J_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_119369002_gb_DQ989995_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD2616F_2005_H5N1_hemagglutinin_HA_gene:0):0.00171769596142812):0,(((((gi_50296060_gb_AY651338_1_Influenza_A_virus_A_Ck_Viet_Nam_35_2004_H5N1_hemagglutinin_HA_gene:0,gi_72398640_gb_DQ099755_1_Influenza_A_virus_A_chicken_Viet_Nam_TN_025_2004_H5N1_segment_4_hemagglutinin_HA_gene:0):0,(gi_50296062_gb_AY651339_1_Influenza_A_virus_A_Ck_Viet_Nam_36_2004_H5N1_hemagglutinin_HA_gene:0,gi_58618441_gb_AY818137_1_Influenza_A_virus_A_quail_Vietnam_36_04_H5N1_hemagglutinin_HA_gene:0):0):0,gi_50296066_gb_AY651341_1_Influenza_A_virus_A_Ck_Viet_Nam_38_2004_H5N1_hemagglutinin_HA_gene:0.001723898787024601):0,(gi_50296064_gb_AY651340_1_Influenza_A_virus_A_Ck_Viet_Nam_37_2004_H5N1_hemagglutinin_HA_gene:0,gi_72398646_gb_DQ099758_1_Influenza_A_virus_A_chicken_Viet_Nam_TG_023_2004_H5N1_segment_4_hemagglutinin_HA_gene:0):0):0,(gi_50296058_gb_AY651337_1_Influenza_A_virus_A_chicken_Viet_Nam_33_2004_H5N1_hemagglutinin_HA_gene:0,gi_72398650_gb_DQ099760_1_Influenza_A_virus_A_chicken_Viet_Nam_LD_080_2004_H5N1_segment_4_hemagglutinin_HA_gene:0.001717095230686608):0):0.001720021278922643):0.01055766215265053):0.005358448309668883):0.001761840501632868,(((gi_115526951_gb_DQ997531_1_Influenza_A_virus_A_duck_Shanghai_xj_2002_H5N1_segment_4:0.005278794819343816,gi_84797211_gb_DQ320914_1_Influenza_A_virus_A_duck_Shantou_4610_2003_H5N1_hemagglutinin_HA_gene:0.01284488324698502):0.001757640774884637,(((gi_61698017_gb_AY950232_1_Influenza_A_virus_A_Chicken_Henan_12_2004_H5N1_segment_4:0,(gi_61698021_gb_AY950234_1_Influenza_A_virus_A_Chicken_Henan_16_2004_H5N1_segment_4:0.001735066777709088,gi_61698013_gb_AY950230_1_Influenza_A_virus_A_chicken_Henan_01_2004_H5N1_segment_4:0.008978464942589802):0):0,gi_61698019_gb_AY950233_1_Influenza_A_virus_A_Chicken_Henan_13_2004_H5N1_segment_4:0):0.001751797465143454,(((gi_61698015_gb_AY950231_1_Influenza_A_virus_A_Chicken_Henan_210_2004_H5N1_segment_4:0,gi_115382756_gb_DQ997219_1_Influenza_A_virus_A_chicken_Henan_wu_2004_H5N1_hemagglutinin_HA_gene:0):0,((gi_50956627_gb_AY684706_1_Influenza_A_virus_A_chicken_Hubei_327_2004_H5N1_hemagglutinin_HA_gene:0.005217432951488556,gi_55233227_gb_AY770079_1_Influenza_A_virus_A_chicken_Hubei_489_2004_H5N1_hemagglutinin_HA_gene:0):0,gi_61698025_gb_AY950236_1_Influenza_A_virus_A_swan_Guangxi_307_2004_H5N1_segment_4:0):0):0,(gi_115527053_gb_DQ997218_1_Influenza_A_virus_A_mallard_Guangxi_wt_2004_H5N1_segment_4:0,gi_61698023_gb_AY950235_1_Influenza_A_virus_A_WildDuck_Guangdong_314_2004_H5N1_segment_4:0):0):0.001750850272480137):0.001728264706498331):0,((((gi_84797135_gb_DQ320876_1_Influenza_A_virus_A_chicken_Fujian_1042_2005_H5N1_hemagglutinin_HA_gene:0,gi_84797133_gb_DQ320875_1_Influenza_A_virus_A_duck_Fujian_897_2005_H5N1_hemagglutinin_HA_gene:0.003528528430078331):0.00176015440510442,gi_84797213_gb_DQ320915_1_Influenza_A_virus_A_goose_Shantou_2216_2005_H5N1_hemagglutinin_HA_gene:0.003526004140535911):0.001770926944004256,(gi_116271066_gb_DQ992714_1_Influenza_A_virus_A_duck_Guangxi_2775_2005_H5N1_hemagglutinin_HA_gene:0.005386569420247741,gi_84797185_gb_DQ320901_1_Influenza_A_virus_A_duck_Guangzhou_20_2005_H5N1_hemagglutinin_HA_gene:0.01072223777210778):0.001717835561053442):0,gi_50296108_gb_AY651362_1_Influenza_A_virus_A_peregrine_falcon_HK_D0028_2004_H5N1_hemagglutinin_HA_gene:0.00177682351679038):0.005290923206695382):0):0.003536628933780002,(gi_115502972_gb_DQ997283_1_Influenza_A_virus_A_chicken_Jilin_hd_2002_H5N1_segment_4:0,gi_50365728_gb_AY653200_1_Influenza_A_virus_A_chicken_Jilin_9_2004_H5N1_segment_4:0):0.001720594756813111):0.001780878816563647,(((((((gi_85062566_gb_DQ343151_1_Influenza_A_virus_A_chicken_Hebei_718_2001_H5N1_hemagglutinin_HA_gene:0.006438546315122176,gi_115526911_gb_DQ997513_1_Influenza_A_virus_A_duck_Guangxi_xa_2001_H5N1_segment_4:0.005474178307851131):0.001575023537889367,(gi_115526992_gb_DQ997405_1_Influenza_A_virus_A_goose_Fujian_bb_2003_H5N1_segment_4:0.01068132475604614,(((gi_116271170_gb_DQ992766_1_Influenza_A_virus_A_chicken_Guiyang_441_2006_H5N1_hemagglutinin_HA_gene:0.001789803345977126,gi_116271168_gb_DQ992765_1_Influenza_A_virus_A_goose_Guiyang_337_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271144_gb_DQ992753_1_Influenza_A_virus_A_duck_Guiyang_2231_2005_H5N1_hemagglutinin_HA_gene:0.003614908465910373):0.02017560843466733,gi_47834879_gb_AY575875_1_Influenza_A_virus_A_Ck_HK_31_4_02_H5N1_hemagglutinin_HA_gene:0):0):0.008906830791496819):0,gi_19697773_gb_AY059482_1_Influenza_A_virus_A_Goose_Hong_Kong_3014_8_2000_H5N1_segment_4_hemagglutinin_HA_gene:0.008822165717130889):0.001750850272480137,((gi_19697771_gb_AY059481_1_Influenza_A_virus_A_Duck_Hong_Kong_2986_1_2000_H5N1_segment_4_hemagglutinin_HA_gene:0.003510650328248212,(gi_28810752_gb_AY221529_1_Influenza_A_virus_A_Chicken_HongKong_YU562_01_H5N1_hemagglutinin_HA_gene:0.002990908644525998,(gi_28810155_gb_AY221528_1_Influenza_A_virus_A_Chicken_HongKong_YU822_2_01_H5N1_hemagglutinin_HA_gene:0,gi_28809438_gb_AY221527_1_Influenza_A_virus_A_Chicken_HongKong_YU822_2_01_MB_H5N1_hemagglutinin_HA_gene:0.001733606498170934):0.002541251581346716):0.00148601536196278):0,((((gi_28807565_gb_AY221524_1_Influenza_A_virus_A_Chicken_HongKong_FY150_01_H5N1_hemagglutinin_HA_gene:0,gi_28807284_gb_AY221523_1_Influenza_A_virus_A_Chicken_HongKong_FY150_01_MB_H5N1_hemagglutinin_HA_gene:0):0.001746003867343182,gi_28808108_gb_AY221525_1_Influenza_A_virus_A_Pheasant_HongKong_FY155_01_MB_H5N1_hemagglutinin_HA_gene:0):0,gi_28808463_gb_AY221526_1_Influenza_A_virus_A_Pheasant_HongKong_FY155_01_H5N1_hemagglutinin_HA_gene:0):0.001748101923847095,(gi_28806384_gb_AY221522_1_Influenza_A_virus_A_Chicken_HongKong_NT873_3_01_H5N1_hemagglutinin_HA_gene:0,gi_28805557_gb_AY221521_1_Influenza_A_virus_A_Chicken_HongKong_NT873_3_01_MB_H5N1_hemagglutinin_HA_gene:0):0.005295685193056846):0):0):0,gi_115526968_gb_DQ997410_1_Influenza_A_virus_A_duck_Zhejiang_bj_2002_H5N1_segment_4:0.02872234987509528):0.003338659947999436,(gi_115382881_gb_DQ997182_1_Influenza_A_virus_A_chicken_Jiangsu_cz1_2002_H5N1_segment_4:0.00549839256281252,(gi_115502990_gb_DQ997377_1_Influenza_A_virus_A_chicken_Jilin_hf_2002_H5N1_segment_4:0.003730202066910738,(gi_115502941_gb_DQ997156_1_Influenza_A_virus_A_chicken_Hubei_wo_2003_H5N1_segment_4:0.01412399896869351,((gi_85062564_gb_DQ343150_1_Influenza_A_virus_A_chicken_Hebei_326_2005_H5N1_hemagglutinin_HA_gene:0.0119832032416233,gi_117414797_gb_DQ914814_1_Influenza_A_virus_A_chicken_Shanxi_2_2006_H5N1_segment_4:0.02646581670056432):0.01769230714106282,(gi_116271242_gb_DQ992802_1_Influenza_A_virus_A_duck_Yunnan_5236_2005_H5N1_hemagglutinin_HA_gene:0.009792926891152985,gi_116271226_gb_DQ992794_1_Influenza_A_virus_A_goose_Yunnan_3315_2005_H5N1_hemagglutinin_HA_gene:0.005533019462053305):0.005744816263230659):0):0.007231174873218021):0.006995706222144872):0.001737446897022598):0.002021056990540436,(((gi_84797149_gb_DQ320883_1_Influenza_A_virus_A_duck_Guangxi_1311_2004_H5N1_hemagglutinin_HA_gene:0,gi_84797161_gb_DQ320889_1_Influenza_A_virus_A_goose_Guangxi_2112_2004_H5N1_hemagglutinin_HA_gene:0):0.001754122782637976,gi_84797157_gb_DQ320887_1_Influenza_A_virus_A_duck_Guangxi_1793_2004_H5N1_hemagglutinin_HA_gene:0):0.009191254905631475,gi_71000185_dbj_AB212280_1_Influenza_A_virus_A_duck_Yokohama_aq10_2003_H5N1_HA_gene_for_hemagglutinin:0.007412816692354494):0.003236971178251705):0):0,gi_115397012_gb_DQ997308_1_Influenza_A_virus_A_chicken_Jilin_hh_2002_H5N1_hemagglutinin_HA_gene:0.001753119532114087):0.001816732100401747,(gi_101918580_dbj_AB259712_1_Influenza_A_virus_A_duck_Hokkaido_Vac_1_04_H5N1_genomic_RNA:0.005232751641785671,gi_109452300_dbj_AB263192_1_Influenza_A_virus_A_R_duck_Mongolia_54_01_duck_Mongolia_47_01_H5N1_genomic_RNA:0):0.07044093106693458):0.001723190782503228,gi_115502957_gb_DQ997268_1_Influenza_A_virus_A_chicken_Jilin_ha_2003_H5N1_segment_4:0.008922628548613474):0.00170676096400408,(gi_19697757_gb_AY059474_1_Influenza_A_virus_A_Goose_Hong_Kong_ww26_2000_H5N1_segment_4_hemagglutinin_HA_gene:0.001713731003501752,gi_19697759_gb_AY059475_1_Influenza_A_virus_A_Goose_Hong_Kong_ww28_2000_H5N1_segment_4_hemagglutinin_HA_gene:0):0.003450010292730959):0,((((gi_21359659_gb_AF468837_1_Influenza_A_virus_A_Duck_Anyang_AVL_1_2001_H5N1_hemagglutinin_H5_H5_gene:0.003500645154619918,gi_115527004_gb_DQ997522_1_Influenza_A_virus_A_goose_Guangdong_xb_2001_H5N1_segment_4:0.006873622954156017):0.001712727752977863,gi_85062568_gb_DQ343152_1_Influenza_A_virus_A_chicken_Hebei_108_02_H5N1_hemagglutinin_HA_gene:0.01228531746654179):0,gi_58374179_gb_AY854190_1_Influenza_A_virus_A_duck_Shandong_093_2004_H5N1_segment_4:0.005238169550378956):0.003443369809696002,gi_116583103_gb_DQ997538_1_Influenza_A_virus_A_chicken_Jilin_xv_2002_H5N1_hemagglutinin_HA_gene:0):0.003479506662947322):0.00181199504389235,(((gi_9863931_gb_AF216737_1_AF216737_Influenza_A_virus_A_Environment_Hong_Kong_437_10_99_H5N1_hemagglutinin_5_gene:0.001725835220679303,gi_9863913_gb_AF216729_1_AF216729_Influenza_A_virus_A_Environment_Hong_Kong_437_8_99_H5N1_hemagglutinin_5_gene:0.003478758783969347):0,gi_9863876_gb_AF216713_1_AF216713_Influenza_A_virus_A_Environment_Hong_Kong_437_4_99_H5N1_hemagglutinin_5_gene:0.001726021381335435):0,gi_9863895_gb_AF216721_1_AF216721_Influenza_A_virus_A_Environment_Hong_Kong_437_6_99_H5N1_hemagglutinin_5_gene:0.001725835220679303):0.007059043784511681):0.003388649089806319,gi_115503009_gb_DQ997547_1_Influenza_A_virus_A_chicken_Jilin_xw_2003_H5N1_segment_4:0):0.001721598007336999,gi_115382830_gb_DQ997133_1_Influenza_A_virus_A_chicken_Hubei_wl_1997_H5N1_segment_4:0.00521837847365329):0.003474838797059389):0,(((gi_4240437_gb_AF082035_1_Influenza_A_virus_A_Chicken_Hong_Kong_786_97_H5N1_hemagglutinin_H5_mRNA:0,gi_4240435_gb_AF082034_1_Influenza_A_virus_A_Chicken_Hong_Kong_728_97_H5N1_hemagglutinin_H5_mRNA:0.001733707092688165):0,((gi_3068720_gb_AF057291_1_AF057291_Influenza_A_virus_A_chicken_Hong_Kong_258_97_H5N1_hemagglutinin_mRNA:0.001733707092688165,(gi_86753755_gb_DQ366306_1_Influenza_A_virus_A_duck_Vietnam_1_2005_H5N1_hemagglutinin_mRNA:0.01506376995644411,gi_86753759_gb_DQ366322_1_Influenza_A_virus_A_duck_Vietnam_8_05_H5N1_hemagglutinin_mRNA:0.03873457055623361):0.009942760047882547):0,gi_86753757_gb_DQ366314_1_Influenza_A_virus_A_goose_Vietnam_3_05_H5N1_hemagglutinin_mRNA:0.001735713593735941):0.00173131949665679):0.001874828124024311,(gi_6048756_gb_AF098543_1_AF098543_Influenza_A_virus_A_Duck_Hong_Kong_p46_97_H5N1_hemagglutinin_gene:0,gi_6048760_gb_AF098545_1_AF098545_Influenza_A_virus_A_Goose_Hong_Kong_w355_97_H5N1_hemagglutinin_gene:0.00173842554186335):0.00159343086596657):0.01069237564731552):0.005156783435137814):0.)";
+    var res = d3.layout.newick_parser( flu_tree );
+    default_tree_settings ();
+    tree.branch_length (function (n) {return undefined;});
+    var year_re     = new RegExp ("_virus_A_([^_]+)"),
         color_scale = d3.scale.category20();
-
-      tree.branch_name(function(d) {
-        var n = d.name.split('_');
+    
+    tree.branch_name (function (d) {
+        var n = d.name.split ('_');
         if (n.length > 13) {
-          return [n[9], n[10], n[12]].join(" ");
-        }
-        return n.join("_");
-      });
-
-      tree.style_nodes(function(element, data) {
-        var m = (tree.branch_name()(data)).split(" ");
-        if (m.length > 1) {
-          element.style("fill", color_scale(m[0]));
-        }
-        node_colorizer(element, data);
-      });
-
-
-      tree.style_edges(function(element, data) {
-        var m = (tree.branch_name()(data.target)).split(" ");
-        if (m.length > 1) {
-          element.style("stroke", color_scale(m[0]));
-        }
-        edge_colorizer(element, data);
-      });
-
-      tree(res).svg(svg).layout();
+             return [n[9],n[10],n[12]].join (" ");
+        } 
+        return n.join ("_");
     });
-
-    $("#example_NGS").on("click", function(e) {
-      var NGS = "((((((((((((((cluster_0_845:0.004893613603717699,cluster_1_109:0.004840816381616456)Node13:0,cluster_3_38:0.004857835778111792)Node12:0,(cluster_6_632:0,cluster_8_53:0)Node17:0)Node11:0,cluster_21_36:0.004879782649604827)Node10:0,cluster_72_37:0.004811683649331113)Node9:0,cluster_130_63:0.004864609127112797)Node8:0,cluster_144_67:0.004856896737854473)Node7:0,cluster_164_38:0.009738706927375622)Node6:0,cluster_201_67:0.004912342010654071)Node5:0,cluster_229_35:0.004811683644837275)Node4:0,cluster_230_36:0.004893613604419758)Node3:0,cluster_295_43:0.004811683649588835)Node2:0,cluster_306_33:0.004888242085157596)Node1:0,cluster_397_62:0.004938437463580042,cluster_524_39:0.0049142477452619)";
-      var res = d3.layout.newick_parser(NGS);
-      var re = new RegExp("_([0-9]+)$"),
-        l10 = Math.log(10);
-      default_tree_settings();
-      tree.node_span(function(a) {
-        var m = re.exec(a.name);
-        try {
-          return Math.sqrt(parseFloat(m[1]))
-        } catch (e) {}
-        return null;
-      });
-      tree.options({
-        'draw-size-bubbles': true
-      }, false);
-
-      tree(res).svg(svg).layout();
+        
+    tree.style_nodes (function (element, data) {
+        var m = (tree.branch_name () (data)).split (" ");
+        if (m.length > 1) {
+            element.style ("fill", color_scale(m[0]));
+        }
+        node_colorizer (element, data);
     });
 
 
-    $("#example_GVZ").on("click", function(e) {
-      default_tree_settings();
+    tree.style_edges (function (element, data) {
+        var m = (tree.branch_name () (data.target)).split (" ");
+        if (m.length > 1) {
+            element.style ("stroke", color_scale(m[0]));
+        }
+        edge_colorizer (element, data);
+    });
 
-      function GVZ_colorizer(element, data) {
-        element.style('stroke-width', 4)
-          .style('stroke-linejoin', 'round')
-          .style('stroke-linecap', 'round');
-      }
-      var GVZ = "(((A300_20090507_rt_PGM:0.00763,((A300_20090507_rt_miSeqR2:0.0,A300_20090507_rt_miSeqR1:0.0):0.00055,A300:0.00055)0.979:0.00055)1.000:0.03978,(A202_20081001_rt_PGM:0.00582,((A202_20081001_rt_miSeqR2:0.0,A202_20081001_rt_miSeqR1:0.0):0.00055,A202:0.00055)0.988:0.00054)0.984:0.01883)0.868:0.00764,((A158_20080617_rt_miSeqR2:0.0,A158_20080617_rt_miSeqR1:0.0,A158_20080617_rt_PGM:0.0,A158:0.0):0.03547,(((A207_20081020_rt_miSeqR2:0.0,A207_20081020_rt_miSeqR1:0.0,A207:0.0):0.00055,A207_20081020_rt_PGM:0.00055)1.000:0.03874,(A124:0.00055,((A124_20080207_rt_miSeqR2:0.0,A124_20080207_rt_miSeqR1:0.0):0.00055,A124_20080207_rt_PGM:0.00383)0.910:0.00054)0.980:0.01829)0.025:0.00507)0.737:0.00225,((((A326_20090902_rt_miSeqR2:0.0,A326_20090902_rt_miSeqR1:0.0,A326_20090902_rt_PGM:0.0):0.03017,((A364_20100120_rt_PGM:0.00585,((A364_20100120_rt_miSeqR2:0.0,A364_20100120_rt_miSeqR1:0.0):0.00055,A364:0.00055)0.829:0.00357)0.996:0.02199,(((A297_20090526_rt_miSeqR2:0.0,A297_20090526_rt_miSeqR1:0.0,A297:0.0):0.00055,A297_20090526_rt_PGM:0.00189)1.000:0.04029,((A313:0.00055,((A313_20090715_rt_miSeqR2:0.0,A313_20090715_rt_miSeqR1:0.0):0.00053,A313_20090715_rt_PGM:0.00577)0.891:0.00055)1.000:0.04241,(A318:0.00055,((A318_20090728_rt_miSeqR2:0.0,A318_20090728_rt_miSeqR1:0.0):0.00053,A318_20090728_rt_PGM:0.00582)0.884:0.00055)0.999:0.03273)0.917:0.01184)0.658:0.00196)0.923:0.00824)0.525:0.00054,((((A144_20080513_rt_miSeqR2:0.0,A144_20080513_rt_miSeqR1:0.0,A144:0.0):0.00055,A144_20080513_rt_PGM:0.00188)0.998:0.02715,(A157:0.00055,((A157_20080617_rt_miSeqR2:0.0,A157_20080617_rt_miSeqR1:0.0):0.00055,A157_20080617_rt_PGM:0.00194)0.825:0.00053)1.000:0.03065)0.912:0.01106,(((A137_20080318_rt_miSeqR2:0.0,A137_20080318_rt_miSeqR1:0.0,A137:0.0):0.00054,A137_20080318_rt_PGM:0.00575)1.000:0.05302,((A302_20090604_rt_miSeqR2:0.0,A302_20090604_rt_miSeqR1:0.0,A302:0.0):0.00054,A302_20090604_rt_PGM:0.00574)1.000:0.03598)0.745:0.00848)0.465:0.00054)0.785:0.00274,((A312_20090702_rt_miSeqR2:0.0,A312_20090702_rt_miSeqR1:0.0,A312:0.0):0.00055,A312_20090702_rt_PGM:0.00571)0.999:0.02550)0.884:0.00629)";
-      var res = d3.layout.newick_parser(GVZ);
-      var colorizer = d3.scale.category10();
+    tree (res).svg (svg).layout();
+});
 
-      tree.branch_name(function(d) {
-        var n = d.name.split('_');
+$("#example_NGS").on ("click", function (e) {
+    var NGS = "((((((((((((((cluster_0_845:0.004893613603717699,cluster_1_109:0.004840816381616456)Node13:0,cluster_3_38:0.004857835778111792)Node12:0,(cluster_6_632:0,cluster_8_53:0)Node17:0)Node11:0,cluster_21_36:0.004879782649604827)Node10:0,cluster_72_37:0.004811683649331113)Node9:0,cluster_130_63:0.004864609127112797)Node8:0,cluster_144_67:0.004856896737854473)Node7:0,cluster_164_38:0.009738706927375622)Node6:0,cluster_201_67:0.004912342010654071)Node5:0,cluster_229_35:0.004811683644837275)Node4:0,cluster_230_36:0.004893613604419758)Node3:0,cluster_295_43:0.004811683649588835)Node2:0,cluster_306_33:0.004888242085157596)Node1:0,cluster_397_62:0.004938437463580042,cluster_524_39:0.0049142477452619)";
+    var res = d3.layout.newick_parser( NGS );
+    var re = new RegExp("_([0-9]+)$"),
+        l10 = Math.log (10);
+    default_tree_settings ();
+    tree.node_span (function (a) { var m = re.exec (a.name); try {return Math.sqrt(parseFloat (m[1]))} catch (e) {} return null;});
+    tree.options ({'draw-size-bubbles' : true}, false);
+    
+    tree (res).svg (svg).layout();
+});
+
+
+$("#example_GVZ").on ("click", function (e) {
+    default_tree_settings ();
+
+    function GVZ_colorizer (element, data) {
+        element.style ('stroke-width', 4)
+               .style ('stroke-linejoin', 'round')
+               .style ('stroke-linecap', 'round');
+    }
+    var GVZ = "(((A300_20090507_rt_PGM:0.00763,((A300_20090507_rt_miSeqR2:0.0,A300_20090507_rt_miSeqR1:0.0):0.00055,A300:0.00055)0.979:0.00055)1.000:0.03978,(A202_20081001_rt_PGM:0.00582,((A202_20081001_rt_miSeqR2:0.0,A202_20081001_rt_miSeqR1:0.0):0.00055,A202:0.00055)0.988:0.00054)0.984:0.01883)0.868:0.00764,((A158_20080617_rt_miSeqR2:0.0,A158_20080617_rt_miSeqR1:0.0,A158_20080617_rt_PGM:0.0,A158:0.0):0.03547,(((A207_20081020_rt_miSeqR2:0.0,A207_20081020_rt_miSeqR1:0.0,A207:0.0):0.00055,A207_20081020_rt_PGM:0.00055)1.000:0.03874,(A124:0.00055,((A124_20080207_rt_miSeqR2:0.0,A124_20080207_rt_miSeqR1:0.0):0.00055,A124_20080207_rt_PGM:0.00383)0.910:0.00054)0.980:0.01829)0.025:0.00507)0.737:0.00225,((((A326_20090902_rt_miSeqR2:0.0,A326_20090902_rt_miSeqR1:0.0,A326_20090902_rt_PGM:0.0):0.03017,((A364_20100120_rt_PGM:0.00585,((A364_20100120_rt_miSeqR2:0.0,A364_20100120_rt_miSeqR1:0.0):0.00055,A364:0.00055)0.829:0.00357)0.996:0.02199,(((A297_20090526_rt_miSeqR2:0.0,A297_20090526_rt_miSeqR1:0.0,A297:0.0):0.00055,A297_20090526_rt_PGM:0.00189)1.000:0.04029,((A313:0.00055,((A313_20090715_rt_miSeqR2:0.0,A313_20090715_rt_miSeqR1:0.0):0.00053,A313_20090715_rt_PGM:0.00577)0.891:0.00055)1.000:0.04241,(A318:0.00055,((A318_20090728_rt_miSeqR2:0.0,A318_20090728_rt_miSeqR1:0.0):0.00053,A318_20090728_rt_PGM:0.00582)0.884:0.00055)0.999:0.03273)0.917:0.01184)0.658:0.00196)0.923:0.00824)0.525:0.00054,((((A144_20080513_rt_miSeqR2:0.0,A144_20080513_rt_miSeqR1:0.0,A144:0.0):0.00055,A144_20080513_rt_PGM:0.00188)0.998:0.02715,(A157:0.00055,((A157_20080617_rt_miSeqR2:0.0,A157_20080617_rt_miSeqR1:0.0):0.00055,A157_20080617_rt_PGM:0.00194)0.825:0.00053)1.000:0.03065)0.912:0.01106,(((A137_20080318_rt_miSeqR2:0.0,A137_20080318_rt_miSeqR1:0.0,A137:0.0):0.00054,A137_20080318_rt_PGM:0.00575)1.000:0.05302,((A302_20090604_rt_miSeqR2:0.0,A302_20090604_rt_miSeqR1:0.0,A302:0.0):0.00054,A302_20090604_rt_PGM:0.00574)1.000:0.03598)0.745:0.00848)0.465:0.00054)0.785:0.00274,((A312_20090702_rt_miSeqR2:0.0,A312_20090702_rt_miSeqR1:0.0,A312:0.0):0.00055,A312_20090702_rt_PGM:0.00571)0.999:0.02550)0.884:0.00629)";
+    var res = d3.layout.newick_parser ( GVZ );
+    var colorizer = d3.scale.category10 (); 
+
+    tree.branch_name (function (d) {
+        var n = d.name.split ('_');
         if (n.length > 1) {
-          return n[0] + "(" + n[n.length - 1] + ")";
-        }
+             return n[0] + "(" + n[n.length-1] + ")";
+        } 
         return n + " (Sanger)";
-      });
-
-      tree.node_span('equal');
-      tree.options({
-        'draw-size-bubbles': false
-      }, false);
-      tree.font_size(14);
-      tree.scale_bar_font_size(12);
-      tree.node_circle_size(4);
-      tree.spacing_x(16, true);
-      tree.style_edges(GVZ_colorizer);
-
-      tree.options({
-        'draw-size-bubbles': false
-      }, false);
-      tree(res).svg(svg).layout();
     });
+    
+    tree.node_span ('equal');
+    tree.options ({'draw-size-bubbles' : false}, false);
+    tree.font_size (14);
+    tree.scale_bar_font_size (12);
+    tree.node_circle_size (4);
+    tree.spacing_x (16, true);
+    tree.style_edges (GVZ_colorizer);
+   
+    tree.options ({'draw-size-bubbles' : false}, false);
+    tree (res).svg (svg).layout();
+});
 
 
 
 
 
-    function node_colorizer(element, data) {
-      try {
-        var count_class = 0;
-
-        selection_set.forEach(function(d, i) {
-          if (data[d]) {
-            count_class++;
-            element.style("fill", color_scheme(i), i == current_selection_id ? "important" : null);
-          }
-        });
-
-        if (count_class > 1) {
-
-        } else {
-          if (count_class == 0) {
-            element.style("fill", null);
-          }
-        }
-      } catch (e) {
-
-      }
-
+function node_colorizer (element, data) {
+try{
+   var count_class = 0;
+       
+    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("fill", color_scheme(i), i == current_selection_id ?  "important" : null);}});
+   
+    if (count_class > 1) {
+    
+    } else {
+        if (count_class == 0) {        
+            element.style ("fill", null);
+       }
     }
+} 
+catch (e) {
 
-    function edge_colorizer(element, data) {
-      //console.log (data[current_selection_name]);
-      try {
-        var count_class = 0;
+}
 
-        selection_set.forEach(function(d, i) {
-          if (data[d]) {
-            count_class++;
-            element.style("stroke", color_scheme(i), i == current_selection_id ? "important" : null);
-          }
-        });
+}
 
-        if (count_class > 1) {
-          element.classed("branch-multiple", true);
-        } else
-        if (count_class == 0) {
-          element.style("stroke", null)
-            .classed("branch-multiple", false);
-        }
-      } catch (e) {}
-
+function edge_colorizer (element, data) {
+   //console.log (data[current_selection_name]);
+try {
+    var count_class = 0;
+       
+    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("stroke", color_scheme(i), i == current_selection_id ?  "important" : null);}});
+   
+    if (count_class > 1) {
+        element.classed ("branch-multiple", true);
+    } else 
+    if (count_class == 0) {        
+             element.style ("stroke", null)
+                   .classed ("branch-multiple", false);
     }
+} 
+catch (e) {
+}
+    
+}
 
-    var valid_id = new RegExp("^[\\w]+$");
+var valid_id = new RegExp ("^[\\w]+$");
 
-    $("#selection_name_box").on("input propertychange", function(e) {
-      var name = $(this).val();
+$("#selection_name_box").on ("input propertychange", function (e) {  
+   var name = $(this).val();         
+   
+   var accept_name = (selection_set.indexOf (name) < 0) &&
+                     valid_id.exec (name) ;
+                     
+   d3.select ("#save_selection_button").classed ("disabled", accept_name ? null : true ); 
+});
 
-      var accept_name = (selection_set.indexOf(name) < 0) &&
-        valid_id.exec(name);
+$("#selection_rename > a").on ("click", function (e) {
 
-      d3.select("#save_selection_button").classed("disabled", accept_name ? null : true);
-    });
+    d3.select ("#save_selection_button")
+           .classed ("disabled",true)
+           .on ("click", function (e) { // save selection handler
+                var old_selection_name = current_selection_name;
+                selection_set[current_selection_id] = current_selection_name = $("#selection_name_box").val();
+                 
+                if (old_selection_name != current_selection_name) {
+                    tree.update_key_name (old_selection_name, current_selection_name);
+                    update_selection_names (current_selection_id);
+                }
+                send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                             {'detail' : ['save', this]}));
+           });
+      
+    d3.select ("#cancel_selection_button")
+               .classed ("disabled",false)
+               .on ("click", function (e) { // save selection handler
+                    $("#selection_name_box").val(current_selection_name);
+                    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['cancel', this]}));
+              });
 
-    $("#selection_rename > a").on("click", function(e) {
+    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['rename', this]}));
+    e.preventDefault    (); 
+});
 
-      d3.select("#save_selection_button")
-        .classed("disabled", true)
-        .on("click", function(e) { // save selection handler
-          var old_selection_name = current_selection_name;
-          selection_set[current_selection_id] = current_selection_name = $("#selection_name_box").val();
-
-          if (old_selection_name != current_selection_name) {
-            tree.update_key_name(old_selection_name, current_selection_name);
-            update_selection_names(current_selection_id);
-          }
-          send_click_event_to_menu_objects(new CustomEvent(selection_menu_element_action, {
-            'detail': ['save', this]
-          }));
-        });
-
-      d3.select("#cancel_selection_button")
-        .classed("disabled", false)
-        .on("click", function(e) { // save selection handler
-          $("#selection_name_box").val(current_selection_name);
-          send_click_event_to_menu_objects(new CustomEvent(selection_menu_element_action, {
-            'detail': ['cancel', this]
-          }));
-        });
-
-      send_click_event_to_menu_objects(new CustomEvent(selection_menu_element_action, {
-        'detail': ['rename', this]
-      }));
-      e.preventDefault();
-    });
-
-    $("#selection_delete > a").on("click", function(e) {
-
-      tree.update_key_name(selection_set[current_selection_id], null)
-      selection_set.splice(current_selection_id, 1);
-
-      if (current_selection_id > 0) {
-        current_selection_id--;
-      }
-      current_selection_name = selection_set[current_selection_id];
-      update_selection_names(current_selection_id)
-      $("#selection_name_box").val(current_selection_name)
-
-
-      send_click_event_to_menu_objects(new CustomEvent(selection_menu_element_action, {
-        'detail': ['save', this]
-      }));
-      e.preventDefault();
-
-    });
-
-    $("#selection_new > a").on("click", function(e) {
-
-      d3.select("#save_selection_button")
-        .classed("disabled", true)
-        .on("click", function(e) { // save selection handler
-          current_selection_name = $("#selection_name_box").val();
-          current_selection_id = selection_set.length;
-          selection_set.push(current_selection_name);
-          update_selection_names(current_selection_id);
-          send_click_event_to_menu_objects(new CustomEvent(selection_menu_element_action, {
-            'detail': ['save', this]
-          }));
-        });
-
-      d3.select("#cancel_selection_button")
-        .classed("disabled", false)
-        .on("click", function(e) { // save selection handler
-          $("#selection_name_box").val(current_selection_name);
-          send_click_event_to_menu_objects(new CustomEvent(selection_menu_element_action, {
-            'detail': ['cancel', this]
-          }));
-        });
-
-      send_click_event_to_menu_objects(new CustomEvent(selection_menu_element_action, {
-        'detail': ['new', this]
-      }));
-      e.preventDefault();
-
-    });
-
-    function send_click_event_to_menu_objects(e) {
-      $("#selection_new, #selection_delete, #selection_rename, #save_selection_name, #selection_name_box, #selection_name_dropdown").get().forEach(
-        function(d) {
-          d.dispatchEvent(e);
-        }
-      );
+$("#selection_delete > a").on ("click", function (e) {
+    
+    tree.update_key_name (selection_set[current_selection_id], null)
+    selection_set.splice (current_selection_id, 1);
+    
+    if (current_selection_id > 0) {
+        current_selection_id --;
     }
+    current_selection_name = selection_set[current_selection_id];
+    update_selection_names (current_selection_id)
+    $("#selection_name_box").val(current_selection_name)
+    
+                            
+    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['save', this]}));
+    e.preventDefault    ();
+       
+});  
+   
+$("#selection_new > a").on ("click", function (e) {
+    
+    d3.select ("#save_selection_button")
+               .classed ("disabled",true)
+               .on ("click", function (e) { // save selection handler
+                    current_selection_name = $("#selection_name_box").val();
+                    current_selection_id = selection_set.length;
+                    selection_set.push (current_selection_name);
+                    update_selection_names (current_selection_id);
+                    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['save', this]}));
+              });
+ 
+     d3.select ("#cancel_selection_button")
+               .classed ("disabled",false)
+               .on ("click", function (e) { // save selection handler
+                    $("#selection_name_box").val(current_selection_name);
+                    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['cancel', this]}));
+              });
+                            
+    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['new', this]}));
+    e.preventDefault    ();
+       
+});  
 
-    function update_selection_names(id, skip_rebuild) {
+function send_click_event_to_menu_objects (e) {
+    $("#selection_new, #selection_delete, #selection_rename, #save_selection_name, #selection_name_box, #selection_name_dropdown").get().forEach (
+        function (d) {
+            d.dispatchEvent (e);
+        }
+    );
+}
+   
+function update_selection_names (id, skip_rebuild) {
 
-      skip_rebuild = skip_rebuild || false;
-      id = id || 0;
-
-
-      current_selection_name = selection_set[id];
-      current_selection_id = id;
-
-      if (!skip_rebuild) {
-        d3.selectAll(".selection_set").remove();
-
-        d3.select("#selection_name_dropdown")
-          .selectAll(".selection_set")
-          .data(selection_set)
+    skip_rebuild = skip_rebuild || false;
+    id = id || 0;
+    
+    
+    current_selection_name = selection_set[id];
+    current_selection_id = id;
+    
+    if (!skip_rebuild) {
+        d3.selectAll (".selection_set").remove();
+    
+        d3.select ("#selection_name_dropdown")
+          .selectAll (".selection_set")
+          .data (selection_set)
           .enter()
-          .append("li")
-          .attr("class", "selection_set")
-          .append("a")
-          .attr("href", "#")
-          .text(function(d) {
-            return d;
-          })
-          .style("color", function(d, i) {
-            return color_scheme(i);
-          })
-          .on("click", function(d, i) {
-            update_selection_names(i, true);
-          });
-
-      }
-
-
-      d3.select("#selection_name_box")
-        .style("color", color_scheme(id))
-        .property("value", current_selection_name);
-
-      tree.selection_label(selection_set[id]);
+          .append ("li")
+          .attr ("class", "selection_set")
+          .append ("a")
+          .attr ("href", "#")
+          .text (function (d) { return d;})
+          .style ("color", function (d,i) {return color_scheme(i);})
+          .on ("click", function (d,i) {update_selection_names (i,true);});
+          
     }
+      
+      
+    d3.select ("#selection_name_box")
+      .style ("color",  color_scheme(id))
+      .property ("value", current_selection_name);
+    
+    tree.selection_label (selection_set[id]);
+}
 
-    var width = 800, //$(container_id).width(),
-      height = 600, //$(container_id).height()
-      selection_set = ['Foreground'],
-      current_selection_name = $("#selection_name_box").val(),
-      current_selection_id = 0,
-      max_selections = 10;
+var width  = 800, //$(container_id).width(),
+    height = 600, //$(container_id).height()
+    selection_set = ['Foreground'],
+    current_selection_name = $("#selection_name_box").val(),
+    current_selection_id = 0,
+    max_selections       = 10;
     color_scheme = d3.scale.category10(),
-      selection_menu_element_action = "phylotree_menu_element_action";
-
-    var tree = d3.layout.phylotree("body")
-      .size([height, width])
-      .separation(function(a, b) {
-        return 0;
-      })
-      .count_handler(function(count) {
-        $("#selected_branch_counter").text(function(d) {
-          return count[current_selection_name];
-        });
-        $("#selected_filtered_counter").text(count.tag);
-      });
+    selection_menu_element_action = "phylotree_menu_element_action";
+    
+var tree = d3.layout.phylotree("body")
+    .size([height, width])
+    .separation (function (a,b) {return 0;})
+    .count_handler (function (count) { 
+            $("#selected_branch_counter").text (function (d) {return count[current_selection_name];}); 
+            $("#selected_filtered_counter").text (count.tag);
+        }
+    );
     //.node_span (function (a) {if (a.children && a.children.length) return 1; return isNaN (parseFloat (a["attribute"]) * 100) ? 1 : parseFloat (a["attribute"]) * 100; });
+    
+var test_string = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)";
+var container_id = '#tree_container';
+//var test_string = "(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)";
 
-    var test_string = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)";
-    var container_id = '#tree_container';
-    //var test_string = "(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)";
+//window.setInterval (function () {});
+   
+var svg = d3.select(container_id).append("svg")
+    .attr("width", width)
+    .attr("height", height);
+                    
+                
 
-    //window.setInterval (function () {});
-
-    var svg = d3.select(container_id).append("svg")
-      .attr("width", width)
-      .attr("height", height);
-
-
-
-    function selection_handler_name_box(e) {
-      var name_box = d3.select(this);
-      switch (e.detail[0]) {
+function selection_handler_name_box (e) {
+    var name_box = d3.select (this);
+     switch (e.detail[0]) {
         case 'save':
         case 'cancel':
-          name_box.property("disabled", true)
-            .style("color", color_scheme(current_selection_id));
+            name_box.property ("disabled", true)
+                    .style ("color",  color_scheme(current_selection_id));
 
-          break;
+            break;
         case 'new':
-          name_box.property("disabled", false)
-            .property("value", "new_selection_name")
-            .style("color", color_scheme(selection_set.length));
-          break;
+            name_box.property ("disabled", false)
+                    .property ("value", "new_selection_name")
+                    .style ("color",  color_scheme(selection_set.length));
+            break;
         case 'rename':
-          name_box.property("disabled", false);
-          break;
-      }
-
+           name_box.property ("disabled", false);
+           break;
     }
+    
+}
 
-    function selection_handler_new(e) {
-      var element = d3.select(this);
-      $(this).data('tooltip', false);
-      switch (e.detail[0]) {
+function selection_handler_new (e) {
+    var element = d3.select (this);
+    $(this).data('tooltip', false);         
+    switch (e.detail[0]) {
         case 'save':
         case 'cancel':
-          if (selection_set.length == max_selections) {
-            element.classed("disabled", true);
-            $(this).tooltip({
-              'title': 'Up to ' + max_selections + ' are allowed',
-              'placement': 'left'
-            });
-          } else {
-            element.classed("disabled", null);
-          }
-          break;
+            if (selection_set.length == max_selections) {
+                element.classed ("disabled", true);
+                    $(this).tooltip ({'title' : 'Up to ' + max_selections + ' are allowed', 'placement' : 'left'});
+            } else {
+                element.classed ("disabled", null);
+            }
+            break;
         default:
-          element.classed("disabled", true);
-          break;
-
-      }
+            element.classed ("disabled", true);
+            break;
+            
     }
+}
 
-    function selection_handler_rename(e) {
-      var element = d3.select(this);
-      element.classed("disabled", (e.detail[0] == "save" || e.detail[0] == "cancel") ? null : true);
-    }
+function selection_handler_rename (e) {
+    var element = d3.select (this);
+    element.classed ("disabled", (e.detail[0] == "save" || e.detail[0] == "cancel") ? null : true);
+}
 
-    function selection_handler_save_selection_name(e) {
-      var element = d3.select(this);
-      element.style("display", (e.detail[0] == "save" || e.detail[0] == "cancel") ? "none" : null);
-    }
+function selection_handler_save_selection_name (e) {
+    var element = d3.select (this);
+    element.style ("display", (e.detail[0] == "save" || e.detail[0] == "cancel") ? "none" : null);
+}
 
-    function selection_handler_name_dropdown(e) {
-      var element = d3.select(this).selectAll(".selection_set");
-      element.classed("disabled", (e.detail[0] == "save" || e.detail[0] == "cancel") ? null : true);
-    }
+function selection_handler_name_dropdown (e) {
+    var element = d3.select (this).selectAll (".selection_set");
+    element.classed ("disabled", (e.detail[0] == "save" || e.detail[0] == "cancel") ? null : true);
+}
 
-    function selection_handler_delete(e) {
-      var element = d3.select(this);
-      $(this).tooltip('destroy');
-      switch (e.detail[0]) {
+function selection_handler_delete (e) {
+    var element = d3.select (this);
+    $(this).tooltip('destroy');         
+    switch (e.detail[0]) {
         case 'save':
         case 'cancel':
-          if (selection_set.length == 1) {
-            element.classed("disabled", true);
-            $(this).tooltip({
-              'title': 'At least one named selection set <br> is required;<br>it can be empty, however',
-              'placement': 'bottom',
-              'html': true
-            });
-          } else {
-            element.classed("disabled", null);
-          }
-          break;
+            if (selection_set.length == 1) {
+                element.classed ("disabled", true);
+                    $(this).tooltip ({'title' : 'At least one named selection set <br> is required;<br>it can be empty, however', 'placement' : 'bottom', 'html': true});
+            } else {
+                element.classed ("disabled", null);
+            }
+            break;
         default:
-          element.classed("disabled", true);
-          break;
+            element.classed ("disabled", true);
+            break;
+            
+    }}
 
-      }
-    }
 
+$( document ).ready( function () {
+    default_tree_settings();
+    tree(test_string).svg (svg).layout();
+    $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
+    $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
+    $("#selection_delete").get(0).addEventListener(selection_menu_element_action,selection_handler_delete,false);
+    $("#selection_delete").get(0).dispatchEvent (new CustomEvent (selection_menu_element_action,
+                                 {'detail' : ['cancel', null]}));
+    $("#selection_name_box").get(0).addEventListener(selection_menu_element_action,selection_handler_name_box,false);
+    $("#save_selection_name").get(0).addEventListener(selection_menu_element_action,selection_handler_save_selection_name,false);
+    $("#selection_name_dropdown").get(0).addEventListener(selection_menu_element_action,selection_handler_name_dropdown,false);
+    update_selection_names();   
+});
 
-    $(document).ready(function() {
-      default_tree_settings();
-      tree(test_string).svg(svg).layout();
-      $("#selection_new").get(0).addEventListener(selection_menu_element_action, selection_handler_new, false);
-      $("#selection_rename").get(0).addEventListener(selection_menu_element_action, selection_handler_rename, false);
-      $("#selection_delete").get(0).addEventListener(selection_menu_element_action, selection_handler_delete, false);
-      $("#selection_delete").get(0).dispatchEvent(new CustomEvent(selection_menu_element_action, {
-        'detail': ['cancel', null]
-      }));
-      $("#selection_name_box").get(0).addEventListener(selection_menu_element_action, selection_handler_name_box, false);
-      $("#save_selection_name").get(0).addEventListener(selection_menu_element_action, selection_handler_save_selection_name, false);
-      $("#selection_name_dropdown").get(0).addEventListener(selection_menu_element_action, selection_handler_name_dropdown, false);
-      update_selection_names();
-    });
-  </script>
+</script>
 
 </body>
-
 </html>
