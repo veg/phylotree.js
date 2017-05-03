@@ -2,13 +2,25 @@
   "name": "phylotree",
   "version": "0.1.4",
   "main": "phylotree.js",
-  "keywords": ["phylogenetics", "phylogeny", "d3", "branching", "tree"],
-  "ignore" : ["index.html"],
+  "keywords": [
+    "phylogenetics",
+    "phylogeny",
+    "d3",
+    "branching",
+    "tree"
+  ],
+  "ignore": [
+    "index.html"
+  ],
   "dependencies": {
-     "underscore"    : "1.x",
-     "font-awesome"  : "4.x",
-     "bootstrap"     : "3.x",
-     "d3"            : "3.x",
-     "jquery"        : "1.x"
+    "underscore": "1.x",
+    "font-awesome": "4.x",
+    "bootstrap": "3.x",
+    "d3": "3.x",
+    "jquery": "1.x"
+  },
+  "devDependencies": {
+    "jsdom": "9.12.x",
+    "should": "^11.2.1"
   }
 }
