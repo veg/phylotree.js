@@ -1,4 +1,4 @@
-## phylotree.js
+# phylotree.js
 
 A JavaScript interactive viewer of [phylogenetic trees](https://en.wikipedia.org/wiki/Phylogenetic_tree), written as an extension of the [D3](http://d3js.org) [hierarchy layout](https://github.com/mbostock/d3/wiki/Hierarchy-Layout). It generates high quality SVG vector graphics, allows a great degree of customizability (CSS or JavaScript callbacks), and comes with a lot of *built-in* convenicence features. 
 
@@ -25,8 +25,12 @@ Key features
 
 1. A [gallery of examples](http://bl.ocks.org/spond) is a good place to learn different ways that phylotree.js can be used to display and annotate the trees. 
 2. A [full-featured web application](http://veg.github.io/phylotree.js/index.html) based on phylotree.js, implemented in [index.html](index.html).
-3. phylotree.js is also used by the 2015 revision of the [datamonkey.org server](http://test.datamonkey.org) for molecular sequence analyis. 
+3. phylotree.js is also used by the 2015 revision of the [datamonkey.org server](http://test.datamonkey.org) for molecular sequence analysis. 
 
 ## Dependencies 
 
 See [bower.json](bower.json) for dependencies. 
+
+## Tests
+
+Run tests using `mocha`.
