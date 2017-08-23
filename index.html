@@ -9,7 +9,7 @@
 
 
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
     <!-- Optional theme -->
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
@@ -61,7 +61,8 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#">phylotree.js</a>
+        <a class="navbar-brand" href="#">phylotree.js</a>
+        <a class="btn btn-info navbar-btn" href="http://hyphy.org/resources/#labeling-branches-with-phylotree">Help</a>  <!--SJS added-->
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
@@ -97,11 +98,14 @@
           </ul>
         </li>
      </ul>
-      
-      
+    
+        
         <div class="form-group navbar-form navbar-right">
           <input type="text" id = 'branch_filter' class="form-control" placeholder="Filter branches on">
         </div>
+        
+        
+
             
       
       <div class="row">
@@ -221,6 +225,11 @@
               </label>
               <label class="btn btn-default  btn-sm">
                 <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "radial" autocomplete="off" title = "Layout radially"> Radial
+              </label>
+            </div>
+            <div class="btn-group" data-toggle="buttons">
+              <label class="btn btn-default  btn-sm">
+                <input type="radio" name="options" class = "phylotree-layout-animation" data-mode = "radial" autocomplete="off" title = "Animations off" checked> Animation
               </label>
             </div>
             
