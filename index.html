@@ -23,9 +23,9 @@
     <script src="phylotree.js"></script>
 
     <link href="phylotree.css" rel="stylesheet">
-    
+
     <style>
-    
+
         .fa-rotate-45 {
           -webkit-transform: rotate(45deg);
           -moz-transform: rotate(45deg);
@@ -97,16 +97,20 @@
           </ul>
         </li>
      </ul>
-    
-        
+
+
+        <div class="navbar-btn navbar-right">
+        <a class="btn btn-info" href="http://hyphy.org/resources/#labeling-branches-with-phylotree">Help</a>
+        </div>
+
         <div class="form-group navbar-form navbar-right">
           <input type="text" id = 'branch_filter' class="form-control" placeholder="Filter branches on">
         </div>
-        
-        
 
-            
-      
+
+
+
+
       <div class="row">
         <div class="col-md-5 navbar-right ">
             <div class="navbar-form " role="search">
@@ -123,8 +127,8 @@
                          </ul>
                     </span>
 
-                    <input type="text" class="form-control" value = "Foreground" id = "selection_name_box" disabled>               
-                    
+                    <input type="text" class="form-control" value = "Foreground" id = "selection_name_box" disabled>
+
                     <span class="input-group-btn" id = "save_selection_name" style = "display: none" >
                         <button type="button" class="btn btn-default" id = "cancel_selection_button" >
                             Cancel
@@ -153,10 +157,9 @@
                     </span>
                   </div>
             </div>
-            <a class="btn btn-info navbar-btn" href="http://hyphy.org/resources/#labeling-branches-with-phylotree">Help</a>  <!--SJS added-->
-          </div>
+        </div>
     </div>
-      
+
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->
 </nav>
@@ -192,7 +195,7 @@
 </div><!-- /.modal -->
 
 <div class = 'container' id = "main_display">
-        
+
     <div class = 'row'>
         <div class = 'col-md-12'>
             <div class="btn-toolbar" role="toolbar">
@@ -232,27 +235,27 @@
                 <input type="radio" name="options" class = "phylotree-layout-animation" data-mode = "radial" autocomplete="off" title = "Animations off" checked> Animation
               </label>
             </div>
-            
+
             <div class="btn-group" data-toggle="buttons">
               <label class="btn btn-default active btn-sm">
-                <input type="radio" class = "phylotree-align-toggler" data-align = "left" name="options-align" autocomplete="off" checked title = "Align tips labels to branches"> 
+                <input type="radio" class = "phylotree-align-toggler" data-align = "left" name="options-align" autocomplete="off" checked title = "Align tips labels to branches">
                     <i class="fa fa-align-left" ></i>
                 </input>
-                
+
               </label>
               <label class="btn btn-default btn-sm">
-               <input type="radio" class = "phylotree-align-toggler" data-align = "right" name="options-align" autocomplete="off" title = "Align tips labels to the edge of the plot"> 
+               <input type="radio" class = "phylotree-align-toggler" data-align = "right" name="options-align" autocomplete="off" title = "Align tips labels to the edge of the plot">
                     <i class="fa fa-align-right" ></i>
                 </input>
               </label>
             </div>
-            
+
             <label class = "pull-right">Selected <span class="badge" id = "selected_branch_counter">0</span> and filtered <span class="badge" id = "selected_filtered_counter">0</span> branches</label>
-           
+
            </div>
         </div>
     </div>
-        
+
     <div class = 'row'>
         <div class = 'col-md-12'>
             <div id = 'tree_container' class = 'tree-widget'>
@@ -278,7 +281,7 @@ $('#newick_export_modal').on('show.bs.modal', function (e) {
                     return "{" + tags.join (",") + "}";
                 }
                 return "";
-            }  
+            }
         )
     );
 })
@@ -293,13 +296,13 @@ $("#newick_file").on ("change", function (e) {
       reader.onload = (function(theFile) {
         return function(e) {
             var res = d3.layout.newick_parser (e.target.result);
-            
+
             if (res["json"]) {
                 if (!("children" in res["json"])) {
                     res["error"] = "Empty tree";
-                } 
+                }
             }
-            
+
             var warning_div = d3.select ("#main_display").insert ("div", ":first-child");
             if (res["error"]) {
                 warning_div.attr ("class", "alert alert-danger alert-dismissable")
@@ -310,7 +313,7 @@ $("#newick_file").on ("change", function (e) {
                 tree (res).svg (svg).layout();
                 warning_div.attr ("class", "alert alert-success alert-dismissable")
                             .html ("Loaded a tree from  file <strong>" + f.name +": </strong>");
-            }          
+            }
             warning_div.append ("button")
                        .attr ("type", "button")
                        .attr ("class", "close")
@@ -338,7 +341,7 @@ $("#mp_label").on ("click", function (e) {
 $ ("[data-direction]").on ("click", function (e) {
     var which_function = $(this).data ("direction") == 'vertical' ? tree.spacing_x : tree.spacing_y;
     which_function (which_function () + (+ $(this).data ("amount"))).update();
-}); 
+});
 
 
 
@@ -370,7 +373,7 @@ function sort_nodes (asc) {
                 d += d3.max (n.children, function (d) { return d["count_depth"];});
             }
             n["count_depth"] = d;
-        }); 
+        });
         tree.resort_children (function (a,b) {
             return (a["count_depth"] - b["count_depth"]) * (asc ? 1 : -1);
         });
@@ -441,15 +444,15 @@ $("#display_dengrogram").on ("click", function (e) {
 //    phylotree.modify_selection = function (callback, attr, place, skip_refresh, mode) {
 
 
-$("#branch_filter").on ("input propertychange", function (e) {  
+$("#branch_filter").on ("input propertychange", function (e) {
    var filter_value = $(this).val();
-   
+
    var rx = new RegExp (filter_value,"i");
-   
-  tree.modify_selection (function (n) { 
-    return filter_value.length && (tree.branch_name () (n.target).search (rx)) != -1; 
+
+  tree.modify_selection (function (n) {
+    return filter_value.length && (tree.branch_name () (n.target).search (rx)) != -1;
    },"tag");
-      
+
 });
 
 $("#validate_newick").on ("click", function (e) {
@@ -458,7 +461,7 @@ $("#validate_newick").on ("click", function (e) {
         var warning_div = d3.select ("#newick_body").selectAll ("div  .alert-danger").data ([res["error"]])
         warning_div.enter ().append ("div");
         warning_div.html (function (d) {return d;}).attr ("class", "alert-danger");
-        
+
     } else {
         default_tree_settings ();
          tree (res).svg (svg).layout();
@@ -495,19 +498,19 @@ $("#example_hiv_compartments").on ("click", function (e) {
     default_tree_settings ();
     tree.radial           (true);
     tree.align_tips       (true);
-    
+
     tree.branch_name      (function (data) {
            if (data.children) {
                 return "";
            } else {
-               bits = data.name.split ('|');        
+               bits = data.name.split ('|');
                if (bits.length >= 6) {
                  return bits[0] + " [" + bits[1] + "] " + bits[2];
-               }     
+               }
                return data.name;
           }
     });
-           
+
     tree (d3.layout.newick_parser(hiv_tree)).svg (svg).layout();
     update_controls ();
 });
@@ -519,15 +522,15 @@ $("#example_influenza_color").on ("click", function (e) {
     tree.branch_length (function (n) {return undefined;});
     var year_re     = new RegExp ("_virus_A_([^_]+)"),
         color_scale = d3.scale.category20();
-    
+
     tree.branch_name (function (d) {
         var n = d.name.split ('_');
         if (n.length > 13) {
              return [n[9],n[10],n[12]].join (" ");
-        } 
+        }
         return n.join ("_");
     });
-        
+
     tree.style_nodes (function (element, data) {
         var m = (tree.branch_name () (data)).split (" ");
         if (m.length > 1) {
@@ -556,7 +559,7 @@ $("#example_NGS").on ("click", function (e) {
     default_tree_settings ();
     tree.node_span (function (a) { var m = re.exec (a.name); try {return Math.sqrt(parseFloat (m[1]))} catch (e) {} return null;});
     tree.options ({'draw-size-bubbles' : true}, false);
-    
+
     tree (res).svg (svg).layout();
 });
 
@@ -571,16 +574,16 @@ $("#example_GVZ").on ("click", function (e) {
     }
     var GVZ = "(((A300_20090507_rt_PGM:0.00763,((A300_20090507_rt_miSeqR2:0.0,A300_20090507_rt_miSeqR1:0.0):0.00055,A300:0.00055)0.979:0.00055)1.000:0.03978,(A202_20081001_rt_PGM:0.00582,((A202_20081001_rt_miSeqR2:0.0,A202_20081001_rt_miSeqR1:0.0):0.00055,A202:0.00055)0.988:0.00054)0.984:0.01883)0.868:0.00764,((A158_20080617_rt_miSeqR2:0.0,A158_20080617_rt_miSeqR1:0.0,A158_20080617_rt_PGM:0.0,A158:0.0):0.03547,(((A207_20081020_rt_miSeqR2:0.0,A207_20081020_rt_miSeqR1:0.0,A207:0.0):0.00055,A207_20081020_rt_PGM:0.00055)1.000:0.03874,(A124:0.00055,((A124_20080207_rt_miSeqR2:0.0,A124_20080207_rt_miSeqR1:0.0):0.00055,A124_20080207_rt_PGM:0.00383)0.910:0.00054)0.980:0.01829)0.025:0.00507)0.737:0.00225,((((A326_20090902_rt_miSeqR2:0.0,A326_20090902_rt_miSeqR1:0.0,A326_20090902_rt_PGM:0.0):0.03017,((A364_20100120_rt_PGM:0.00585,((A364_20100120_rt_miSeqR2:0.0,A364_20100120_rt_miSeqR1:0.0):0.00055,A364:0.00055)0.829:0.00357)0.996:0.02199,(((A297_20090526_rt_miSeqR2:0.0,A297_20090526_rt_miSeqR1:0.0,A297:0.0):0.00055,A297_20090526_rt_PGM:0.00189)1.000:0.04029,((A313:0.00055,((A313_20090715_rt_miSeqR2:0.0,A313_20090715_rt_miSeqR1:0.0):0.00053,A313_20090715_rt_PGM:0.00577)0.891:0.00055)1.000:0.04241,(A318:0.00055,((A318_20090728_rt_miSeqR2:0.0,A318_20090728_rt_miSeqR1:0.0):0.00053,A318_20090728_rt_PGM:0.00582)0.884:0.00055)0.999:0.03273)0.917:0.01184)0.658:0.00196)0.923:0.00824)0.525:0.00054,((((A144_20080513_rt_miSeqR2:0.0,A144_20080513_rt_miSeqR1:0.0,A144:0.0):0.00055,A144_20080513_rt_PGM:0.00188)0.998:0.02715,(A157:0.00055,((A157_20080617_rt_miSeqR2:0.0,A157_20080617_rt_miSeqR1:0.0):0.00055,A157_20080617_rt_PGM:0.00194)0.825:0.00053)1.000:0.03065)0.912:0.01106,(((A137_20080318_rt_miSeqR2:0.0,A137_20080318_rt_miSeqR1:0.0,A137:0.0):0.00054,A137_20080318_rt_PGM:0.00575)1.000:0.05302,((A302_20090604_rt_miSeqR2:0.0,A302_20090604_rt_miSeqR1:0.0,A302:0.0):0.00054,A302_20090604_rt_PGM:0.00574)1.000:0.03598)0.745:0.00848)0.465:0.00054)0.785:0.00274,((A312_20090702_rt_miSeqR2:0.0,A312_20090702_rt_miSeqR1:0.0,A312:0.0):0.00055,A312_20090702_rt_PGM:0.00571)0.999:0.02550)0.884:0.00629)";
     var res = d3.layout.newick_parser ( GVZ );
-    var colorizer = d3.scale.category10 (); 
+    var colorizer = d3.scale.category10 ();
 
     tree.branch_name (function (d) {
         var n = d.name.split ('_');
         if (n.length > 1) {
              return n[0] + "(" + n[n.length-1] + ")";
-        } 
+        }
         return n + " (Sanger)";
     });
-    
+
     tree.node_span ('equal');
     tree.options ({'draw-size-bubbles' : false}, false);
     tree.font_size (14);
@@ -588,7 +591,7 @@ $("#example_GVZ").on ("click", function (e) {
     tree.node_circle_size (4);
     tree.spacing_x (16, true);
     tree.style_edges (GVZ_colorizer);
-   
+
     tree.options ({'draw-size-bubbles' : false}, false);
     tree (res).svg (svg).layout();
 });
@@ -600,17 +603,17 @@ $("#example_GVZ").on ("click", function (e) {
 function node_colorizer (element, data) {
 try{
    var count_class = 0;
-       
+
     selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("fill", color_scheme(i), i == current_selection_id ?  "important" : null);}});
-   
+
     if (count_class > 1) {
-    
+
     } else {
-        if (count_class == 0) {        
+        if (count_class == 0) {
             element.style ("fill", null);
        }
     }
-} 
+}
 catch (e) {
 
 }
@@ -621,31 +624,31 @@ function edge_colorizer (element, data) {
    //console.log (data[current_selection_name]);
 try {
     var count_class = 0;
-       
+
     selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("stroke", color_scheme(i), i == current_selection_id ?  "important" : null);}});
-   
+
     if (count_class > 1) {
         element.classed ("branch-multiple", true);
-    } else 
-    if (count_class == 0) {        
+    } else
+    if (count_class == 0) {
              element.style ("stroke", null)
                    .classed ("branch-multiple", false);
     }
-} 
+}
 catch (e) {
 }
-    
+
 }
 
 var valid_id = new RegExp ("^[\\w]+$");
 
-$("#selection_name_box").on ("input propertychange", function (e) {  
-   var name = $(this).val();         
-   
+$("#selection_name_box").on ("input propertychange", function (e) {
+   var name = $(this).val();
+
    var accept_name = (selection_set.indexOf (name) < 0) &&
                      valid_id.exec (name) ;
-                     
-   d3.select ("#save_selection_button").classed ("disabled", accept_name ? null : true ); 
+
+   d3.select ("#save_selection_button").classed ("disabled", accept_name ? null : true );
 });
 
 $("#selection_rename > a").on ("click", function (e) {
@@ -655,7 +658,7 @@ $("#selection_rename > a").on ("click", function (e) {
            .on ("click", function (e) { // save selection handler
                 var old_selection_name = current_selection_name;
                 selection_set[current_selection_id] = current_selection_name = $("#selection_name_box").val();
-                 
+
                 if (old_selection_name != current_selection_name) {
                     tree.update_key_name (old_selection_name, current_selection_name);
                     update_selection_names (current_selection_id);
@@ -663,7 +666,7 @@ $("#selection_rename > a").on ("click", function (e) {
                 send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
                              {'detail' : ['save', this]}));
            });
-      
+
     d3.select ("#cancel_selection_button")
                .classed ("disabled",false)
                .on ("click", function (e) { // save selection handler
@@ -674,30 +677,30 @@ $("#selection_rename > a").on ("click", function (e) {
 
     send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
                                  {'detail' : ['rename', this]}));
-    e.preventDefault    (); 
+    e.preventDefault    ();
 });
 
 $("#selection_delete > a").on ("click", function (e) {
-    
+
     tree.update_key_name (selection_set[current_selection_id], null)
     selection_set.splice (current_selection_id, 1);
-    
+
     if (current_selection_id > 0) {
         current_selection_id --;
     }
     current_selection_name = selection_set[current_selection_id];
     update_selection_names (current_selection_id)
     $("#selection_name_box").val(current_selection_name)
-    
-                            
+
+
     send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
                                  {'detail' : ['save', this]}));
     e.preventDefault    ();
-       
-});  
-   
+
+});
+
 $("#selection_new > a").on ("click", function (e) {
-    
+
     d3.select ("#save_selection_button")
                .classed ("disabled",true)
                .on ("click", function (e) { // save selection handler
@@ -708,7 +711,7 @@ $("#selection_new > a").on ("click", function (e) {
                     send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
                                  {'detail' : ['save', this]}));
               });
- 
+
      d3.select ("#cancel_selection_button")
                .classed ("disabled",false)
                .on ("click", function (e) { // save selection handler
@@ -716,12 +719,12 @@ $("#selection_new > a").on ("click", function (e) {
                     send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
                                  {'detail' : ['cancel', this]}));
               });
-                            
+
     send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
                                  {'detail' : ['new', this]}));
     e.preventDefault    ();
-       
-});  
+
+});
 
 function send_click_event_to_menu_objects (e) {
     $("#selection_new, #selection_delete, #selection_rename, #save_selection_name, #selection_name_box, #selection_name_dropdown").get().forEach (
@@ -730,19 +733,19 @@ function send_click_event_to_menu_objects (e) {
         }
     );
 }
-   
+
 function update_selection_names (id, skip_rebuild) {
 
     skip_rebuild = skip_rebuild || false;
     id = id || 0;
-    
-    
+
+
     current_selection_name = selection_set[id];
     current_selection_id = id;
-    
+
     if (!skip_rebuild) {
         d3.selectAll (".selection_set").remove();
-    
+
         d3.select ("#selection_name_dropdown")
           .selectAll (".selection_set")
           .data (selection_set)
@@ -754,14 +757,14 @@ function update_selection_names (id, skip_rebuild) {
           .text (function (d) { return d;})
           .style ("color", function (d,i) {return color_scheme(i);})
           .on ("click", function (d,i) {update_selection_names (i,true);});
-          
+
     }
-      
-      
+
+
     d3.select ("#selection_name_box")
       .style ("color",  color_scheme(id))
       .property ("value", current_selection_name);
-    
+
     tree.selection_label (selection_set[id]);
 }
 
@@ -773,28 +776,28 @@ var width  = 800, //$(container_id).width(),
     max_selections       = 10;
     color_scheme = d3.scale.category10(),
     selection_menu_element_action = "phylotree_menu_element_action";
-    
+
 var tree = d3.layout.phylotree("body")
     .size([height, width])
     .separation (function (a,b) {return 0;})
-    .count_handler (function (count) { 
-            $("#selected_branch_counter").text (function (d) {return count[current_selection_name];}); 
+    .count_handler (function (count) {
+            $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
             $("#selected_filtered_counter").text (count.tag);
         }
     );
     //.node_span (function (a) {if (a.children && a.children.length) return 1; return isNaN (parseFloat (a["attribute"]) * 100) ? 1 : parseFloat (a["attribute"]) * 100; });
-    
+
 var test_string = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)";
 var container_id = '#tree_container';
 //var test_string = "(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)";
 
 //window.setInterval (function () {});
-   
+
 var svg = d3.select(container_id).append("svg")
     .attr("width", width)
     .attr("height", height);
-                    
-                
+
+
 
 function selection_handler_name_box (e) {
     var name_box = d3.select (this);
@@ -814,12 +817,12 @@ function selection_handler_name_box (e) {
            name_box.property ("disabled", false);
            break;
     }
-    
+
 }
 
 function selection_handler_new (e) {
     var element = d3.select (this);
-    $(this).data('tooltip', false);         
+    $(this).data('tooltip', false);
     switch (e.detail[0]) {
         case 'save':
         case 'cancel':
@@ -833,7 +836,7 @@ function selection_handler_new (e) {
         default:
             element.classed ("disabled", true);
             break;
-            
+
     }
 }
 
@@ -854,7 +857,7 @@ function selection_handler_name_dropdown (e) {
 
 function selection_handler_delete (e) {
     var element = d3.select (this);
-    $(this).tooltip('destroy');         
+    $(this).tooltip('destroy');
     switch (e.detail[0]) {
         case 'save':
         case 'cancel':
@@ -868,7 +871,7 @@ function selection_handler_delete (e) {
         default:
             element.classed ("disabled", true);
             break;
-            
+
     }}
 
 
@@ -883,7 +886,7 @@ $( document ).ready( function () {
     $("#selection_name_box").get(0).addEventListener(selection_menu_element_action,selection_handler_name_box,false);
     $("#save_selection_name").get(0).addEventListener(selection_menu_element_action,selection_handler_save_selection_name,false);
     $("#selection_name_dropdown").get(0).addEventListener(selection_menu_element_action,selection_handler_name_dropdown,false);
-    update_selection_names();   
+    update_selection_names();
 });
 
 </script>
