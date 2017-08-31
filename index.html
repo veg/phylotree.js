@@ -223,9 +223,10 @@
                 <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "radial" autocomplete="off" title = "Layout radially"> Radial
               </label>
             </div>
-            <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default  btn-sm">
-                <input type="radio" name="options" class = "phylotree-layout-animation" data-mode = "radial" autocomplete="off" title = "Animations off" checked> Animation
+            <div class="btn-group">
+                <button type="button" class="btn btn-default btn-sm active" id = "toggle_animation" title = "Toggle animation">
+                    Animation
+                </button>
               </label>
             </div>
             
@@ -346,6 +347,14 @@ $(".phylotree-layout-mode").on ("change", function (e) {
         }
     }
 });
+
+
+$("#toggle_animation").on ("click", function (e) {
+    var current_mode = $(this).hasClass('active');
+    $(this).toggleClass('active');
+    tree.options ({'transitions' : !current_mode} );
+});
+
 
 $(".phylotree-align-toggler").on ("change", function (e) {
     if ($(this).is(':checked')) {
@@ -471,6 +480,8 @@ function default_tree_settings () {
     tree.style_nodes (node_colorizer);
     tree.style_edges (edge_colorizer);
     tree.selection_label (current_selection_name);
+    tree.node_circle_size (undefined);
+    tree.radial (false);
 }
 
 $("#example_hiv_scaled").on ("click", function (e) {
@@ -478,6 +489,8 @@ $("#example_hiv_scaled").on ("click", function (e) {
     var res = d3.layout.newick_parser( hiv_tree );
     default_tree_settings ();
     tree (res).svg (svg).layout();
+    update_controls ();
+
 });
 
 function update_controls () {
@@ -517,31 +530,38 @@ $("#example_influenza_color").on ("click", function (e) {
         color_scale = d3.scale.category20();
     
     tree.branch_name (function (d) {
-        var n = d.name.split ('_');
+        var n = d.name.replace ("Hong_Kong", "Hong Kong").split ('_');
         if (n.length > 13) {
-             return [n[9],n[10],n[12]].join (" ");
+             if (n[9].length == 1) {
+                return [n[10].toUpperCase(),n[11],n[13]].join (" ");
+             }
+             return [n[9].toUpperCase(),n[10],n[12]].join (" ");
         } 
         return n.join ("_");
     });
         
     tree.style_nodes (function (element, data) {
+        node_colorizer (element, data);
         var m = (tree.branch_name () (data)).split (" ");
         if (m.length > 1) {
             element.style ("fill", color_scale(m[0]));
         }
-        node_colorizer (element, data);
     });
 
 
     tree.style_edges (function (element, data) {
+        edge_colorizer (element, data);
         var m = (tree.branch_name () (data.target)).split (" ");
         if (m.length > 1) {
             element.style ("stroke", color_scale(m[0]));
         }
-        edge_colorizer (element, data);
     });
 
+    tree.radial (true);
+    tree.align_tips (true);
     tree (res).svg (svg).layout();
+    update_controls ();
+
 });
 
 $("#example_NGS").on ("click", function (e) {
@@ -554,6 +574,8 @@ $("#example_NGS").on ("click", function (e) {
     tree.options ({'draw-size-bubbles' : true}, false);
     
     tree (res).svg (svg).layout();
+    update_controls ();
+
 });
 
 
@@ -561,6 +583,7 @@ $("#example_GVZ").on ("click", function (e) {
     default_tree_settings ();
 
     function GVZ_colorizer (element, data) {
+        edge_colorizer (element, data);
         element.style ('stroke-width', 4)
                .style ('stroke-linejoin', 'round')
                .style ('stroke-linecap', 'round');
@@ -584,9 +607,12 @@ $("#example_GVZ").on ("click", function (e) {
     tree.node_circle_size (4);
     tree.spacing_x (16, true);
     tree.style_edges (GVZ_colorizer);
+    tree.node_circle_size (0);
    
     tree.options ({'draw-size-bubbles' : false}, false);
     tree (res).svg (svg).layout();
+    update_controls ();
+
 });
 
 
