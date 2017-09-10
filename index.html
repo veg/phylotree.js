@@ -425,11 +425,11 @@ $("#select_all").on ("click", function (e) {
 });
 
 $("#select_all_internal").on ("click", function (e) {
-    tree.modify_selection (function (d) { return !d3_phylotree_is_leafnode (d.target);});
+    tree.modify_selection (function (d) { return !d3.layout.phylotree.is_leafnode (d.target);});
 });
 
 $("#select_all_leaves").on ("click", function (e) {
-    tree.modify_selection (function (d) { return d3_phylotree_is_leafnode (d.target);});
+    tree.modify_selection (function (d) { return d3.layout.phylotree.is_leafnode (d.target);});
 });
 
 
@@ -438,11 +438,11 @@ $("#select_none").on ("click", function (e) {
 });
 
 $("#clear_internal").on ("click", function (e) {
-    tree.modify_selection (function (d) { return d3_phylotree_is_leafnode (d.target) ? d.target[current_selection_name] : false;});
+    tree.modify_selection (function (d) { return d3.layout.phylotree.is_leafnode (d.target) ? d.target[current_selection_name] : false;});
 });
 
 $("#clear_leaves").on ("click", function (e) {
-    tree.modify_selection (function (d) { return !d3_phylotree_is_leafnode (d.target) ? d.target[current_selection_name] : false;});
+    tree.modify_selection (function (d) { return !d3.layout.phylotree.is_leafnode (d.target) ? d.target[current_selection_name] : false;});
 });
 
 
@@ -543,7 +543,7 @@ $("#example_influenza_color").on ("click", function (e) {
                 return [n[10].toUpperCase(),n[11],n[13]].join (" ");
              }
              return [n[9].toUpperCase(),n[10],n[12]].join (" ");
-        } 
+        }
         return n.join ("_");
     });
 
