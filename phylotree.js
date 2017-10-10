@@ -343,8 +343,6 @@
           },
           cartesian_to_polar = function(node, radius, radial_root_offset) {
 
-              node.x *= scales[0];
-              node.y *= scales[1];
               node.radius = radius * (node.radius + radial_root_offset);
 
               if (!node.angle) {
@@ -550,6 +548,10 @@
                   size[1] = max_depth * fixed_width[1];
                   scales[1] = (size[1] - offsets[1] - options["left-offset"]) / _extents[1][1];
                   label_width = phylotree._label_width(shown_font_size);
+                  if (phylotree.radial ()) {
+                    //label_width *= 2;
+                  }
+
               } else {
                   label_width = phylotree._label_width(shown_font_size);
                   at_least_one_dimension_fixed = true;
@@ -596,13 +598,14 @@
 
               nodes.forEach(function(d) {
                  d.radius = d.y * scales[1] / size[1];
+                 max_r = Math.max (d.radius, max_r);
               });
 
               var annular_shift = 0,
                   do_tip_offset = phylotree.align_tips() && !options['draw-size-bubbles'];
 
 
-              nodes.forEach(function(d) {
+               nodes.forEach(function(d) {
                   if (!d.children) {
                       var my_circ_position = d.x * scales[0];
                       if (last_child_angle !== null) {
@@ -617,8 +620,9 @@
                                   c = d.radius * last_child_radius - (dd * dd - (last_child_radius - d.radius) * (last_child_radius - d.radius)) / 2 / (1 - Math.cos(last_child_angle - d.angle)),
                                   st = Math.sqrt(b * b - 4 * c);
 
-                              annular_shift = Math.min(options['annular-limit'] * max_r, (-b + st) / 2);
+                              annular_shift = Math.min(options['annular-limit'] * max_r, (-b + st) / 2) ;
                               min_radius = options['max-radius'];
+
                           } else {
                               min_radius = Math.max (min_radius, local_mr);
                           }
@@ -631,35 +635,28 @@
               });
 
 
-             radius = Math.min(options['max-radius'], Math.max(effective_span / 2 / Math.PI, min_radius));
 
-              if (annular_shift) {
-                  var scaler = 1;
+               radius = Math.min(options['max-radius'], Math.max(effective_span / 2 / Math.PI, min_radius));
 
-                   nodes.forEach(function(d) {
-                      d.radius = d.y*scales[1]/size[1] + annular_shift;
-                      scaler = Math.max (scaler, d.radius);
-
-                  });
-
-
-                  if (scaler > 1) {
-                      scales[0] /= scaler;
-                      scales[1] /= scaler;
-                      annular_shift /= scaler;
-                  }
+               if (at_least_one_dimension_fixed) {
+                  radius = Math.min(radius, (Math.min(effective_span, _extents[1][1] * scales[1]) - label_width) * 0.5 - radius * annular_shift);
                }
 
 
-              if (at_least_one_dimension_fixed) {
-                  radius = Math.min(radius, (Math.min(effective_span, _extents[1][1] * scales[1]) - label_width) * 0.5 - radius * annular_shift);
-              }
+               radial_center = radius_pad_for_bubbles = radius;
+               var scaler = 1;
 
-              radial_center = radius_pad_for_bubbles = radius;
+               if (annular_shift) {
+                    scaler = max_r / (max_r + annular_shift );
+                    radius *= scaler;
+               }
+
 
               nodes.forEach(function(d) {
 
                   cartesian_to_polar(d, radius, annular_shift);
+
+                  max_r = Math.max (max_r, d.radius);
 
                   if (options['draw-size-bubbles']) {
                       radius_pad_for_bubbles = Math.max(radius_pad_for_bubbles, d.radius + phylotree.node_bubble_size(d));
@@ -690,8 +687,9 @@
               });
 
 
-              size[0] = radial_center + radius;
-              size[1] = radial_center + radius;
+              size[0] = radial_center + radius / scaler;
+              size[1] = radial_center + radius / scaler;
+
           } else {
 
               do_lr();
@@ -2351,7 +2349,6 @@
 
           var pad_radius = tree.pad_width(),
               vertical_offset = (tree.options()['top-bottom-spacing'] != 'fit-to-size' ? tree.pad_height() : 0);
-
 
           sizes = [sizes[1] + 2 * pad_radius,
               sizes[0] + 2 * pad_radius + vertical_offset
