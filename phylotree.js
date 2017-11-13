@@ -245,6 +245,11 @@
               'color-fill': true,
               'internal-names': false,
               'selectable': true,
+              // restricted-selectable can take an array of predetermined
+              // selecters that are defined in phylotree.predefined_selecters
+              // only the defined functions will be allowed when selecting
+              // branches
+              'restricted-selectable': false,
               'collapsible': true,
               'left-right-spacing': 'fixed-step', //'fit-to-size',
               'top-bottom-spacing': 'fixed-step',
@@ -1091,21 +1096,43 @@
 
       };
 
-      phylotree.modify_selection = function(callback, attr, place, skip_refresh, mode) {
+      // List of all selecters that can be used with the restricted-selectable option
+      phylotree.predefined_selecters = {
+        'all' : (d) => { return true; } ,
+        'none' : (d) => { return false; } ,
+        'all-leaf-nodes' : (d) => { return d3_phylotree_is_leafnode(d.target); },
+        'all-internal-nodes' :  (d) => { return !d3_phylotree_is_leafnode(d.target);}
+      };
+
+      // SW 20171113 : TODO: Arguments violate clean-coding standards. 
+      // https://github.com/ryanmcdermott/clean-code-javascript#functions
+      phylotree.modify_selection = function(node_selecter, attr, place, skip_refresh, mode) {
 
           attr = attr || selection_attribute_name;
           mode = mode || "toggle";
 
-          if (options["selectable"] && !options["binary-selectable"]) {
+          // check if node_selecter is a value of pre-defined selecters
+
+          if(options["restricted-selectable"].length) {
+
+            // the selection must be from a list of pre-determined selections
+            if(_.contains(_.keys(this.predefined_selecters), node_selecter)) {
+              node_selecter = this.predefined_selecters[node_selecter];
+            } else {
+              return;
+            }
+
+          }
+
+          if ((options["restricted-selectable"] || options["selectable"]) && !options["binary-selectable"]) {
 
               var do_refresh = false;
 
-              if (typeof callback === 'function') {
+              if (typeof node_selecter === 'function') {
                   links.forEach(function(d) {
-                      var select_me = callback(d);
+                      var select_me = node_selecter(d);
                       d[attr] = d[attr] || false;
                       if (d[attr] != select_me) {
-
                           d[attr] = select_me;
                           do_refresh = true;
                           d.target[attr] = select_me;
@@ -1114,7 +1141,7 @@
 
               } else {
 
-                  callback.forEach(function(d) {
+                  node_selecter.forEach(function(d) {
                       var new_value;
                       switch (mode) {
                           case 'true':
@@ -1139,7 +1166,6 @@
                       d[attr] = d.target[attr];
                   });
 
-
               }
 
               if (do_refresh) {
@@ -1163,10 +1189,10 @@
 
           } else if (options['binary-selectable']) {
 
-              if (typeof callback === 'function') {
+              if (typeof node_selecter === 'function') {
                   links.forEach(function(d) {
 
-                      var select_me = callback(d);
+                      var select_me = node_selecter(d);
                       d[attr] = d[attr] || false;
 
 
@@ -1188,7 +1214,7 @@
 
               } else {
 
-                  callback.forEach(function(d) {
+                  node_selecter.forEach(function(d) {
 
                       var new_value;
                       new_value = !d[attr];
@@ -2078,6 +2104,7 @@
       };
 
       phylotree.select_all_descendants = function(node, terminal, internal) {
+
           var selection = [];
 
           function sel(d) {
