@@ -18,11 +18,14 @@
 <style>
   #guide {
     position: fixed;
-    top: 50px;
-    right: 50px;
+    top: 25px;
+    right: 25px;
     height: 400px;
     width: 400px;
-    background: red;
+    border-style: solid;
+    border-color: red;
+    border-width: 1px;
+    background: white;
   }
 </style>
 
@@ -36,18 +39,55 @@
     d3.text("h3_full.new", function(error, newick) {
       var tree = d3.layout.phylotree()
         // create a tree layout object
-        .svg(d3.select("#tree_display"));
+        .svg(d3.select("#tree_display"))
+        .options({
+          "show-scale": false
+        });
       // render to this SVG element
-
-      tree(d3.layout.newick_parser(newick))
+      var parsed = d3.layout.newick_parser(newick);
+      tree(parsed)
         // parse the Newick into a d3 hierarchy object with additional fields
         .layout();
       // layout and render the tree
       
       var guide_tree = d3.layout.phylotree()
-        .svg(d3.select("#tree_guide"));
+        .svg(d3.select("#tree_guide"))
+        .options({
+          'left-right-spacing': 'fit-to-size',
+          // fit to given size top-to-bottom
+          'top-bottom-spacing': 'fit-to-size',
+          // fit to given size left-to-right
+          'selectable': false,
+          // make nodes and branches not selectable
+          'collapsible': false,
+          // turn off the menu on internal nodes
+          'transitions': false,
+          // turn off d3 animations
+          'show-scale': false
+        })
+        .size([400, 400])
+        .node_circle_size(0);
+      guide_tree(parsed)
+        .layout();
+    
+      var x = d3.scale.linear()
+        .domain([0, document.body.scrollWidth])
+        .range([0, 400]);
+      var y = d3.scale.linear()
+        .domain([0, document.body.scrollHeight])
+        .range([0, 400]);
+      var rect = d3.select("#tree_guide")
+        .append('rect')
+          .attr('x', 0)
+          .attr('y', 0)
+          .style('opacity', .25)
+          .attr('width', x(window.innerWidth))
+          .attr('height', y(window.innerHeight));
 
-      
+      document.body.onscroll = function(event) {
+        rect.attr('x', x(window.scrollX))
+          .attr('y', y(window.scrollY));
+      };
     });
   </script>
 
