@@ -25,7 +25,7 @@ Key features
 
 1. A [gallery of examples](http://bl.ocks.org/spond) is a good place to learn different ways that phylotree.js can be used to display and annotate the trees. 
 2. A [full-featured web application](http://veg.github.io/phylotree.js/index.html) based on phylotree.js, implemented in [index.html](index.html).
-3. phylotree.js is also used by the 2015 revision of the [datamonkey.org server](http://test.datamonkey.org) for molecular sequence analysis. 
+3. phylotree.js is also used by the 2017 revision of the [datamonkey.org server](http://datamonkey.org) for molecular sequence analysis. 
 
 ## Dependencies 
 
