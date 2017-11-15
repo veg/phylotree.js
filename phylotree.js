@@ -307,7 +307,7 @@
       fixed_width = [15, 20],
       font_size = 12,
       scale_bar_font_size = 12,
-      offsets = [0, font_size],
+      offsets = [0, font_size/2],
       draw_line = d3.svg
         .line()
         .x(function(d) {

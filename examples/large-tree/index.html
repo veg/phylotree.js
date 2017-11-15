@@ -11,7 +11,7 @@
   <script src="//code.jquery.com/jquery.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <script src="//d3js.org/d3.v3.min.js"></script>
-  <script src="//veg.github.io/phylotree.js/phylotree.js"></script>
+  <script src="/phylotree.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
 </head>
 
@@ -20,8 +20,6 @@
     position: fixed;
     top: 25px;
     right: 25px;
-    height: 400px;
-    width: 400px;
     border-style: solid;
     border-color: red;
     border-width: 1px;
@@ -37,19 +35,31 @@
 
   <script>
     d3.text("h3_full.new", function(error, newick) {
-      var tree = d3.layout.phylotree()
+      var main_tree = d3.layout.phylotree()
         // create a tree layout object
         .svg(d3.select("#tree_display"))
         .options({
-          "show-scale": false
-        });
+          "show-scale": false,
+          'left-right-spacing': 'fit-to-size',
+          // fit to given size top-to-bottom
+          'top-bottom-spacing': 'fit-to-size',
+          "collapsible": false
+        })
+        .size([38330, 38330/3]);
       // render to this SVG element
       var parsed = d3.layout.newick_parser(newick);
-      tree(parsed)
+      main_tree(parsed)
         // parse the Newick into a d3 hierarchy object with additional fields
         .layout();
       // layout and render the tree
-      
+     
+      var guide_height = 400,
+        guide_width = 400;
+
+      d3.select('#guide')
+        .style('height', guide_height+'px')
+        .style('width', guide_width+'px');
+
       var guide_tree = d3.layout.phylotree()
         .svg(d3.select("#tree_guide"))
         .options({
@@ -65,17 +75,17 @@
           // turn off d3 animations
           'show-scale': false
         })
-        .size([400, 400])
+        .size([guide_height, guide_width])
         .node_circle_size(0);
       guide_tree(parsed)
         .layout();
     
       var x = d3.scale.linear()
         .domain([0, document.body.scrollWidth])
-        .range([0, 400]);
+        .range([0, guide_width]);
       var y = d3.scale.linear()
         .domain([0, document.body.scrollHeight])
-        .range([0, 400]);
+        .range([0, guide_height]);
       var rect = d3.select("#tree_guide")
         .append('rect')
           .attr('x', 0)
