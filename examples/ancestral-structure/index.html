@@ -77,12 +77,24 @@
           var no_gap = node_sequence[d] != "-" && parent_sequence[d] != "-",
             is_change = node_sequence[d] != parent_sequence[d];
           if(no_gap && is_change) {
-            changes[node.name].push(i);
+            changes[node.name].push(i+1);
           }
         });
       });
-       tree.selection_callback(function(selected){
-         console.log(selected);
+      tree.selection_callback(function(selected){
+        var selected_node_names = _.pluck(selected, "name"),
+          all_changes = _.uniq(_.flatten(_.values(_.pick(changes, selected_node_names)))),
+          highlighter = new pv.color.ColorOp(function(atom, out, index) {
+            if (all_changes.indexOf(atom.residue().num()) > -1) {
+              out[index+0] = 1.0; out[index+1] = 0.0;
+              out[index+2] = 0.0; out[index+3] = 1.0;
+            } else {
+              out[index+0] = 1.0; out[index+1] = 1.0;
+              out[index+2] = 1.0; out[index+3] = 1.0;
+            }
+          });
+        geom.colorBy(highlighter);
+        viewer.requestRedraw();
       });
     });
     // render to this SVG element
@@ -110,21 +122,6 @@
     var viewer = pv.Viewer(parent, options);
     var prevPicked = null;
     var geom;
-
-    function evenOdd() {
-      return new pv.color.ColorOp(function(atom, out, index) {
-        // index + 0, index + 1 etc. are the positions in the output array
-        // at which the red (+0), green (+1), blue (+2) and  alpha (+3)
-        // components are to be written.
-        if (atom.residue().num() === 35) {
-          out[index+0] = 1.0; out[index+1] = 0.0;
-          out[index+2] = 0.0; out[index+3] = 1.0;
-        } else {
-          out[index+0] = 1.0; out[index+1] = 1.0;
-          out[index+2] = 1.0; out[index+3] = 1.0;
-        }
-      });
-    }
 
     parent.addEventListener('mousemove', function(event) {
       var rect = viewer.boundingClientRect();
@@ -158,10 +155,6 @@
       var chain = structure.select({chain: 'A'});
       geom = viewer.cartoon('protein', chain, {color: pv.color.uniform("white")});
       viewer.autoZoom();
-      setTimeout(function(){
-        geom.colorBy(evenOdd())
-        viewer.requestRedraw();
-      }, 1000);
     });
   </script>
 
