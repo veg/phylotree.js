@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+
+  <script src="//code.jquery.com/jquery.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="//d3js.org/d3.v3.min.js"></script>
+  <script src="/phylotree.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
+  <script type='text/javascript' src='bio-pv.min.js'></script>
+</head>
+
+<style>
+  #guide {
+    position: fixed;
+    left: 25px;
+    top: 25px;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    background: white;
+    height: 450px;
+    width: 410px;
+  }
+
+  #viewer {
+    position:fixed;
+    bottom:0px;
+    top:0px;
+    left:0px;
+    right:0px;
+  }
+</style>
+
+<body>
+  <div id="viewer"></div>
+  <div id="guide">
+    <svg id="tree_display" />
+    <div id='picked-atom-name' style='text-align:center;'>&nbsp;</div>
+  </div>
+
+  <script>
+    var example_tree = "((((s9,(s8,s2)Node5)Node3,((s10,s3)Node9,s4)Node8)Node2,(s5,(s1,s0)Node15)Node13)Node1,s7,s6)"
+    // tree from Yokoyama et al http://www.ncbi.nlm.nih.gov/pubmed/18768804
+
+
+    var tree = d3.layout.phylotree()
+      // create a tree layout object
+      .svg(d3.select("#tree_display"))
+      .options({
+        'left-right-spacing': 'fit-to-size',
+        'top-bottom-spacing': 'fit-to-size'
+      })
+      .size([400, 400])
+      .selection_callback(console.log);
+    // render to this SVG element
+
+    tree(d3.layout.newick_parser(example_tree))
+      // parse the Newick into a d3 hierarchy object with additional fields
+      .layout();
+    // layout and render the tree
+
+    var options = {
+      width: 'auto',
+      height: 'auto',
+      antialias: true,
+      quality : 'medium',
+      background: '#EEE'
+    };
+    var parent = document.getElementById('viewer');
+    var viewer = pv.Viewer(parent, options);
+    var geom;
+
+    function evenOdd() {
+      return new pv.color.ColorOp(function(atom, out, index) {
+        // index + 0, index + 1 etc. are the positions in the output array
+        // at which the red (+0), green (+1), blue (+2) and  alpha (+3)
+        // components are to be written.
+        if (atom.index() % 2 === 0) {
+          out[index+0] = 1.0; out[index+1] = 0.0;
+          out[index+2] = 0.0; out[index+3] = 1.0;
+        } else {
+          out[index+0] = 0.0; out[index+1] = 0.0;
+          out[index+2] = 1.0; out[index+3] = 1.0;
+        }
+      });
+    }
+
+    pv.io.fetchPdb("2i0q.pdb", function(structure) {
+      geom = viewer.cartoon('protein', structure, {color: pv.color.uniform("white")});
+      viewer.autoZoom();
+      setTimeout(function(){
+        geom.colorBy(evenOdd())
+        viewer.requestRedraw();
+      }, 1000);
+    });
+  </script>
+
+</body>
+
+</html>

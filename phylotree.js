@@ -245,6 +245,7 @@
       scale_attribute = "y_scaled",
       needs_redraw = true,
       svg = null,
+      selection_callback = null,
       options = {
         layout: "left-to-right",
         branches: "step",
@@ -1359,7 +1360,9 @@
           }
         }
       }
-
+      if(selection_callback && attr != "tag"){
+        selection_callback(phylotree.get_selection());
+      }
       return phylotree;
     };
 
@@ -2557,6 +2560,12 @@
     phylotree.get_partitions = function(attributes) {
       return this.partitions;
     };
+
+    phylotree.selection_callback = function(callback){
+      if(!callback) return selection_callback;
+      selection_callback = callback;
+      return phylotree;
+    }
 
     d3.rebind(phylotree, d3_hierarchy, "sort", "children", "value");
 
