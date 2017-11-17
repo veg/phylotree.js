@@ -24,6 +24,9 @@
       border-width: 1px;
       background: white;
     }
+    #guide path.branch {
+      stroke: #DDD;
+    }
   </style>
 
 
@@ -91,7 +94,7 @@
         .append('rect')
           .attr('x', 0)
           .attr('y', 0)
-          .style('opacity', .25)
+          .style('opacity', .6)
           .attr('width', x(window.innerWidth))
           .attr('height', y(window.innerHeight));
 
