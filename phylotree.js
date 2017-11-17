@@ -297,6 +297,7 @@
       },
       nodes = [],
       links = [],
+      parsed_tags = [],
       partitions = [],
       x_coord = function(d) {
         return d.y;
@@ -853,6 +854,20 @@
       } else {
         newick_string = nwk;
         nodes = d3_hierarchy.call(this, _node_data.json);
+        
+        // Parse tags
+        var _parsed_tags = {};
+        nodes.forEach(node => {
+          var left_bracket_index = node.name.indexOf('{');
+          if(left_bracket_index > -1) {
+            var tag = node.name.slice(left_bracket_index+1, node.name.length-1);
+
+            node[tag] = true;
+            _parsed_tags[tag] = true;
+            node.name = node.name.slice(0, left_bracket_index);
+          }
+        });
+        parsed_tags = Object.keys(_parsed_tags);
       }
 
       phylotree.placenodes();
@@ -2216,7 +2231,7 @@
         });
 
       brush.call(brush_object);
-
+      phylotree.sync_edge_labels();
       return phylotree;
     };
 
@@ -2566,6 +2581,10 @@
       selection_callback = callback;
       return phylotree;
     }
+
+    phylotree.get_parsed_tags = function() {
+      return parsed_tags;
+    };
 
     d3.rebind(phylotree, d3_hierarchy, "sort", "children", "value");
 
