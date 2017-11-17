@@ -294,8 +294,7 @@ $("#newick_file").on ("change", function (e) {
       var f = files[0];
       var reader = new FileReader();
 
-      reader.onload = (function(theFile) {
-        return function(e) {
+      reader.onload = function(e) {
             var res = d3.layout.newick_parser (e.target.result);
 
             if (res["json"]) {
@@ -322,7 +321,6 @@ $("#newick_file").on ("change", function (e) {
                        .attr ("aria-hidden", "true")
                        .html ("&times;");
         };
-      })(f);
 
       reader.readAsText(f);
     }
