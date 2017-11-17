@@ -310,7 +310,12 @@ $("#newick_file").on ("change", function (e) {
 
             } else {
                 default_tree_settings ();
-                tree (res).svg (svg).layout();
+                tree (res);
+                selection_set = tree.get_parsed_tags().length > 0 ? tree.get_parsed_tags() : ["Foreground"];
+                selection_set.forEach((d,i) => update_selection_names(i))
+                current_selection_name = selection_set[0];
+                update_selection_names(0);
+                tree.svg (svg).layout();
                 warning_div.attr ("class", "alert alert-success alert-dismissable")
                             .html ("Loaded a tree from  file <strong>" + f.name +": </strong>");
             }
