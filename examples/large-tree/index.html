@@ -27,6 +27,9 @@
     #guide path.branch {
       stroke: #DDD;
     }
+    #guide path.branch:hover {
+      stroke-width: 2px;
+    }
   </style>
 
 
@@ -77,7 +80,9 @@
           // turn off the menu on internal nodes
           'transitions': false,
           // turn off d3 animations
-          'show-scale': false
+          'show-scale': false,
+          // disable brush
+          'brush': false
         })
         .size([guide_height, guide_width])
         .node_circle_size(0);
@@ -102,6 +107,13 @@
         rect.attr('x', x(window.scrollX))
           .attr('y', y(window.scrollY));
       };
+
+      d3.select('#guide').on("click", function() {
+        var coords = d3.mouse(this),
+          new_x = x.invert(coords[0])-window.innerWidth/2,
+          new_y = y.invert(coords[1])-window.innerHeight/2;
+        window.scrollTo(new_x, new_y);
+      });
     });
   </script>
 

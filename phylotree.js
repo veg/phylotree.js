@@ -278,7 +278,8 @@
         "maximim-per-level-spacing": 100,
         "minimum-per-level-spacing": 10,
         node_circle_size: d3.functor(3),
-        transitions: null
+        transitions: null,
+        brush: true
       },
       css_classes = {
         "tree-container": "phylotree-container",
@@ -2173,64 +2174,66 @@
 
       var sizes = d3_phylotree_resize_svg(phylotree, svg, transitions);
 
-      var brush = enclosure
-        .selectAll("." + css_classes["tree-selection-brush"])
-        .data([0]);
-      brush
-        .enter()
-        .insert("g", ":first-child")
-        .attr("class", css_classes["tree-selection-brush"]);
+      if(options["brush"]) {
+        var brush = enclosure
+          .selectAll("." + css_classes["tree-selection-brush"])
+          .data([0]);
+        brush
+          .enter()
+          .insert("g", ":first-child")
+          .attr("class", css_classes["tree-selection-brush"]);
 
-      var brush_object = d3.svg
-        .brush()
-        .x(
-          d3.scale
-            .identity()
-            .domain([0, sizes[0] - offsets[1] - options["left-offset"]])
-        )
-        .y(d3.scale.identity().domain([0, sizes[1] - phylotree.pad_height()]))
-        .on("brush", function() {
-          var extent = d3.event.target.extent(),
-            shown_links = links.filter(d3_phylotree_edge_visible),
-            selected_links = shown_links
-              .filter(function(d, i) {
-                return (
-                  d.source.screen_x >= extent[0][0] &&
-                  d.source.screen_x <= extent[1][0] &&
-                  d.source.screen_y >= extent[0][1] &&
-                  d.source.screen_y <= extent[1][1] &&
-                  d.target.screen_x >= extent[0][0] &&
-                  d.target.screen_x <= extent[1][0] &&
-                  d.target.screen_y >= extent[0][1] &&
-                  d.target.screen_y <= extent[1][1]
-                );
-              })
-              .map(function(d) {
+        var brush_object = d3.svg
+          .brush()
+          .x(
+            d3.scale
+              .identity()
+              .domain([0, sizes[0] - offsets[1] - options["left-offset"]])
+          )
+          .y(d3.scale.identity().domain([0, sizes[1] - phylotree.pad_height()]))
+          .on("brush", function() {
+            var extent = d3.event.target.extent(),
+              shown_links = links.filter(d3_phylotree_edge_visible),
+              selected_links = shown_links
+                .filter(function(d, i) {
+                  return (
+                    d.source.screen_x >= extent[0][0] &&
+                    d.source.screen_x <= extent[1][0] &&
+                    d.source.screen_y >= extent[0][1] &&
+                    d.source.screen_y <= extent[1][1] &&
+                    d.target.screen_x >= extent[0][0] &&
+                    d.target.screen_x <= extent[1][0] &&
+                    d.target.screen_y >= extent[0][1] &&
+                    d.target.screen_y <= extent[1][1]
+                  );
+                })
+                .map(function(d) {
+                  return d.target;
+                });
+
+            phylotree.modify_selection(
+              links.map(function(d) {
                 return d.target;
-              });
+              }),
+              "tag",
+              false,
+              selected_links.length > 0,
+              "false"
+            );
+            phylotree.modify_selection(
+              selected_links,
+              "tag",
+              false,
+              false,
+              "true"
+            );
+          })
+          .on("brushend", function() {
+            brush.call(d3.event.target.clear());
+          });
 
-          phylotree.modify_selection(
-            links.map(function(d) {
-              return d.target;
-            }),
-            "tag",
-            false,
-            selected_links.length > 0,
-            "false"
-          );
-          phylotree.modify_selection(
-            selected_links,
-            "tag",
-            false,
-            false,
-            "true"
-          );
-        })
-        .on("brushend", function() {
-          brush.call(d3.event.target.clear());
-        });
-
-      brush.call(brush_object);
+        brush.call(brush_object);
+      }
       phylotree.sync_edge_labels();
       return phylotree;
     };
