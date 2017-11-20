@@ -62,8 +62,12 @@
       // layout and render the tree
 
       // Sort deepest clades towards bottom of tree
+      var i = 0;
       main_tree.traverse_and_compute (function (n) {
         var d = 1;
+        if(!n.name) {
+          n.name = "Node"+i++;
+        }
         if (n.children && n.children.length) {
           d += d3.max (n.children, function (d) { return d["count_depth"];});
         }
@@ -87,15 +91,15 @@
           // fit to given size top-to-bottom
           'top-bottom-spacing': 'fit-to-size',
           // fit to given size left-to-right
-          'selectable': false,
-          // make nodes and branches not selectable
           'collapsible': false,
           // turn off the menu on internal nodes
           'transitions': false,
           // turn off d3 animations
           'show-scale': false,
           // disable brush
-          'brush': false
+          'brush': false,
+          // disable selections on this tree
+          'selectable': false
         })
         .size([guide_height, guide_width])
         .node_circle_size(0);
@@ -126,6 +130,10 @@
           new_x = x.invert(coords[0])-window.innerWidth/2,
           new_y = y.invert(coords[1])-window.innerHeight/2;
         window.scrollTo(new_x, new_y);
+      });
+
+      main_tree.selection_callback(function(selected){
+        guide_tree.sync_edge_labels();
       });
     });
   </script>
