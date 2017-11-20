@@ -41,8 +41,9 @@
   <svg id="tree_display" />
 
   <script>
+    var main_tree, guide_tree, parsed;
     d3.text("h3_full.new", function(error, newick) {
-      var main_tree = d3.layout.phylotree()
+      main_tree = d3.layout.phylotree()
         // create a tree layout object
         .svg(d3.select("#tree_display"))
         .options({
@@ -54,12 +55,24 @@
         })
         .size([38330, 38330/3]);
       // render to this SVG element
-      var parsed = d3.layout.newick_parser(newick);
+      parsed = d3.layout.newick_parser(newick);
       main_tree(parsed)
         // parse the Newick into a d3 hierarchy object with additional fields
         .layout();
       // layout and render the tree
-     
+
+      // Sort deepest clades towards bottom of tree
+      main_tree.traverse_and_compute (function (n) {
+        var d = 1;
+        if (n.children && n.children.length) {
+          d += d3.max (n.children, function (d) { return d["count_depth"];});
+        }
+        n["count_depth"] = d;
+      });
+      main_tree.resort_children (function (a,b) {
+        return (a["count_depth"] - b["count_depth"]);
+      });
+
       var guide_height = 400,
         guide_width = 400;
 
@@ -67,7 +80,7 @@
         .style('height', guide_height+'px')
         .style('width', guide_width+'px');
 
-      var guide_tree = d3.layout.phylotree()
+      guide_tree = d3.layout.phylotree()
         .svg(d3.select("#tree_guide"))
         .options({
           'left-right-spacing': 'fit-to-size',
