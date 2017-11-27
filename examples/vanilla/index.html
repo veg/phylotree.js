@@ -40,7 +40,7 @@
         .size([height, width])
         .node_circle_size(0); // do not show "circles" at internal nodes
 
-      tree(d3.layout.newick_parser(newick))
+      tree(newick)
         // parse the Newick into a d3 hierarchy object with additional fields
         // generate node coordinates
         .layout();

@@ -1,187 +1,29 @@
 (function() {
   var d3_layout_phylotree_event_id = "d3.layout.phylotree.event",
     d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
-  /**
-* @name newick_parser
-* @version 1.0
-* @exports phylotree
-* @namespace phylotree
-*/
+/**
+ * Parses a Newick string into an equivalent JSON representation that is
+ * suitable for consumption by ``d3.layout.hierarchy``.
+ *
+ * Optionally accepts bootstrap values. Currently supports Newick strings with or without branch lengths,
+ * as well as tagged trees such as
+ *  ``(a,(b{TAG},(c{TAG},d{ANOTHERTAG})))``
+ *
+ * @param {String} nwk_str - A string representing a phylogenetic tree in Newick format.
+ * @param {Object} bootstrap_values - SDS: Not clear what this does (optional).
+ * @returns {Object} An object with keys ``json`` and ``error``.
+ */
   d3.layout.newick_parser = function(nwk_str, bootstrap_values) {
-    var clade_stack = [];
-
-    function add_new_tree_level() {
-      var new_level = {
-        name: null
-      };
-      var the_parent = clade_stack[clade_stack.length - 1];
-      if (!("children" in the_parent)) {
-        the_parent["children"] = [];
-      }
-      clade_stack.push(new_level);
-      the_parent["children"].push(clade_stack[clade_stack.length - 1]);
-      clade_stack[clade_stack.length - 1]["original_child_order"] =
-        the_parent["children"].length;
-    }
-
-    function finish_node_definition() {
-      var this_node = clade_stack.pop();
-      if (bootstrap_values && "children" in this_node) {
-        this_node["bootstrap_values"] = current_node_name;
-      } else {
-        this_node["name"] = current_node_name;
-      }
-      this_node["attribute"] = current_node_attribute;
-      this_node["annotation"] = current_node_annotation;
-      current_node_name = "";
-      current_node_attribute = "";
-      current_node_annotation = "";
-    }
-
-    function generate_error(location) {
-      return {
-        json: null,
-        error:
-          "Unexpected '" +
-          nwk_str[location] +
-          "' in '" +
-          nwk_str.substring(location - 20, location + 1) +
-          "[ERROR HERE]" +
-          nwk_str.substring(location + 1, location + 20) +
-          "'"
-      };
-    }
-
-    var automaton_state = 0;
-    var current_node_name = "";
-    var current_node_attribute = "";
-    var current_node_annotation = "";
-    var quote_delimiter = null;
-    var name_quotes = {
-      "'": 1,
-      '"': 1
-    };
-
-    var tree_json = {
-      name: "root"
-    };
-    clade_stack.push(tree_json);
-
-    var space = /\s/;
-
-    for (var char_index = 0; char_index < nwk_str.length; char_index++) {
-      try {
-        var current_char = nwk_str[char_index];
-        switch (automaton_state) {
-          case 0: {
-            // look for the first opening parenthesis
-            if (current_char == "(") {
-              add_new_tree_level();
-              automaton_state = 1; // expecting node name
-            }
-            break;
-          }
-          case 1: // name
-          case 3: { // branch length
-            // reading name
-            if (current_char == ":") {
-              if (automaton_state == 3) {
-                return generate_error(char_index);
-              }
-              automaton_state = 3;
-            } else if (current_char == "," || current_char == ")") {
-              try {
-                finish_node_definition();
-                automaton_state = 1;
-                if (current_char == ",") {
-                  add_new_tree_level();
-                }
-              } catch (e) {
-                return generate_error(char_index);
-              }
-            } else if (current_char == "(") {
-              if (current_node_name.length > 0) {
-                return generate_error(char_index);
-              } else {
-                add_new_tree_level();
-              }
-            } else if (current_char in name_quotes) {
-              if (
-                automaton_state == 1 &&
-                current_node_name.length === 0 &&
-                current_node_attribute.length === 0 &&
-                current_node_annotation.length === 0
-              ) {
-                automaton_state = 2;
-                quote_delimiter = current_char;
-                continue;
-              }
-              return generate_error(char_index);
-            } else {
-              if (current_char == "[") {
-                if (current_node_annotation.length) {
-                  return generate_error(char_index);
-                } else {
-                  automaton_state = 4;
-                }
-              } else {
-                if (automaton_state == 3) {
-                  current_node_attribute += current_char;
-                } else {
-                  if (space.test(current_char)) {
-                    continue;
-                  }
-                  current_node_name += current_char;
-                }
-              }
-            }
-
-            break;
-          }
-          case 2: {
-            if (current_char == quote_delimiter) {
-              if (char_index < nwk_str.length - 1) {
-                if (nwk_str[char_index + 1] == quote_delimiter) {
-                  char_index++;
-                  current_node_name += quote_delimiter;
-                  continue;
-                }
-              }
-              quote_delimiter = 0;
-              automaton_state = 1;
-              continue;
-            } else {
-              current_node_name += current_char;
-            }
-            break;
-          }
-          case 4: {
-            if (current_char == "]") {
-              automaton_state = 3;
-            } else {
-              if (current_char == "[") {
-                return generate_error(char_index);
-              }
-              current_node_annotation += current_char;
-            }
-            break;
-          }
-        }
-      } catch (e) {
-        return generate_error(char_index);
-      }
-    }
-
-    if (clade_stack.length != 1) {
-      return generate_error(nwk_str.length - 1);
-    }
-
-    return {
-      json: tree_json,
-      error: null
-    };
+    return d3_phylotree_newick_parser(nwk_str, bootstrap_values);
   };
 
+/**
+ * Instantiate a phylotree.
+ *
+ * @param {d3-selection} container - Specify a container, for things like menu
+ * and tooltip placement. Defaults to body (optional).
+ * @returns {Function} phylotree - an instance of a Phylotree.
+ */
   d3.layout.phylotree = function(container) {
     var item_selected = d3_phylotree_item_selected,
       node_visible = d3_phylotree_node_visible,
@@ -841,6 +683,14 @@
       return phylotree;
     };
 
+/**
+ * An instance of a phylotree. Sets event listens, parses tags, places nodes and creates links
+ * that represent branches.
+ *
+ * @param {Object} nwk - A Newick string or hierarchical JSON representation of a phylogenetic tree.
+ * @param {Object} bootstrap_values - SDS: Not sure what this does.
+ * @returns {Phylotree} phylotree - itself, following the builder pattern.
+ */
     function phylotree(nwk, bootstrap_values) {
       d3_phylotree_add_event_listener();
 
@@ -1140,6 +990,13 @@
       return phylotree;
     };
 
+/**
+ * Return Newick string representation of a phylotree.
+ * 
+ * @param {Function} annotator - Function to apply to each node, determining
+ * what label is written (optional).
+ * @returns {String} newick - Phylogenetic tree serialized as a Newick string.
+ */
     phylotree.get_newick = function(annotator) {
       function escape_string(nn) {
         var need_escape = /[\s\[\]\,\)\(\:\'\"]/;
@@ -1882,6 +1739,12 @@
       return needs_redraw;
     };
 
+/**
+ * Sets the SVG element for the Phylotree to be rendered in.
+ *
+ * @param {d3-selection} svg_element - SVG element to render within, selected by D3.
+ * @returns {phylotree} - returns itself, for method chaining.
+ */
     phylotree.svg = function(svg_element) {
       if (!arguments.length) return svg_element;
       if (svg !== svg_element) {
@@ -2241,7 +2104,12 @@
     phylotree.css_classes = function() {
       return css_classes;
     };
-
+/**
+ * Lay out the tree within the SVG.
+ *
+ * @param {Boolean} transitions Specify whether or not transitions should occur.
+ * @returns {Phylotree} Returns itself, for method chaining.
+ */
     phylotree.layout = function(transitions) {
       if (svg) {
         svg
@@ -2671,6 +2539,12 @@
     return sizes;
   }
 
+/**
+ * Determine if a given node is a leaf node.
+ *
+ * @param {Node} A node in a tree.
+ * @returns {Bool} Whether or not the node is a leaf node.
+ */
   function d3_phylotree_is_leafnode(node) {
     return !(node.children && node.children.length);
   }
@@ -2712,11 +2586,6 @@
 
   function d3_phylotree_newick_parser(nwk_str, bootstrap_values) {
     var clade_stack = [];
-    /**
- * @method add_new_tree_level
- * @memberof phylotree
- * @returns nothing
- */
     function add_new_tree_level() {
       var new_level = {
         name: null
@@ -2731,11 +2600,6 @@
         the_parent["children"].length;
     }
 
-    /**
- * @method finish_node_definition
- * @memberof phylotree
- * @returns nothing
- */
     function finish_node_definition() {
       var this_node = clade_stack.pop();
       if (bootstrap_values && "children" in this_node) {
