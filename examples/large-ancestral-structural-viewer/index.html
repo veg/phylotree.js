@@ -55,7 +55,7 @@
 
   <script>
     var main_tree, guide_tree, parsed;
-    d3.text("h3_full.new", function(error, newick) {
+    d3.json("h3_substitutions.json", function(error, data) {
       main_tree = d3.layout.phylotree()
         // create a tree layout object
         .svg(d3.select("#tree_display"))
@@ -68,7 +68,7 @@
         })
         .size([38330, 38330/3]);
       // render to this SVG element
-      parsed = d3.layout.newick_parser(newick);
+      parsed = d3.layout.newick_parser(data["tree"]);
       main_tree(parsed)
         // parse the Newick into a d3 hierarchy object with additional fields
         .layout();
@@ -78,9 +78,6 @@
       var i = 0;
       main_tree.traverse_and_compute (function (n) {
         var d = 1;
-        if(!n.name) {
-          n.name = "Node"+i++;
-        }
         if (n.children && n.children.length) {
           d += d3.max (n.children, function (d) { return d["count_depth"];});
         }
@@ -140,13 +137,29 @@
 
       d3.select('#guide').on("click", function() {
         var coords = d3.mouse(this),
-          new_x = x.invert(coords[0])-window.innerWidth/2,
-          new_y = y.invert(coords[1])-window.innerHeight/2;
+          new_x = x.invert(coords[0])-window.innerWidth/4,
+          new_y = y.invert(coords[1])-window.innerHeight/4;
         window.scrollTo(new_x, new_y);
       });
 
       main_tree.selection_callback(function(selected){
         guide_tree.sync_edge_labels();
+
+        // color substitutions on structure
+        var selected_node_names = _.pluck(selected, "name"),
+          all_changes = _.uniq(_.flatten(_.values(_.pick(data, selected_node_names))))
+            .map(d=>d+1),
+          highlighter = new pv.color.ColorOp(function(atom, out, index) {
+            if (all_changes.indexOf(atom.residue().num()) > -1) {
+              out[index+0] = 1.0; out[index+1] = 0.0;
+              out[index+2] = 0.0; out[index+3] = 1.0;
+            } else {
+              out[index+0] = 1.0; out[index+1] = 1.0;
+              out[index+2] = 1.0; out[index+3] = 1.0;
+            }
+          });
+        geom.colorBy(highlighter);
+        viewer.requestRedraw();
       });
 
       var options = {
@@ -158,7 +171,7 @@
       };
       var parent = document.getElementById('structure-viewer');
       var viewer = pv.Viewer(parent, options);
-
+      var geom;
       pv.io.fetchPdb("1ha0.pdb", function(structure) {
         geom = viewer.cartoon('protein', structure, {color: pv.color.uniform("white")});
         viewer.autoZoom();
