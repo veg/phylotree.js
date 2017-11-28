@@ -14,16 +14,17 @@
   <script src="/phylotree.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
   <script type='text/javascript' src='bio-pv.min.js'></script>
-  <title>Large tree example</title>
+  <title>Ancestral Sequence Structural Viewer</title>
   <style>
     #guide {
       position: fixed;
       top: 0px;
       right: 50%;
       border-style: solid;
-      border-color: red;
+      border-color: black;
       border-width: 1px;
       background: white;
+      margin-right: 5px;
     }
     #guide path.branch {
       stroke: #DDD;
@@ -38,23 +39,92 @@
       width: 50%;
       height: 100%;
       border-style: solid;
-      border-color: red;
+      border-color: black;
       border-width: 1px;
+    }
+    .top-margin {
+      margin-top: 55px;
     }
   </style>
 
 
 </head>
 <body>
-  <div id="guide">
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+          <a class="navbar-brand" href="#">Ancestral Sequence Structural Viewer</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <div class="navbar-form " role="search">
+            <div class="input-group">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  Labels <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" id = "selection_name_dropdown">
+                  <li id = "selection_rename"><a href="#">Rename selection set</a></li>
+                  <li class="divider"></li>
+                  <li><a id="red_selection" href="javascript:void(0);" style="color: red">Red selection</a></li>
+                  <li><a id="blue_selection" href="javascript:void(0);" style="color: blue">Blue selection</a></li>
+                </ul>
+              </span>
+
+              <input type="text" class="form-control" value = "Red selection" id = "selection_name_box" style="color:red;" disabled>
+
+              <span class="input-group-btn" id = "save_selection_name" style = "display: none" >
+                <button type="button" class="btn btn-default" id = "cancel_selection_button" >
+                  Cancel
+                </button>
+                <button type="button" class="btn btn-default" id = "save_selection_button">
+                  Save
+                </button>
+              </span>
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Selection <span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="#" id = "select_all">Select all</a></li>
+                    <li><a href="#" id = "select_all_internal">Select all internal nodes</a></li>
+                    <li><a href="#" id = "select_all_leaves">Select all leaf nodes</a></li>
+                    <li><a href="#" id = "clear_internal">Clear all internal nodes</a></li>
+                    <li><a href="#" id = "clear_leaves">Clear all leaves</a></li>
+                    <li><a href="#" id = "select_none">Clear selection</a></li>
+                    <li class="divider"></li>
+                    <li><a href="#" id = "mp_label">Label internal nodes using maximum parsimony</a></li>
+                    <li><a href="#" id = "and_label">Label internal nodes using conjunction (AND) </a></li>
+                    <li><a href="#" id = "or_label">Label internal nodes using disjunction (OR) </a></li>
+                  </ul>
+                </span>
+              </div>
+            </div>
+          </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+  <div id="guide" class="top-margin">
     <svg id="tree_guide" />
   </div>
-  <div id="structure-viewer">
+  <div id="structure-viewer" class="top-margin">
   </div>
-  <svg id="tree_display" />
+  <svg id="tree_display" class="top-margin"/>
 
   <script>
-    var main_tree, guide_tree, parsed;
+    var current_selection_id = 0,
+      red_name = "Red selection",
+      blue_name = "Blue selection",
+      changes = {red: [], blue: []},
+      main_tree, guide_tree, parsed;
     d3.json("h3_substitutions.json", function(error, data) {
       main_tree = d3.layout.phylotree()
         // create a tree layout object
@@ -64,7 +134,8 @@
           'left-right-spacing': 'fit-to-size',
           // fit to given size top-to-bottom
           'top-bottom-spacing': 'fit-to-size',
-          "collapsible": false
+          "collapsible": false,
+          'brush': false
         })
         .size([38330, 38330/3]);
       // render to this SVG element
@@ -87,8 +158,8 @@
         return (a["count_depth"] - b["count_depth"]);
       });
 
-      var guide_height = 300,
-        guide_width = 300;
+      var guide_height = 500,
+        guide_width = 500;
 
       d3.select('#guide')
         .style('height', guide_height+'px')
@@ -147,17 +218,22 @@
 
         // color substitutions on structure
         var selected_node_names = _.pluck(selected, "name"),
-          all_changes = _.uniq(_.flatten(_.values(_.pick(data, selected_node_names))))
+          new_changes = _.uniq(_.flatten(_.values(_.pick(data, selected_node_names))))
             .map(d=>d+1),
-          highlighter = new pv.color.ColorOp(function(atom, out, index) {
-            if (all_changes.indexOf(atom.residue().num()) > -1) {
-              out[index+0] = 1.0; out[index+1] = 0.0;
-              out[index+2] = 0.0; out[index+3] = 1.0;
-            } else {
-              out[index+0] = 1.0; out[index+1] = 1.0;
-              out[index+2] = 1.0; out[index+3] = 1.0;
-            }
-          });
+          current_label = main_tree.selection_label();
+        changes[current_label] = new_changes;
+        var highlighter = new pv.color.ColorOp(function(atom, out, index) {
+          if (changes.red.indexOf(atom.residue().num()) > -1) {
+            out[index+0] = 1.0; out[index+1] = 0.0;
+            out[index+2] = 0.0; out[index+3] = 1.0;
+          } else if (changes.blue.indexOf(atom.residue().num()) > -1) {
+            out[index+0] = 0.0; out[index+1] = 0.0;
+            out[index+2] = 1.0; out[index+3] = 1.0;
+          } else {
+            out[index+0] = 1.0; out[index+1] = 1.0;
+            out[index+2] = 1.0; out[index+3] = 1.0;
+          }
+        });
         geom.colorBy(highlighter);
         viewer.requestRedraw();
       });
@@ -176,7 +252,39 @@
         geom = viewer.cartoon('protein', structure, {color: pv.color.uniform("white")});
         viewer.autoZoom();
       });
+
+      main_tree.selection_label('red');
+      guide_tree.selection_label('red');
+      main_tree.style_edges(edge_colorizer);
+      guide_tree.style_edges(edge_colorizer);
+      main_tree.style_nodes(edge_colorizer);
     });
+
+    $("#red_selection").on("click", function(e){
+      main_tree.selection_label('red');
+      guide_tree.selection_label('red');
+      d3.select("#selection_name_box")
+        .style('color', 'red')
+        .property('value', 'Red selection');
+    });
+
+    $("#blue_selection").on("click", function(e){
+      main_tree.selection_label('blue');
+      guide_tree.selection_label('blue');
+      d3.select("#selection_name_box")
+        .style('color', 'blue')
+        .property('value', 'Blue selection');
+    });
+
+    function edge_colorizer (element, data) {
+      var edge_stroke;
+      if(data['red']){
+        edge_stroke = data['blue'] ? "purple" : "red";
+      } else {
+        edge_stroke = data['blue'] ? "blue" : "darkgrey";
+      }
+      element.style ("stroke", edge_stroke, "important");
+    }
   </script>
 
 </body>
