@@ -27,7 +27,8 @@
       margin-right: 5px;
     }
     #guide path.branch {
-      stroke: #DDD;
+      opacity: .8;
+      stroke: grey;
     }
     #guide path.branch:hover {
       stroke-width: 2px;
@@ -75,6 +76,8 @@
                 <ul class="dropdown-menu" id = "selection_name_dropdown">
                   <li><a id="red_selection" href="javascript:void(0);" style="color: red">Red selection</a></li>
                   <li><a id="blue_selection" href="javascript:void(0);" style="color: blue">Blue selection</a></li>
+                  <li class="divider"></li>
+                  <li><a id="rename_selection" href="javascript:void(0);">Rename selection</a></li>
                 </ul>
               </span>
 
@@ -118,10 +121,18 @@
   <svg id="tree_display" class="top-margin"/>
 
   <script>
-    var current_selection_id = 0,
-      red_name = "Red selection",
-      blue_name = "Blue selection",
+    var current_selection = "red",
+      names = { 
+        red: "Red selection",
+        blue: "Blue selection"
+      },
       changes = {red: [], blue: []},
+      change_colors = {
+        none: [1, 1, 1],
+        red: [1, 0, 0],
+        blue: [0, 0, 1],
+        purple: [1, 0, 1]
+      },
       main_tree, guide_tree, parsed;
     d3.json("h3_substitutions.json", function(error, data) {
       main_tree = d3.layout.phylotree()
@@ -136,6 +147,7 @@
           'reroot': false,
           'hide': false
         })
+        .style_nodes(colorizer('black'))
         .size([38330, 38330/3]);
       // render to this SVG element
       parsed = d3.layout.newick_parser(data["tree"]);
@@ -222,16 +234,11 @@
           current_label = main_tree.selection_label();
         changes[current_label] = new_changes;
         var highlighter = new pv.color.ColorOp(function(atom, out, index) {
-          if (changes.red.indexOf(atom.residue().num()) > -1) {
-            out[index+0] = 1.0; out[index+1] = 0.0;
-            out[index+2] = 0.0; out[index+3] = 1.0;
-          } else if (changes.blue.indexOf(atom.residue().num()) > -1) {
-            out[index+0] = 0.0; out[index+1] = 0.0;
-            out[index+2] = 1.0; out[index+3] = 1.0;
-          } else {
-            out[index+0] = 1.0; out[index+1] = 1.0;
-            out[index+2] = 1.0; out[index+3] = 1.0;
-          }
+          var has_red_change = changes.red.indexOf(atom.residue().num()) > -1,
+            has_blue_change = changes.blue.indexOf(atom.residue().num()) > -1,
+            color = has_red_change ? ( has_blue_change ? 'purple' : 'red' ) : (has_blue_change ? 'blue' : 'none');
+          out[index+0] = change_colors[color][0]; out[index+1] = change_colors[color][1];
+          out[index+2] = change_colors[color][2]; out[index+3] = 1.0;
         });
         geom.colorBy(highlighter);
         viewer.requestRedraw();
@@ -254,25 +261,27 @@
 
       main_tree.selection_label('red');
       guide_tree.selection_label('red');
-      main_tree.style_edges(edge_colorizer);
-      guide_tree.style_edges(edge_colorizer);
-      main_tree.style_nodes(edge_colorizer);
+      main_tree.style_edges(colorizer('grey'));
+      guide_tree.style_edges(colorizer('grey'));
+      main_tree.style_nodes(colorizer('black'));
     });
 
     $("#red_selection").on("click", function(e){
+      current_selection = 'red';
       main_tree.selection_label('red');
       guide_tree.selection_label('red');
       d3.select("#selection_name_box")
         .style('color', 'red')
-        .property('value', 'Red selection');
+        .property('value', names['red']);
     });
 
     $("#blue_selection").on("click", function(e){
+      current_selection = 'blue';
       main_tree.selection_label('blue');
       guide_tree.selection_label('blue');
       d3.select("#selection_name_box")
         .style('color', 'blue')
-        .property('value', 'Blue selection');
+        .property('value', names['blue']);
     });
 
     $("#select_all").on ("click", function (e) {
@@ -293,16 +302,14 @@
     });
 
     $("#clear_internal").on ("click", function (e) {
-      var current_selection_name = current_selection_id == 0 ? 'red' : 'blue';
       main_tree.modify_selection (function (d) {
-        return d3.layout.phylotree.is_leafnode (d.target) ? d.target[current_selection_name] : false;
+        return d3.layout.phylotree.is_leafnode (d.target) ? d.target[current_selection] : false;
       });
     });
 
     $("#clear_leaves").on ("click", function (e) {
-      var current_selection_name = current_selection_id == 0 ? 'red' : 'blue';
       main_tree.modify_selection (function (d) {
-        return !d3.layout.phylotree.is_leafnode (d.target) ? d.target[current_selection_name] : false;
+        return !d3.layout.phylotree.is_leafnode (d.target) ? d.target[current_selection] : false;
       });
     });
 
@@ -311,27 +318,52 @@
     });
 
     $("#and_label").on ("click", function (e) {
-      var current_selection_name = current_selection_id == 0 ? 'red' : 'blue';
       main_tree.internal_label (function (d) {
-        return d.reduce (function (prev, curr) { return curr[current_selection_name] && prev; }, true)
+        return d.reduce (function (prev, curr) { return curr[current_selection] && prev; }, true)
       }, true);
     });
 
     $("#or_label").on ("click", function (e) {
-      var current_selection_name = current_selection_id == 0 ? 'red' : 'blue';
       main_tree.internal_label (function (d) {
-        return d.reduce (function (prev, curr) { return curr[current_selection_name] || prev; }, false)
+        return d.reduce (function (prev, curr) { return curr[current_selection] || prev; }, false)
       }, true);
     });
 
-    function edge_colorizer (element, data) {
-      var edge_stroke;
-      if(data['red']){
-        edge_stroke = data['blue'] ? "purple" : "red";
-      } else {
-        edge_stroke = data['blue'] ? "blue" : "darkgrey";
+    $("#rename_selection").on("click", function(e){
+      d3.select('#save_selection_name')
+        .style('display', null);
+      d3.select('#selection_name_box')
+       .attr('disabled', null); 
+    });
+
+    $("#cancel_selection_button").on("click", function(e){
+      d3.select('#save_selection_name')
+        .style('display', 'none');
+      d3.select('#selection_name_box')
+        .attr('disabled', true);
+      $('#selection_name_box').val(names[current_selection]);
+    });
+
+    $("#save_selection_button").on("click", function(e){
+      d3.select('#save_selection_name')
+        .style('display', 'none');
+      var new_name = $('#selection_name_box').val();
+      $("#" + current_selection + "_selection").html(new_name);
+      d3.select('#selection_name_box')
+        .attr('disabled', true);
+      names[current_selection] = new_name;
+    });
+
+    function colorizer(default_color) {
+      return function (element, data) {
+        var edge_stroke;
+        if(data['red']){
+          edge_stroke = data['blue'] ? "purple" : "red";
+        } else {
+          edge_stroke = data['blue'] ? "blue" : default_color;
+        }
+        element.style ("stroke", edge_stroke, "important");
       }
-      element.style ("stroke", edge_stroke, "important");
     }
   </script>
 
