@@ -41,3 +41,4 @@ the tree.
 
 .. autofunction:: phylotree.layout([transitions])
 
+These form the basis for IO and drawing trees. The next section covers methods that pertain to nodes.

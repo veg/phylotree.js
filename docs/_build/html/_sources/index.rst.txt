@@ -27,7 +27,7 @@ Contents
 .. _D3: https://d3js.org/
 .. _a standalone web application: /
 .. _Datamonkey: http://datamonkey.org
-.. _ancestral sequence structural viewer: /examples/ancestral-structure
+.. _ancestral sequence structural viewer: /examples/large-ancestral-structural-viewer
 
 Indices and tables
 ------------------

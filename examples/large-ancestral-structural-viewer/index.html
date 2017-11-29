@@ -73,8 +73,6 @@
                   Labels <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" id = "selection_name_dropdown">
-                  <li id = "selection_rename"><a href="#">Rename selection set</a></li>
-                  <li class="divider"></li>
                   <li><a id="red_selection" href="javascript:void(0);" style="color: red">Red selection</a></li>
                   <li><a id="blue_selection" href="javascript:void(0);" style="color: blue">Blue selection</a></li>
                 </ul>
@@ -93,16 +91,16 @@
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Selection <span class="caret"></span></button>
                   <ul class="dropdown-menu">
-                    <li><a href="#" id = "select_all">Select all</a></li>
-                    <li><a href="#" id = "select_all_internal">Select all internal nodes</a></li>
-                    <li><a href="#" id = "select_all_leaves">Select all leaf nodes</a></li>
-                    <li><a href="#" id = "clear_internal">Clear all internal nodes</a></li>
-                    <li><a href="#" id = "clear_leaves">Clear all leaves</a></li>
-                    <li><a href="#" id = "select_none">Clear selection</a></li>
+                    <li><a href="javascript:void(0);" id = "select_all">Select all</a></li>
+                    <li><a href="javascript:void(0);" id = "select_all_internal">Select all internal nodes</a></li>
+                    <li><a href="javascript:void(0);" id = "select_all_leaves">Select all leaf nodes</a></li>
+                    <li><a href="javascript:void(0);" id = "clear_internal">Clear all internal nodes</a></li>
+                    <li><a href="javascript:void(0);" id = "clear_leaves">Clear all leaves</a></li>
+                    <li><a href="javascript:void(0);" id = "select_none">Clear selection</a></li>
                     <li class="divider"></li>
-                    <li><a href="#" id = "mp_label">Label internal nodes using maximum parsimony</a></li>
-                    <li><a href="#" id = "and_label">Label internal nodes using conjunction (AND) </a></li>
-                    <li><a href="#" id = "or_label">Label internal nodes using disjunction (OR) </a></li>
+                    <li><a href="javascript:void(0);" id = "mp_label">Label internal nodes using maximum parsimony</a></li>
+                    <li><a href="javascript:void(0);" id = "and_label">Label internal nodes using conjunction (AND) </a></li>
+                    <li><a href="javascript:void(0);" id = "or_label">Label internal nodes using disjunction (OR) </a></li>
                   </ul>
                 </span>
               </div>
@@ -130,12 +128,13 @@
         // create a tree layout object
         .svg(d3.select("#tree_display"))
         .options({
-          "show-scale": false,
+          'show-scale': false,
           'left-right-spacing': 'fit-to-size',
-          // fit to given size top-to-bottom
           'top-bottom-spacing': 'fit-to-size',
-          "collapsible": false,
-          'brush': false
+          'collapsible': false,
+          'brush': false,
+          'reroot': false,
+          'hide': false
         })
         .size([38330, 38330/3]);
       // render to this SVG element
@@ -158,8 +157,8 @@
         return (a["count_depth"] - b["count_depth"]);
       });
 
-      var guide_height = 500,
-        guide_width = 500;
+      var guide_height = window.innerWidth/6,
+        guide_width = window.innerWidth/6;
 
       d3.select('#guide')
         .style('height', guide_height+'px')
@@ -274,6 +273,55 @@
       d3.select("#selection_name_box")
         .style('color', 'blue')
         .property('value', 'Blue selection');
+    });
+
+    $("#select_all").on ("click", function (e) {
+      main_tree.modify_selection (function (d) { return true;});
+    });
+
+    $("#select_all_internal").on ("click", function (e) {
+      main_tree.modify_selection (function (d) { return !d3.layout.phylotree.is_leafnode (d.target);});
+    });
+
+    $("#select_all_leaves").on ("click", function (e) {
+      main_tree.modify_selection (function (d) { return d3.layout.phylotree.is_leafnode (d.target);});
+    });
+
+
+    $("#select_none").on ("click", function (e) {
+      main_tree.modify_selection (function (d) { return false;});
+    });
+
+    $("#clear_internal").on ("click", function (e) {
+      var current_selection_name = current_selection_id == 0 ? 'red' : 'blue';
+      main_tree.modify_selection (function (d) {
+        return d3.layout.phylotree.is_leafnode (d.target) ? d.target[current_selection_name] : false;
+      });
+    });
+
+    $("#clear_leaves").on ("click", function (e) {
+      var current_selection_name = current_selection_id == 0 ? 'red' : 'blue';
+      main_tree.modify_selection (function (d) {
+        return !d3.layout.phylotree.is_leafnode (d.target) ? d.target[current_selection_name] : false;
+      });
+    });
+
+    $("#mp_label").on ("click", function (e) {
+      main_tree.max_parsimony (true);
+    });
+
+    $("#and_label").on ("click", function (e) {
+      var current_selection_name = current_selection_id == 0 ? 'red' : 'blue';
+      main_tree.internal_label (function (d) {
+        return d.reduce (function (prev, curr) { return curr[current_selection_name] && prev; }, true)
+      }, true);
+    });
+
+    $("#or_label").on ("click", function (e) {
+      var current_selection_name = current_selection_id == 0 ? 'red' : 'blue';
+      main_tree.internal_label (function (d) {
+        return d.reduce (function (prev, curr) { return curr[current_selection_name] || prev; }, false)
+      }, true);
     });
 
     function edge_colorizer (element, data) {

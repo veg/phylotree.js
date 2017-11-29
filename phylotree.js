@@ -121,7 +121,9 @@
         "minimum-per-level-spacing": 10,
         node_circle_size: d3.functor(3),
         transitions: null,
-        brush: true
+        brush: true,
+        reroot: true,
+        hide: true
       },
       css_classes = {
         "tree-container": "phylotree-container",
@@ -888,36 +890,40 @@
                 phylotree.modify_selection(phylotree.path_to_root(node));
               });
 
-            menu_object.append("li").attr("class", "divider");
+            if(options['reroot'] || options['hide']) {
+              menu_object.append("li").attr("class", "divider");
+            }
           }
 
-          menu_object
-            .append("li")
-            .append("a")
-            .attr("tabindex", "-1")
-            .text("Reroot on this node")
-            .on("click", function(d) {
-              menu_object.style("display", "none");
-              phylotree.reroot(node).update();
-            });
+          if(options['reroot']) {
+            menu_object
+              .append("li")
+              .append("a")
+              .attr("tabindex", "-1")
+              .text("Reroot on this node")
+              .on("click", function(d) {
+                menu_object.style("display", "none");
+                phylotree.reroot(node).update();
+              });
+          }
 
-          menu_object.append("li").attr("class", "divider");
-
-          menu_object
-            .append("li")
-            .append("a")
-            .attr("tabindex", "-1")
-            .text(
-              "Hide this " +
-                (d3_phylotree_is_leafnode(node) ? "node" : "subtree")
-            )
-            .on("click", function(d) {
-              menu_object.style("display", "none");
-              phylotree
-                .modify_selection([node], "notshown", true, true)
-                .update_has_hidden_nodes()
-                .update();
-            });
+          if(options['hide']) {
+            menu_object
+              .append("li")
+              .append("a")
+              .attr("tabindex", "-1")
+              .text(
+                "Hide this " +
+                  (d3_phylotree_is_leafnode(node) ? "node" : "subtree")
+              )
+              .on("click", function(d) {
+                menu_object.style("display", "none");
+                phylotree
+                  .modify_selection([node], "notshown", true, true)
+                  .update_has_hidden_nodes()
+                  .update();
+              });
+          }
         }
 
         if (d3_phylotree_has_hidden_nodes(node)) {
