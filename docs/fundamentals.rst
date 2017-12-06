@@ -28,6 +28,8 @@ for downstream use in an application.
 
 .. _D3 hierarchy layout: https://github.com/d3/d3-3.x-api-reference/blob/master/Hierarchy-Layout.md
 
+.. autofunction:: phylotree.get_parsed_tags
+
 Drawing trees
 -------------
 
@@ -42,3 +44,17 @@ the tree.
 .. autofunction:: phylotree.layout([transitions])
 
 These form the basis for IO and drawing trees. The next section covers methods that pertain to nodes.
+
+Formatting trees
+----------------
+
+The following methods are getters/setters for various formatting options.
+
+.. autofunction:: phylotree.size([attr])
+
+.. autofunction:: phylotree.spacing_x([attr, skip_render])
+
+.. autofunction:: phylotree.spacing_y([attr, skip_render])
+
+.. autofunction:: phylotree.font_size([attr])
+

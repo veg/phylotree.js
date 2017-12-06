@@ -17,9 +17,9 @@ Contents
 
    intro
    fundamentals
-   nodes
-   branches
    options
+   nodes_branches
+   selection
    advanced
    examples
 

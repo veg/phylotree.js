@@ -115,9 +115,9 @@
         "annular-limit": 0.38196601125010515,
         compression: 0.2,
         "align-tips": false,
-        "maximim-per-node-spacing": 100,
+        "maximum-per-node-spacing": 100,
         "minimum-per-node-spacing": 2,
-        "maximim-per-level-spacing": 100,
+        "maximum-per-level-spacing": 100,
         "minimum-per-level-spacing": 10,
         node_circle_size: d3.functor(3),
         transitions: null,
@@ -224,6 +224,12 @@
 
     /*--------------------------------------------------------------------------------------*/
 
+/**
+ * Place the current nodes, i.e., determine their coordinates based
+ * on current settings.
+ *
+ * @returns The current ``phylotree``.
+ */
     phylotree.placenodes = function() {
       var x = 0.0,
         _extents = [[0, 0], [0, 0]],
@@ -686,7 +692,7 @@
     };
 
 /**
- * An instance of a phylotree. Sets event listens, parses tags, places nodes and creates links
+ * An instance of a phylotree. Sets event listeners, parses tags, and creates links
  * that represent branches.
  *
  * @param {Object} nwk - A Newick string or hierarchical JSON representation of a phylogenetic tree.
@@ -728,6 +734,13 @@
       return phylotree;
     }
 
+/**
+ * Get or set the size of tree in pixels.
+ *
+ * @param {Array} attr (optional) An array of the form ``[height, width]``.
+ * @returns {Phylotree} The current ``size`` array if getting, or the current ``phylotree``
+ * if setting.
+ */
     phylotree.size = function(attr) {
       if (arguments.length) {
         phylo_attr = attr;
@@ -758,6 +771,12 @@
       return offsets[1] + options["left-offset"] + label_width;
     };
 
+/**
+ * Get all descendants of a given node.
+ *
+ * @param {Node} node A node in the current phylotree.
+ * @returns {Array} An array of descendant nodes.
+ */
     phylotree.descendants = function(n) {
       var desc = [];
 
@@ -765,13 +784,18 @@
         if (d3_phylotree_is_leafnode(nd)) {
           desc.push(nd);
         } else {
-          nd.children.forEach(recurse_nd);
+          nd.children.forEach(recurse_d);
         }
       }
       recurse_d(n);
       return desc;
     };
 
+/**
+ * Collapse a given node
+ *
+ * @param {Node} node A node to be collapsed.
+ */
     phylotree.collapse_node = function(n) {
       if (!d3_phylotree_is_node_collapsed(n)) {
         n.collapsed = true;
@@ -784,6 +808,13 @@
       return phylotree;
     };
 
+/**
+ * Getter/setter for the selection label. Useful when allowing
+ * users to make multiple selection.
+ *
+ * @param {String} attr (Optional) If setting, the new selection label.
+ * @returns The selection label if getting, or the current phylotree if setting.
+ */
     phylotree.selection_label = function(attr) {
       if (!arguments.length) return selection_attribute_name;
       selection_attribute_name = attr;
@@ -984,13 +1015,37 @@
       }
     };
 
+/**
+ * Get or set node styler. If setting, pass a function of two arguments,
+ * ``element`` and ``data``. ``data`` exposes the underlying node so that
+ * its attributes can be referenced. These can be used to apply styles to
+ * ``element``, which will be a D3 selection corresponding to the SVG element
+ * that makes up the current node.
+ *
+ * @param {Function} attr - Optional; if setting, the node styler function to be set.
+ * @returns The `node_styler` function if getting, or the current `phylotree` if setting.
+ */
     phylotree.style_nodes = function(attr) {
       if (!arguments.length) return node_styler;
       node_styler = attr;
       return phylotree;
     };
 
-    phylotree.style_edges = function(attr) {
+ /**
+ * Get or set edge styler. If setting, pass a function of two arguments,
+ * ``element`` and ``data``. ``data`` exposes the underlying edge so that
+ * its attributes can be referenced. These can be used to apply styles to
+ * ``element``, which will be a D3 selection corresponding to the SVG element
+ * that makes up the current edge.
+ *
+ * Note that, in accordance with the D3 hierarchy layout, edges will have
+ * a ``source`` and ``target`` field, corresponding to the nodes that make up
+ * up the associated branch.
+ *
+ * @param {Function} attr - Optional; if setting, the node styler function to be set.
+ * @returns The ``edge_styler`` function if getting, or the current ``phylotree`` if setting.
+ */
+   phylotree.style_edges = function(attr) {
       if (!arguments.length) return edge_styler;
       edge_styler = attr.bind(this);
       return phylotree;
@@ -1094,6 +1149,18 @@
 
     // SW 20171113 : TODO: Arguments violate clean-coding standards.
     // https://github.com/ryanmcdermott/clean-code-javascript#functions
+/**
+ * Modify the current selection.
+ *
+ * @param {Function} node_selecter A function to apply to each node, which
+ * determines whether they become part of the current selection. Alternatively,
+ * a string describing one of the pre-defined restricted-selectable options.
+ * @param {String} attr (Optional) The selection attribute to modify.
+ * @param {Boolean} place (Optional) Whether or not ``placenodes`` should be called.
+ * @param {Boolean} skip_refresh (Optional) Whether or not a refresh is called.
+ * @param {String} mode (Optional) Can be ``"toggle"``, ``"true"``, or ``"false"``.
+ * @returns The current ``phylotree``.
+ */
     phylotree.modify_selection = function(
       node_selecter,
       attr,
@@ -1249,6 +1316,12 @@
       trigger_refresh(phylotree);
     };
 
+/**
+ * Determine whether a given node is a leaf node.
+ *
+ * @param {Node} node A node in the phylotree.
+ * @returns {Boolean} Whether or not the argument is a leaf node.
+ */
     phylotree.is_leafnode = d3_phylotree_is_leafnode;
 
     phylotree.radial = function(attr) {
@@ -1263,6 +1336,12 @@
       return phylotree;
     };
 
+/**
+ * Return the bubble size of the current node. 
+ *
+ * @param {Node} A node in the phylotree.
+ * @returns {Float} The size of the bubble associated to this node.
+ */
     phylotree.node_bubble_size = function(node) {
       return options["draw-size-bubbles"]
         ? relative_node_span(node) * scales[0] * 0.5
@@ -1281,6 +1360,11 @@
       return [right_most_leaf - d.screen_x, 0];
     };
 
+/**
+ * Get nodes which are currently selected.
+ *
+ * @returns {Array} An array of nodes that match the current selection.
+ */
     phylotree.get_selection = function() {
       return nodes.filter(function(d) {
         return d[selection_attribute_name];
@@ -1395,6 +1479,15 @@
       });
     };
 
+/**
+ * Get or set the current node span. If setting, the argument should
+ * be a function of a node which returns a number, so that node spans
+ * can be determined dynamically. Optionally, the argument can be the
+ * string ``"equal"``, to give all nodes an equal span.
+ *
+ * @param {Function} attr Optional; if setting, the node_span function.
+ * @returns The ``node_span`` if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.node_span = function(attr) {
       if (!arguments.length) return node_span;
       if (typeof attr == "string" && attr == "equal") {
@@ -1462,6 +1555,12 @@
       return phylotree;
     };
 
+/**
+ * Delete a given node.
+ *
+ * @param {Node} The node to be deleted, or the index of such a node.
+ * @returns The current ``phylotree``.
+ */
     phylotree.delete_a_node = function(index) {
       if (typeof index != "number") {
         return phylotree.delete_a_node(nodes.indexOf(index));
@@ -1512,6 +1611,12 @@
       return phylotree;
     };
 
+/**
+ * Traverse the tree in a prescribed order, and compute a value at each node.
+ *
+ * @param {Function} callback A function to be called on each node.
+ * @param {String} traversal_type Either ``"pre-order"`` or ``"post-order"``.
+ */
     phylotree.traverse_and_compute = function(callback, traversal_type) {
       traversal_type = traversal_type || "post-order";
 
@@ -1531,6 +1636,12 @@
       traversal_type(nodes[0]);
     };
 
+/**
+ * Reroot the tree on the given node.
+ *
+ * @param {Node} node Node to reroot on.
+ * @returns {Phylotree} The current ``phylotree``.
+ */
     phylotree.reroot = function(node) {
       if (node.parent) {
         new_json = {
@@ -1605,6 +1716,14 @@
       return phylotree;
     };
 
+
+/**
+ * Update a given key name in each node.
+ *
+ * @param {String} old_key The old key name.
+ * @param {String} new_key The new key name.
+ * @returns The current ``phylotree``.
+ */
     phylotree.update_key_name = function(old_key, new_key) {
       nodes.forEach(function(n) {
         if (old_key in n) {
@@ -1615,14 +1734,22 @@
         }
       });
       phylotree.sync_edge_labels();
+      return phylotree;
     };
 
+/**
+ * Get or set spacing in the x-direction.
+ *
+ * @param {Number} attr (Optional), the new spacing value if setting.
+ * @param {Boolean} skip_render (Optional), whether or not a refresh should be performed.
+ * @returns The current ``spacing_x`` value if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.spacing_x = function(attr, skip_render) {
       if (!arguments.length) return fixed_width[0];
       if (
         fixed_width[0] != attr &&
         attr >= options["minimum-per-node-spacing"] &&
-        attr <= options["maximim-per-node-spacing"]
+        attr <= options["maximum-per-node-spacing"]
       ) {
         fixed_width[0] = attr;
         if (!skip_render) {
@@ -1632,12 +1759,19 @@
       return phylotree;
     };
 
+/**
+ * Get or set spacing in the y-direction.
+ *
+ * @param {Number} attr (Optional), the new spacing value if setting.
+ * @param {Boolean} skip_render (Optional), whether or not a refresh should be performed.
+ * @returns The current ``spacing_y`` value if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.spacing_y = function(attr, skip_render) {
       if (!arguments.length) return fixed_width[1];
       if (
         fixed_width[1] != attr &&
         attr >= options["minimum-per-level-spacing"] &&
-        attr <= options["maximim-per-level-spacing"]
+        attr <= options["maximum-per-level-spacing"]
       ) {
         fixed_width[1] = attr;
         if (!skip_render) {
@@ -1647,6 +1781,14 @@
       return phylotree;
     };
 
+/**
+ * Toggle collapsed view of a given node. Either collapses a clade into
+ * a smaller blob for viewing large trees, or expands a node that was
+ * previously collapsed.
+ *
+ * @param {Node} node The node to toggle.
+ * @returns {Phylotree} The current ``phylotree``.
+ */
     phylotree.toggle_collapse = function(node) {
       if (node.collapsed) {
         node.collapsed = false;
@@ -1683,12 +1825,25 @@
       return phylotree;
     };
 
+/**
+ * Get or set branch length accessor.
+ *
+ * @param {Function} attr Empty if getting, or new branch length accessor if setting.
+ * @returns {Object} The branch length accessor if getting, or the current phylotree if setting.
+ */
     phylotree.branch_length = function(attr) {
       if (!arguments.length) return branch_length_accessor;
       branch_length_accessor = attr ? attr : def_branch_length_accessor;
       return phylotree;
     };
 
+/**
+ * Get or set branch name accessor.
+ *
+ * @param {Function} attr (Optional) If setting, a function that accesses a branch name
+ * from a node.
+ * @returns The ``node_label`` accessor if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.branch_name = function(attr) {
       if (!arguments.length) return node_label;
       node_label = attr ? attr : def_node_label;
@@ -1723,6 +1878,12 @@
       return width;
     };
 
+/**
+ * Get or set font size.
+ *
+ * @param {Function} attr Empty if getting, or new font size if setting.
+ * @returns The current ``font_size`` accessor if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.font_size = function(attr) {
       if (!arguments.length) return font_size;
       font_size = attr === undefined ? 12 : attr;
@@ -1784,6 +1945,14 @@
       return phylotree;
     };
 
+/**
+ * Change option settings.
+ *
+ * @param {Object} opt Keys are the option to toggle and values are
+ * the parameters for that option.
+ * @param {Boolean} run_update (optional) Whether or not the tree should update. 
+ * @returns The current ``phylotree``.
+ */
     phylotree.options = function(opt, run_update) {
       if (!arguments.length) return options;
 
@@ -1830,6 +1999,13 @@
       return nodes.length <= 300;
     };
 
+/**
+ * Update the current phylotree, i.e., alter the svg
+ * elements.
+ *
+ * @param {Boolean} transitions (Optional) Toggle whether transitions should be shown.
+ * @returns The current ``phylotree``.
+ */
     phylotree.update = function(transitions) {
       if (!phylotree.svg) return phylotree;
 
@@ -2110,6 +2286,7 @@
     phylotree.css_classes = function() {
       return css_classes;
     };
+
 /**
  * Lay out the tree within the SVG.
  *
@@ -2193,6 +2370,15 @@
       return class_var;
     };
 
+/**
+ * Select all descendents of a given node, with options for selecting
+ * terminal/internal nodes.
+ *
+ * @param {Node} node The node whose descendents should be selected.
+ * @param {Boolean} terminal Whether to include terminal nodes.
+ * @param {Boolean} internal Whther to include internal nodes.
+ * @returns {Array} An array of selected nodes.
+ */
     phylotree.select_all_descendants = function(node, terminal, internal) {
       var selection = [];
 
@@ -2427,14 +2613,32 @@
       return node;
     };
 
+/**
+ * Get an array of all nodes.
+ *
+ * @returns {Array} Nodes in the current ``phylotree``.
+ */
     phylotree.get_nodes = function() {
       return nodes;
     };
 
+/**
+ * Get a node by name.
+ *
+ * @param {String} name Name of the desired node.
+ * @returns {Node} Desired node.
+ */
     phylotree.get_node_by_name = function(name) {
       return _.findWhere(nodes, { name: name });
     };
 
+/**
+ * Add attributes to nodes. New attributes will be placed in the
+ * ``annotations`` key of any nodes that are matched.
+ *
+ * @param {Object} attributes An object whose keys are the names of nodes
+ * to modify, and whose values are the new attributes to add.
+ */
     phylotree.assign_attributes = function(attributes) {
       //return nodes;
       // add annotations to each matching node
@@ -2453,12 +2657,23 @@
       return this.partitions;
     };
 
+/**
+ * Getter/setter for the selection callback. This function is called
+ * every time the current selection is modified, and its argument is
+ * an array of nodes that make up the current selection.
+ *
+ * @param {Function} callback (Optional) The selection callback function.
+ * @returns The current ``selection_callback`` if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.selection_callback = function(callback){
       if(!callback) return selection_callback;
       selection_callback = callback;
       return phylotree;
     }
 
+/**
+ * Return tags that were read when parsing the original Newick string.
+ */
     phylotree.get_parsed_tags = function() {
       return parsed_tags;
     };

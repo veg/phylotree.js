@@ -36,7 +36,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="Phylotree.js 0.1.5 documentation" href="index.html"/>
-        <link rel="next" title="Nodes" href="nodes.html"/>
+        <link rel="next" title="Options" href="options.html"/>
         <link rel="prev" title="Introduction" href="intro.html"/> 
 
   
@@ -100,11 +100,16 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Fundamentals</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#reading-and-writing-trees">Reading and writing trees</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#drawing-trees">Drawing trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#formatting-trees">Formatting trees</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="nodes.html">Nodes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="branches.html">Branches</a></li>
 <li class="toctree-l1"><a class="reference internal" href="options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nodes_branches.html">Nodes and branches</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_branches.html#node-methods">Node methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_branches.html#branch-methods">Branch methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="selection.html">Selection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
@@ -203,7 +208,7 @@ that have been closed over to provide an internal state.</p>
 <dl class="function">
 <dt id="phylotree.phylotree">
 <code class="descclassname">phylotree.</code><code class="descname">phylotree</code><span class="sig-paren">(</span><em>nwk</em><span class="optional">[</span>, <em>bootstrap_values</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.phylotree" title="Permalink to this definition">¶</a></dt>
-<dd><p>An instance of a phylotree. Sets event listens, parses tags, places nodes and creates links
+<dd><p>An instance of a phylotree. Sets event listeners, parses tags, and creates links
 that represent branches.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -272,6 +277,12 @@ for downstream use in an application.</p>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="phylotree.get_parsed_tags">
+<code class="descclassname">phylotree.</code><code class="descname">get_parsed_tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.get_parsed_tags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return tags that were read when parsing the original Newick string.</p>
+</dd></dl>
+
 </div>
 <div class="section" id="drawing-trees">
 <h2>Drawing trees<a class="headerlink" href="#drawing-trees" title="Permalink to this headline">¶</a></h2>
@@ -321,6 +332,92 @@ the tree.</p>
 
 <p>These form the basis for IO and drawing trees. The next section covers methods that pertain to nodes.</p>
 </div>
+<div class="section" id="formatting-trees">
+<h2>Formatting trees<a class="headerlink" href="#formatting-trees" title="Permalink to this headline">¶</a></h2>
+<p>The following methods are getters/setters for various formatting options.</p>
+<dl class="function">
+<dt id="phylotree.size">
+<code class="descclassname">phylotree.</code><code class="descname">size</code><span class="sig-paren">(</span><span class="optional">[</span><em>attr</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set the size of tree in pixels.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>Array</em>) – (optional) An array of the form <code class="docutils literal"><span class="pre">[height,</span> <span class="pre">width]</span></code>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Phylotree</strong> – The current <code class="docutils literal"><span class="pre">size</span></code> array if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.spacing_x">
+<code class="descclassname">phylotree.</code><code class="descname">spacing_x</code><span class="sig-paren">(</span><span class="optional">[</span><em>attr</em>, <em>skip_render</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.spacing_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set spacing in the x-direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>Number</em>) – (Optional), the new spacing value if setting.</li>
+<li><strong>skip_render</strong> (<em>Boolean</em>) – (Optional), whether or not a refresh should be performed.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal"><span class="pre">spacing_x</span></code> value if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.spacing_y">
+<code class="descclassname">phylotree.</code><code class="descname">spacing_y</code><span class="sig-paren">(</span><span class="optional">[</span><em>attr</em>, <em>skip_render</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.spacing_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set spacing in the y-direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>Number</em>) – (Optional), the new spacing value if setting.</li>
+<li><strong>skip_render</strong> (<em>Boolean</em>) – (Optional), whether or not a refresh should be performed.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal"><span class="pre">spacing_y</span></code> value if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.font_size">
+<code class="descclassname">phylotree.</code><code class="descname">font_size</code><span class="sig-paren">(</span><span class="optional">[</span><em>attr</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.font_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set font size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>function</em>) – Empty if getting, or new font size if setting.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal"><span class="pre">font_size</span></code> accessor if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -333,7 +430,7 @@ the tree.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="nodes.html" class="btn btn-neutral float-right" title="Nodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="options.html" class="btn btn-neutral float-right" title="Options" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="intro.html" class="btn btn-neutral" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
