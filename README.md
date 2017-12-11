@@ -34,3 +34,16 @@ See [bower.json](bower.json) for dependencies.
 ## Tests
 
 Run tests using `mocha`.
+
+## Documentation
+
+Documentation was created using [sphinx-js](https://github.com/erikrose/sphinx-js). Install with
+
+``pip install -r requirements.txt``
+
+and build with
+
+```
+cd docs
+make html
+```

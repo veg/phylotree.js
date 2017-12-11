@@ -3,6 +3,11 @@ Fundamentals
 This section describes basic commands for displaying trees, such as those found in
 the :ref:`intro-section` section.
 
+Note that many methods follow the getter/setter pattern, commonly used in D3. That is,
+they can either be used to retrieve an underlying parameter by being invoked without
+arguments (get), or can be used to change an underlying parameter by being invoked with the
+proper arguments (set).
+
 Reading and writing trees
 -------------------------
 
@@ -34,7 +39,7 @@ Drawing trees
 -------------
 
 In order to render a phylotree, an SVG element needs to present in the body of the document. One
-can specify which svg to render to with the following function.
+can specify which svg to render within with the following function.
 
 .. autofunction:: phylotree.svg
 
@@ -42,8 +47,6 @@ Once a tree has been parsed and an SVG element chosen, the following function is
 the tree.
 
 .. autofunction:: phylotree.layout([transitions])
-
-These form the basis for IO and drawing trees. The next section covers methods that pertain to nodes.
 
 Formatting trees
 ----------------

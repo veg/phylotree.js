@@ -717,13 +717,15 @@
         // Parse tags
         var _parsed_tags = {};
         nodes.forEach(node => {
-          var left_bracket_index = node.name.indexOf('{');
-          if(left_bracket_index > -1) {
-            var tag = node.name.slice(left_bracket_index+1, node.name.length-1);
+          if(node.name) {
+            var left_bracket_index = node.name.indexOf('{');
+            if(left_bracket_index > -1) {
+              var tag = node.name.slice(left_bracket_index+1, node.name.length-1);
 
-            node[tag] = true;
-            _parsed_tags[tag] = true;
-            node.name = node.name.slice(0, left_bracket_index);
+              node[tag] = true;
+              _parsed_tags[tag] = true;
+              node.name = node.name.slice(0, left_bracket_index);
+            }
           }
         });
         parsed_tags = Object.keys(_parsed_tags);
@@ -792,7 +794,7 @@
     };
 
 /**
- * Collapse a given node
+ * Collapses a given node.
  *
  * @param {Node} node A node to be collapsed.
  */
@@ -810,10 +812,10 @@
 
 /**
  * Getter/setter for the selection label. Useful when allowing
- * users to make multiple selection.
+ * users to make multiple selections.
  *
  * @param {String} attr (Optional) If setting, the new selection label.
- * @returns The selection label if getting, or the current phylotree if setting.
+ * @returns The current selection label if getting, or the current ``phylotree`` if setting.
  */
     phylotree.selection_label = function(attr) {
       if (!arguments.length) return selection_attribute_name;
@@ -1023,7 +1025,7 @@
  * that makes up the current node.
  *
  * @param {Function} attr - Optional; if setting, the node styler function to be set.
- * @returns The `node_styler` function if getting, or the current `phylotree` if setting.
+ * @returns The ``node_styler`` function if getting, or the current ``phylotree`` if setting.
  */
     phylotree.style_nodes = function(attr) {
       if (!arguments.length) return node_styler;
@@ -1150,11 +1152,12 @@
     // SW 20171113 : TODO: Arguments violate clean-coding standards.
     // https://github.com/ryanmcdermott/clean-code-javascript#functions
 /**
- * Modify the current selection.
+ * Modify the current selection, via functional programming.
  *
  * @param {Function} node_selecter A function to apply to each node, which
  * determines whether they become part of the current selection. Alternatively,
- * a string describing one of the pre-defined restricted-selectable options.
+ * if ``restricted-selectable`` mode is enabled, a string describing one of
+ * the pre-defined restricted-selectable options.
  * @param {String} attr (Optional) The selection attribute to modify.
  * @param {Boolean} place (Optional) Whether or not ``placenodes`` should be called.
  * @param {Boolean} skip_refresh (Optional) Whether or not a refresh is called.
@@ -1482,7 +1485,7 @@
 /**
  * Get or set the current node span. If setting, the argument should
  * be a function of a node which returns a number, so that node spans
- * can be determined dynamically. Optionally, the argument can be the
+ * can be determined dynamically. Alternatively, the argument can be the
  * string ``"equal"``, to give all nodes an equal span.
  *
  * @param {Function} attr Optional; if setting, the node_span function.
@@ -1907,10 +1910,10 @@
     };
 
 /**
- * Sets the SVG element for the Phylotree to be rendered in.
+ * Getter/setter for the SVG element for the Phylotree to be rendered in.
  *
- * @param {d3-selection} svg_element - SVG element to render within, selected by D3.
- * @returns {phylotree} - returns itself, for method chaining.
+ * @param {d3-selection} svg_element (Optional) SVG element to render within, selected by D3.
+ * @returns The selected SVG element if getting, or the current ``phylotree`` if setting.`
  */
     phylotree.svg = function(svg_element) {
       if (!arguments.length) return svg_element;
@@ -2291,7 +2294,7 @@
  * Lay out the tree within the SVG.
  *
  * @param {Boolean} transitions Specify whether or not transitions should occur.
- * @returns {Phylotree} Returns itself, for method chaining.
+ * @returns The current ``phylotree``.
  */
     phylotree.layout = function(transitions) {
       if (svg) {
@@ -2673,6 +2676,8 @@
 
 /**
  * Return tags that were read when parsing the original Newick string.
+ *
+ * @returns An array of strings, comprising each tag that was read.
  */
     phylotree.get_parsed_tags = function() {
       return parsed_tags;

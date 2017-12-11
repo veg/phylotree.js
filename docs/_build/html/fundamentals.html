@@ -179,6 +179,10 @@
 <h1>Fundamentals<a class="headerlink" href="#fundamentals" title="Permalink to this headline">¶</a></h1>
 <p>This section describes basic commands for displaying trees, such as those found in
 the <a class="reference internal" href="intro.html#intro-section"><span class="std std-ref">Introduction</span></a> section.</p>
+<p>Note that many methods follow the getter/setter pattern, commonly used in D3. That is,
+they can either be used to retrieve an underlying parameter by being invoked without
+arguments (get), or can be used to change an underlying parameter by being invoked with the
+proper arguments (set).</p>
 <div class="section" id="reading-and-writing-trees">
 <h2>Reading and writing trees<a class="headerlink" href="#reading-and-writing-trees" title="Permalink to this headline">¶</a></h2>
 <p>The following is the main method for instantiating a phylotree. It is
@@ -281,27 +285,35 @@ for downstream use in an application.</p>
 <dt id="phylotree.get_parsed_tags">
 <code class="descclassname">phylotree.</code><code class="descname">get_parsed_tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.get_parsed_tags" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return tags that were read when parsing the original Newick string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">An array of strings, comprising each tag that was read.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
 <div class="section" id="drawing-trees">
 <h2>Drawing trees<a class="headerlink" href="#drawing-trees" title="Permalink to this headline">¶</a></h2>
 <p>In order to render a phylotree, an SVG element needs to present in the body of the document. One
-can specify which svg to render to with the following function.</p>
+can specify which svg to render within with the following function.</p>
 <dl class="function">
 <dt id="phylotree.svg">
 <code class="descclassname">phylotree.</code><code class="descname">svg</code><span class="sig-paren">(</span><em>svg_element</em><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.svg" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the SVG element for the Phylotree to be rendered in.</p>
+<dd><p>Getter/setter for the SVG element for the Phylotree to be rendered in.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>svg_element</strong> (<em>d3-selection</em>) – SVG element to render within, selected by D3.</li>
+<li><strong>svg_element</strong> (<em>d3-selection</em>) – (Optional) SVG element to render within, selected by D3.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>phylotree</strong> – - returns itself, for method chaining.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The selected SVG element if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.`</p>
 </td>
 </tr>
 </tbody>
@@ -323,14 +335,13 @@ the tree.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Phylotree</strong> – Returns itself, for method chaining.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal"><span class="pre">phylotree</span></code>.</p>
 </td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
-<p>These form the basis for IO and drawing trees. The next section covers methods that pertain to nodes.</p>
 </div>
 <div class="section" id="formatting-trees">
 <h2>Formatting trees<a class="headerlink" href="#formatting-trees" title="Permalink to this headline">¶</a></h2>
