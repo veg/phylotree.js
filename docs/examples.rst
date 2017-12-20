@@ -16,7 +16,7 @@ Vanilla
   * `View Vanilla source <https://github.com/veg/phylotree.js/blob/master/examples/vanilla/index.html>`_
 
 Custom menu items
-  Adding a custom menu item to italicize node names.
+  Adding a custom menu item to italicize node names. Leaf node menus now have an additional option "Italicize node label".
 
   * `View Custom menu items example </examples/custom-menu-items>`_
   * `View Custom menu items source <https://github.com/veg/phylotree.js/blob/master/examples/custom-menu-items/index.html>`_
@@ -39,22 +39,26 @@ Variable size and shape for leaf nodes
   * `View Variable leaves example </examples/clone-compartment>`_
   * `View Variable leaves source <https://github.com/veg/phylotree.js/blob/master/examples/clone-compartment/index.html>`_
 
-Web application
-  A web application for visualizing and annotating phylogenetic trees.
-
-  * `View Web application example </>`_
-  * `View Web application source <https://github.com/veg/phylotree.js/blob/master/index.html>`_
-
 Large tree
   Viewing a large tree with a Starcraft-style guide.
 
   * `View Large tree example </examples/large-tree>`_
   * `View Large tree source <https://github.com/veg/phylotree.js/blob/master/examples/large-tree/index.html>`_
 
+Web application
+  A web application for visualizing and annotating phylogenetic trees. Load trees as files or text, make multiple
+  named selections with a variety of mechanisms, and save annotated trees for further use.
+
+  * `View Web application example </>`_
+  * `View Web application source <https://github.com/veg/phylotree.js/blob/master/index.html>`_
+
 Ancestral sequence structural viewer
   Interfacing with `PV, the Javascript protein viewer <https://biasmv.github.io/pv/>`_, to visualize
-  ancestral substitutions on a protein structure.
+  ancestral substitutions on a protein structure. `HyPhy`_ was used to infer ancestral substitutions on an alignment of hemagglutinin.
+  Users can make two types of branch selections. Any branch that is selected and has inferred non-synonymous substitutions will
+  instantaneously highlight positions where those substitutions occurred on an associated protein structure.
 
   * `View Ancestral sequence structural viewer example </examples/large-ancestral-structural-viewer>`_
   * `View Ancestral sequence structural viewer source <https://github.com/veg/phylotree.js/blob/master/examples/large-ancestral-structural-viewer/index.html>`_
 
+.. _HyPhy: http://hyphy.org/

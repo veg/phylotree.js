@@ -7,23 +7,81 @@
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
   <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
 
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
   <script src="//code.jquery.com/jquery.js"></script>
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <script src="//d3js.org/d3.v3.min.js"></script>
   <script src="/phylotree.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
+  <style>
+#code {
+  display: inline-block;
+  width: 800px;
+  padding-left: 50px;
+  height: 400px;
+  overflow-y: scroll;
+}
+  </style>
+</head>
 </head>
 
 <body>
 
-  <button id="select_all">Select All</button>
-  <button id="select_none">Select None</button>
-  <button id="select_leaf">Select Leaf Nodes</button>
-  <button id="select_internal">Select Internal Nodes</button>
-  <br />
+  <div style="display:inline-block;">
+    <button id="select_all">Select All</button>
+    <button id="select_none">Select None</button>
+    <button id="select_leaf">Select Leaf Nodes</button>
+    <button id="select_internal">Select Internal Nodes</button>
+    <br />
 
-  <svg id="tree_display"></svg>
+    <svg id="tree_display"></svg>
+  </div>
+  <div id="code"><pre><code class="javascript">d3.text("yokoyama.nwk", function(error, newick) {
+  var height = 400,
+    width = 400,
+
+    tree = d3.layout.phylotree()
+    .svg(d3.select("#tree_display"))
+    .options({
+      'left-right-spacing': 'fit-to-size',
+      // fit to given size top-to-bottom
+      'top-bottom-spacing': 'fit-to-size',
+      // fit to given size left-to-right
+      'collapsible': false,
+      // turn off the menu on internal nodes
+      'transitions': false,
+      // turn off d3 animations
+      'restricted-selectable': ['all', 'all-leaf-nodes', 'all-internal-nodes', 'none'],
+      // define kinds of selections that can be made on the tree
+    })
+    .size([height, width])
+    .node_circle_size(0); // do not show "circles" at internal nodes
+
+  tree(d3.layout.newick_parser(newick))
+    // parse the Newick into a d3 hierarchy object with additional fields
+    // generate node coordinates
+    .layout();
+  // render the tree
+
+  $("#select_all").on("click", function(e) {
+    tree.modify_selection("all");
+  });
+
+  $("#select_none").on("click", function(e) {
+    tree.modify_selection("none");
+  });
+
+  $("#select_leaf").on("click", function(e) {
+    tree.modify_selection("all-leaf-nodes");
+  });
+
+  $("#select_internal").on("click", function(e) {
+    tree.modify_selection("all-internal-nodes");
+  });
+
+});</code></pre></div>
 
   <script>
     d3.text("yokoyama.nwk", function(error, newick) {
@@ -70,6 +128,9 @@
       });
 
     });
+
+    // for syntax highlighting
+    hljs.initHighlightingOnLoad();
   </script>
 
 </body>
