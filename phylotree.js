@@ -1,187 +1,29 @@
 (function() {
   var d3_layout_phylotree_event_id = "d3.layout.phylotree.event",
     d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
-  /**
-* @name newick_parser
-* @version 1.0
-* @exports phylotree
-* @namespace phylotree
-*/
+/**
+ * Parses a Newick string into an equivalent JSON representation that is
+ * suitable for consumption by ``d3.layout.hierarchy``.
+ *
+ * Optionally accepts bootstrap values. Currently supports Newick strings with or without branch lengths,
+ * as well as tagged trees such as
+ *  ``(a,(b{TAG},(c{TAG},d{ANOTHERTAG})))``
+ *
+ * @param {String} nwk_str - A string representing a phylogenetic tree in Newick format.
+ * @param {Object} bootstrap_values - SDS: Not clear what this does (optional).
+ * @returns {Object} An object with keys ``json`` and ``error``.
+ */
   d3.layout.newick_parser = function(nwk_str, bootstrap_values) {
-    var clade_stack = [];
-
-    function add_new_tree_level() {
-      var new_level = {
-        name: null
-      };
-      var the_parent = clade_stack[clade_stack.length - 1];
-      if (!("children" in the_parent)) {
-        the_parent["children"] = [];
-      }
-      clade_stack.push(new_level);
-      the_parent["children"].push(clade_stack[clade_stack.length - 1]);
-      clade_stack[clade_stack.length - 1]["original_child_order"] =
-        the_parent["children"].length;
-    }
-
-    function finish_node_definition() {
-      var this_node = clade_stack.pop();
-      if (bootstrap_values && "children" in this_node) {
-        this_node["bootstrap_values"] = current_node_name;
-      } else {
-        this_node["name"] = current_node_name;
-      }
-      this_node["attribute"] = current_node_attribute;
-      this_node["annotation"] = current_node_annotation;
-      current_node_name = "";
-      current_node_attribute = "";
-      current_node_annotation = "";
-    }
-
-    function generate_error(location) {
-      return {
-        json: null,
-        error:
-          "Unexpected '" +
-          nwk_str[location] +
-          "' in '" +
-          nwk_str.substring(location - 20, location + 1) +
-          "[ERROR HERE]" +
-          nwk_str.substring(location + 1, location + 20) +
-          "'"
-      };
-    }
-
-    var automaton_state = 0;
-    var current_node_name = "";
-    var current_node_attribute = "";
-    var current_node_annotation = "";
-    var quote_delimiter = null;
-    var name_quotes = {
-      "'": 1,
-      '"': 1
-    };
-
-    var tree_json = {
-      name: "root"
-    };
-    clade_stack.push(tree_json);
-
-    var space = /\s/;
-
-    for (var char_index = 0; char_index < nwk_str.length; char_index++) {
-      try {
-        var current_char = nwk_str[char_index];
-        switch (automaton_state) {
-          case 0: {
-            // look for the first opening parenthesis
-            if (current_char == "(") {
-              add_new_tree_level();
-              automaton_state = 1; // expecting node name
-            }
-            break;
-          }
-          case 1: // name
-          case 3: { // branch length
-            // reading name
-            if (current_char == ":") {
-              if (automaton_state == 3) {
-                return generate_error(char_index);
-              }
-              automaton_state = 3;
-            } else if (current_char == "," || current_char == ")") {
-              try {
-                finish_node_definition();
-                automaton_state = 1;
-                if (current_char == ",") {
-                  add_new_tree_level();
-                }
-              } catch (e) {
-                return generate_error(char_index);
-              }
-            } else if (current_char == "(") {
-              if (current_node_name.length > 0) {
-                return generate_error(char_index);
-              } else {
-                add_new_tree_level();
-              }
-            } else if (current_char in name_quotes) {
-              if (
-                automaton_state == 1 &&
-                current_node_name.length === 0 &&
-                current_node_attribute.length === 0 &&
-                current_node_annotation.length === 0
-              ) {
-                automaton_state = 2;
-                quote_delimiter = current_char;
-                continue;
-              }
-              return generate_error(char_index);
-            } else {
-              if (current_char == "[") {
-                if (current_node_annotation.length) {
-                  return generate_error(char_index);
-                } else {
-                  automaton_state = 4;
-                }
-              } else {
-                if (automaton_state == 3) {
-                  current_node_attribute += current_char;
-                } else {
-                  if (space.test(current_char)) {
-                    continue;
-                  }
-                  current_node_name += current_char;
-                }
-              }
-            }
-
-            break;
-          }
-          case 2: {
-            if (current_char == quote_delimiter) {
-              if (char_index < nwk_str.length - 1) {
-                if (nwk_str[char_index + 1] == quote_delimiter) {
-                  char_index++;
-                  current_node_name += quote_delimiter;
-                  continue;
-                }
-              }
-              quote_delimiter = 0;
-              automaton_state = 1;
-              continue;
-            } else {
-              current_node_name += current_char;
-            }
-            break;
-          }
-          case 4: {
-            if (current_char == "]") {
-              automaton_state = 3;
-            } else {
-              if (current_char == "[") {
-                return generate_error(char_index);
-              }
-              current_node_annotation += current_char;
-            }
-            break;
-          }
-        }
-      } catch (e) {
-        return generate_error(char_index);
-      }
-    }
-
-    if (clade_stack.length != 1) {
-      return generate_error(nwk_str.length - 1);
-    }
-
-    return {
-      json: tree_json,
-      error: null
-    };
+    return d3_phylotree_newick_parser(nwk_str, bootstrap_values);
   };
 
+/**
+ * Instantiate a phylotree.
+ *
+ * @param {d3-selection} container - Specify a container, for things like menu
+ * and tooltip placement. Defaults to body (optional).
+ * @returns {Function} phylotree - an instance of a Phylotree.
+ */
   d3.layout.phylotree = function(container) {
     var item_selected = d3_phylotree_item_selected,
       node_visible = d3_phylotree_node_visible,
@@ -245,6 +87,7 @@
       scale_attribute = "y_scaled",
       needs_redraw = true,
       svg = null,
+      selection_callback = null,
       options = {
         layout: "left-to-right",
         branches: "step",
@@ -272,12 +115,15 @@
         "annular-limit": 0.38196601125010515,
         compression: 0.2,
         "align-tips": false,
-        "maximim-per-node-spacing": 100,
+        "maximum-per-node-spacing": 100,
         "minimum-per-node-spacing": 2,
-        "maximim-per-level-spacing": 100,
+        "maximum-per-level-spacing": 100,
         "minimum-per-level-spacing": 10,
         node_circle_size: d3.functor(3),
-        transitions: null
+        transitions: null,
+        brush: true,
+        reroot: true,
+        hide: true
       },
       css_classes = {
         "tree-container": "phylotree-container",
@@ -308,7 +154,7 @@
       fixed_width = [15, 20],
       font_size = 12,
       scale_bar_font_size = 12,
-      offsets = [0, font_size],
+      offsets = [0, font_size/2],
       draw_line = d3.svg
         .line()
         .x(function(d) {
@@ -378,6 +224,12 @@
 
     /*--------------------------------------------------------------------------------------*/
 
+/**
+ * Place the current nodes, i.e., determine their coordinates based
+ * on current settings.
+ *
+ * @returns The current ``phylotree``.
+ */
     phylotree.placenodes = function() {
       var x = 0.0,
         _extents = [[0, 0], [0, 0]],
@@ -839,6 +691,14 @@
       return phylotree;
     };
 
+/**
+ * An instance of a phylotree. Sets event listeners, parses tags, and creates links
+ * that represent branches.
+ *
+ * @param {Object} nwk - A Newick string or hierarchical JSON representation of a phylogenetic tree.
+ * @param {Object} bootstrap_values - SDS: Not sure what this does.
+ * @returns {Phylotree} phylotree - itself, following the builder pattern.
+ */
     function phylotree(nwk, bootstrap_values) {
       d3_phylotree_add_event_listener();
 
@@ -857,13 +717,15 @@
         // Parse tags
         var _parsed_tags = {};
         nodes.forEach(node => {
-          var left_bracket_index = node.name.indexOf('{');
-          if(left_bracket_index > -1) {
-            var tag = node.name.slice(left_bracket_index+1, node.name.length-1);
+          if(node.name) {
+            var left_bracket_index = node.name.indexOf('{');
+            if(left_bracket_index > -1) {
+              var tag = node.name.slice(left_bracket_index+1, node.name.length-1);
 
-            node[tag] = true;
-            _parsed_tags[tag] = true;
-            node.name = node.name.slice(0, left_bracket_index);
+              node[tag] = true;
+              _parsed_tags[tag] = true;
+              node.name = node.name.slice(0, left_bracket_index);
+            }
           }
         });
         parsed_tags = Object.keys(_parsed_tags);
@@ -874,6 +736,13 @@
       return phylotree;
     }
 
+/**
+ * Get or set the size of tree in pixels.
+ *
+ * @param {Array} attr (optional) An array of the form ``[height, width]``.
+ * @returns {Phylotree} The current ``size`` array if getting, or the current ``phylotree``
+ * if setting.
+ */
     phylotree.size = function(attr) {
       if (arguments.length) {
         phylo_attr = attr;
@@ -904,6 +773,12 @@
       return offsets[1] + options["left-offset"] + label_width;
     };
 
+/**
+ * Get all descendants of a given node.
+ *
+ * @param {Node} node A node in the current phylotree.
+ * @returns {Array} An array of descendant nodes.
+ */
     phylotree.descendants = function(n) {
       var desc = [];
 
@@ -911,13 +786,18 @@
         if (d3_phylotree_is_leafnode(nd)) {
           desc.push(nd);
         } else {
-          nd.children.forEach(recurse_nd);
+          nd.children.forEach(recurse_d);
         }
       }
       recurse_d(n);
       return desc;
     };
 
+/**
+ * Collapses a given node.
+ *
+ * @param {Node} node A node to be collapsed.
+ */
     phylotree.collapse_node = function(n) {
       if (!d3_phylotree_is_node_collapsed(n)) {
         n.collapsed = true;
@@ -930,6 +810,13 @@
       return phylotree;
     };
 
+/**
+ * Getter/setter for the selection label. Useful when allowing
+ * users to make multiple selections.
+ *
+ * @param {String} attr (Optional) If setting, the new selection label.
+ * @returns The current selection label if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.selection_label = function(attr) {
       if (!arguments.length) return selection_attribute_name;
       selection_attribute_name = attr;
@@ -1036,36 +923,40 @@
                 phylotree.modify_selection(phylotree.path_to_root(node));
               });
 
-            menu_object.append("li").attr("class", "divider");
+            if(options['reroot'] || options['hide']) {
+              menu_object.append("li").attr("class", "divider");
+            }
           }
 
-          menu_object
-            .append("li")
-            .append("a")
-            .attr("tabindex", "-1")
-            .text("Reroot on this node")
-            .on("click", function(d) {
-              menu_object.style("display", "none");
-              phylotree.reroot(node).update();
-            });
+          if(options['reroot']) {
+            menu_object
+              .append("li")
+              .append("a")
+              .attr("tabindex", "-1")
+              .text("Reroot on this node")
+              .on("click", function(d) {
+                menu_object.style("display", "none");
+                phylotree.reroot(node).update();
+              });
+          }
 
-          menu_object.append("li").attr("class", "divider");
-
-          menu_object
-            .append("li")
-            .append("a")
-            .attr("tabindex", "-1")
-            .text(
-              "Hide this " +
-                (d3_phylotree_is_leafnode(node) ? "node" : "subtree")
-            )
-            .on("click", function(d) {
-              menu_object.style("display", "none");
-              phylotree
-                .modify_selection([node], "notshown", true, true)
-                .update_has_hidden_nodes()
-                .update();
-            });
+          if(options['hide']) {
+            menu_object
+              .append("li")
+              .append("a")
+              .attr("tabindex", "-1")
+              .text(
+                "Hide this " +
+                  (d3_phylotree_is_leafnode(node) ? "node" : "subtree")
+              )
+              .on("click", function(d) {
+                menu_object.style("display", "none");
+                phylotree
+                  .modify_selection([node], "notshown", true, true)
+                  .update_has_hidden_nodes()
+                  .update();
+              });
+          }
         }
 
         if (d3_phylotree_has_hidden_nodes(node)) {
@@ -1126,18 +1017,49 @@
       }
     };
 
+/**
+ * Get or set node styler. If setting, pass a function of two arguments,
+ * ``element`` and ``data``. ``data`` exposes the underlying node so that
+ * its attributes can be referenced. These can be used to apply styles to
+ * ``element``, which will be a D3 selection corresponding to the SVG element
+ * that makes up the current node.
+ *
+ * @param {Function} attr - Optional; if setting, the node styler function to be set.
+ * @returns The ``node_styler`` function if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.style_nodes = function(attr) {
       if (!arguments.length) return node_styler;
       node_styler = attr;
       return phylotree;
     };
 
-    phylotree.style_edges = function(attr) {
+ /**
+ * Get or set edge styler. If setting, pass a function of two arguments,
+ * ``element`` and ``data``. ``data`` exposes the underlying edge so that
+ * its attributes can be referenced. These can be used to apply styles to
+ * ``element``, which will be a D3 selection corresponding to the SVG element
+ * that makes up the current edge.
+ *
+ * Note that, in accordance with the D3 hierarchy layout, edges will have
+ * a ``source`` and ``target`` field, corresponding to the nodes that make up
+ * up the associated branch.
+ *
+ * @param {Function} attr - Optional; if setting, the node styler function to be set.
+ * @returns The ``edge_styler`` function if getting, or the current ``phylotree`` if setting.
+ */
+   phylotree.style_edges = function(attr) {
       if (!arguments.length) return edge_styler;
       edge_styler = attr.bind(this);
       return phylotree;
     };
 
+/**
+ * Return Newick string representation of a phylotree.
+ * 
+ * @param {Function} annotator - Function to apply to each node, determining
+ * what label is written (optional).
+ * @returns {String} newick - Phylogenetic tree serialized as a Newick string.
+ */
     phylotree.get_newick = function(annotator) {
       function escape_string(nn) {
         var need_escape = /[\s\[\]\,\)\(\:\'\"]/;
@@ -1229,6 +1151,19 @@
 
     // SW 20171113 : TODO: Arguments violate clean-coding standards.
     // https://github.com/ryanmcdermott/clean-code-javascript#functions
+/**
+ * Modify the current selection, via functional programming.
+ *
+ * @param {Function} node_selecter A function to apply to each node, which
+ * determines whether they become part of the current selection. Alternatively,
+ * if ``restricted-selectable`` mode is enabled, a string describing one of
+ * the pre-defined restricted-selectable options.
+ * @param {String} attr (Optional) The selection attribute to modify.
+ * @param {Boolean} place (Optional) Whether or not ``placenodes`` should be called.
+ * @param {Boolean} skip_refresh (Optional) Whether or not a refresh is called.
+ * @param {String} mode (Optional) Can be ``"toggle"``, ``"true"``, or ``"false"``.
+ * @returns The current ``phylotree``.
+ */
     phylotree.modify_selection = function(
       node_selecter,
       attr,
@@ -1374,7 +1309,9 @@
           }
         }
       }
-
+      if(selection_callback && attr != "tag"){
+        selection_callback(phylotree.get_selection());
+      }
       return phylotree;
     };
 
@@ -1382,6 +1319,12 @@
       trigger_refresh(phylotree);
     };
 
+/**
+ * Determine whether a given node is a leaf node.
+ *
+ * @param {Node} node A node in the phylotree.
+ * @returns {Boolean} Whether or not the argument is a leaf node.
+ */
     phylotree.is_leafnode = d3_phylotree_is_leafnode;
 
     phylotree.radial = function(attr) {
@@ -1396,6 +1339,12 @@
       return phylotree;
     };
 
+/**
+ * Return the bubble size of the current node. 
+ *
+ * @param {Node} A node in the phylotree.
+ * @returns {Float} The size of the bubble associated to this node.
+ */
     phylotree.node_bubble_size = function(node) {
       return options["draw-size-bubbles"]
         ? relative_node_span(node) * scales[0] * 0.5
@@ -1414,6 +1363,11 @@
       return [right_most_leaf - d.screen_x, 0];
     };
 
+/**
+ * Get nodes which are currently selected.
+ *
+ * @returns {Array} An array of nodes that match the current selection.
+ */
     phylotree.get_selection = function() {
       return nodes.filter(function(d) {
         return d[selection_attribute_name];
@@ -1528,6 +1482,15 @@
       });
     };
 
+/**
+ * Get or set the current node span. If setting, the argument should
+ * be a function of a node which returns a number, so that node spans
+ * can be determined dynamically. Alternatively, the argument can be the
+ * string ``"equal"``, to give all nodes an equal span.
+ *
+ * @param {Function} attr Optional; if setting, the node_span function.
+ * @returns The ``node_span`` if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.node_span = function(attr) {
       if (!arguments.length) return node_span;
       if (typeof attr == "string" && attr == "equal") {
@@ -1595,6 +1558,12 @@
       return phylotree;
     };
 
+/**
+ * Delete a given node.
+ *
+ * @param {Node} The node to be deleted, or the index of such a node.
+ * @returns The current ``phylotree``.
+ */
     phylotree.delete_a_node = function(index) {
       if (typeof index != "number") {
         return phylotree.delete_a_node(nodes.indexOf(index));
@@ -1645,6 +1614,12 @@
       return phylotree;
     };
 
+/**
+ * Traverse the tree in a prescribed order, and compute a value at each node.
+ *
+ * @param {Function} callback A function to be called on each node.
+ * @param {String} traversal_type Either ``"pre-order"`` or ``"post-order"``.
+ */
     phylotree.traverse_and_compute = function(callback, traversal_type) {
       traversal_type = traversal_type || "post-order";
 
@@ -1664,6 +1639,12 @@
       traversal_type(nodes[0]);
     };
 
+/**
+ * Reroot the tree on the given node.
+ *
+ * @param {Node} node Node to reroot on.
+ * @returns {Phylotree} The current ``phylotree``.
+ */
     phylotree.reroot = function(node) {
       if (node.parent) {
         new_json = {
@@ -1738,6 +1719,14 @@
       return phylotree;
     };
 
+
+/**
+ * Update a given key name in each node.
+ *
+ * @param {String} old_key The old key name.
+ * @param {String} new_key The new key name.
+ * @returns The current ``phylotree``.
+ */
     phylotree.update_key_name = function(old_key, new_key) {
       nodes.forEach(function(n) {
         if (old_key in n) {
@@ -1748,14 +1737,22 @@
         }
       });
       phylotree.sync_edge_labels();
+      return phylotree;
     };
 
+/**
+ * Get or set spacing in the x-direction.
+ *
+ * @param {Number} attr (Optional), the new spacing value if setting.
+ * @param {Boolean} skip_render (Optional), whether or not a refresh should be performed.
+ * @returns The current ``spacing_x`` value if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.spacing_x = function(attr, skip_render) {
       if (!arguments.length) return fixed_width[0];
       if (
         fixed_width[0] != attr &&
         attr >= options["minimum-per-node-spacing"] &&
-        attr <= options["maximim-per-node-spacing"]
+        attr <= options["maximum-per-node-spacing"]
       ) {
         fixed_width[0] = attr;
         if (!skip_render) {
@@ -1765,12 +1762,19 @@
       return phylotree;
     };
 
+/**
+ * Get or set spacing in the y-direction.
+ *
+ * @param {Number} attr (Optional), the new spacing value if setting.
+ * @param {Boolean} skip_render (Optional), whether or not a refresh should be performed.
+ * @returns The current ``spacing_y`` value if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.spacing_y = function(attr, skip_render) {
       if (!arguments.length) return fixed_width[1];
       if (
         fixed_width[1] != attr &&
         attr >= options["minimum-per-level-spacing"] &&
-        attr <= options["maximim-per-level-spacing"]
+        attr <= options["maximum-per-level-spacing"]
       ) {
         fixed_width[1] = attr;
         if (!skip_render) {
@@ -1780,6 +1784,14 @@
       return phylotree;
     };
 
+/**
+ * Toggle collapsed view of a given node. Either collapses a clade into
+ * a smaller blob for viewing large trees, or expands a node that was
+ * previously collapsed.
+ *
+ * @param {Node} node The node to toggle.
+ * @returns {Phylotree} The current ``phylotree``.
+ */
     phylotree.toggle_collapse = function(node) {
       if (node.collapsed) {
         node.collapsed = false;
@@ -1816,12 +1828,25 @@
       return phylotree;
     };
 
+/**
+ * Get or set branch length accessor.
+ *
+ * @param {Function} attr Empty if getting, or new branch length accessor if setting.
+ * @returns {Object} The branch length accessor if getting, or the current phylotree if setting.
+ */
     phylotree.branch_length = function(attr) {
       if (!arguments.length) return branch_length_accessor;
       branch_length_accessor = attr ? attr : def_branch_length_accessor;
       return phylotree;
     };
 
+/**
+ * Get or set branch name accessor.
+ *
+ * @param {Function} attr (Optional) If setting, a function that accesses a branch name
+ * from a node.
+ * @returns The ``node_label`` accessor if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.branch_name = function(attr) {
       if (!arguments.length) return node_label;
       node_label = attr ? attr : def_node_label;
@@ -1856,6 +1881,12 @@
       return width;
     };
 
+/**
+ * Get or set font size.
+ *
+ * @param {Function} attr Empty if getting, or new font size if setting.
+ * @returns The current ``font_size`` accessor if getting, or the current ``phylotree`` if setting.
+ */
     phylotree.font_size = function(attr) {
       if (!arguments.length) return font_size;
       font_size = attr === undefined ? 12 : attr;
@@ -1878,6 +1909,12 @@
       return needs_redraw;
     };
 
+/**
+ * Getter/setter for the SVG element for the Phylotree to be rendered in.
+ *
+ * @param {d3-selection} svg_element (Optional) SVG element to render within, selected by D3.
+ * @returns The selected SVG element if getting, or the current ``phylotree`` if setting.`
+ */
     phylotree.svg = function(svg_element) {
       if (!arguments.length) return svg_element;
       if (svg !== svg_element) {
@@ -1911,6 +1948,14 @@
       return phylotree;
     };
 
+/**
+ * Change option settings.
+ *
+ * @param {Object} opt Keys are the option to toggle and values are
+ * the parameters for that option.
+ * @param {Boolean} run_update (optional) Whether or not the tree should update. 
+ * @returns The current ``phylotree``.
+ */
     phylotree.options = function(opt, run_update) {
       if (!arguments.length) return options;
 
@@ -1957,6 +2002,13 @@
       return nodes.length <= 300;
     };
 
+/**
+ * Update the current phylotree, i.e., alter the svg
+ * elements.
+ *
+ * @param {Boolean} transitions (Optional) Toggle whether transitions should be shown.
+ * @returns The current ``phylotree``.
+ */
     phylotree.update = function(transitions) {
       if (!phylotree.svg) return phylotree;
 
@@ -2170,64 +2222,66 @@
 
       var sizes = d3_phylotree_resize_svg(phylotree, svg, transitions);
 
-      var brush = enclosure
-        .selectAll("." + css_classes["tree-selection-brush"])
-        .data([0]);
-      brush
-        .enter()
-        .insert("g", ":first-child")
-        .attr("class", css_classes["tree-selection-brush"]);
+      if(options["brush"]) {
+        var brush = enclosure
+          .selectAll("." + css_classes["tree-selection-brush"])
+          .data([0]);
+        brush
+          .enter()
+          .insert("g", ":first-child")
+          .attr("class", css_classes["tree-selection-brush"]);
 
-      var brush_object = d3.svg
-        .brush()
-        .x(
-          d3.scale
-            .identity()
-            .domain([0, sizes[0] - offsets[1] - options["left-offset"]])
-        )
-        .y(d3.scale.identity().domain([0, sizes[1] - phylotree.pad_height()]))
-        .on("brush", function() {
-          var extent = d3.event.target.extent(),
-            shown_links = links.filter(d3_phylotree_edge_visible),
-            selected_links = shown_links
-              .filter(function(d, i) {
-                return (
-                  d.source.screen_x >= extent[0][0] &&
-                  d.source.screen_x <= extent[1][0] &&
-                  d.source.screen_y >= extent[0][1] &&
-                  d.source.screen_y <= extent[1][1] &&
-                  d.target.screen_x >= extent[0][0] &&
-                  d.target.screen_x <= extent[1][0] &&
-                  d.target.screen_y >= extent[0][1] &&
-                  d.target.screen_y <= extent[1][1]
-                );
-              })
-              .map(function(d) {
+        var brush_object = d3.svg
+          .brush()
+          .x(
+            d3.scale
+              .identity()
+              .domain([0, sizes[0] - offsets[1] - options["left-offset"]])
+          )
+          .y(d3.scale.identity().domain([0, sizes[1] - phylotree.pad_height()]))
+          .on("brush", function() {
+            var extent = d3.event.target.extent(),
+              shown_links = links.filter(d3_phylotree_edge_visible),
+              selected_links = shown_links
+                .filter(function(d, i) {
+                  return (
+                    d.source.screen_x >= extent[0][0] &&
+                    d.source.screen_x <= extent[1][0] &&
+                    d.source.screen_y >= extent[0][1] &&
+                    d.source.screen_y <= extent[1][1] &&
+                    d.target.screen_x >= extent[0][0] &&
+                    d.target.screen_x <= extent[1][0] &&
+                    d.target.screen_y >= extent[0][1] &&
+                    d.target.screen_y <= extent[1][1]
+                  );
+                })
+                .map(function(d) {
+                  return d.target;
+                });
+
+            phylotree.modify_selection(
+              links.map(function(d) {
                 return d.target;
-              });
+              }),
+              "tag",
+              false,
+              selected_links.length > 0,
+              "false"
+            );
+            phylotree.modify_selection(
+              selected_links,
+              "tag",
+              false,
+              false,
+              "true"
+            );
+          })
+          .on("brushend", function() {
+            brush.call(d3.event.target.clear());
+          });
 
-          phylotree.modify_selection(
-            links.map(function(d) {
-              return d.target;
-            }),
-            "tag",
-            false,
-            selected_links.length > 0,
-            "false"
-          );
-          phylotree.modify_selection(
-            selected_links,
-            "tag",
-            false,
-            false,
-            "true"
-          );
-        })
-        .on("brushend", function() {
-          brush.call(d3.event.target.clear());
-        });
-
-      brush.call(brush_object);
+        brush.call(brush_object);
+      }
       phylotree.sync_edge_labels();
       return phylotree;
     };
@@ -2236,6 +2290,12 @@
       return css_classes;
     };
 
+/**
+ * Lay out the tree within the SVG.
+ *
+ * @param {Boolean} transitions Specify whether or not transitions should occur.
+ * @returns The current ``phylotree``.
+ */
     phylotree.layout = function(transitions) {
       if (svg) {
         svg
@@ -2313,6 +2373,15 @@
       return class_var;
     };
 
+/**
+ * Select all descendents of a given node, with options for selecting
+ * terminal/internal nodes.
+ *
+ * @param {Node} node The node whose descendents should be selected.
+ * @param {Boolean} terminal Whether to include terminal nodes.
+ * @param {Boolean} internal Whther to include internal nodes.
+ * @returns {Array} An array of selected nodes.
+ */
     phylotree.select_all_descendants = function(node, terminal, internal) {
       var selection = [];
 
@@ -2547,14 +2616,32 @@
       return node;
     };
 
+/**
+ * Get an array of all nodes.
+ *
+ * @returns {Array} Nodes in the current ``phylotree``.
+ */
     phylotree.get_nodes = function() {
       return nodes;
     };
 
+/**
+ * Get a node by name.
+ *
+ * @param {String} name Name of the desired node.
+ * @returns {Node} Desired node.
+ */
     phylotree.get_node_by_name = function(name) {
       return _.findWhere(nodes, { name: name });
     };
 
+/**
+ * Add attributes to nodes. New attributes will be placed in the
+ * ``annotations`` key of any nodes that are matched.
+ *
+ * @param {Object} attributes An object whose keys are the names of nodes
+ * to modify, and whose values are the new attributes to add.
+ */
     phylotree.assign_attributes = function(attributes) {
       //return nodes;
       // add annotations to each matching node
@@ -2573,6 +2660,25 @@
       return this.partitions;
     };
 
+/**
+ * Getter/setter for the selection callback. This function is called
+ * every time the current selection is modified, and its argument is
+ * an array of nodes that make up the current selection.
+ *
+ * @param {Function} callback (Optional) The selection callback function.
+ * @returns The current ``selection_callback`` if getting, or the current ``phylotree`` if setting.
+ */
+    phylotree.selection_callback = function(callback){
+      if(!callback) return selection_callback;
+      selection_callback = callback;
+      return phylotree;
+    }
+
+/**
+ * Return tags that were read when parsing the original Newick string.
+ *
+ * @returns An array of strings, comprising each tag that was read.
+ */
     phylotree.get_parsed_tags = function() {
       return parsed_tags;
     };
@@ -2659,6 +2765,12 @@
     return sizes;
   }
 
+/**
+ * Determine if a given node is a leaf node.
+ *
+ * @param {Node} A node in a tree.
+ * @returns {Bool} Whether or not the node is a leaf node.
+ */
   function d3_phylotree_is_leafnode(node) {
     return !(node.children && node.children.length);
   }
@@ -2700,11 +2812,6 @@
 
   function d3_phylotree_newick_parser(nwk_str, bootstrap_values) {
     var clade_stack = [];
-    /**
- * @method add_new_tree_level
- * @memberof phylotree
- * @returns nothing
- */
     function add_new_tree_level() {
       var new_level = {
         name: null
@@ -2719,11 +2826,6 @@
         the_parent["children"].length;
     }
 
-    /**
- * @method finish_node_definition
- * @memberof phylotree
- * @returns nothing
- */
     function finish_node_definition() {
       var this_node = clade_stack.pop();
       if (bootstrap_values && "children" in this_node) {

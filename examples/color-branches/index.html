@@ -186,6 +186,7 @@ A,B,A
         d3.text(url, function(error, newick) {
 
           drawATree(newick);
+          loadAnnotationFromURL("annotation.csv");
         });
       }
 
@@ -278,7 +279,6 @@ A,B,A
       });
 
       loadTreeFromURL("tree.nwk");
-      loadAnnotationFromURL("annotation.csv");
     </script>
 
 </body>

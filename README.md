@@ -29,8 +29,23 @@ Key features
 
 ## Dependencies 
 
-See [bower.json](bower.json) for dependencies. 
+See [package.json](package.json) for dependencies. 
 
 ## Tests
 
 Run tests using `mocha`.
+
+## Documentation
+Documentation for phylotree.js can be [found here](http://phylotree.hyphy.org/documentation).
+
+Documentation was created using [sphinx-js](https://github.com/erikrose/sphinx-js). Install with
+
+```
+pip install -r requirements.txt
+```
+
+and build with
+
+```
+npm run docs
+```
