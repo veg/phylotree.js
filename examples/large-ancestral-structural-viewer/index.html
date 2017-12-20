@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+
+  <script src="//code.jquery.com/jquery.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="//d3js.org/d3.v3.min.js"></script>
+  <script src="/phylotree.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
+  <script type='text/javascript' src='bio-pv.min.js'></script>
+  <title>Ancestral Sequence Structural Viewer</title>
+  <style>
+    #guide {
+      position: fixed;
+      top: 0px;
+      right: 50%;
+      border-style: solid;
+      border-color: black;
+      border-width: 1px;
+      background: white;
+      margin-right: 5px;
+    }
+    #guide path.branch {
+      opacity: .8;
+      stroke: grey;
+    }
+    #guide path.branch:hover {
+      stroke-width: 2px;
+    }
+    #structure-viewer {
+      position: fixed;
+      right: 0px;
+      bottom: 0px;
+      width: 50%;
+      height: 100%;
+      border-style: solid;
+      border-color: black;
+      border-width: 1px;
+    }
+    .top-margin {
+      margin-top: 55px;
+    }
+  </style>
+
+
+</head>
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+          <a class="navbar-brand" href="#">Ancestral Sequence Structural Viewer</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <div class="navbar-form " role="search">
+            <div class="input-group">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  Labels <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" id = "selection_name_dropdown">
+                  <li><a id="red_selection" href="javascript:void(0);" style="color: red">Red selection</a></li>
+                  <li><a id="blue_selection" href="javascript:void(0);" style="color: blue">Blue selection</a></li>
+                  <li class="divider"></li>
+                  <li><a id="rename_selection" href="javascript:void(0);">Rename selection</a></li>
+                </ul>
+              </span>
+
+              <input type="text" class="form-control" value = "Red selection" id = "selection_name_box" style="color:red;" disabled>
+
+              <span class="input-group-btn" id = "save_selection_name" style = "display: none" >
+                <button type="button" class="btn btn-default" id = "cancel_selection_button" >
+                  Cancel
+                </button>
+                <button type="button" class="btn btn-default" id = "save_selection_button">
+                  Save
+                </button>
+              </span>
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Selection <span class="caret"></span></button>
+                  <ul class="dropdown-menu">
+                    <li><a href="javascript:void(0);" id = "select_all">Select all</a></li>
+                    <li><a href="javascript:void(0);" id = "select_all_internal">Select all internal nodes</a></li>
+                    <li><a href="javascript:void(0);" id = "select_all_leaves">Select all leaf nodes</a></li>
+                    <li><a href="javascript:void(0);" id = "clear_internal">Clear all internal nodes</a></li>
+                    <li><a href="javascript:void(0);" id = "clear_leaves">Clear all leaves</a></li>
+                    <li><a href="javascript:void(0);" id = "select_none">Clear selection</a></li>
+                    <li class="divider"></li>
+                    <li><a href="javascript:void(0);" id = "mp_label">Label internal nodes using maximum parsimony</a></li>
+                    <li><a href="javascript:void(0);" id = "and_label">Label internal nodes using conjunction (AND) </a></li>
+                    <li><a href="javascript:void(0);" id = "or_label">Label internal nodes using disjunction (OR) </a></li>
+                  </ul>
+                </span>
+              </div>
+            </div>
+          </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+  <div id="guide" class="top-margin">
+    <svg id="tree_guide" />
+  </div>
+  <div id="structure-viewer" class="top-margin">
+  </div>
+  <svg id="tree_display" class="top-margin"/>
+
+  <script>
+    var current_selection = "red",
+      names = { 
+        red: "Red selection",
+        blue: "Blue selection"
+      },
+      changes = {red: [], blue: []},
+      change_colors = {
+        none: [1, 1, 1],
+        red: [1, 0, 0],
+        blue: [0, 0, 1],
+        purple: [1, 0, 1]
+      },
+      main_tree, guide_tree, parsed;
+    d3.json("h3_substitutions.json", function(error, data) {
+      main_tree = d3.layout.phylotree()
+        // create a tree layout object
+        .svg(d3.select("#tree_display"))
+        .options({
+          'show-scale': false,
+          'left-right-spacing': 'fit-to-size',
+          'top-bottom-spacing': 'fit-to-size',
+          'collapsible': false,
+          'brush': false,
+          'reroot': false,
+          'hide': false
+        })
+        .style_nodes(colorizer('black'))
+        .size([38330, 38330/3]);
+      // render to this SVG element
+      parsed = d3.layout.newick_parser(data["tree"]);
+      main_tree(parsed)
+        // parse the Newick into a d3 hierarchy object with additional fields
+        .layout();
+      // layout and render the tree
+
+      // Sort deepest clades towards bottom of tree
+      var i = 0;
+      main_tree.traverse_and_compute (function (n) {
+        var d = 1;
+        if (n.children && n.children.length) {
+          d += d3.max (n.children, function (d) { return d["count_depth"];});
+        }
+        n["count_depth"] = d;
+      });
+      main_tree.resort_children (function (a,b) {
+        return (a["count_depth"] - b["count_depth"]);
+      });
+
+      var guide_height = window.innerWidth/6,
+        guide_width = window.innerWidth/6;
+
+      d3.select('#guide')
+        .style('height', guide_height+'px')
+        .style('width', guide_width+'px');
+
+      guide_tree = d3.layout.phylotree()
+        .svg(d3.select("#tree_guide"))
+        .options({
+          'left-right-spacing': 'fit-to-size',
+          // fit to given size top-to-bottom
+          'top-bottom-spacing': 'fit-to-size',
+          // fit to given size left-to-right
+          'collapsible': false,
+          // turn off the menu on internal nodes
+          'transitions': false,
+          // turn off d3 animations
+          'show-scale': false,
+          // disable brush
+          'brush': false,
+          // disable selections on this tree
+          'selectable': false
+        })
+        .size([guide_height, guide_width])
+        .node_circle_size(0);
+      guide_tree(parsed)
+        .layout();
+    
+      var x = d3.scale.linear()
+        .domain([0, document.body.scrollWidth])
+        .range([0, guide_width]);
+      var y = d3.scale.linear()
+        .domain([0, document.body.scrollHeight])
+        .range([0, guide_height]);
+      var rect = d3.select("#tree_guide")
+        .append('rect')
+          .attr('x', 0)
+          .attr('y', 0)
+          .style('opacity', .6)
+          .attr('width', x(window.innerWidth/2))
+          .attr('height', y(window.innerHeight));
+
+      document.body.onscroll = function(event) {
+        rect.attr('x', x(window.scrollX))
+          .attr('y', y(window.scrollY));
+      };
+
+      d3.select('#guide').on("click", function() {
+        var coords = d3.mouse(this),
+          new_x = x.invert(coords[0])-window.innerWidth/4,
+          new_y = y.invert(coords[1])-window.innerHeight/4;
+        window.scrollTo(new_x, new_y);
+      });
+
+      main_tree.selection_callback(function(selected){
+        guide_tree.sync_edge_labels();
+
+        // color substitutions on structure
+        var selected_node_names = _.pluck(selected, "name"),
+          new_changes = _.uniq(_.flatten(_.values(_.pick(data, selected_node_names))))
+            .map(d=>d+1),
+          current_label = main_tree.selection_label();
+        changes[current_label] = new_changes;
+        var highlighter = new pv.color.ColorOp(function(atom, out, index) {
+          var has_red_change = changes.red.indexOf(atom.residue().num()) > -1,
+            has_blue_change = changes.blue.indexOf(atom.residue().num()) > -1,
+            color = has_red_change ? ( has_blue_change ? 'purple' : 'red' ) : (has_blue_change ? 'blue' : 'none');
+          out[index+0] = change_colors[color][0]; out[index+1] = change_colors[color][1];
+          out[index+2] = change_colors[color][2]; out[index+3] = 1.0;
+        });
+        geom.colorBy(highlighter);
+        viewer.requestRedraw();
+      });
+
+      var options = {
+        width: 'auto',
+        height: 'auto',
+        antialias: true,
+        quality : 'medium',
+        background: '#EEE'
+      };
+      var parent = document.getElementById('structure-viewer');
+      var viewer = pv.Viewer(parent, options);
+      var geom;
+      pv.io.fetchPdb("1ha0.pdb", function(structure) {
+        geom = viewer.cartoon('protein', structure, {color: pv.color.uniform("white")});
+        viewer.autoZoom();
+      });
+
+      main_tree.selection_label('red');
+      guide_tree.selection_label('red');
+      main_tree.style_edges(colorizer('grey'));
+      guide_tree.style_edges(colorizer('grey'));
+      main_tree.style_nodes(colorizer('black'));
+    });
+
+    $("#red_selection").on("click", function(e){
+      current_selection = 'red';
+      main_tree.selection_label('red');
+      guide_tree.selection_label('red');
+      d3.select("#selection_name_box")
+        .style('color', 'red')
+        .property('value', names['red']);
+    });
+
+    $("#blue_selection").on("click", function(e){
+      current_selection = 'blue';
+      main_tree.selection_label('blue');
+      guide_tree.selection_label('blue');
+      d3.select("#selection_name_box")
+        .style('color', 'blue')
+        .property('value', names['blue']);
+    });
+
+    $("#select_all").on ("click", function (e) {
+      main_tree.modify_selection (function (d) { return true;});
+    });
+
+    $("#select_all_internal").on ("click", function (e) {
+      main_tree.modify_selection (function (d) { return !d3.layout.phylotree.is_leafnode (d.target);});
+    });
+
+    $("#select_all_leaves").on ("click", function (e) {
+      main_tree.modify_selection (function (d) { return d3.layout.phylotree.is_leafnode (d.target);});
+    });
+
+
+    $("#select_none").on ("click", function (e) {
+      main_tree.modify_selection (function (d) { return false;});
+    });
+
+    $("#clear_internal").on ("click", function (e) {
+      main_tree.modify_selection (function (d) {
+        return d3.layout.phylotree.is_leafnode (d.target) ? d.target[current_selection] : false;
+      });
+    });
+
+    $("#clear_leaves").on ("click", function (e) {
+      main_tree.modify_selection (function (d) {
+        return !d3.layout.phylotree.is_leafnode (d.target) ? d.target[current_selection] : false;
+      });
+    });
+
+    $("#mp_label").on ("click", function (e) {
+      main_tree.max_parsimony (true);
+    });
+
+    $("#and_label").on ("click", function (e) {
+      main_tree.internal_label (function (d) {
+        return d.reduce (function (prev, curr) { return curr[current_selection] && prev; }, true)
+      }, true);
+    });
+
+    $("#or_label").on ("click", function (e) {
+      main_tree.internal_label (function (d) {
+        return d.reduce (function (prev, curr) { return curr[current_selection] || prev; }, false)
+      }, true);
+    });
+
+    $("#rename_selection").on("click", function(e){
+      d3.select('#save_selection_name')
+        .style('display', null);
+      d3.select('#selection_name_box')
+       .attr('disabled', null); 
+    });
+
+    $("#cancel_selection_button").on("click", function(e){
+      d3.select('#save_selection_name')
+        .style('display', 'none');
+      d3.select('#selection_name_box')
+        .attr('disabled', true);
+      $('#selection_name_box').val(names[current_selection]);
+    });
+
+    $("#save_selection_button").on("click", function(e){
+      d3.select('#save_selection_name')
+        .style('display', 'none');
+      var new_name = $('#selection_name_box').val();
+      $("#" + current_selection + "_selection").html(new_name);
+      d3.select('#selection_name_box')
+        .attr('disabled', true);
+      names[current_selection] = new_name;
+    });
+
+    function colorizer(default_color) {
+      return function (element, data) {
+        var edge_stroke;
+        if(data['red']){
+          edge_stroke = data['blue'] ? "purple" : "red";
+        } else {
+          edge_stroke = data['blue'] ? "blue" : default_color;
+        }
+        element.style ("stroke", edge_stroke, "important");
+      }
+    }
+  </script>
+
+</body>
+
+</html>

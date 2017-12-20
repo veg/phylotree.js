@@ -1,0 +1,486 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Nodes and branches &mdash; Phylotree.js 0.1.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Phylotree.js 0.1.5 documentation" href="index.html"/>
+        <link rel="next" title="Selection" href="selection.html"/>
+        <link rel="prev" title="Options" href="options.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Phylotree.js
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#a-minimal-working-example">A minimal working example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#toggling-options">Toggling options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentals.html">Fundamentals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals.html#reading-and-writing-trees">Reading and writing trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals.html#drawing-trees">Drawing trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals.html#formatting-trees">Formatting trees</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="options.html">Options</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Nodes and branches</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#node-methods">Node methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#branch-methods">Branch methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="selection.html">Selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Phylotree.js</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Nodes and branches</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/nodes_branches.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="nodes-and-branches">
+<h1>Nodes and branches<a class="headerlink" href="#nodes-and-branches" title="Permalink to this headline">¶</a></h1>
+<p>This will describe node- and branch-based methods.</p>
+<div class="section" id="node-methods">
+<h2>Node methods<a class="headerlink" href="#node-methods" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="phylotree.get_nodes">
+<code class="descclassname">phylotree.</code><code class="descname">get_nodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.get_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an array of all nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>Array</strong> – Nodes in the current <code class="docutils literal"><span class="pre">phylotree</span></code>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.descendants">
+<code class="descclassname">phylotree.</code><code class="descname">descendants</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.descendants" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all descendants of a given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<em>Node</em>) – A node in the current phylotree.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Array</strong> – An array of descendant nodes.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.collapse_node">
+<code class="descclassname">phylotree.</code><code class="descname">collapse_node</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.collapse_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Collapses a given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> (<em>Node</em>) – A node to be collapsed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.style_nodes">
+<code class="descclassname">phylotree.</code><code class="descname">style_nodes</code><span class="sig-paren">(</span><span class="optional">[</span><em>attr</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.style_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set node styler. If setting, pass a function of two arguments,
+<code class="docutils literal"><span class="pre">element</span></code> and <code class="docutils literal"><span class="pre">data</span></code>. <code class="docutils literal"><span class="pre">data</span></code> exposes the underlying node so that
+its attributes can be referenced. These can be used to apply styles to
+<code class="docutils literal"><span class="pre">element</span></code>, which will be a D3 selection corresponding to the SVG element
+that makes up the current node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>function</em>) – Optional; if setting, the node styler function to be set.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The <code class="docutils literal"><span class="pre">node_styler</span></code> function if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.node_span">
+<code class="descclassname">phylotree.</code><code class="descname">node_span</code><span class="sig-paren">(</span><span class="optional">[</span><em>attr</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.node_span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set the current node span. If setting, the argument should
+be a function of a node which returns a number, so that node spans
+can be determined dynamically. Alternatively, the argument can be the
+string <code class="docutils literal"><span class="pre">&quot;equal&quot;</span></code>, to give all nodes an equal span.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>function</em>) – Optional; if setting, the node_span function.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The <code class="docutils literal"><span class="pre">node_span</span></code> if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.delete_a_node">
+<code class="descclassname">phylotree.</code><code class="descname">delete_a_node</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.delete_a_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>The</strong> (<em>Node</em>) – node to be deleted, or the index of such a node.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal"><span class="pre">phylotree</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.traverse_and_compute">
+<code class="descclassname">phylotree.</code><code class="descname">traverse_and_compute</code><span class="sig-paren">(</span><em>callback</em>, <em>traversal_type</em><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.traverse_and_compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Traverse the tree in a prescribed order, and compute a value at each node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
+<li><strong>callback</strong> (<em>function</em>) – A function to be called on each node.</li>
+<li><strong>traversal_type</strong> (<em>String</em>) – Either <code class="docutils literal"><span class="pre">&quot;pre-order&quot;</span></code> or <code class="docutils literal"><span class="pre">&quot;post-order&quot;</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.reroot">
+<code class="descclassname">phylotree.</code><code class="descname">reroot</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.reroot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reroot the tree on the given node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<em>Node</em>) – Node to reroot on.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Phylotree</strong> – The current <code class="docutils literal"><span class="pre">phylotree</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.toggle_collapse">
+<code class="descclassname">phylotree.</code><code class="descname">toggle_collapse</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.toggle_collapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Toggle collapsed view of a given node. Either collapses a clade into
+a smaller blob for viewing large trees, or expands a node that was
+previously collapsed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<em>Node</em>) – The node to toggle.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Phylotree</strong> – The current <code class="docutils literal"><span class="pre">phylotree</span></code>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="branch-methods">
+<h2>Branch methods<a class="headerlink" href="#branch-methods" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="phylotree.style_edges">
+<code class="descclassname">phylotree.</code><code class="descname">style_edges</code><span class="sig-paren">(</span><span class="optional">[</span><em>attr</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.style_edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set edge styler. If setting, pass a function of two arguments,
+<code class="docutils literal"><span class="pre">element</span></code> and <code class="docutils literal"><span class="pre">data</span></code>. <code class="docutils literal"><span class="pre">data</span></code> exposes the underlying edge so that
+its attributes can be referenced. These can be used to apply styles to
+<code class="docutils literal"><span class="pre">element</span></code>, which will be a D3 selection corresponding to the SVG element
+that makes up the current edge.</p>
+<p>Note that, in accordance with the D3 hierarchy layout, edges will have
+a <code class="docutils literal"><span class="pre">source</span></code> and <code class="docutils literal"><span class="pre">target</span></code> field, corresponding to the nodes that make up
+up the associated branch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>function</em>) – Optional; if setting, the node styler function to be set.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The <code class="docutils literal"><span class="pre">edge_styler</span></code> function if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phylotree.branch_length">
+<code class="descclassname">phylotree.</code><code class="descname">branch_length</code><span class="sig-paren">(</span><span class="optional">[</span><em>attr</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.branch_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get or set branch length accessor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>attr</strong> (<em>function</em>) – Empty if getting, or new branch length accessor if setting.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Object</strong> – The branch length accessor if getting, or the current phylotree if setting.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="selection.html" class="btn btn-neutral float-right" title="Selection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="options.html" class="btn btn-neutral" title="Options" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, VEG/IGEM.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

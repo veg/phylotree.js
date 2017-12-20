@@ -1,0 +1,331 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Introduction &mdash; Phylotree.js 0.1.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="Phylotree.js 0.1.5 documentation" href="index.html"/>
+        <link rel="next" title="Fundamentals" href="fundamentals.html"/>
+        <link rel="prev" title="Welcome to Phylotree.js’s documentation!" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Phylotree.js
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.5
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-minimal-working-example">A minimal working example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#toggling-options">Toggling options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentals.html">Fundamentals</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals.html#reading-and-writing-trees">Reading and writing trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals.html#drawing-trees">Drawing trees</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fundamentals.html#formatting-trees">Formatting trees</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="options.html">Options</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nodes_branches.html">Nodes and branches</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_branches.html#node-methods">Node methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_branches.html#branch-methods">Branch methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="selection.html">Selection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="advanced.html">Advanced</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Phylotree.js</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/intro.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="introduction">
+<span id="intro-section"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Getting started with Phylotree.js is straightforward. This page describes acquiring the source code and two simple examples for displaying trees on a web page.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>The source code for Phylotree is available as a single Javascript file. An additional CSS file is provided for appropriate SVG styling. Phylotree
+also requires <a class="reference external" href="https://d3js.org/">D3</a>, <a class="reference external" href="http://jquery.com/">jQuery</a>, <a class="reference external" href="http://underscorejs.org/">Underscore</a>, and <a class="reference external" href="https://getbootstrap.com/docs/3.3/">Bootstrap</a> as dependencies. To use Phylotree.js, make sure all of Phylotree and its dependencies are included
+in your project.</p>
+<p>If you are developing web applications in the traditional manner (i.e., by including Javascript and CSS files in HTML files), acquire the source code at Github by
+<a class="reference external" href="https://github.com/veg/phylotree.js/releases">downloading a compressed version of the latest release</a>. Then, include the Javascript and CSS as usual:</p>
+<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;phylotree.css&quot;</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;//code.jquery.com/jquery.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;//d3js.org/d3.v3.min.js&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">src</span><span class="o">=</span><span class="s">&quot;https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js&quot;</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;utf-8&quot;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src</span><span class="o">=</span><span class="s">&#39;phylotree.js&#39;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p>Phylotree.js is also available as an <a class="reference external" href="https://www.npmjs.com/package/phylotree">NPM package</a>. It can be imported as an ES6 module and bundled with a module-bundler like <a class="reference external" href="https://webpack.js.org/">Webpack</a>. Install with NPM via</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>npm install phylotree
+</pre></div>
+</div>
+<p>or yarn via</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>yarn add phylotree
+</pre></div>
+</div>
+<p>to obtain the source code. Then include the necessary Javascript and CSS using the following ES6 syntax:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="nx">require</span><span class="p">(</span><span class="s2">&quot;phylotree&quot;</span><span class="p">);</span>
+<span class="nx">require</span><span class="p">(</span><span class="s2">&quot;phylotree.css&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="a-minimal-working-example">
+<h2>A minimal working example<a class="headerlink" href="#a-minimal-working-example" title="Permalink to this headline">¶</a></h2>
+<p>If you have a tree in Newick format, you are ready to go with the following four lines of Javascript. Below,
+we assume such a string to be stored in the variable <code class="docutils literal"><span class="pre">example_tree</span></code>.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">tree</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">phylotree</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">svg</span><span class="p">(</span><span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;#tree_display&quot;</span><span class="p">));</span>
+<span class="nx">tree</span><span class="p">(</span><span class="nx">example_tree</span><span class="p">)</span>
+  <span class="p">.</span><span class="nx">layout</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>This forms the basis of the <a class="reference external" href="/examples/hello-world">Hello World</a> example.</p>
+</div>
+<div class="section" id="toggling-options">
+<h2>Toggling options<a class="headerlink" href="#toggling-options" title="Permalink to this headline">¶</a></h2>
+<p>The above example comes complete with selectable branches, nodes with drop down menus, clades that collapse, and
+so on. These can be toggled with the options method. The following code snippet simply displays a tree, disabling
+the default options.</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">height</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span>
+  <span class="nx">width</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span>
+
+  <span class="nx">tree</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">phylotree</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">svg</span><span class="p">(</span><span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;#tree_display&quot;</span><span class="p">))</span>
+  <span class="p">.</span><span class="nx">options</span><span class="p">({</span>
+    <span class="s1">&#39;left-right-spacing&#39;</span><span class="o">:</span> <span class="s1">&#39;fit-to-size&#39;</span><span class="p">,</span>
+    <span class="c1">// fit to given size top-to-bottom</span>
+    <span class="s1">&#39;top-bottom-spacing&#39;</span><span class="o">:</span> <span class="s1">&#39;fit-to-size&#39;</span><span class="p">,</span>
+    <span class="c1">// fit to given size left-to-right</span>
+    <span class="s1">&#39;selectable&#39;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="c1">// make nodes and branches not selectable</span>
+    <span class="s1">&#39;collapsible&#39;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="c1">// turn off the menu on internal nodes</span>
+    <span class="s1">&#39;transitions&#39;</span><span class="o">:</span> <span class="kc">false</span>
+    <span class="c1">// turn off d3 animations</span>
+  <span class="p">})</span>
+  <span class="p">.</span><span class="nx">size</span><span class="p">([</span><span class="nx">height</span><span class="p">,</span> <span class="nx">width</span><span class="p">])</span>
+  <span class="p">.</span><span class="nx">node_circle_size</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="c1">// do not show &quot;circles&quot; at internal nodes</span>
+
+<span class="nx">tree</span><span class="p">(</span><span class="nx">newick</span><span class="p">)</span>
+  <span class="c1">// generate node coordinates</span>
+  <span class="p">.</span><span class="nx">layout</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>This forms the basis of the <a class="reference external" href="/examples/vanilla">Vanilla</a> example. A list of available options is available in the <a class="reference internal" href="options.html#options-section"><span class="std std-ref">Options</span></a> section.</p>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="fundamentals.html" class="btn btn-neutral float-right" title="Fundamentals" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to Phylotree.js’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, VEG/IGEM.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.5',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

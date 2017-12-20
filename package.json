@@ -1,6 +1,6 @@
 {
   "name": "phylotree",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "phylotree.js",
   "keywords": [
     "phylogenetics",
@@ -22,5 +22,8 @@
   "devDependencies": {
     "jsdom": "9.12.x",
     "should": "^11.2.1"
+  },
+  "scripts" : {
+    "docs": "sphinx-build -b html docs documentation"
   }
 }
