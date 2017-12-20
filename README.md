@@ -39,11 +39,12 @@ Run tests using `mocha`.
 
 Documentation was created using [sphinx-js](https://github.com/erikrose/sphinx-js). Install with
 
-``pip install -r requirements.txt``
+```
+pip install -r requirements.txt
+```
 
 and build with
 
 ```
-cd docs
-make html
+npm run docs
 ```

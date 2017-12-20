@@ -181,13 +181,13 @@
 <dl class="function">
 <dt id="phylotree.modify_selection">
 <code class="descclassname">phylotree.</code><code class="descname">modify_selection</code><span class="sig-paren">(</span><em>node_selecter</em>, <em>attr</em>, <em>place</em>, <em>skip_refresh</em>, <em>mode</em><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.modify_selection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Modify the current selection.</p>
+<dd><p>Modify the current selection, via functional programming.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>node_selecter</strong> (<em>function</em>) – A function to apply to each node, which determines whether they become part of the current selection. Alternatively, a string describing one of the pre-defined restricted-selectable options.</li>
+<li><strong>node_selecter</strong> (<em>function</em>) – A function to apply to each node, which determines whether they become part of the current selection. Alternatively, if <code class="docutils literal"><span class="pre">restricted-selectable</span></code> mode is enabled, a string describing one of the pre-defined restricted-selectable options.</li>
 <li><strong>attr</strong> (<em>String</em>) – (Optional) The selection attribute to modify.</li>
 <li><strong>place</strong> (<em>Boolean</em>) – (Optional) Whether or not <code class="docutils literal"><span class="pre">placenodes</span></code> should be called.</li>
 <li><strong>skip_refresh</strong> (<em>Boolean</em>) – (Optional) Whether or not a refresh is called.</li>
@@ -228,7 +228,7 @@ an array of nodes that make up the current selection.</p>
 <dt id="phylotree.selection_label">
 <code class="descclassname">phylotree.</code><code class="descname">selection_label</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.selection_label" title="Permalink to this definition">¶</a></dt>
 <dd><p>Getter/setter for the selection label. Useful when allowing
-users to make multiple selection.</p>
+users to make multiple selections.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -238,7 +238,7 @@ users to make multiple selection.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The selection label if getting, or the current phylotree if setting.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current selection label if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
 </td>
 </tr>
 </tbody>

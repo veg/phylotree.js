@@ -22,5 +22,8 @@
   "devDependencies": {
     "jsdom": "9.12.x",
     "should": "^11.2.1"
+  },
+  "scripts" : {
+    "docs": "sphinx-build -b html docs documentation"
   }
 }

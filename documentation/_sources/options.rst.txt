@@ -21,11 +21,20 @@ top-bottom-spacing
   * ``"fixed-step"`` - Determine width from padding and spacing.
   * ``"fit-to-size"`` - Determine width from size array.
 
+brush
+  `(Boolean)` Whether or not the brush should be activated. Defaults to ``true``.
+
+hide
+  `(Boolean)` Whether or not hiding a given node or subtree is enabled. Defaults to ``true``.
+
+reroot
+  `(Boolean)` Whether or not rerooting on a given node is enabled. Defaults to ``true``.
+
 compression
   `(Number)` The percentage of original size for a collapsed node. Defaults to ``.2``.
 
 show-scale
-  `(Boolean)` Determines whether or not scale bar for branch lengths is show.
+  `(Boolean)` Determines whether or not scale bar for branch lengths is shown.
 
 left-offset
   `(Number)` Amount of space on left side of phylotree. Defaults to ``0``.
