@@ -42,9 +42,6 @@
           transform: rotate(135deg);
         }
 
-        #browser-size-warning {
-          display: none;
-        }
    </style>
 </head>
 
@@ -263,17 +260,6 @@
 
     <div class = 'row'>
         <div class = 'col-md-12'>
-            <div id="browser-size-warning" class="alert alert-warning alert-dismissible" role="alert">
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <p>
-                <strong>Warning:</strong> The size of the browser window may have caused the navigation bar to expand, making the phylotree toolbar
-                inaccessible.
-              </p>
-              <p>
-                If you cannot see buttons to interact with the tree (resizing, toggling a linear versus radial layout, etc.) directly above this message,
-                try making your browser window larger.
-              </p>
-            </div>
             <div id = 'tree_container' class = 'tree-widget'>
             </div>
         </div>
@@ -935,7 +921,6 @@ $( document ).ready( function () {
     $("#save_selection_name").get(0).addEventListener(selection_menu_element_action,selection_handler_save_selection_name,false);
     $("#selection_name_dropdown").get(0).addEventListener(selection_menu_element_action,selection_handler_name_dropdown,false);
     update_selection_names();
-    if(window.innerWidth < 1100) $('#browser-size-warning').show();
 });
 
 </script>
