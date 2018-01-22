@@ -10,6 +10,8 @@ Phylotree.js is a Javascript library for working with phylogenetic trees. Uses i
 
 It is written as a `D3`_ layout, and aspires to be a general purpose tool. Example uses include `a standalone web application`_ for viewing and labeling phylogenetic trees, the `Datamonkey`_ webserver for comparative sequence analysis, and an `ancestral sequence structural viewer`_.
 
+The code is `available on Github`_.
+
 Contents
 --------
 .. toctree::
@@ -28,6 +30,7 @@ Contents
 .. _a standalone web application: /
 .. _Datamonkey: http://datamonkey.org
 .. _ancestral sequence structural viewer: /examples/large-ancestral-structural-viewer
+.. _available on Github: http://github.com/veg/phylotree.js
 
 Indices and tables
 ------------------

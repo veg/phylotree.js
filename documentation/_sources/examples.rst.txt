@@ -16,7 +16,7 @@ Vanilla
   * `View Vanilla source <https://github.com/veg/phylotree.js/blob/master/examples/vanilla/index.html>`_
 
 Custom menu items
-  Adding a custom menu item to italicize node names. Leaf node menus now have an additional option.
+  Adding a custom menu item to italicize node names. Leaf node menus now have an additional option "Italicize node label".
 
   * `View Custom menu items example </examples/custom-menu-items>`_
   * `View Custom menu items source <https://github.com/veg/phylotree.js/blob/master/examples/custom-menu-items/index.html>`_
