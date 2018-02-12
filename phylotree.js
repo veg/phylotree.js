@@ -2887,9 +2887,6 @@
           case 3: { // branch length
             // reading name
             if (current_char == ":") {
-              if (automaton_state == 3) {
-                return generate_error(char_index);
-              }
               automaton_state = 3;
             } else if (current_char == "," || current_char == ")") {
               try {

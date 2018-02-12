@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="//code.jquery.com/jquery.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="//d3js.org/d3.v3.min.js"></script>
+  <script src="/phylotree.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
+  <style>
+#legend-div {
+  position: fixed;
+  top: 0px;
+  background: white;
+  margin-right: 5px;
+  margin-top: 5px;
+}
+  </style>
+</head>
+
+<body>
+  <svg id="tree_display" />
+  <div id="legend-div">
+    <svg id="legend" />
+  </div>
+  <script>
+    var tree;
+    d3.text('SIV.new', function(error, data){
+      tree = d3.layout.phylotree()
+        // create a tree layout object
+        .svg(d3.select("#tree_display"));
+      // render to this SVG element
+
+      tree(data)
+        // parse the Newick into a d3 hierarchy object with additional fields
+        .layout();
+      // layout and render the tree
+      function get_state_from_annotation(node) { 
+        return node.annotation.split(',').filter(d=>d.slice(0,7)=="states=")[0].slice(8,-1);
+      }
+
+      var legend_entries = _.unique(
+        tree.get_nodes()
+          .map(node=>node.annotation ? get_state_from_annotation(node) : '')
+        ).slice(1);
+
+      var legend_box_size = 20;
+      var legend_scale = d3.scale.category20()
+        .domain(legend_entries);
+
+      var legend_gs = d3.select('#legend')
+        .attr('height', 500)
+        .selectAll('g')
+        .data(legend_entries)
+        .enter()
+        .append('g');
+      legend_gs.append('rect')
+        .attr('width', legend_box_size)
+        .attr('height', legend_box_size)
+        .attr('fill', legend_scale)
+        .attr('transform', function(d,i){ return 'translate(0,' + ((legend_box_size+5)*i)+ ')';});
+      legend_gs.append('text')
+        .attr('x', 25)
+        .attr('y', function(d, i) { return (legend_box_size+5)*i+15; })
+        .text(function(d) { return d; });
+
+      tree.style_edges(function(element, data){
+        var color = legend_scale(get_state_from_annotation(data.target));
+        element.style('stroke', color);
+        return color;
+      });
+      
+      d3.select('#legend-div')
+        .style('left', d3.select('#tree_display').style('width'));
+
+      tree.update();
+    });
+  </script>
+
+</body>
+
+</html>
