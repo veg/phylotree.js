@@ -123,10 +123,10 @@
         transitions: null,
         brush: true,
         reroot: true,
-        hide: true
+        hide: true,
+        "tree-container": "phylotree-container",
       },
       css_classes = {
-        "tree-container": "phylotree-container",
         "tree-scale-bar": "tree-scale-bar",
         node: "node",
         "internal-node": "internal-node",
@@ -1919,8 +1919,10 @@
       if (!arguments.length) return svg_element;
       if (svg !== svg_element) {
         svg = svg_element;
-        svg.selectAll("*").remove();
-        svg_defs = svg.append("defs");
+        if(options["tree-container"] == "phylotree-container"){
+          svg.selectAll("*").remove();
+          svg_defs = svg.append("defs");
+        }
         d3.select(self.container).on(
           "click",
           function(d) {
@@ -2017,13 +2019,13 @@
       var node_id = 0;
 
       var enclosure = svg
-        .selectAll("." + css_classes["tree-container"])
+        .selectAll("." + options["tree-container"])
         .data([0]);
 
       enclosure
         .enter()
         .append("g")
-        .attr("class", css_classes["tree-container"]);
+        .attr("class", options["tree-container"]);
 
       enclosure.attr("transform", function(d) {
         return d3_phylotree_svg_translate([
@@ -2301,13 +2303,13 @@
         svg
           .selectAll(
             "." +
-              css_classes["tree-container"] +
+              options["tree-container"] +
               ",." +
               css_classes["tree-scale-bar"] +
               ",." +
               css_classes["tree-selection-brush"]
           )
-          .remove();
+          //.remove();
         return phylotree.update(transitions);
       }
       return phylotree;
@@ -2316,7 +2318,7 @@
     phylotree.refresh = function() {
       var self = this;
 
-      var enclosure = svg.selectAll("." + css_classes["tree-container"]);
+      var enclosure = svg.selectAll("." + options["tree-container"]);
 
       var edges = enclosure.selectAll(
         d3_phylotree_edge_css_selectors(css_classes)
@@ -2731,7 +2733,7 @@
 
       if (svg) {
         svg
-          .selectAll("." + tree.css_classes()["tree-container"])
+          .selectAll("." + options["tree-container"])
           .attr(
             "transform",
             "translate (" +
