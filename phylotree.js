@@ -124,6 +124,7 @@
         brush: true,
         reroot: true,
         hide: true,
+        "label-nodes-with-name": false
       },
       css_classes = {
         "tree-container": "phylotree-container",
@@ -1528,6 +1529,7 @@
       sort_children(nodes[0]);
       phylotree.update_layout(nodes);
       phylotree.update();
+      return phylotree;
     };
 
     phylotree.graft_a_node = function(
@@ -1645,6 +1647,7 @@
       }
 
       traversal_type(nodes[0]);
+      return phylotree;
     };
 
 /**
@@ -2231,6 +2234,10 @@
           phylotree.draw_node(this, d, transitions);
         });
 
+      if(options["label-nodes-with-name"]){
+        drawn_nodes.attr("id", function(d) { return "node-" + d.name });
+      }
+
       var sizes = d3_phylotree_resize_svg(phylotree, svg, transitions);
 
       if(options["brush"]) {
@@ -2573,7 +2580,6 @@
               .transition()
               .attr("x2", function(d) {
                 if(options["layout"] == "right-to-left"){
-                  console.log(options["tree-container"], d.screen_x);
                   return d.screen_x;
                 }
                 return phylotree.shift_tip(d)[0];

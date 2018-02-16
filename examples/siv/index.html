@@ -38,98 +38,141 @@
   </div>
   <script>
     var tree, organ_tree;
+
+      function traverser (n) {
+        var d = 1;
+        if (n.children && n.children.length) {
+          d += d3.max (n.children, function (d) { return d["count_depth"];});
+        }
+        n["count_depth"] = d;
+      }
+      function resorter(a,b) {
+        return (a["count_depth"] - b["count_depth"]);
+      }
+
     d3.text('SIV.new', function(error, siv_data){
       d3.text('N02_Bone_Marrow_MCC.new', function(error, organ_data){
+        d3.json('links.json', function(error, link_data) {
+          var tree_padding = 160,
+            right_padding = 20;
+          tree = d3.layout.phylotree()
+            .options({
+              "show-scale": false,
+              "align-tips": true,
+              "label-nodes-with-name": true
+            })
+            // create a tree layout object
+            .svg(d3.select("#tree_display"));
+          // render to this SVG element
 
-        var tree_padding = 160,
-          right_padding = 20;
-        tree = d3.layout.phylotree()
-          .options({
-            "show-scale": false,
-            "align-tips": true
-          })
-          // create a tree layout object
-          .svg(d3.select("#tree_display"));
-        // render to this SVG element
+          tree(siv_data)
+            .spacing_x(10)
+            .traverse_and_compute(traverser)
+            .resort_children(resorter)
+            // parse the Newick into a d3 hierarchy object with additional fields
+            .layout();
+          // layout and render the tree
+          function get_state_from_annotation(node) { 
+            return node.annotation.split(',').filter(d=>d.slice(0,7)=="states=")[0].slice(8,-1);
+          }
 
-        tree(siv_data)
-          .spacing_x(10)
-          // parse the Newick into a d3 hierarchy object with additional fields
-          .layout();
-        // layout and render the tree
-        function get_state_from_annotation(node) { 
-          return node.annotation.split(',').filter(d=>d.slice(0,7)=="states=")[0].slice(8,-1);
-        }
+          var legend_entries = _.unique(
+            tree.get_nodes()
+              .map(node=>node.annotation ? get_state_from_annotation(node) : '')
+            ).slice(1);
 
-        var legend_entries = _.unique(
-          tree.get_nodes()
-            .map(node=>node.annotation ? get_state_from_annotation(node) : '')
-          ).slice(1);
+          var legend_box_size = 20;
+          var legend_scale = d3.scale.category20()
+            .domain(legend_entries);
 
-        var legend_box_size = 20;
-        var legend_scale = d3.scale.category20()
-          .domain(legend_entries);
+          var legend_gs = d3.select('#legend')
+            .attr('height', 400)
+            .attr('width', tree_padding)
+            .selectAll('g')
+            .data(legend_entries)
+            .enter()
+            .append('g');
+          legend_gs.append('rect')
+            .attr('width', legend_box_size)
+            .attr('height', legend_box_size)
+            .attr('fill', legend_scale)
+            .attr('transform', function(d,i){ return 'translate(0,' + ((legend_box_size+5)*i)+ ')';});
+          legend_gs.append('text')
+            .attr('x', 25)
+            .attr('y', function(d, i) { return (legend_box_size+5)*i+15; })
+            .text(function(d) { return d; });
 
-        var legend_gs = d3.select('#legend')
-          .attr('height', 400)
-          .attr('width', tree_padding)
-          .selectAll('g')
-          .data(legend_entries)
-          .enter()
-          .append('g');
-        legend_gs.append('rect')
-          .attr('width', legend_box_size)
-          .attr('height', legend_box_size)
-          .attr('fill', legend_scale)
-          .attr('transform', function(d,i){ return 'translate(0,' + ((legend_box_size+5)*i)+ ')';});
-        legend_gs.append('text')
-          .attr('x', 25)
-          .attr('y', function(d, i) { return (legend_box_size+5)*i+15; })
-          .text(function(d) { return d; });
-
-        tree.style_edges(function(element, data){
-          var color = legend_scale(get_state_from_annotation(data.target));
-          element.style('stroke', color);
-          return color;
-        });
-        
-        d3.select('#legend-div')
-          .style('left', d3.select('#tree_display').style('width'));
-
-        tree.update();
-
-        organ_tree = d3.layout.phylotree();
-          organ_tree.spacing_x(75, true)
-          .options({
-            "show-scale": false,
-            "align-tips": true,
-            "layout": "right-to-left"
-          }).css_classes({
-            "tree-container": "organ-tree-container",
-            "branch": "organ-branch"
+          tree.style_edges(function(element, data){
+            var color = legend_scale(get_state_from_annotation(data.target));
+            element.style('stroke', color);
+            return color;
           });
-          organ_tree.svg(d3.select("#tree_display"));
+          
+          d3.select('#legend-div')
+            .style('left', d3.select('#tree_display').style('width'));
 
-        organ_tree(organ_data)
-          .layout();
+          tree.update();
 
-        var viral_tree_bbox = d3.select('.phylotree-container').node().getBBox(),
-          organ_tree_bbox = d3.select('.organ-tree-container').node().getBBox();
+          organ_tree = d3.layout.phylotree();
+            organ_tree.spacing_x(75, true)
+              .options({
+                "show-scale": false,
+                "align-tips": true,
+                "layout": "right-to-left",
+                "label-nodes-with-name": true
+              }).css_classes({
+                "tree-container": "organ-tree-container",
+                "branch": "organ-branch"
+              });
+            organ_tree.svg(d3.select("#tree_display"));
+
+          organ_tree(organ_data)
+            .traverse_and_compute(traverser)
+            .resort_children(resorter)
+            .layout();
+
+          var viral_tree_bbox = d3.select('.phylotree-container').node().getBBox(),
+            organ_tree_bbox = d3.select('.organ-tree-container').node().getBBox();
 
 
-        var svg_width = viral_tree_bbox.width + organ_tree_bbox.width + tree_padding + right_padding,
-          svg_height = Math.max(viral_tree_bbox.height, organ_tree_bbox.height);
+          var svg_width = viral_tree_bbox.width + organ_tree_bbox.width + tree_padding + right_padding,
+            svg_height = Math.max(viral_tree_bbox.height, organ_tree_bbox.height);
 
 
-        setTimeout( ()=> {
-        d3.select('svg')
-          .attr('width', svg_width)
-          .attr('height', svg_height);
+          setTimeout( ()=> {
+            d3.select('svg')
+              .attr('width', svg_width)
+              .attr('height', svg_height);
 
-          var organ_tree_translate = viral_tree_bbox.width + tree_padding + right_padding;
-          d3.select('.organ-tree-container')
-            .attr('transform', 'translate(' + organ_tree_translate + ',0)');
-          }, 300);
+              var organ_tree_translate = viral_tree_bbox.width + tree_padding + right_padding;
+              d3.select('.organ-tree-container')
+                .attr('transform', 'translate(' + organ_tree_translate + ',0)');
+
+              var all_coordinates = link_data.map(link => {
+                var organ_tree_node_rect = d3.select(`#node-${link[0]}`).node().getBoundingClientRect(),
+                  tree_node_rect = d3.select(`#node-${link[1]}`).node().getBoundingClientRect(),
+                  coordinates = {
+                    x1: tree_node_rect.right,
+                    x2: organ_tree_node_rect.left,
+                    y1: (tree_node_rect.top + tree_node_rect.bottom)/2,
+                    y2: (organ_tree_node_rect.top + organ_tree_node_rect.bottom)/2
+                  };
+                  return coordinates;
+                });
+              d3.select('#tree_display')
+                .selectAll('.line-link')
+                .data(all_coordinates)
+                .enter()
+                .append('line')
+                  .attr('x1', d => d.x1)
+                  .attr('x2', d => d.x2)
+                  .attr('y1', d => d.y1)
+                  .attr('y2', d => d.y2)
+                  .style('stroke', 'black')
+                  .style('stroke-width', 2);
+            }, 300);
+           
+        });
       });
     });
   </script>
