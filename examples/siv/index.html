@@ -101,7 +101,9 @@
         organ_tree = d3.layout.phylotree();
           organ_tree.spacing_x(75, true)
           .options({
-            "show-scale": false
+            "show-scale": false,
+            "align-tips": true,
+            "layout": "right-to-left"
           }).css_classes({
             "tree-container": "organ-tree-container",
             "branch": "organ-branch"
@@ -116,7 +118,7 @@
 
 
         var svg_width = viral_tree_bbox.width + organ_tree_bbox.width + tree_padding + right_padding,
-          svg_height = Math.max(viral_tree_bbox.height + organ_tree_bbox.height);
+          svg_height = Math.max(viral_tree_bbox.height, organ_tree_bbox.height);
 
 
         setTimeout( ()=> {
@@ -125,11 +127,9 @@
           .attr('height', svg_height);
 
           var organ_tree_translate = viral_tree_bbox.width + tree_padding + right_padding;
-          console.log(organ_tree_translate);
-          var x=863.7999877929688;
           d3.select('.organ-tree-container')
             .attr('transform', 'translate(' + organ_tree_translate + ',0)');
-        }, 300);
+          }, 300);
       });
     });
   </script>

@@ -603,6 +603,10 @@
           d.x *= scales[0];
           d.y *= scales[1];
 
+          if(options["layout"] == "right-to-left"){
+            d.y = _extents[1][1]*scales[1]-d.y;
+          }
+
           if (d3_phylotree_is_leafnode(d)) {
             right_most_leaf = Math.max(
               right_most_leaf,
@@ -625,6 +629,7 @@
             });
           }
         });
+
       }
 
       if (draw_scale_bar) {
@@ -1359,7 +1364,10 @@
           0
         ];
       }
-
+      if(options["right-to-left"]){
+        //return [d.screen_x, 0]; 
+        return [right_most_leaf - d.screen_x, 0];
+      }
       return [right_most_leaf - d.screen_x, 0];
     };
 
@@ -2213,9 +2221,10 @@
 
       drawn_nodes
         .attr("transform", function(d) {
+          const should_shift = options["layout"] == "right-to-left" && d3_phylotree_is_leafnode(d);
           d.screen_x = x_coord(d);
           d.screen_y = y_coord(d);
-          return d3_phylotree_svg_translate([d.screen_x, d.screen_y]);
+          return d3_phylotree_svg_translate([should_shift ? 0 : d.screen_x, d.screen_y]);
         })
         .attr("class", phylotree.reclass_node)
         .each(function(d) {
@@ -2483,7 +2492,6 @@
         });
       }
     };
-
     phylotree.draw_node = function(container, node, transitions) {
       container = d3.select(container);
 
@@ -2533,6 +2541,9 @@
           (transitions ? labels.transition() : labels)
             .attr("text-anchor", "start")
             .attr("transform", function(d) {
+              if(options["layout"] == "right-to-left"){
+                return d3_phylotree_svg_translate([-20, 0]);
+              }
               return d3_phylotree_svg_translate(
                 phylotree.align_tips() ? phylotree.shift_tip(d) : null
               );
@@ -2561,6 +2572,10 @@
             tracers
               .transition()
               .attr("x2", function(d) {
+                if(options["layout"] == "right-to-left"){
+                  console.log(options["tree-container"], d.screen_x);
+                  return d.screen_x;
+                }
                 return phylotree.shift_tip(d)[0];
               })
               .attr("transform", function(d) {
