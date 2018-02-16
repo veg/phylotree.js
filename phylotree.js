@@ -124,9 +124,9 @@
         brush: true,
         reroot: true,
         hide: true,
-        "tree-container": "phylotree-container",
       },
       css_classes = {
+        "tree-container": "phylotree-container",
         "tree-scale-bar": "tree-scale-bar",
         node: "node",
         "internal-node": "internal-node",
@@ -1919,7 +1919,7 @@
       if (!arguments.length) return svg_element;
       if (svg !== svg_element) {
         svg = svg_element;
-        if(options["tree-container"] == "phylotree-container"){
+        if(css_classes["tree-container"] == "phylotree-container"){
           svg.selectAll("*").remove();
           svg_defs = svg.append("defs");
         }
@@ -2019,13 +2019,13 @@
       var node_id = 0;
 
       var enclosure = svg
-        .selectAll("." + options["tree-container"])
+        .selectAll("." + css_classes["tree-container"])
         .data([0]);
 
       enclosure
         .enter()
         .append("g")
-        .attr("class", options["tree-container"]);
+        .attr("class", css_classes["tree-container"]);
 
       enclosure.attr("transform", function(d) {
         return d3_phylotree_svg_translate([
@@ -2288,8 +2288,31 @@
       return phylotree;
     };
 
-    phylotree.css_classes = function() {
-      return css_classes;
+/**
+ * Get or set CSS classes.
+ *
+ * @param {Object} opt Keys are the CSS class to toggle and values are
+ * the parameters for that CSS class.
+ * @param {Boolean} run_update (optional) Whether or not the tree should update. 
+ * @returns The current ``phylotree``.
+ */
+    phylotree.css_classes = function(opt, run_update) {
+      if (!arguments.length) return css_classes;
+
+      var do_update = false;
+
+      for (var key in css_classes) {
+        if (key in opt && opt[key] != css_classes[key]) {
+          do_update = true;
+          css_classes[key] = opt[key];
+        }
+      }
+
+      if (run_update && do_update) {
+        phylotree.layout();
+      }
+
+      return phylotree;
     };
 
 /**
@@ -2303,7 +2326,7 @@
         svg
           .selectAll(
             "." +
-              options["tree-container"] +
+              css_classes["tree-container"] +
               ",." +
               css_classes["tree-scale-bar"] +
               ",." +
@@ -2318,7 +2341,7 @@
     phylotree.refresh = function() {
       var self = this;
 
-      var enclosure = svg.selectAll("." + options["tree-container"]);
+      var enclosure = svg.selectAll("." + css_classes["tree-container"]);
 
       var edges = enclosure.selectAll(
         d3_phylotree_edge_css_selectors(css_classes)
@@ -2733,7 +2756,7 @@
 
       if (svg) {
         svg
-          .selectAll("." + options["tree-container"])
+          .selectAll("." + css_classes["tree-container"])
           .attr(
             "transform",
             "translate (" +

@@ -22,6 +22,12 @@
   margin-right: 5px;
   margin-top: 5px;
 }
+.organ-branch {
+  fill: none;
+  stroke: #999;
+  stroke-width: 10px;
+}
+
   </style>
 </head>
 
@@ -47,6 +53,7 @@
         // render to this SVG element
 
         tree(siv_data)
+          .spacing_x(10)
           // parse the Newick into a d3 hierarchy object with additional fields
           .layout();
         // layout and render the tree
@@ -92,9 +99,12 @@
         tree.update();
 
         organ_tree = d3.layout.phylotree();
-          organ_tree.options({
-            "tree-container": "organ-tree-container",
+          organ_tree.spacing_x(75, true)
+          .options({
             "show-scale": false
+          }).css_classes({
+            "tree-container": "organ-tree-container",
+            "branch": "organ-branch"
           });
           organ_tree.svg(d3.select("#tree_display"));
 
