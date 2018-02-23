@@ -1067,6 +1067,7 @@
  * @returns {String} newick - Phylogenetic tree serialized as a Newick string.
  */
     phylotree.get_newick = function(annotator) {
+      if(!annotator) annotator = d => d.name;
       function escape_string(nn) {
         var need_escape = /[\s\[\]\,\)\(\:\'\"]/;
         var enquote = need_escape.test(nn);
