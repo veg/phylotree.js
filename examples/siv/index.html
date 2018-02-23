@@ -131,6 +131,19 @@
             .resort_children(resorter)
             .layout();
 
+          var links;
+
+          organ_tree.selection_callback(function(selection){
+            if(selection.length == 0){
+              links.style('stroke', 'black');
+            } else {
+              const names = selection.map(d=>d.name);
+              links.style('stroke', d=>{
+                return names.indexOf(d.id) > -1 ? 'red' : 'WhiteSmoke'
+              });
+            }
+          });
+
           var viral_tree_bbox = d3.select('.phylotree-container').node().getBBox(),
             organ_tree_bbox = d3.select('.organ-tree-container').node().getBBox();
 
@@ -152,6 +165,7 @@
                 var organ_tree_node_rect = d3.select(`#node-${link[0]}`).node().getBoundingClientRect(),
                   tree_node_rect = d3.select(`#node-${link[1]}`).node().getBoundingClientRect(),
                   coordinates = {
+                    id: link[0],
                     x1: tree_node_rect.right,
                     x2: organ_tree_node_rect.left,
                     y1: (tree_node_rect.top + tree_node_rect.bottom)/2,
@@ -159,7 +173,7 @@
                   };
                   return coordinates;
                 });
-              d3.select('#tree_display')
+              links = d3.select('#tree_display')
                 .selectAll('.line-link')
                 .data(all_coordinates)
                 .enter()
