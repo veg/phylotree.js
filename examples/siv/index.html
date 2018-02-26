@@ -25,7 +25,7 @@
 .organ-branch {
   fill: none;
   stroke: #999;
-  stroke-width: 10px;
+  stroke-width: 5;
 }
 
   </style>
@@ -37,22 +37,22 @@
     <svg id="legend" />
   </div>
   <script>
-    var tree, organ_tree;
+    var tree, organ_tree, organ_order_dict;
 
-      function traverser (n) {
-        var d = 1;
-        if (n.children && n.children.length) {
-          d += d3.max (n.children, function (d) { return d["count_depth"];});
-        }
-        n["count_depth"] = d;
+    function ladder_traverser (n) {
+      var d = 1;
+      if (n.children && n.children.length) {
+        d += d3.max (n.children, function (d) { return d["count_depth"];});
       }
-      function resorter(a,b) {
-        return (a["count_depth"] - b["count_depth"]);
-      }
-
-    d3.text('SIV.new', function(error, siv_data){
-      d3.text('N02_Bone_Marrow_MCC.new', function(error, organ_data){
-        d3.json('links.json', function(error, link_data) {
+      n["count_depth"] = d;
+    }
+    function ladder_resorter(a,b) {
+      return (a["count_depth"] - b["count_depth"]);
+    }
+    d3.json('links.json', function(error, link_data) {
+      var link_dict = _.object(link_data.map(row=>[row[1], row[0]]));
+      d3.text('SIV.new', function(error, siv_data){
+        d3.text('N02_Bone_Marrow_MCC.new', function(error, organ_data){
           var tree_padding = 160,
             right_padding = 20;
           tree = d3.layout.phylotree()
@@ -67,11 +67,48 @@
 
           tree(siv_data)
             .spacing_x(10)
-            .traverse_and_compute(traverser)
-            .resort_children(resorter)
+            .traverse_and_compute(ladder_traverser)
+            .resort_children(ladder_resorter)
             // parse the Newick into a d3 hierarchy object with additional fields
             .layout();
           // layout and render the tree
+
+          function otcm_traverser(node) {
+            if(d3.layout.phylotree.is_leafnode(node)) return;
+            var left_leaves = node.children[0].children ? 
+                node.children[0].left_leaves.concat(node.children[0].right_leaves) :
+                [+node.children[0].name],
+              right_leaves = node.children[1].children ? 
+                node.children[1].left_leaves.concat(node.children[1].right_leaves) :
+                [+node.children[1].name];
+
+            var lr_count = 0,
+              rl_count = 0,
+              li, ri;
+            for(li=0; li < left_leaves.length; li++){
+              for(ri=0; ri < right_leaves.length; ri++) {
+                lr_count += organ_order_dict[left_leaves[li]] > organ_order_dict[right_leaves[ri]];
+                rl_count += organ_order_dict[left_leaves[li]] < organ_order_dict[right_leaves[ri]];
+              }
+            }
+
+            var swap = lr_count > rl_count;
+            if(swap){
+              var left_child = node.children[0],
+                right_child = node.children[1];
+              node.children = [right_child, left_child];
+            }
+            node.left_leaves = swap ? right_leaves : left_leaves;
+            node.right_leaves = swap ? left_leaves : right_leaves;
+          }
+
+          var organ_order = tree.get_nodes()
+            .filter(n=>d3.layout.phylotree.is_leafnode(n))
+            .sort((a,b)=>a.screen_y-b.screen_y)
+            .map(n=>link_dict[n.name])
+            .filter(n=>n);
+          organ_order_dict = _.object(organ_order.map((d,i)=>[d,i]));
+
           function get_state_from_annotation(node) { 
             return node.annotation.split(',').filter(d=>d.slice(0,7)=="states=")[0].slice(8,-1);
           }
@@ -126,9 +163,9 @@
               });
             organ_tree.svg(d3.select("#tree_display"));
 
-          organ_tree(organ_data)
-            .traverse_and_compute(traverser)
-            .resort_children(resorter)
+          organ_tree(organ_data, false, "4")
+            .traverse_and_compute(otcm_traverser)
+            .placenodes()
             .layout();
 
           var links;
@@ -184,6 +221,14 @@
                   .attr('y2', d => d.y2)
                   .style('stroke', 'black')
                   .style('stroke-width', 2);
+              var tree_leaves = tree.get_nodes()
+                .filter(n=>d3.layout.phylotree.is_leafnode(n))
+                .sort((a,b)=>a.screen_y-b.screen_y)
+                .map(n=>n.name);
+              var organ_tree_leaves = tree.get_nodes()
+                .filter(n=>d3.layout.phylotree.is_leafnode(n))
+                .sort((a,b)=>a.screen_y-b.screen_y)
+                .map(n=>n.name);
             }, 300);
            
         });

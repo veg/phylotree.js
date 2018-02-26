@@ -705,7 +705,7 @@
  * @param {Object} bootstrap_values - SDS: Not sure what this does.
  * @returns {Phylotree} phylotree - itself, following the builder pattern.
  */
-    function phylotree(nwk, bootstrap_values) {
+    function phylotree(nwk, bootstrap_values, first_node) {
       d3_phylotree_add_event_listener();
 
       var _node_data =
@@ -735,6 +735,22 @@
           }
         });
         parsed_tags = Object.keys(_parsed_tags);
+
+        if(first_node) {
+          var current_node = phylotree.get_node_by_name(first_node),
+            parent = current_node.parent,
+            children;
+          while (parent) {
+            parent.children = parent.children.sort((a,b) => {
+              if(a == current_node) return -1;
+              if(b == current_node) return 1;
+              return 0;
+            });
+            current_node = current_node.parent;
+            parent = current_node.parent;
+          }
+        }
+
       }
 
       phylotree.placenodes();
