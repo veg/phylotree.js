@@ -151,17 +151,17 @@
           tree.update();
 
           organ_tree = d3.layout.phylotree();
-            organ_tree.spacing_x(75, true)
-              .options({
-                "show-scale": false,
-                "align-tips": true,
-                "layout": "right-to-left",
-                "label-nodes-with-name": true
-              }).css_classes({
-                "tree-container": "organ-tree-container",
-                "branch": "organ-branch"
-              });
-            organ_tree.svg(d3.select("#tree_display"));
+          organ_tree.spacing_x(75, true)
+            .options({
+              "show-scale": false,
+              "align-tips": true,
+              "layout": "right-to-left",
+              "label-nodes-with-name": true
+            }).css_classes({
+              "tree-container": "organ-tree-container",
+              "branch": "organ-branch"
+            });
+          organ_tree.svg(d3.select("#tree_display"));
 
           organ_tree(organ_data, false, "4")
             .traverse_and_compute(otcm_traverser)
@@ -221,14 +221,6 @@
                   .attr('y2', d => d.y2)
                   .style('stroke', 'black')
                   .style('stroke-width', 2);
-              var tree_leaves = tree.get_nodes()
-                .filter(n=>d3.layout.phylotree.is_leafnode(n))
-                .sort((a,b)=>a.screen_y-b.screen_y)
-                .map(n=>n.name);
-              var organ_tree_leaves = tree.get_nodes()
-                .filter(n=>d3.layout.phylotree.is_leafnode(n))
-                .sort((a,b)=>a.screen_y-b.screen_y)
-                .map(n=>n.name);
             }, 300);
            
         });
