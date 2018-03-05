@@ -116,11 +116,20 @@
           var legend_entries = _.unique(
             tree.get_nodes()
               .map(node=>node.annotation ? get_state_from_annotation(node) : '')
-            ).slice(1);
+            ).slice(1)
+            .filter(d => d.indexOf('+') == -1);
+          legend_entries.push("Undetermined");
 
           var legend_box_size = 20;
-          var legend_scale = d3.scale.category20()
+          var legend_scale = d3.scale.category10()
             .domain(legend_entries);
+          console.log(legend_entries);
+          function legend_name_to_color(name){
+            if(name.indexOf('+') > -1 || name == "Undetermined"){
+              return "#333"; 
+            }
+            return legend_scale(name);
+          }
 
           var legend_gs = d3.select('#legend')
             .attr('height', 400)
@@ -132,7 +141,7 @@
           legend_gs.append('rect')
             .attr('width', legend_box_size)
             .attr('height', legend_box_size)
-            .attr('fill', legend_scale)
+            .attr('fill', legend_name_to_color)
             .attr('transform', function(d,i){ return 'translate(0,' + ((legend_box_size+5)*i)+ ')';});
           legend_gs.append('text')
             .attr('x', 25)
@@ -140,7 +149,8 @@
             .text(function(d) { return d; });
 
           tree.style_edges(function(element, data){
-            var color = legend_scale(get_state_from_annotation(data.target));
+            const state = get_state_from_annotation(data.target);
+            var color = legend_name_to_color(state);
             element.style('stroke', color);
             return color;
           });
