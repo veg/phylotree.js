@@ -157,6 +157,18 @@ body {
               return node.annotation.split(',').filter(d=>d.slice(0,7)=="states=")[0].slice(8,-1);
             }
 
+            const posterior_scale = d3.scale.linear()
+              .domain([0, 1])
+              .range([1, 5]);
+
+            function get_posterior_from_annotation(node) { 
+              const result = node.annotation.split(',').filter(d=>d.slice(0,10)=="posterior=")[0];
+              if(result) {
+                return +result.slice(11,-1);
+              }
+              return 1;
+            }
+
             var legend_entries = _.unique(
               tree.get_nodes()
                 .map(node=>node.annotation ? get_state_from_annotation(node) : '')
@@ -194,8 +206,10 @@ body {
 
             tree.style_edges(function(element, data){
               const state = get_state_from_annotation(data.target);
+                posterior = get_posterior_from_annotation(data.target);
               var color = legend_name_to_color(state);
               element.style('stroke', color);
+              element.style('stroke-width', posterior_scale(posterior));
               return color;
             });
             
