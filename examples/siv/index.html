@@ -132,7 +132,7 @@
           }
 
           var legend_gs = d3.select('#legend')
-            .attr('height', 400)
+            .attr('height', 300)
             .attr('width', tree_padding)
             .selectAll('g')
             .data(legend_entries)
@@ -155,9 +155,6 @@
             return color;
           });
           
-          d3.select('#legend-div')
-            .style('left', d3.select('#tree_display').style('width'));
-
           tree.update();
 
           organ_tree = d3.layout.phylotree();
@@ -183,10 +180,14 @@
           organ_tree.selection_callback(function(selection){
             if(selection.length == 0){
               links.style('stroke', 'black');
+              links.style('opacity', '1');
             } else {
               const names = selection.map(d=>d.name);
               links.style('stroke', d=>{
-                return names.indexOf(d.id) > -1 ? 'red' : 'WhiteSmoke'
+                return names.indexOf(d.id) > -1 ? 'red' : 'black'
+              });
+              links.style('opacity', d=>{
+                return names.indexOf(d.id) > -1 ? 1 : .05;
               });
             }
           });
@@ -195,7 +196,7 @@
             organ_tree_bbox = d3.select('.organ-tree-container').node().getBBox();
 
 
-          var svg_width = viral_tree_bbox.width + organ_tree_bbox.width + tree_padding + right_padding,
+          var svg_width = viral_tree_bbox.width + organ_tree_bbox.width + tree_padding + right_padding + 100,
             svg_height = Math.max(viral_tree_bbox.height, organ_tree_bbox.height);
 
 
@@ -231,6 +232,10 @@
                   .attr('y2', d => d.y2)
                   .style('stroke', 'black')
                   .style('stroke-width', 2);
+
+            d3.select('#legend-div')
+              .style('left', (svg_width-100)+'px');
+
             }, 300);
            
         });
