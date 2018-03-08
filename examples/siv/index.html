@@ -27,6 +27,13 @@
   stroke: #999;
   stroke-width: 5;
 }
+.axis path, .axis line{
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #000;
+  stroke-width: 1;
+}
+  
 body {
   padding-top: 70px;
 }
@@ -64,9 +71,9 @@ body {
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Toggle label<span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a href="#">State</a></li>
-              <li><a href="#">Time</a></li>
-              <li><a href="#">Off</a></li>
+              <li><a id="toggle-state" href="javascript:void(0);">State</a></li>
+              <li><a id="toggle-time" href="javascript:void(0);">Time</a></li>
+              <li><a id="toggle-off" href="javascript:void(0);">Off</a></li>
             </ul>
           </li>
 
@@ -83,6 +90,7 @@ body {
     function render_tree(name, spacing) {
       d3.select('#tree_display').html('');
       d3.select('#legend').html('');
+
       function ladder_traverser (n) {
         var d = 1;
         if (n.children && n.children.length) {
@@ -188,7 +196,7 @@ body {
             }
 
             var legend_gs = d3.select('#legend')
-              .attr('height', 300)
+              .attr('height', 600)
               .attr('width', tree_padding)
               .selectAll('g')
               .data(legend_entries)
@@ -203,6 +211,56 @@ body {
               .attr('x', 25)
               .attr('y', function(d, i) { return (legend_box_size+5)*i+15; })
               .text(function(d) { return d; });
+
+            var linearGradient = d3.select('#legend')
+                .append('defs')
+                .append('linearGradient')
+                .attr('id', 'colorbar-gradient')
+                .attr('x1', '0%')
+                .attr('x2', '0%')
+                .attr('y1', '0%')
+                .attr('y2', '100%');
+
+            linearGradient.append('stop')
+              .attr('offset', '0%')
+              .attr('stop-color', '#FF0000');
+
+            linearGradient.append('stop')
+              .attr('offset', '50%')
+              .attr('stop-color', '#0000FF');
+
+            linearGradient.append('stop')
+              .attr('offset', '100%')
+              .attr('stop-color', '#000000');
+
+            var colorbar_g = d3.select('#legend')
+              .append('g')
+              .attr('class', 'colorbar')
+              .attr('transform', 'translate(0,270)');
+            
+            colorbar_g.append("rect")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", 25)
+              .attr("height", 260)
+              .attr("fill", "url(#colorbar-gradient)");
+
+            var colorbar_scale = d3.scale.linear()
+              .domain([21, 204])
+              .range([260, 0]);
+
+            var colorbar_color_scale = d3.scale.linear()
+              .domain([21, 112, 204])
+              .range(['#000000', '#0000FF', '#FF0000']);
+
+            var colorbar_axis = d3.svg.axis()
+              .scale(colorbar_scale)
+              .orient("right");
+
+            colorbar_g.append("g")
+              .attr('class', 'axis')
+              .attr('transform', 'translate(25,0)')
+              .call(colorbar_axis);
 
             tree.style_edges(function(element, data){
               const state = get_state_from_annotation(data.target);
@@ -294,7 +352,35 @@ body {
                 .style('left', (svg_width-100)+'px');
 
               }, 300);
-             
+
+            $('#toggle-state').on('click', function(){
+              d3.select('.phylotree-container')
+                .selectAll('.node')
+                .select('text')
+                .attr('fill', function(d) {
+                  if(d.annotation) {
+                    return legend_name_to_color(get_state_from_annotation(d));
+                  }
+                  return 'black';
+                });
+            });
+
+            $('#toggle-time').on('click', function(){
+              d3.select('.phylotree-container')
+                .selectAll('.node')
+                .select('text')
+                .attr('fill', function(d) {
+                  return colorbar_color_scale(+d.name.slice(0,3));
+                });
+            });
+
+            $('#toggle-off').on('click', function(){
+              d3.select('.phylotree-container')
+                .selectAll('.node')
+                .select('text')
+                .attr('fill','black');
+            });
+
           });
         });
       });
