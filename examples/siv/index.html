@@ -56,6 +56,7 @@ body {
 
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <p class="navbar-text" id="current-dataset-label"></p> 
         <ul class="nav navbar-nav">
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dataset<span class="caret"></span></a>
@@ -91,6 +92,7 @@ body {
       d3.select('#tree_display').html('');
       d3.select('#legend').html('');
 
+      $("#current-dataset-label").html(name.replace('_', ' '));
       function ladder_traverser (n) {
         var d = 1;
         if (n.children && n.children.length) {
@@ -111,8 +113,13 @@ body {
               .options({
                 "show-scale": false,
                 "align-tips": true,
-                "label-nodes-with-name": true
+                "label-nodes-with-name": true,
+                "selectable": false,
+                "collapsible": false,
+                "reroot": false,
+                "hide": false
               })
+              .node_circle_size(0)
               // create a tree layout object
               .svg(d3.select("#tree_display"));
             // render to this SVG element
@@ -279,7 +286,10 @@ body {
                 "show-scale": false,
                 "align-tips": true,
                 "layout": "right-to-left",
-                "label-nodes-with-name": true
+                "label-nodes-with-name": true,
+                "collapsible": false,
+                "reroot": false,
+                "hide": false
               }).css_classes({
                 "tree-container": "organ-tree-container",
                 "branch": "organ-branch"
