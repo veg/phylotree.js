@@ -297,6 +297,9 @@ body {
               if(selection.length == 0){
                 links.style('stroke', 'black');
                 links.style('opacity', '1');
+                d3.select('.phylotree-container')
+                  .selectAll('.node')
+                  .style('opacity', 1);
               } else {
                 const names = selection.map(d=>d.name);
                 links.style('stroke', d=>{
@@ -305,6 +308,11 @@ body {
                 links.style('opacity', d=>{
                   return names.indexOf(d.id) > -1 ? 1 : .05;
                 });
+                d3.select('.phylotree-container')
+                  .selectAll('.node')
+                  .style('opacity', function(d) {
+                    return names.indexOf(link_dict[d.name]) > -1 ? 1 : .2;
+                  });
               }
             });
 
