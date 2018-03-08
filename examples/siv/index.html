@@ -18,7 +18,7 @@
   <style>
 #legend-div {
   position: fixed;
-  top: 0px;
+  top: 70px;
   margin-right: 5px;
   margin-top: 5px;
 }
@@ -27,11 +27,53 @@
   stroke: #999;
   stroke-width: 5;
 }
-
+body {
+  padding-top: 70px;
+}
   </style>
 </head>
 
 <body>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">SIV Tanglegram</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dataset<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Bone Marrow</a></li>
+              <li><a href="#">CD14</a></li>
+              <li><a href="#">CD3</a></li>
+              <li><a href="#">Lung Macs</a></li>
+              <li><a href="#">Plasma</a></li>
+            </ul>
+          </li>
+
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Toggle label<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#">State</a></li>
+              <li><a href="#">Time</a></li>
+              <li><a href="#">Off</a></li>
+            </ul>
+          </li>
+
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
   <svg id="tree_display" />
   <div id="legend-div">
     <svg id="legend" />
@@ -123,7 +165,7 @@
           var legend_box_size = 20;
           var legend_scale = d3.scale.category10()
             .domain(legend_entries);
-          console.log(legend_entries);
+
           function legend_name_to_color(name){
             if(name.indexOf('+') > -1 || name == "Undetermined"){
               return "#333"; 
@@ -195,7 +237,6 @@
           var viral_tree_bbox = d3.select('.phylotree-container').node().getBBox(),
             organ_tree_bbox = d3.select('.organ-tree-container').node().getBBox();
 
-
           var svg_width = viral_tree_bbox.width + organ_tree_bbox.width + tree_padding + right_padding + 100,
             svg_height = Math.max(viral_tree_bbox.height, organ_tree_bbox.height);
 
@@ -228,8 +269,8 @@
                 .append('line')
                   .attr('x1', d => d.x1)
                   .attr('x2', d => d.x2)
-                  .attr('y1', d => d.y1)
-                  .attr('y2', d => d.y2)
+                  .attr('y1', d => d.y1-70)
+                  .attr('y2', d => d.y2-70)
                   .style('stroke', 'black')
                   .style('stroke-width', 2);
 
