@@ -213,11 +213,18 @@ body {
               .attr('width', legend_box_size)
               .attr('height', legend_box_size)
               .attr('fill', legend_name_to_color)
-              .attr('transform', function(d,i){ return 'translate(0,' + ((legend_box_size+5)*i)+ ')';});
+              .attr('transform', function(d,i){ return 'translate(0,' + ((legend_box_size+5)*i+20)+ ')';});
             legend_gs.append('text')
               .attr('x', 25)
-              .attr('y', function(d, i) { return (legend_box_size+5)*i+15; })
-              .text(function(d) { return d; });
+              .attr('y', function(d, i) { return (legend_box_size+5)*i+35; })
+              .text(function(d) { return d.replace('_', ' '); });
+
+            d3.select('#legend')
+              .append('text')
+              .attr('x', 0)
+              .attr('y', 12)
+              .text('Tissue')
+              .style('font-weight', 'bold');
 
             var linearGradient = d3.select('#legend')
                 .append('defs')
@@ -243,7 +250,7 @@ body {
             var colorbar_g = d3.select('#legend')
               .append('g')
               .attr('class', 'colorbar')
-              .attr('transform', 'translate(0,270)');
+              .attr('transform', 'translate(0,310)');
             
             colorbar_g.append("rect")
               .attr("x", 0)
@@ -326,12 +333,24 @@ body {
               }
             });
 
+            d3.select('#legend')
+              .append('text')
+              .attr('x', 0)
+              .attr('y', 300)
+              .text('Time (days)')
+              .style('font-weight', 'bold');
+
+
             var viral_tree_bbox = d3.select('.phylotree-container').node().getBBox(),
               organ_tree_bbox = d3.select('.organ-tree-container').node().getBBox();
 
             var svg_width = viral_tree_bbox.width + organ_tree_bbox.width + tree_padding + right_padding + 100,
               svg_height = Math.max(viral_tree_bbox.height, organ_tree_bbox.height);
 
+            organ_tree.style_edges(function(element, data){
+              element.style('stroke', legend_name_to_color(name));
+            });
+            organ_tree.update();
 
             setTimeout( ()=> {
               d3.select('svg')
