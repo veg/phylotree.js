@@ -2978,6 +2978,10 @@
       return generate_error(nwk_str.length - 1);
     }
 
+    if (current_node_name.length) {
+        tree_json.name = current_node_name;
+    }
+
     return {
       json: tree_json,
       error: null
