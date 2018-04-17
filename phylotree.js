@@ -2933,6 +2933,10 @@
                   if (space.test(current_char)) {
                     continue;
                   }
+                  if (current_char == ";") { // semicolon terminates tree definition 
+                    char_index = nwk_str.length;
+                    break;
+                  } 
                   current_node_name += current_char;
                 }
               }
@@ -2940,7 +2944,7 @@
 
             break;
           }
-          case 2: {
+          case 2: { // inside a quoted expression
             if (current_char == quote_delimiter) {
               if (char_index < nwk_str.length - 1) {
                 if (nwk_str[char_index + 1] == quote_delimiter) {
@@ -2957,7 +2961,7 @@
             }
             break;
           }
-          case 4: {
+          case 4: { // inside a comment / attribute
             if (current_char == "]") {
               automaton_state = 3;
             } else {
