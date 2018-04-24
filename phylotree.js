@@ -2039,7 +2039,7 @@
         scale_bar.enter().append("g");
         scale_bar
           .attr("class", css_classes["tree-scale-bar"])
-          .style("font-size", "" + scale_bar_font_size)
+          .style("font-size", scale_bar_font_size + "px")
           .attr("transform", function(d) {
             return d3_phylotree_svg_translate([
               offsets[1] + options["left-offset"],
@@ -2488,7 +2488,7 @@
             return node_label(d);
           })
           .style("font-size", function(d) {
-            return shown_font_size;
+            return shown_font_size + "px";
           });
 
         if (phylotree.radial()) {
