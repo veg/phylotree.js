@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="//code.jquery.com/jquery.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="//d3js.org/d3.v3.min.js"></script>
+  <script src="//veg.github.io/phylotree.js/phylotree.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
+  <style>
+#code {
+  display: inline-block;
+  width: 700px;
+  padding-left: 50px;
+}
+.axis {
+  font: 12px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 2px;
+}
+  </style>
+</head>
+</head>
+
+<body>
+  <svg id="viz"></svg>
+  <script>
+var padding = { top: 20, bottom:20, right:20, left: 50 },
+  width = 300 - padding.left - padding.right,
+  height = 500 - padding.top - padding.bottom;
+
+var svg = d3.select('#viz')
+  .attr('width', width+padding.left+padding.right)
+  .attr('height', height+padding.top+padding.bottom)
+  .append('g')
+    .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')');
+
+var x_scale = d3.scale.ordinal()
+  .domain(['Nonsynonymous', 'Synonymous'])
+  .rangeRoundBands([0, width], .3);
+
+var y_scale = d3.scale.linear()
+  .domain([0, 100])
+  .range([height, 0]);
+
+var x_axis = d3.svg.axis()
+  .orient('bottom')
+  .scale(x_scale);
+
+var y_axis = d3.svg.axis()
+  .orient('left')
+  .scale(y_scale);
+
+svg.append('g')
+  .attr('class', 'axis')
+  .attr('transform', 'translate(0,' + height + ')')
+  .call(x_axis);
+
+svg.append('g')
+  .attr('class', 'axis')
+  .call(y_axis);
+
+svg.selectAll('.axis-line')
+  .data(d3.range(10, 101, 10))
+  .enter()
+  .append('line')
+    .attr('x1', 0)
+    .attr('x2', width)
+    .attr('y1', y_scale)
+    .attr('y2', y_scale)
+    .attr('stroke', 'lightgrey');
+
+svg.selectAll('.bar')
+  .data([
+    {category: 'Nonsynonymous', value: 30},
+    {category: 'Synonymous', value: 60}
+  ])
+  .enter()
+  .append('rect')
+    .attr('class', 'bar')
+    .attr('x', d=>x_scale(d.category))
+    .attr('y', d=>y_scale(d.value))
+    .attr('width', x_scale.rangeBand())
+    .attr('height', d=>height-y_scale(d.value))
+    .attr('fill', d=>d.category=='Nonsynonymous' ? 'red' : 'blue');
+
+setInterval(()=>{
+  var new_nonsynonymous = Math.floor(Math.random()*100),
+    new_synonymous = Math.floor(Math.random()*100);
+  svg.selectAll('.bar')
+   .data([
+     {category: 'Nonsynonymous', value: new_nonsynonymous},
+     {category: 'Synonymous', value: new_synonymous}
+   ])
+   .transition()
+   .duration(500)
+     .attr('y', d=>y_scale(d.value))
+     .attr('height', d=>height-y_scale(d.value));
+}, 1000);
+
+
+  </script>
+
+</body>
+
+</html>
