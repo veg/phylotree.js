@@ -33,7 +33,9 @@
   stroke: #000;
   stroke-width: 1;
 }
-  
+.colorbar {
+  display: none;
+}
 body {
   padding-top: 70px;
 }
@@ -338,6 +340,7 @@ body {
               .attr('x', 0)
               .attr('y', 300)
               .text('Time (days)')
+              .attr('class', 'colorbar')
               .style('font-weight', 'bold');
 
 
@@ -400,6 +403,7 @@ body {
                   }
                   return 'black';
                 });
+              d3.selectAll('.colorbar').style('display', 'none');
             });
 
             $('#toggle-time').on('click', function(){
@@ -409,6 +413,7 @@ body {
                 .attr('fill', function(d) {
                   return colorbar_color_scale(+d.name.slice(0,3));
                 });
+              d3.selectAll('.colorbar').style('display', 'inline');
             });
 
             $('#toggle-off').on('click', function(){
@@ -416,6 +421,7 @@ body {
                 .selectAll('.node')
                 .select('text')
                 .attr('fill','black');
+                d3.selectAll('.colorbar').style('display', 'none');
             });
 
           });
