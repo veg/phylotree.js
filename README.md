@@ -1,11 +1,15 @@
 # phylotree.js
 
-A JavaScript interactive viewer of [phylogenetic trees](https://en.wikipedia.org/wiki/Phylogenetic_tree), written as an extension of the [D3](http://d3js.org) [hierarchy layout](https://github.com/mbostock/d3/wiki/Hierarchy-Layout). It generates high quality SVG vector graphics, allows a great degree of customizability (CSS or JavaScript callbacks), and comes with a lot of *built-in* convenicence features. 
+A JavaScript interactive viewer of [phylogenetic trees](https://en.wikipedia.org/wiki/Phylogenetic_tree), written as an extension of the [D3](http://d3js.org) [hierarchy layout](https://github.com/d3/d3-3.x-api-reference/blob/master/Hierarchy-Layout.md). It generates high quality SVG vector graphics, allows a great degree of customizability (CSS or JavaScript callbacks), and comes with a lot of *built-in* convenience features. 
+
+`phylotree.js` is intended 
+
+![Alt Text](phylotree.gif)
 
 Key features
 
 * Runs entirely in the browser, including Newick parsing. 
-* Can easily handle trees with thousands of tips.
+* Can handle trees with thousands of tips.
 * Supports linear, radial, scaled branch, tip-aligned, and scaled tip size views.
 * The viewer can be constrained to fit in a given SVG box, or scale based on the size of the tree.
 * Numerous interactive features, including
@@ -23,17 +27,9 @@ Key features
 
 ## Examples
 
-1. A [gallery of examples](http://bl.ocks.org/spond) is a good place to learn different ways that phylotree.js can be used to display and annotate the trees. 
+1. A [gallery of examples](http://phylotree.hyphy.org/documentation/examples.html) is a good place to learn different ways that phylotree.js can be used to display and annotate the trees. 
 2. A [full-featured web application](http://veg.github.io/phylotree.js/index.html) based on phylotree.js, implemented in [index.html](index.html).
 3. phylotree.js is also used by the 2017 revision of the [datamonkey.org server](http://datamonkey.org) for molecular sequence analysis. 
-
-## Dependencies 
-
-See [package.json](package.json) for dependencies. 
-
-## Tests
-
-Run tests using `mocha`.
 
 ## Documentation
 Documentation for phylotree.js can be [found here](http://phylotree.hyphy.org/documentation).
@@ -49,3 +45,11 @@ and build with
 ```
 npm run docs
 ```
+
+## Dependencies 
+
+See [package.json](package.json) for dependencies. 
+
+## Tests
+
+Run tests using `mocha`.
