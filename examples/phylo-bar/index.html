@@ -41,7 +41,7 @@
   <script>
 d3.json('substitution-counts.json', (err, data) => {
   // D3 bar chart
-  var padding = { top: 20, bottom:20, right:20, left: 50 },
+  var padding = { top: 20, bottom:20, right:20, left: 75 },
     width = 300 - padding.left - padding.right,
     height = 500 - padding.top - padding.bottom;
 
@@ -81,6 +81,15 @@ d3.json('substitution-counts.json', (err, data) => {
     .attr('class', 'axis')
     .call(y_axis);
 
+  var y_label_x = -35,
+    y_label_y = height/2;
+  svg.append('text')
+    .attr('x', y_label_x)
+    .attr('y', y_label_y)
+    .attr('transform', 'rotate(-90 ' + y_label_x + ',' + y_label_y + ')')
+    .attr('text-anchor', 'middle')
+    .text('Inferred substitutions');
+
   svg.selectAll('.axis-line')
     .data(d3.range(10, 181, 10))
     .enter()
@@ -89,7 +98,7 @@ d3.json('substitution-counts.json', (err, data) => {
       .attr('x2', width)
       .attr('y1', y_scale)
       .attr('y2', y_scale)
-      .attr('stroke', 'lightgrey');
+      .attr('stroke', (d, i) => i%2 == 1 ? 'lightgrey' : 'WhiteSmoke');
 
   svg.selectAll('.bar')
     .data([
