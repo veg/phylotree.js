@@ -164,6 +164,11 @@
           return y_coord(d);
         })
         .interpolate("step-before"),
+      
+      ensure_size_is_in_px = function (value) {
+        return (typeof value === 'number') ? value + "px" : value;
+      },
+      
       draw_arc = function(points) {
         var start = radial_mapper(points[0].radius, points[0].angle),
           end = radial_mapper(points[0].radius, points[1].angle);
@@ -2039,7 +2044,7 @@
         scale_bar.enter().append("g");
         scale_bar
           .attr("class", css_classes["tree-scale-bar"])
-          .style("font-size", "" + scale_bar_font_size)
+          .style("font-size", ensure_size_is_in_px(scale_bar_font_size))
           .attr("transform", function(d) {
             return d3_phylotree_svg_translate([
               offsets[1] + options["left-offset"],
@@ -2488,7 +2493,7 @@
             return node_label(d);
           })
           .style("font-size", function(d) {
-            return shown_font_size;
+            return ensure_size_is_in_px(shown_font_size);
           });
 
         if (phylotree.radial()) {
