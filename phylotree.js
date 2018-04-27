@@ -2778,7 +2778,7 @@
 
       if (svg) {
         svg
-          .selectAll("." + css_classes["tree-container"])
+          .selectAll("." + tree.css_classes()["tree-container"])
           .attr(
             "transform",
             "translate (" +
