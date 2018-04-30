@@ -1,3 +1,5 @@
+const parseString = require('xml2js').parseString;
+
 (function() {
   var d3_layout_phylotree_event_id = "d3.layout.phylotree.event",
     d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
@@ -702,11 +704,15 @@
     function phylotree(nwk, bootstrap_values) {
       d3_phylotree_add_event_listener();
 
-      var _node_data =
-        typeof nwk == "string"
-          ? d3_phylotree_newick_parser(nwk, bootstrap_values)
-          : nwk;
+      var _node_data;
       // this builds children and links;
+      if (typeof nwk != "string") {
+        _node_data = nwk;
+      } else if (nwk[0] == '<'){
+        _node_data = d3_phylotree_xml_parser(nwk);
+      } else {
+        _node_data = d3_phylotree_newick_parser(nwk, bootstrap_values);
+      }
 
       if (!_node_data["json"]) {
         nodes = [];
@@ -2982,6 +2988,38 @@
       json: tree_json,
       error: null
     };
+  }
+
+  function d3_phylotree_xml_parser(xml_string) {
+    function parse_phyloxml(node, index) {
+      if(node.clade) {
+        node.clade.forEach(parse_phyloxml)
+      }
+      node.original_child_order = index + 1;
+      if(node.clade) {
+        node.children = node.clade;
+        delete node.clade;
+      }
+      if(node.branch_length) {
+        node.attribute = node.branch_length[0];
+      }
+      if(node.taxonomy) {
+        node.name = node.taxonomy[0].scientific_name[0];
+      }
+      node.annotation = "";
+    }
+
+    var tree_json; 
+    parseString(xml_string, function(error, xml) {
+      tree_json = xml.phyloxml.phylogeny[0].clade[0];
+      tree_json.name = "root";
+      parse_phyloxml(tree_json);
+    });
+
+    return {
+      json: tree_json,
+      error: null
+    }
   }
 
   function d3_add_custom_menu(node, name, callback, condition) {
