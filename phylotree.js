@@ -706,11 +706,17 @@ const parseString = require('xml2js').parseString;
 
       var _node_data;
       // this builds children and links;
-      if (typeof nwk != "string") {
+      if (nwk.name == 'root') {
+        // already parsed by phylotree.js
+        _node_data = { json: nwk, error: null };
+      } else if (typeof nwk != "string") {
+        // old default
         _node_data = nwk;
       } else if (nwk[0] == '<'){
-        _node_data = d3_phylotree_xml_parser(nwk);
+        // xml
+        _node_data = d3_phylotree_phyloxml_parser(nwk);
       } else {
+        // newick string
         _node_data = d3_phylotree_newick_parser(nwk, bootstrap_values);
       }
 
@@ -2990,16 +2996,15 @@ const parseString = require('xml2js').parseString;
     };
   }
 
-  function d3_phylotree_xml_parser(xml_string) {
+  function d3_phylotree_phyloxml_parser(xml_string) {
     function parse_phyloxml(node, index) {
       if(node.clade) {
         node.clade.forEach(parse_phyloxml)
-      }
-      node.original_child_order = index + 1;
-      if(node.clade) {
         node.children = node.clade;
         delete node.clade;
       }
+      node.original_child_order = index + 1;
+
       if(node.branch_length) {
         node.attribute = node.branch_length[0];
       }
@@ -3122,4 +3127,43 @@ const parseString = require('xml2js').parseString;
   d3.layout.phylotree.is_leafnode = d3_phylotree_is_leafnode;
   d3.layout.phylotree.add_custom_menu = d3_add_custom_menu;
   d3.layout.phylotree.trigger_refresh = d3_phylotree_trigger_refresh;
+  d3.layout.phylotree.nexml_parser = function (xml_string) {
+    var trees;
+    parseString(xml_string, function(error, xml) {
+      trees = xml["nex:nexml"].trees[0].tree.map(function(nexml_tree) {
+        var node_list = nexml_tree.node.map(d=>d.$),
+          node_hash = node_list.reduce(function(a,b){
+            b.edges = [];
+            b.name = b.id;
+            a[b.id] = b;
+            return a;
+          }, {}),
+          roots = node_list.filter(d=>d.root),
+          root_id = roots > 0 ? roots[0].id : node_list[0].id;
+        node_hash[root_id].name = 'root';
+
+        nexml_tree.edge.map(d=>d.$)
+          .forEach(function(edge){
+            node_hash[edge.source].edges.push(edge);
+          });
+        
+        function parse_nexml(node, index) {
+          if(node.edges) {
+            var targets = _.pluck(node.edges, 'target');
+            node.children = _.values(_.pick(node_hash, targets));
+            node.children.forEach(function(child, i){
+              child.attribute = node.edges[i].length || "";
+            });
+            node.children.forEach(parse_nexml);
+            node.annotation = "";
+          }
+        }
+
+        parse_nexml(node_hash[root_id]);
+        return node_hash[root_id];
+      });
+    });
+    return trees;
+  }
+
 }.call(this));
