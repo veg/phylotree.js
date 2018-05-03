@@ -703,7 +703,7 @@ const parseString = require('xml2js').parseString;
  * An instance of a phylotree. Sets event listeners, parses tags, and creates links
  * that represent branches.
  *
- * @param {Object} nwk - A Newick string or hierarchical JSON representation of a phylogenetic tree.
+ * @param {Object} nwk - A Newick string, PhyloXML string, or hierarchical JSON representation of a phylogenetic tree.
  * @param {Object} bootstrap_values - SDS: Not sure what this does.
  * @returns {Phylotree} phylotree - itself, following the builder pattern.
  */
@@ -3171,6 +3171,15 @@ const parseString = require('xml2js').parseString;
   d3.layout.phylotree.is_leafnode = d3_phylotree_is_leafnode;
   d3.layout.phylotree.add_custom_menu = d3_add_custom_menu;
   d3.layout.phylotree.trigger_refresh = d3_phylotree_trigger_refresh;
+
+/**
+ * A parser for NexML. This is a separate function, since NeXML objects
+ * can contain multiple trees. Results should be passed into a phylotree
+ * object, as shown in the examples.
+ *
+ * @param {Object} nexml - A NeXML string.
+ * @returns {Object} trees - An array of trees contained in the NeXML object.
+ */
   d3.layout.phylotree.nexml_parser = function (xml_string) {
     var trees;
     parseString(xml_string, function(error, xml) {

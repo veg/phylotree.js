@@ -9,6 +9,12 @@ Hello-world
   * `View Hello-world example </examples/hello-world>`_
   * `View Hello-world source <https://github.com/veg/phylotree.js/blob/master/examples/hello-world/index.html>`_
 
+Phylo-bar
+  A phylogenetic tree that interfaces with a D3.js bar chart to count classes of substitutions along portions of a phylogeny.
+
+  * `View Phylo-bar example </examples/phylo-bar>`_
+  * `View Phylo-bar source <https://github.com/veg/phylotree.js/blob/master/examples/phylo-bar/index.html>`_
+
 Vanilla
   The simplest tree possible, with all default features disabled.
 
@@ -39,6 +45,20 @@ Variable size and shape for leaf nodes
   * `View Variable leaves example </examples/clone-compartment>`_
   * `View Variable leaves source <https://github.com/veg/phylotree.js/blob/master/examples/clone-compartment/index.html>`_
 
+Leaf metadata
+  Visualize some artificial data associated with leaves of a tree.
+
+  * `View Leaf metadata example </examples/leafdata>`_
+  * `View Leaf metadata source <https://github.com/veg/phylotree.js/blob/master/examples/leafdata/index.html>`_
+
+XML parsing
+  Parse PhyloXML or NexML formats.
+
+  * `View PhyloXML example </examples/phyloxml>`_
+  * `View PhyloXML source <https://github.com/veg/phylotree.js/blob/master/examples/phyloxml/index.html>`_
+  * `View NexML example </examples/nexml>`_
+  * `View NexML source <https://github.com/veg/phylotree.js/blob/master/examples/nexml/index.html>`_
+
 Large tree
   Viewing a large tree with a Starcraft-style guide.
 
@@ -60,5 +80,12 @@ Ancestral sequence structural viewer
 
   * `View Ancestral sequence structural viewer example </examples/large-ancestral-structural-viewer>`_
   * `View Ancestral sequence structural viewer source <https://github.com/veg/phylotree.js/blob/master/examples/large-ancestral-structural-viewer/index.html>`_
+
+Interactive tanglegram
+  A tanglegram to compare phylogenies inferred from muliple vs. single tissue samples. Crossings are minimized using a 
+  dynamic programming algorithm, and the single-tissue tree enables selections to highlight inter-tree crossings.
+
+  * `View Interactive tanglegram  example </examples/siv>`_
+  * `View Interactive tanglegram source <https://github.com/veg/phylotree.js/blob/master/examples/siv/index.html>`_
 
 .. _HyPhy: http://hyphy.org/
