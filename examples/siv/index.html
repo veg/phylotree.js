@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="//code.jquery.com/jquery.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="/phylotree.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
+  <style>
+#legend-div {
+  position: fixed;
+  top: 70px;
+  margin-right: 5px;
+  margin-top: 5px;
+}
+.organ-branch {
+  fill: none;
+  stroke: #999;
+  stroke-width: 5;
+}
+.axis path, .axis line{
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #000;
+  stroke-width: 1;
+}
+.colorbar {
+  display: none;
+}
+body {
+  padding-top: 70px;
+}
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">SIV Tanglegram</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <p class="navbar-text" id="current-dataset-label"></p> 
+        <ul class="nav navbar-nav">
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dataset<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a id="load-bone-marrow" href="javascript:void(0);">Bone Marrow</a></li>
+              <li><a id="load-cd14" href="javascript:void(0);">CD14</a></li>
+              <li><a id="load-cd3" href="javascript:void(0);">CD3</a></li>
+              <li><a id="load-lung-macs" href="javascript:void(0);">Lung Macs</a></li>
+              <li><a id="load-plasma" href="javascript:void(0);">Plasma</a></li>
+            </ul>
+          </li>
+
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Toggle label<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><a id="toggle-state" href="javascript:void(0);">State</a></li>
+              <li><a id="toggle-time" href="javascript:void(0);">Time</a></li>
+              <li><a id="toggle-off" href="javascript:void(0);">Off</a></li>
+            </ul>
+          </li>
+
+        </ul>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+  <svg id="tree_display" />
+  <div id="legend-div">
+    <svg id="legend" />
+  </div>
+  <script>
+    var tree, organ_tree, organ_order_dict;
+    function render_tree(name, spacing) {
+      d3.select('#tree_display').html('');
+      d3.select('#legend').html('');
+
+      $("#current-dataset-label").html(name.replace('_', ' '));
+      function ladder_traverser (n) {
+        var d = 1;
+        if (n.children && n.children.length) {
+          d += d3.max (n.children, function (d) { return d["count_depth"];});
+        }
+        n["count_depth"] = d;
+      }
+      function ladder_resorter(a,b) {
+        return (a["count_depth"] - b["count_depth"]);
+      }
+      d3.json("N02_" + name + "_MCC.json", function(error, link_data) {
+        var link_dict = _.object(link_data.map(row=>[row[1], row[0]]));
+        d3.text('SIV.new', function(error, siv_data){
+          d3.text("N02_" + name + "_MCC.new", function(error, organ_data){
+            var tree_padding = 160,
+              right_padding = 20;
+            tree = d3.layout.phylotree()
+              .options({
+                "show-scale": false,
+                "align-tips": true,
+                "label-nodes-with-name": true,
+                "selectable": false,
+                "collapsible": false,
+                "reroot": false,
+                "hide": false
+              })
+              .node_circle_size(0)
+              // create a tree layout object
+              .svg(d3.select("#tree_display"));
+            // render to this SVG element
+
+            tree(siv_data)
+              .spacing_x(10)
+              .traverse_and_compute(ladder_traverser)
+              .resort_children(ladder_resorter)
+              // parse the Newick into a d3 hierarchy object with additional fields
+              .layout();
+            // layout and render the tree
+
+            function otcm_traverser(node) {
+              if(d3.layout.phylotree.is_leafnode(node)) return;
+              var left_leaves = node.children[0].children ? 
+                  node.children[0].left_leaves.concat(node.children[0].right_leaves) :
+                  [+node.children[0].name],
+                right_leaves = node.children[1].children ? 
+                  node.children[1].left_leaves.concat(node.children[1].right_leaves) :
+                  [+node.children[1].name];
+
+              var lr_count = 0,
+                rl_count = 0,
+                li, ri;
+              for(li=0; li < left_leaves.length; li++){
+                for(ri=0; ri < right_leaves.length; ri++) {
+                  lr_count += organ_order_dict[left_leaves[li]] > organ_order_dict[right_leaves[ri]];
+                  rl_count += organ_order_dict[left_leaves[li]] < organ_order_dict[right_leaves[ri]];
+                }
+              }
+
+              var swap = lr_count > rl_count;
+              if(swap){
+                var left_child = node.children[0],
+                  right_child = node.children[1];
+                node.children = [right_child, left_child];
+              }
+              node.left_leaves = swap ? right_leaves : left_leaves;
+              node.right_leaves = swap ? left_leaves : right_leaves;
+            }
+
+            var organ_order = tree.get_nodes()
+              .filter(n=>d3.layout.phylotree.is_leafnode(n))
+              .sort((a,b)=>a.screen_y-b.screen_y)
+              .map(n=>link_dict[n.name])
+              .filter(n=>n);
+            organ_order_dict = _.object(organ_order.map((d,i)=>[d,i]));
+
+            function get_state_from_annotation(node) { 
+              return node.annotation.split(',').filter(d=>d.slice(0,7)=="states=")[0].slice(8,-1);
+            }
+
+            const posterior_scale = d3.scale.linear()
+              .domain([0, 1])
+              .range([1, 5]);
+
+            function get_posterior_from_annotation(node) { 
+              const result = node.annotation.split(',').filter(d=>d.slice(0,10)=="posterior=")[0];
+              if(result) {
+                return +result.slice(11,-1);
+              }
+              return 1;
+            }
+
+            var legend_entries = _.unique(
+              tree.get_nodes()
+                .map(node=>node.annotation ? get_state_from_annotation(node) : '')
+              ).slice(1)
+              .filter(d => d.indexOf('+') == -1);
+            legend_entries.push("Undetermined");
+
+            var legend_box_size = 20;
+            var legend_scale = d3.scale.category10()
+              .domain(legend_entries);
+
+            function legend_name_to_color(name){
+              if(name.indexOf('+') > -1 || name == "Undetermined"){
+                return "#333"; 
+              }
+              return legend_scale(name);
+            }
+
+            var legend_gs = d3.select('#legend')
+              .attr('height', 600)
+              .attr('width', tree_padding)
+              .selectAll('g')
+              .data(legend_entries)
+              .enter()
+              .append('g');
+            legend_gs.append('rect')
+              .attr('width', legend_box_size)
+              .attr('height', legend_box_size)
+              .attr('fill', legend_name_to_color)
+              .attr('transform', function(d,i){ return 'translate(0,' + ((legend_box_size+5)*i+20)+ ')';});
+            legend_gs.append('text')
+              .attr('x', 25)
+              .attr('y', function(d, i) { return (legend_box_size+5)*i+35; })
+              .text(function(d) { return d.replace('_', ' '); });
+
+            d3.select('#legend')
+              .append('text')
+              .attr('x', 0)
+              .attr('y', 12)
+              .text('Tissue')
+              .style('font-weight', 'bold');
+
+            var linearGradient = d3.select('#legend')
+                .append('defs')
+                .append('linearGradient')
+                .attr('id', 'colorbar-gradient')
+                .attr('x1', '0%')
+                .attr('x2', '0%')
+                .attr('y1', '0%')
+                .attr('y2', '100%');
+
+            linearGradient.append('stop')
+              .attr('offset', '0%')
+              .attr('stop-color', '#FF0000');
+
+            linearGradient.append('stop')
+              .attr('offset', '50%')
+              .attr('stop-color', '#0000FF');
+
+            linearGradient.append('stop')
+              .attr('offset', '100%')
+              .attr('stop-color', '#000000');
+
+            var colorbar_g = d3.select('#legend')
+              .append('g')
+              .attr('class', 'colorbar')
+              .attr('transform', 'translate(0,310)');
+            
+            colorbar_g.append("rect")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", 25)
+              .attr("height", 260)
+              .attr("fill", "url(#colorbar-gradient)");
+
+            var colorbar_scale = d3.scale.linear()
+              .domain([21, 204])
+              .range([260, 0]);
+
+            var colorbar_color_scale = d3.scale.linear()
+              .domain([21, 112, 204])
+              .range(['#000000', '#0000FF', '#FF0000']);
+
+            var colorbar_axis = d3.svg.axis()
+              .scale(colorbar_scale)
+              .orient("right");
+
+            colorbar_g.append("g")
+              .attr('class', 'axis')
+              .attr('transform', 'translate(25,0)')
+              .call(colorbar_axis);
+
+            tree.style_edges(function(element, data){
+              const state = get_state_from_annotation(data.target);
+                posterior = get_posterior_from_annotation(data.target);
+              var color = legend_name_to_color(state);
+              element.style('stroke', color);
+              element.style('stroke-width', posterior_scale(posterior));
+              return color;
+            });
+            
+            tree.update();
+
+            organ_tree = d3.layout.phylotree();
+            organ_tree.spacing_x(spacing, true)
+              .options({
+                "show-scale": false,
+                "align-tips": true,
+                "layout": "right-to-left",
+                "label-nodes-with-name": true,
+                "collapsible": false,
+                "reroot": false,
+                "hide": false
+              }).css_classes({
+                "tree-container": "organ-tree-container",
+                "branch": "organ-branch"
+              });
+            organ_tree.svg(d3.select("#tree_display"));
+
+            organ_tree(organ_data, false, "4")
+              .traverse_and_compute(otcm_traverser)
+              .placenodes()
+              .layout();
+
+            var links;
+
+            organ_tree.selection_callback(function(selection){
+              if(selection.length == 0){
+                links.style('stroke', 'black');
+                links.style('opacity', '1');
+                d3.select('.phylotree-container')
+                  .selectAll('.node')
+                  .style('opacity', 1);
+              } else {
+                const names = selection.map(d=>d.name);
+                links.style('stroke', d=>{
+                  return names.indexOf(d.id) > -1 ? 'red' : 'black'
+                });
+                links.style('opacity', d=>{
+                  return names.indexOf(d.id) > -1 ? 1 : .05;
+                });
+                d3.select('.phylotree-container')
+                  .selectAll('.node')
+                  .style('opacity', function(d) {
+                    return names.indexOf(link_dict[d.name]) > -1 ? 1 : .2;
+                  });
+              }
+            });
+
+            d3.select('#legend')
+              .append('text')
+              .attr('x', 0)
+              .attr('y', 300)
+              .text('Time (days)')
+              .attr('class', 'colorbar')
+              .style('font-weight', 'bold');
+
+
+            var viral_tree_bbox = d3.select('.phylotree-container').node().getBBox(),
+              organ_tree_bbox = d3.select('.organ-tree-container').node().getBBox();
+
+            var svg_width = viral_tree_bbox.width + organ_tree_bbox.width + tree_padding + right_padding + 100,
+              svg_height = Math.max(viral_tree_bbox.height, organ_tree_bbox.height);
+
+            organ_tree.style_edges(function(element, data){
+              element.style('stroke', legend_name_to_color(name));
+            });
+            organ_tree.update();
+
+            setTimeout( ()=> {
+              d3.select('svg')
+                .attr('width', svg_width)
+                .attr('height', svg_height);
+
+                var organ_tree_translate = viral_tree_bbox.width + tree_padding + right_padding;
+                d3.select('.organ-tree-container')
+                  .attr('transform', 'translate(' + organ_tree_translate + ',0)');
+
+                var all_coordinates = link_data.map(link => {
+                  var organ_tree_node_rect = d3.select(`#node-${link[0]}`).node().getBoundingClientRect(),
+                    tree_node_rect = d3.select(`#node-${link[1]}`).node().getBoundingClientRect(),
+                    coordinates = {
+                      id: link[0],
+                      x1: tree_node_rect.right,
+                      x2: organ_tree_node_rect.left,
+                      y1: (tree_node_rect.top + tree_node_rect.bottom)/2,
+                      y2: (organ_tree_node_rect.top + organ_tree_node_rect.bottom)/2
+                    };
+                    return coordinates;
+                  });
+                links = d3.select('#tree_display')
+                  .selectAll('.line-link')
+                  .data(all_coordinates)
+                  .enter()
+                  .append('line')
+                    .attr('x1', d => d.x1)
+                    .attr('x2', d => d.x2)
+                    .attr('y1', d => d.y1-70)
+                    .attr('y2', d => d.y2-70)
+                    .style('stroke', 'black')
+                    .style('stroke-width', 2);
+
+              d3.select('#legend-div')
+                .style('left', (svg_width-100)+'px');
+
+              }, 300);
+
+            $('#toggle-state').on('click', function(){
+              d3.select('.phylotree-container')
+                .selectAll('.node')
+                .select('text')
+                .attr('fill', function(d) {
+                  if(d.annotation) {
+                    return legend_name_to_color(get_state_from_annotation(d));
+                  }
+                  return 'black';
+                });
+              d3.selectAll('.colorbar').style('display', 'none');
+            });
+
+            $('#toggle-time').on('click', function(){
+              d3.select('.phylotree-container')
+                .selectAll('.node')
+                .select('text')
+                .attr('fill', function(d) {
+                  return colorbar_color_scale(+d.name.slice(0,3));
+                });
+              d3.selectAll('.colorbar').style('display', 'inline');
+            });
+
+            $('#toggle-off').on('click', function(){
+              d3.select('.phylotree-container')
+                .selectAll('.node')
+                .select('text')
+                .attr('fill','black');
+                d3.selectAll('.colorbar').style('display', 'none');
+            });
+
+          });
+        });
+      });
+    }
+
+    $('#load-bone-marrow').on('click', function(){
+      render_tree('Bone_Marrow', 75);
+    });
+
+    $('#load-cd14').on('click', function(){
+      render_tree('CD14', 80);
+    });
+
+    $('#load-cd3').on('click', function(){
+      render_tree('CD3', 70);
+    });
+
+    $('#load-lung-macs').on('click', function(){
+      render_tree('Lung_Macs', 60);
+    });
+
+    $('#load-plasma').on('click', function(){
+      render_tree('Plasma', 45);
+    });
+
+    render_tree('Bone_Marrow', 75);
+
+  </script>
+
+</body>
+
+</html>

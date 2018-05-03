@@ -123,7 +123,8 @@
         transitions: null,
         brush: true,
         reroot: true,
-        hide: true
+        hide: true,
+        "label-nodes-with-name": false
       },
       css_classes = {
         "tree-container": "phylotree-container",
@@ -603,6 +604,10 @@
           d.x *= scales[0];
           d.y *= scales[1];
 
+          if(options["layout"] == "right-to-left"){
+            d.y = _extents[1][1]*scales[1]-d.y;
+          }
+
           if (d3_phylotree_is_leafnode(d)) {
             right_most_leaf = Math.max(
               right_most_leaf,
@@ -625,6 +630,7 @@
             });
           }
         });
+
       }
 
       if (draw_scale_bar) {
@@ -1061,6 +1067,7 @@
  * @returns {String} newick - Phylogenetic tree serialized as a Newick string.
  */
     phylotree.get_newick = function(annotator) {
+      if(!annotator) annotator = d => d.name;
       function escape_string(nn) {
         var need_escape = /[\s\[\]\,\)\(\:\'\"]/;
         var enquote = need_escape.test(nn);
@@ -1359,7 +1366,10 @@
           0
         ];
       }
-
+      if(options["right-to-left"]){
+        //return [d.screen_x, 0]; 
+        return [right_most_leaf - d.screen_x, 0];
+      }
       return [right_most_leaf - d.screen_x, 0];
     };
 
@@ -1520,6 +1530,7 @@
       sort_children(nodes[0]);
       phylotree.update_layout(nodes);
       phylotree.update();
+      return phylotree;
     };
 
     phylotree.graft_a_node = function(
@@ -1637,6 +1648,7 @@
       }
 
       traversal_type(nodes[0]);
+      return phylotree;
     };
 
 /**
@@ -1919,8 +1931,10 @@
       if (!arguments.length) return svg_element;
       if (svg !== svg_element) {
         svg = svg_element;
-        svg.selectAll("*").remove();
-        svg_defs = svg.append("defs");
+        if(css_classes["tree-container"] == "phylotree-container"){
+          svg.selectAll("*").remove();
+          svg_defs = svg.append("defs");
+        }
         d3.select(self.container).on(
           "click",
           function(d) {
@@ -2211,14 +2225,19 @@
 
       drawn_nodes
         .attr("transform", function(d) {
+          const should_shift = options["layout"] == "right-to-left" && d3_phylotree_is_leafnode(d);
           d.screen_x = x_coord(d);
           d.screen_y = y_coord(d);
-          return d3_phylotree_svg_translate([d.screen_x, d.screen_y]);
+          return d3_phylotree_svg_translate([should_shift ? 0 : d.screen_x, d.screen_y]);
         })
         .attr("class", phylotree.reclass_node)
         .each(function(d) {
           phylotree.draw_node(this, d, transitions);
         });
+
+      if(options["label-nodes-with-name"]){
+        drawn_nodes.attr("id", function(d) { return "node-" + d.name });
+      }
 
       var sizes = d3_phylotree_resize_svg(phylotree, svg, transitions);
 
@@ -2286,8 +2305,31 @@
       return phylotree;
     };
 
-    phylotree.css_classes = function() {
-      return css_classes;
+/**
+ * Get or set CSS classes.
+ *
+ * @param {Object} opt Keys are the CSS class to toggle and values are
+ * the parameters for that CSS class.
+ * @param {Boolean} run_update (optional) Whether or not the tree should update. 
+ * @returns The current ``phylotree``.
+ */
+    phylotree.css_classes = function(opt, run_update) {
+      if (!arguments.length) return css_classes;
+
+      var do_update = false;
+
+      for (var key in css_classes) {
+        if (key in opt && opt[key] != css_classes[key]) {
+          do_update = true;
+          css_classes[key] = opt[key];
+        }
+      }
+
+      if (run_update && do_update) {
+        phylotree.layout();
+      }
+
+      return phylotree;
     };
 
 /**
@@ -2307,7 +2349,7 @@
               ",." +
               css_classes["tree-selection-brush"]
           )
-          .remove();
+          //.remove();
         return phylotree.update(transitions);
       }
       return phylotree;
@@ -2458,7 +2500,6 @@
         });
       }
     };
-
     phylotree.draw_node = function(container, node, transitions) {
       container = d3.select(container);
 
@@ -2508,6 +2549,9 @@
           (transitions ? labels.transition() : labels)
             .attr("text-anchor", "start")
             .attr("transform", function(d) {
+              if(options["layout"] == "right-to-left"){
+                return d3_phylotree_svg_translate([-20, 0]);
+              }
               return d3_phylotree_svg_translate(
                 phylotree.align_tips() ? phylotree.shift_tip(d) : null
               );
@@ -2536,6 +2580,9 @@
             tracers
               .transition()
               .attr("x2", function(d) {
+                if(options["layout"] == "right-to-left"){
+                  return d.screen_x;
+                }
                 return phylotree.shift_tip(d)[0];
               })
               .attr("transform", function(d) {
@@ -2887,9 +2934,6 @@
           case 3: { // branch length
             // reading name
             if (current_char == ":") {
-              if (automaton_state == 3) {
-                return generate_error(char_index);
-              }
               automaton_state = 3;
             } else if (current_char == "," || current_char == ")") {
               try {
