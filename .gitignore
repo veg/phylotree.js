@@ -44,3 +44,6 @@ jspm_packages
 *.tgz
 .idea
 bower_components
+
+# OS specific files
+.DS_Store

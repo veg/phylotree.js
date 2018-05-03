@@ -8,14 +8,13 @@ Documentation for phylotree.js can be [found here](http://phylotree.hyphy.org/do
 
 ## Examples
 
-With `phylotree.js`, it is possible to interface phylogenetic trees with a variety of other visualizations to produce custom, interactive visualizations of phylogenetic data. A simple example entails a small tree that interacts with a D3.js bar chart:
+With `phylotree.js`, it is possible to interface phylogenetic trees with a variety of other software to produce custom, interactive visualizations of phylogenetic data. A simple example entails a small tree that interacts with a D3.js bar chart:
 
 ![Alt Text](images/bar.gif)
 
 while a complex example involves a large tree that interacts with a structural viewer:
 
 ![Alt Text](images/structure.gif)
-
 
 ### Gallery
 
@@ -31,8 +30,9 @@ phylotree.js is also used by the 2017 revision of the [datamonkey.org server](ht
 
 ## Features
 
-* Capable of handling multiple selections.
-* Runs entirely in the browser, including Newick parsing. 
+* Capable of handling multiple selection categories for comparative analysis.
+* Several mechanisms for selecting branches, including by clade, path to root, individual branches, internal branches, leaves, and branches that are nearby after layout.
+* Runs entirely in the browser, including Newick/PhyloXML/NexML parsing. 
 * Can handle trees with thousands of tips.
 * Supports linear, radial, scaled branch, tip-aligned, and scaled tip size views.
 * The viewer can be constrained to fit in a given SVG box, or scale based on the size of the tree.
@@ -48,6 +48,7 @@ phylotree.js is also used by the 2017 revision of the [datamonkey.org server](ht
    * Customize the way tip names are displayed
    * Transform branch lengths based on branch attributes (e.g. a non-linear scale).
    * Redefine the way a tree is displayed by writing custom CSS
+* Available on [npm](https://www.npmjs.com/package/phylotree) to facilitate modern JavaScript development.
 
 ## Dependencies 
 
