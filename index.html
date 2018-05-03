@@ -488,6 +488,7 @@ $("#validate_newick").on ("click", function (e) {
 });
 
 function default_tree_settings () {
+    tree = d3.layout.phylotree();
     tree.branch_length (null);
     tree.branch_name (null);
     tree.node_span ('equal');
