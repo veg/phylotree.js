@@ -167,6 +167,11 @@ const parseString = require('xml2js').parseString;
           return y_coord(d);
         })
         .interpolate("step-before"),
+      
+      ensure_size_is_in_px = function (value) {
+        return (typeof value === 'number') ? value + "px" : value;
+      },
+      
       draw_arc = function(points) {
         var start = radial_mapper(points[0].radius, points[0].angle),
           end = radial_mapper(points[0].radius, points[1].angle);
@@ -2065,7 +2070,7 @@ const parseString = require('xml2js').parseString;
         scale_bar.enter().append("g");
         scale_bar
           .attr("class", css_classes["tree-scale-bar"])
-          .style("font-size", "" + scale_bar_font_size)
+          .style("font-size", ensure_size_is_in_px(scale_bar_font_size))
           .attr("transform", function(d) {
             return d3_phylotree_svg_translate([
               offsets[1] + options["left-offset"],
@@ -2541,7 +2546,7 @@ const parseString = require('xml2js').parseString;
             return node_label(d);
           })
           .style("font-size", function(d) {
-            return shown_font_size;
+            return ensure_size_is_in_px(shown_font_size);
           });
 
         if (phylotree.radial()) {
@@ -2989,6 +2994,10 @@ const parseString = require('xml2js').parseString;
                   if (space.test(current_char)) {
                     continue;
                   }
+                  if (current_char == ";") { // semicolon terminates tree definition 
+                    char_index = nwk_str.length;
+                    break;
+                  } 
                   current_node_name += current_char;
                 }
               }
@@ -2996,7 +3005,7 @@ const parseString = require('xml2js').parseString;
 
             break;
           }
-          case 2: {
+          case 2: { // inside a quoted expression
             if (current_char == quote_delimiter) {
               if (char_index < nwk_str.length - 1) {
                 if (nwk_str[char_index + 1] == quote_delimiter) {
@@ -3013,7 +3022,7 @@ const parseString = require('xml2js').parseString;
             }
             break;
           }
-          case 4: {
+          case 4: { // inside a comment / attribute
             if (current_char == "]") {
               automaton_state = 3;
             } else {
@@ -3032,6 +3041,10 @@ const parseString = require('xml2js').parseString;
 
     if (clade_stack.length != 1) {
       return generate_error(nwk_str.length - 1);
+    }
+
+    if (current_node_name.length) {
+        tree_json.name = current_node_name;
     }
 
     return {
