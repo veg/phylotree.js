@@ -126,7 +126,8 @@ const parseString = require('xml2js').parseString;
         brush: true,
         reroot: true,
         hide: true,
-        "label-nodes-with-name": false
+        "label-nodes-with-name": false,
+        zoom: false
       },
       css_classes = {
         "tree-container": "phylotree-container",
@@ -2319,6 +2320,18 @@ const parseString = require('xml2js').parseString;
         brush.call(brush_object);
       }
       phylotree.sync_edge_labels();
+      if(options["zoom"]) {
+        var zoom = d3.behavior.zoom()
+          .scaleExtent([.1, 10])
+          .on("zoom", function(){
+            var translate = d3.event.translate;
+            translate[0] += offsets[1] + options["left-offset"];
+            translate[1] += phylotree.pad_height();
+            d3.select("."+css_classes["tree-container"])
+              .attr("transform", "translate(" + translate + ")scale(" + d3.event.scale + ")");
+          });
+          svg.call(zoom);
+      }
       return phylotree;
     };
 

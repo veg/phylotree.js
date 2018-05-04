@@ -45,6 +45,12 @@ Variable size and shape for leaf nodes
   * `View Variable leaves example </examples/clone-compartment>`_
   * `View Variable leaves source <https://github.com/veg/phylotree.js/blob/master/examples/clone-compartment/index.html>`_
 
+Zoom
+  Example of zooming and panning.
+
+  * `View Zooming example </examples/zoom>`_
+  * `View Zooming source <https://github.com/veg/phylotree.js/blob/master/examples/zoom/index.html>`_
+
 Leaf metadata
   Visualize some artificial data associated with leaves of a tree.
 
