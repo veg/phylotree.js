@@ -17,12 +17,16 @@ attached to the ``d3.layout`` namespace.
 .. autofunction:: d3.layout.phylotree([container])
 
 Phylotrees are themselves functions, with many methods attached and variables
-that have been closed over to provide an internal state.
+that have been closed over to provide an internal state. Newick, PhyloXML, and
+NeXML formats are supported.
 
 .. autofunction:: phylotree~phylotree(nwk[, bootstrap_values])
 
+.. autofunction:: d3.layout.phylotree.nexml_parser
+
 Internally, Phylotree.js uses the `D3 hierarchy layout`_. The following function
-parses Newick strings into a hierarchical JSON format.
+parses Newick strings into a hierarchical JSON format. Certain ad-hoc extensions,
+such as those used by HyPhy or Beast, are (partially) supported.
 
 .. autofunction:: d3.layout.newick_parser(nwk_str[, bootstrap_values])
 

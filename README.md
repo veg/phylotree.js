@@ -8,11 +8,11 @@ Documentation for phylotree.js can be [found here](http://phylotree.hyphy.org/do
 
 ## Examples
 
-With `phylotree.js`, it is possible to interface phylogenetic trees with a variety of other software to produce custom, interactive visualizations of phylogenetic data. A simple example entails a small tree that interacts with a D3.js bar chart:
+With `phylotree.js`, it is possible to interface phylogenetic trees with a variety of other software to produce custom, interactive visualizations of phylogenetic data. A simple example entails a [small tree that interacts with a D3.js bar chart](http://phylotree.hyphy.org/examples/phylo-bar/):
 
 ![Alt Text](images/bar.gif)
 
-while a complex example involves a large tree that interacts with a structural viewer:
+while a complex example involves a [large tree that interacts with a structural viewer](http://phylotree.hyphy.org/examples/large-ancestral-structural-viewer/):
 
 ![Alt Text](images/structure.gif)
 

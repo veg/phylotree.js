@@ -17,8 +17,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
   <style>
 #code {
-  float: right;
-  margin-left: 50px;
+  width: 700px;
 }
   </style>
 </head>
@@ -26,15 +25,14 @@
 <body>
   <svg id="tree_display" />
     <div id="code"><pre><code class="javascript">
-    var tree = d3.layout.phylotree()
-      // create a tree layout object
-      .svg(d3.select("#tree_display"));
-      // render to this SVG element
-
-    tree(example_tree)
-      // parse the Newick into a d3 hierarchy object with additional fields
-      .layout();
-      // layout and render the tree</code></pre></div>
+    d3.text('trees.xml', function(error, data) {
+      var nexml_trees = d3.layout.phylotree.nexml_parser(data);
+      var tree = d3.layout.phylotree()
+        .svg(d3.select("#tree_display"));
+      tree(nexml_trees[0])
+        .layout();
+    });
+    </code></pre></div>
   <script>
 
     d3.text('trees.xml', function(error, data) {

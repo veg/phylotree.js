@@ -51,6 +51,9 @@ collapsible
 selectable
   `(Boolean)` Determines whether or not individual branches are selectable. Defaults to ``true``.
 
+zoom
+  `(Boolean)` Determines whether or not zooming is enabled. Defaults to ``false``.
+
 restricted-selectable
   `(Array)` Determines what types of global selection actions are possible. Defaults to ``false``.
 

@@ -208,7 +208,8 @@ attached to the <code class="docutils literal"><span class="pre">d3.layout</span
 </dd></dl>
 
 <p>Phylotrees are themselves functions, with many methods attached and variables
-that have been closed over to provide an internal state.</p>
+that have been closed over to provide an internal state. Newick, PhyloXML, and
+NeXML formats are supported.</p>
 <dl class="function">
 <dt id="phylotree.phylotree">
 <code class="descclassname">phylotree.</code><code class="descname">phylotree</code><span class="sig-paren">(</span><em>nwk</em><span class="optional">[</span>, <em>bootstrap_values</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.phylotree" title="Permalink to this definition">¶</a></dt>
@@ -219,7 +220,7 @@ that represent branches.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>nwk</strong> (<em>Object</em>) – A Newick string or hierarchical JSON representation of a phylogenetic tree.</li>
+<li><strong>nwk</strong> (<em>Object</em>) – A Newick string, PhyloXML string, or hierarchical JSON representation of a phylogenetic tree.</li>
 <li><strong>bootstrap_values</strong> (<em>Object</em>) – SDS: Not sure what this does.</li>
 </ul>
 </td>
@@ -231,8 +232,31 @@ that represent branches.</p>
 </table>
 </dd></dl>
 
+<dl class="function">
+<dt id="d3.layout.phylotree.nexml_parser">
+<code class="descclassname">d3.layout.phylotree.</code><code class="descname">nexml_parser</code><span class="sig-paren">(</span><em>xml_string</em><span class="sig-paren">)</span><a class="headerlink" href="#d3.layout.phylotree.nexml_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>A parser for NexML. This is a separate function, since NeXML objects
+can contain multiple trees. Results should be passed into a phylotree
+object, as shown in the examples.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
+<li><strong>nexml</strong> (<em>Object</em>) – A NeXML string.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Object</strong> – trees - An array of trees contained in the NeXML object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <p>Internally, Phylotree.js uses the <a class="reference external" href="https://github.com/d3/d3-3.x-api-reference/blob/master/Hierarchy-Layout.md">D3 hierarchy layout</a>. The following function
-parses Newick strings into a hierarchical JSON format.</p>
+parses Newick strings into a hierarchical JSON format. Certain ad-hoc extensions,
+such as those used by HyPhy or Beast, are (partially) supported.</p>
 <dl class="function">
 <dt id="d3.layout.newick_parser">
 <code class="descclassname">d3.layout.</code><code class="descname">newick_parser</code><span class="sig-paren">(</span><em>nwk_str</em><span class="optional">[</span>, <em>bootstrap_values</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#d3.layout.newick_parser" title="Permalink to this definition">¶</a></dt>
