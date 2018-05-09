@@ -1,10 +1,10 @@
 const path = require('path');
 
 module.exports = {
-  mode: 'development',
-  entry: path.resolve(__dirname, 'phylotree.js'),
+  mode: 'production',
+  entry: path.resolve(__dirname, 'src', 'main.js'),
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname),
     filename: 'phylotree.js'
   },
   externals: [
