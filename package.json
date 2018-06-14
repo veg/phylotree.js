@@ -13,7 +13,7 @@
     "index.html"
   ],
   "dependencies": {
-    "bootstrap": "3.x",
+    "bootstrap": "4",
     "d3": "3.x",
     "font-awesome": "4.x",
     "jquery": "1.x",

@@ -8,14 +8,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
 
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.1/spacelab/bootstrap.min.css">
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
 
@@ -47,6 +48,10 @@
             padding-top: 50px;
           }
         }
+
+        .btn {
+          height: 30px;
+        }
    </style>
 </head>
 
@@ -56,18 +61,8 @@
 ###############################################################################################################################
 -->
 
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-        <a class="navbar-brand" href="#">phylotree.js</a>
-    </div>
+<nav class="navbar navbar-default-expand-lg navbar-light bg-light" role="navigation">
+  <a class="navbar-brand" href="#">phylotree.js</a>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -122,7 +117,7 @@
             <div class="navbar-form " role="search">
                  <div class="input-group">
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown">
                             Tag <span class="caret"></span>
                         </button>
                           <ul class="dropdown-menu" id = "selection_name_dropdown">
@@ -136,15 +131,15 @@
                     <input type="text" class="form-control" value = "Foreground" id = "selection_name_box" disabled>
 
                     <span class="input-group-btn" id = "save_selection_name" style = "display: none" >
-                        <button type="button" class="btn btn-default" id = "cancel_selection_button" >
+                        <button type="button" class="btn btn-light" id = "cancel_selection_button" >
                             Cancel
                         </button>
-                        <button type="button" class="btn btn-default" id = "save_selection_button">
+                        <button type="button" class="btn btn-light" id = "save_selection_button">
                             Save
                         </button>
                     </span>
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Selection <span class="caret"></span></button>
+                        <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown">Selection <span class="caret"></span></button>
                           <ul class="dropdown-menu">
                             <li><a href="#" id = "filter_add">Add filtered nodes to selection</a></li>
                             <li><a href="#" id = "filter_remove">Remove filtered nodes from selection</a></li>
@@ -194,7 +189,7 @@
          <textarea id = 'nwk_export_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20></textarea>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -206,51 +201,51 @@
         <div class = 'col-md-12'>
             <div class="btn-toolbar" role="toolbar">
               <div class="btn-group">
-                <button type="button" class="btn btn-default btn-sm" data-direction = 'vertical' data-amount = '1' title = "Expand vertical spacing">
+                <button type="button" class="btn btn-light btn-sm" data-direction = 'vertical' data-amount = '1' title = "Expand vertical spacing">
                     <i class="fa fa-arrows-v" ></i>
                 </button>
-                 <button type="button" class="btn btn-default btn-sm" data-direction = 'vertical' data-amount = '-1' title = "Compress vertical spacing">
+                 <button type="button" class="btn btn-light btn-sm" data-direction = 'vertical' data-amount = '-1' title = "Compress vertical spacing">
                     <i class="fa  fa-compress fa-rotate-135" ></i>
                 </button>
-                <button type="button" class="btn btn-default btn-sm" data-direction = 'horizontal' data-amount = '1' title = "Expand horizonal spacing">
+                <button type="button" class="btn btn-light btn-sm" data-direction = 'horizontal' data-amount = '1' title = "Expand horizonal spacing">
                     <i class="fa fa-arrows-h" ></i>
                 </button>
-                 <button type="button" class="btn btn-default btn-sm" data-direction = 'horizontal' data-amount = '-1' title = "Compress horizonal spacing">
+                 <button type="button" class="btn btn-light btn-sm" data-direction = 'horizontal' data-amount = '-1' title = "Compress horizonal spacing">
                     <i class="fa  fa-compress fa-rotate-45" ></i>
                 </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "sort_ascending" title = "Sort deepest clades to the bototm">
+                 <button type="button" class="btn btn-light btn-sm" id = "sort_ascending" title = "Sort deepest clades to the bototm">
                     <i class="fa fa-sort-amount-asc" ></i>
                 </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "sort_descending" title = "Sort deepsest clades to the top">
+                 <button type="button" class="btn btn-light btn-sm" id = "sort_descending" title = "Sort deepsest clades to the top">
                     <i class="fa fa-sort-amount-desc" ></i>
                 </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "sort_original" title = "Restore original order">
+                 <button type="button" class="btn btn-light btn-sm" id = "sort_original" title = "Restore original order">
                     <i class="fa fa-sort" ></i>
                 </button>
               </div>
             <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default active btn-sm">
+              <label class="btn btn-light active btn-sm">
                 <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "linear" autocomplete="off" checked title = "Layout left-to-right"> Linear
               </label>
-              <label class="btn btn-default  btn-sm">
+              <label class="btn btn-light  btn-sm">
                 <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "radial" autocomplete="off" title = "Layout radially"> Radial
               </label>
             </div>
             <div class="btn-group">
-                <button type="button" class="btn btn-default btn-sm active" id = "toggle_animation" title = "Toggle animation">
+                <button type="button" class="btn btn-light btn-sm active" id = "toggle_animation" title = "Toggle animation">
                     Animation
                 </button>
               </label>
             </div>
 
             <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default active btn-sm">
+              <label class="btn btn-light active btn-sm">
                 <input type="radio" class = "phylotree-align-toggler" data-align = "left" name="options-align" autocomplete="off" checked title = "Align tips labels to branches">
                     <i class="fa fa-align-left" ></i>
                 </input>
 
               </label>
-              <label class="btn btn-default btn-sm">
+              <label class="btn btn-light btn-sm">
                <input type="radio" class = "phylotree-align-toggler" data-align = "right" name="options-align" autocomplete="off" title = "Align tips labels to the edge of the plot">
                     <i class="fa fa-align-right" ></i>
                 </input>
