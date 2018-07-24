@@ -63,7 +63,9 @@ tree(d3.layout.newick_parser(example_tree))
 
 // add a custom menu for (in this case) terminal nodes
 
-tree.get_nodes().forEach(function(tree_node) {
+tree.get_nodes()
+  .filter(d3.layout.phylotree.is_leafnode)
+  .forEach(function(tree_node) {
   d3.layout.phylotree.add_custom_menu(tree_node, // add to this node
     my_menu_title, // display this text for the menu
     function() {
@@ -82,7 +84,13 @@ tree.get_nodes().forEach(function(tree_node) {
 
     var tree = d3.layout.phylotree()
       // create a tree layout object
-      .svg(d3.select("#tree_display"));
+      .svg(d3.select("#tree_display"))
+      .options({
+        'selectable': false,
+        'reroot': false,
+        'hide': false,
+        'collapsible': false
+      });
     // render to this SVG element
 
     function my_node_style_text(node) {
@@ -109,7 +117,9 @@ tree.get_nodes().forEach(function(tree_node) {
 
     // add a custom menu for (in this case) terminal nodes
 
-    tree.get_nodes().forEach(function(tree_node) {
+    tree.get_nodes()
+      .filter(d3.layout.phylotree.is_leafnode)
+      .forEach(function(tree_node) {
       d3.layout.phylotree.add_custom_menu(tree_node, // add to this node
         my_menu_title, // display this text for the menu
         function() {

@@ -849,6 +849,7 @@ const parseString = require('xml2js').parseString;
     };
 
     phylotree.handle_node_click = function(node) {
+      
       var menu_object = d3
         .select(self.container)
         .select("#" + d3_layout_phylotree_context_menu_id);
@@ -864,6 +865,12 @@ const parseString = require('xml2js').parseString;
 
       menu_object.selectAll("li").remove();
       if (node) {
+        if( !_.some([
+          Boolean(node.menu_items),
+          options['hide'],
+          options['selectable'],
+          options['collapsible']
+        ]) ) return;
         if (!d3_phylotree_is_leafnode(node)) {
           if (options["collapsible"]) {
             menu_object
@@ -879,11 +886,13 @@ const parseString = require('xml2js').parseString;
                 menu_object.style("display", "none");
                 phylotree.toggle_collapse(node).update();
               });
-            menu_object.append("li").attr("class", "divider");
-            menu_object
-              .append("li")
-              .attr("class", "dropdown-header")
-              .text("Toggle selection");
+            if(options["selectable"]) {
+              menu_object.append("li").attr("class", "divider");
+              menu_object
+                .append("li")
+                .attr("class", "dropdown-header")
+                .text("Toggle selection");
+            }
           }
 
           if (options["selectable"]) {
@@ -1018,7 +1027,14 @@ const parseString = require('xml2js').parseString;
         }
 
         if (has_user_elements.length) {
-          menu_object.append("li").attr("class", "divider");
+          const show_divider_options = [
+            options['hide'],
+            options['selectable'],
+            options['collapsible']
+          ];
+          if( _.some(show_divider_options) ) {
+            menu_object.append("li").attr("class", "divider");
+          }
           has_user_elements.forEach(function(d) {
             menu_object
               .append("li")
@@ -2549,9 +2565,7 @@ const parseString = require('xml2js').parseString;
         }
 
         labels
-          .on("click", function(d, i) {
-            phylotree.handle_node_click(d);
-          })
+          .on("click", phylotree.handle_node_click)
           .attr("dy", function(d) {
             return shown_font_size * 0.33;
           })
