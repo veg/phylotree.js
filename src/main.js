@@ -127,7 +127,8 @@ const parseString = require('xml2js').parseString;
         reroot: true,
         hide: true,
         "label-nodes-with-name": false,
-        zoom: false
+        zoom: false,
+        "show-menu": true
       },
       css_classes = {
         "tree-container": "phylotree-container",
@@ -867,10 +868,10 @@ const parseString = require('xml2js').parseString;
       if (node) {
         if( !_.some([
           Boolean(node.menu_items),
-          options['hide'],
-          options['selectable'],
-          options['collapsible']
-        ]) ) return;
+          options["hide"],
+          options["selectable"],
+          options["collapsible"]
+        ]) || !options["show-menu"]) return;
         if (!d3_phylotree_is_leafnode(node)) {
           if (options["collapsible"]) {
             menu_object
