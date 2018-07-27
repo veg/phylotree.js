@@ -84,13 +84,7 @@ tree.get_nodes()
 
     var tree = d3.layout.phylotree()
       // create a tree layout object
-      .svg(d3.select("#tree_display"))
-      .options({
-        'selectable': false,
-        'reroot': false,
-        'hide': false,
-        'collapsible': false
-      });
+      .svg(d3.select("#tree_display"));
     // render to this SVG element
 
     function my_node_style_text(node) {

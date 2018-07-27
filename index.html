@@ -917,7 +917,7 @@ function selection_handler_delete (e) {
 
 $( document ).ready( function () {
     default_tree_settings();
-    tree(test_string).svg (svg).options({reroot: false, hide:false, selectable: false, collapsible: false}).layout();
+    tree(test_string).svg (svg).layout();
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
     $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
     $("#selection_delete").get(0).addEventListener(selection_menu_element_action,selection_handler_delete,false);
