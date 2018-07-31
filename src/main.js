@@ -602,8 +602,8 @@ const parseString = require('xml2js').parseString;
           }
         });
 
-        size[0] = radial_center + radius / scaler;
-        size[1] = radial_center + radius / scaler;
+        size[0] = Math.min (size[0], size[1]);
+        size[1] = size[0];
       } else {
         do_lr();
 
