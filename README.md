@@ -56,6 +56,16 @@ See [package.json](package.json) for dependencies.
 
 ## Development
 
+### Local development
+
+Assuming that `./node_modules/.bin` is on your `$PATH`, run
+
+```
+yarn run develop
+```
+
+This will run `webpack` in watch mode and start a local server (default port is 8080). Refresh upon editing to view changes.
+
 ### Documentation
 
 Documentation was created using [sphinx-js](https://github.com/erikrose/sphinx-js). Install with
