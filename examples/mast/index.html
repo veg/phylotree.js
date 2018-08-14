@@ -30,12 +30,14 @@
   <script>
 
 function argmax(arr) {
-  return arr.map(x => [x, x.length])
+  var result = arr.map(x => [x, x.length])
 	  .reduce((r, a) => (a[1] > r[1] ? a : r))[0];
+  return result;
 }
-var tree1, tree2;
-d3.text('tree1.new', function(error, newick1) {
-  d3.text('tree2.new', function(error, newick2) {
+
+var tree1, tree2, best_match = [];
+d3.text('lasv-l_matched_sle.new', function(error, newick1) {
+  d3.text('lasv-s_matched_sle.new', function(error, newick2) {
     tree1 = d3.layout.phylotree()
       .svg(d3.select("#tree1_display"));
     tree1(newick1)
@@ -46,11 +48,22 @@ d3.text('tree1.new', function(error, newick1) {
     tree2(newick2)
       .layout();
 
-    var result = {};
+    var result = {}, 
+      i = 1;
 
     tree2.traverse_and_compute(function(node2) {
+      if(!node2.name) {
+        node2.name = 'Node'+i;
+        i++;
+      } else {
+        node2.name = node2.name.replace('-S-', '-L-');
+      }
       result[node2.name] = {};
       tree1.traverse_and_compute(function(node1) {
+        if(!node1.name) {
+          node1.name = 'Node'+i;
+          i++;
+        }
         var is_leaf1 = d3.layout.phylotree.is_leafnode(node1),
           is_leaf2 = d3.layout.phylotree.is_leafnode(node2);
         if(is_leaf1 && is_leaf2) {
@@ -61,7 +74,6 @@ d3.text('tree1.new', function(error, newick1) {
             result[node2.children[1].name][node1.name]
           ]);
         } else if(is_leaf2) {
-          console.log(result[node2.name][node1.children[0].name], result[node2.name][node1.children[1].name]);
           result[node2.name][node1.name] = argmax([
             result[node2.name][node1.children[0].name],
             result[node2.name][node1.children[1].name]
@@ -82,16 +94,14 @@ d3.text('tree1.new', function(error, newick1) {
             ])
           ]);
         }
-        console.log('1:', node1.name, '2:', node2.name, 'result:', result[node2.name][node1.name], result[node2.name][node1.name].length);
+        if(result[node2.name][node1.name].length > best_match.length) {
+          best_match = result[node2.name][node1.name];
+        }
       });
     });
     
-    var tree1_root = tree1.get_nodes().filter(node=>!node.parent)[0].name,
-      tree2_root = tree2.get_nodes().filter(node=>!node.parent)[0].name,
-      mast_leaves = result[tree2_root][tree1_root];
-
     tree1.modify_selection(function(edge) { 
-      return  mast_leaves.indexOf(edge.target.name) > -1; 
+      return best_match.indexOf(edge.target.name) > -1; 
     });
 
     tree1.internal_label (function (d) { 
@@ -99,7 +109,7 @@ d3.text('tree1.new', function(error, newick1) {
     }, true);
 
     tree2.modify_selection(function(edge) { 
-      return  mast_leaves.indexOf(edge.target.name) > -1; 
+      return best_match.indexOf(edge.target.name) > -1; 
     });
 
     tree2.internal_label (function (d) { 
