@@ -1867,6 +1867,7 @@ const parseString = require('xml2js').parseString;
         } else {
           var remove_idx = current_node.children.indexOf(remove_me);
           current_node.children.splice(remove_idx, 1);
+          stashed_bl = current_node.__mapped_bl;
           remove_me = new_json;
         }
 
