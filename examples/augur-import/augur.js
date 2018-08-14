@@ -10,7 +10,7 @@ d3.json('./zika.json', function(err, zika) {
     .svg(d3.select("#tree_display"));
   // render to this SVG element
 
-  tree(zika, {"type" : "augur"})
+  tree(zika, {"type" : "test"})
     // parse the Newick into a d3 hierarchy object with additional fields
     .layout();
   // layout and render the tree

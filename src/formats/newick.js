@@ -1,7 +1,6 @@
 var newick_parser = function (nwk_str, bootstrap_values) {
 
   var clade_stack = [];
-  console.log(nwk_str);
 
   function add_new_tree_level() {
     var new_level = {

@@ -1,4 +1,5 @@
-const parseString = require('xml2js').parseString;
+
+// SW20180814 TODO: Condense all parser requires to just the parser_registry
 const parser_registry = require('./formats/registry');
 const nexml_parser = require('./formats/nexml');
 const d3_phylotree_newick_parser = require('./formats/newick');
@@ -96,6 +97,7 @@ const d3_phylotree_phyloxml_parser  = require('./formats/phyloxml');
       selection_callback = null,
       options = {
         layout: "left-to-right",
+				logger : console,
         branches: "step",
         scaling: true,
         bootstrap: false,
@@ -235,6 +237,7 @@ const d3_phylotree_phyloxml_parser  = require('./formats/phyloxml');
     });
 
     self.container = container || "body";
+		self.logger = options.logger;
 
     /*--------------------------------------------------------------------------------------*/
 
@@ -736,7 +739,7 @@ const d3_phylotree_phyloxml_parser  = require('./formats/phyloxml');
 					_node_data = parser_registry[type](nwk, options);
 				} else {
 					// Hard failure
-					console.log("type " + type + " not in registry! Available types are " + _.keys(parser_registry))
+					self.logger.error("type " + type + " not in registry! Available types are " + _.keys(parser_registry))
 				}
 
 			} else {
