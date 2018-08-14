@@ -18,8 +18,7 @@
     "font-awesome": "4.x",
     "jquery": "1.x",
     "underscore": "1.x",
-    "xml2js": "^0.4.19",
-    "yarn": "^1.9.4"
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "concurrently": "^3.6.1",
@@ -27,6 +26,7 @@
     "jsdom": "9.12.x",
     "prettier": "^1.14.2",
     "should": "^11.2.1",
+    "yarn": "^1.9.4",
     "webpack": "^4.6.0",
     "webpack-cli": "^2.0.15"
   },
