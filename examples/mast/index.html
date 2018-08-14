@@ -28,50 +28,84 @@
   <svg id="tree1_display" />
   <svg id="tree2_display" />
   <script>
+
+function argmax(arr) {
+  return arr.map(x => [x, x.length])
+	  .reduce((r, a) => (a[1] > r[1] ? a : r))[0];
+}
+var tree1, tree2;
 d3.text('tree1.new', function(error, newick1) {
   d3.text('tree2.new', function(error, newick2) {
-    var tree1 = d3.layout.phylotree()
+    tree1 = d3.layout.phylotree()
       .svg(d3.select("#tree1_display"));
     tree1(newick1)
       .layout();
 
-    var tree2 = d3.layout.phylotree()
+    tree2 = d3.layout.phylotree()
       .svg(d3.select("#tree2_display"));
     tree2(newick2)
       .layout();
-    var result = {}, current_result;
+
+    var result = {};
+
     tree2.traverse_and_compute(function(node2) {
       result[node2.name] = {};
       tree1.traverse_and_compute(function(node1) {
-        result[node2.name][node1.name] = {};
-        current_result = result[node2.name][node1.name];
         var is_leaf1 = d3.layout.phylotree.is_leafnode(node1),
           is_leaf2 = d3.layout.phylotree.is_leafnode(node2);
         if(is_leaf1 && is_leaf2) {
-          current_result.count = +(node1.name == node2.name);
+          result[node2.name][node1.name] = node1.name == node2.name ? [node1.name] : [];
         } else if(is_leaf1) {
-          current_result.count = Math.max(
-            result[node2.children[0].name][node1.name].count,
-            result[node2.children[1].name][node1.name].count
-          );
+          result[node2.name][node1.name] = argmax([
+            result[node2.children[0].name][node1.name],
+            result[node2.children[1].name][node1.name]
+          ]);
         } else if(is_leaf2) {
-          current_result.count = Math.max(
-            result[node2.name][node1.children[0].name].count,
-            result[node2.name][node1.children[1].name].count
-          );
+          console.log(result[node2.name][node1.children[0].name], result[node2.name][node1.children[1].name]);
+          result[node2.name][node1.name] = argmax([
+            result[node2.name][node1.children[0].name],
+            result[node2.name][node1.children[1].name]
+          ]);
         } else {
-          current_result.count = Math.max(
-            result[node2.name][node1.children[0].name].count,
-            result[node2.name][node1.children[1].name].count,
-            result[node2.children[0].name][node1.name].count,
-            result[node2.children[1].name][node1.name].count,
-            result[node2.children[0].name][node1.children[0].name].count+result[node2.children[1].name][node1.children[1].name].count,
-            result[node2.children[1].name][node1.children[0].name].count+result[node2.children[0].name][node1.children[1].name].count
-          );
+          result[node2.name][node1.name] = argmax([
+            result[node2.name][node1.children[0].name],
+            result[node2.name][node1.children[1].name],
+            result[node2.children[0].name][node1.name],
+            result[node2.children[1].name][node1.name],
+            _.flatten([
+              result[node2.children[0].name][node1.children[0].name],
+              result[node2.children[1].name][node1.children[1].name]
+            ]),
+            _.flatten([
+              result[node2.children[1].name][node1.children[0].name],
+              result[node2.children[0].name][node1.children[1].name]
+            ])
+          ]);
         }
-        console.log('1:', node1.name, '2:', node2.name, 'result:', current_result.count);
+        console.log('1:', node1.name, '2:', node2.name, 'result:', result[node2.name][node1.name], result[node2.name][node1.name].length);
       });
     });
+    
+    var tree1_root = tree1.get_nodes().filter(node=>!node.parent)[0].name,
+      tree2_root = tree2.get_nodes().filter(node=>!node.parent)[0].name,
+      mast_leaves = result[tree2_root][tree1_root];
+
+    tree1.modify_selection(function(edge) { 
+      return  mast_leaves.indexOf(edge.target.name) > -1; 
+    });
+
+    tree1.internal_label (function (d) { 
+      return d.reduce (function (prev, curr) { return curr.selected || prev; }, false)
+    }, true);
+
+    tree2.modify_selection(function(edge) { 
+      return  mast_leaves.indexOf(edge.target.name) > -1; 
+    });
+
+    tree2.internal_label (function (d) { 
+      return d.reduce (function (prev, curr) { return curr.selected || prev; }, false)
+    }, true);
+
   });
 });
   </script>
