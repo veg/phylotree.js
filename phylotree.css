@@ -27,6 +27,10 @@ stroke: black;
 stroke-width: 0.5px;
 }
 
+.internal-node text {
+    font-style: italic;
+}
+
 .node {
 font: 10px sans-serif;
 }
