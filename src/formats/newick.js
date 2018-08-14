@@ -1,17 +1,16 @@
 /**
-* Parses a Newick string into an equivalent JSON representation that is
-* suitable for consumption by ``d3.layout.hierarchy``.
-*
-* Optionally accepts bootstrap values. Currently supports Newick strings with or without branch lengths,
-* as well as tagged trees such as
-*  ``(a,(b{TAG},(c{TAG},d{ANOTHERTAG})))``
-*
-* @param {String} nwk_str - A string representing a phylogenetic tree in Newick format.
-* @param {Object} bootstrap_values.
-* @returns {Object} An object with keys ``json`` and ``error``.
-*/
-var newick_parser = function (nwk_str, bootstrap_values) {
-
+ * Parses a Newick string into an equivalent JSON representation that is
+ * suitable for consumption by ``d3.layout.hierarchy``.
+ *
+ * Optionally accepts bootstrap values. Currently supports Newick strings with or without branch lengths,
+ * as well as tagged trees such as
+ *  ``(a,(b{TAG},(c{TAG},d{ANOTHERTAG})))``
+ *
+ * @param {String} nwk_str - A string representing a phylogenetic tree in Newick format.
+ * @param {Object} bootstrap_values.
+ * @returns {Object} An object with keys ``json`` and ``error``.
+ */
+var newick_parser = function(nwk_str, bootstrap_values) {
   var clade_stack = [];
 
   function add_new_tree_level() {
@@ -86,7 +85,8 @@ var newick_parser = function (nwk_str, bootstrap_values) {
           break;
         }
         case 1: // name
-        case 3: { // branch length
+        case 3: {
+          // branch length
           // reading name
           if (current_char == ":") {
             automaton_state = 3;
@@ -132,10 +132,11 @@ var newick_parser = function (nwk_str, bootstrap_values) {
                 if (space.test(current_char)) {
                   continue;
                 }
-                if (current_char == ";") { // semicolon terminates tree definition 
+                if (current_char == ";") {
+                  // semicolon terminates tree definition
                   char_index = nwk_str.length;
                   break;
-                } 
+                }
                 current_node_name += current_char;
               }
             }
@@ -143,7 +144,8 @@ var newick_parser = function (nwk_str, bootstrap_values) {
 
           break;
         }
-        case 2: { // inside a quoted expression
+        case 2: {
+          // inside a quoted expression
           if (current_char == quote_delimiter) {
             if (char_index < nwk_str.length - 1) {
               if (nwk_str[char_index + 1] == quote_delimiter) {
@@ -160,7 +162,8 @@ var newick_parser = function (nwk_str, bootstrap_values) {
           }
           break;
         }
-        case 4: { // inside a comment / attribute
+        case 4: {
+          // inside a comment / attribute
           if (current_char == "]") {
             automaton_state = 3;
           } else {
@@ -182,14 +185,13 @@ var newick_parser = function (nwk_str, bootstrap_values) {
   }
 
   if (current_node_name.length) {
-      tree_json.name = current_node_name;
+    tree_json.name = current_node_name;
   }
 
   return {
     json: tree_json,
     error: null
   };
-
-}
+};
 
 module.exports = newick_parser;
