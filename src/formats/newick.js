@@ -1,3 +1,15 @@
+/**
+* Parses a Newick string into an equivalent JSON representation that is
+* suitable for consumption by ``d3.layout.hierarchy``.
+*
+* Optionally accepts bootstrap values. Currently supports Newick strings with or without branch lengths,
+* as well as tagged trees such as
+*  ``(a,(b{TAG},(c{TAG},d{ANOTHERTAG})))``
+*
+* @param {String} nwk_str - A string representing a phylogenetic tree in Newick format.
+* @param {Object} bootstrap_values.
+* @returns {Object} An object with keys ``json`` and ``error``.
+*/
 var newick_parser = function (nwk_str, bootstrap_values) {
 
   var clade_stack = [];
