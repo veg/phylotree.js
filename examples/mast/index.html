@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+  <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script src="//code.jquery.com/jquery.js"></script>
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="//d3js.org/d3.v3.min.js"></script>
+  <script src="/phylotree.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
+  <style>
+#code {
+  display: inline-block;
+  width: 700px;
+  padding-left: 50px;
+}
+  </style>
+</head>
+
+<body>
+  <svg id="tree1_display" />
+  <svg id="tree2_display" />
+  <script>
+d3.text('tree1.new', function(error, newick1) {
+  d3.text('tree2.new', function(error, newick2) {
+    var tree1 = d3.layout.phylotree()
+      .svg(d3.select("#tree1_display"));
+    tree1(newick1)
+      .layout();
+
+    var tree2 = d3.layout.phylotree()
+      .svg(d3.select("#tree2_display"));
+    tree2(newick2)
+      .layout();
+    var result = {}, current_result;
+    tree2.traverse_and_compute(function(node2) {
+      result[node2.name] = {};
+      tree1.traverse_and_compute(function(node1) {
+        result[node2.name][node1.name] = {};
+        current_result = result[node2.name][node1.name];
+        var is_leaf1 = d3.layout.phylotree.is_leafnode(node1),
+          is_leaf2 = d3.layout.phylotree.is_leafnode(node2);
+        if(is_leaf1 && is_leaf2) {
+          current_result.count = +(node1.name == node2.name);
+        } else if(is_leaf1) {
+          current_result.count = Math.max(
+            result[node2.children[0].name][node1.name].count,
+            result[node2.children[1].name][node1.name].count
+          );
+        } else if(is_leaf2) {
+          current_result.count = Math.max(
+            result[node2.name][node1.children[0].name].count,
+            result[node2.name][node1.children[1].name].count
+          );
+        } else {
+          current_result.count = Math.max(
+            result[node2.name][node1.children[0].name].count,
+            result[node2.name][node1.children[1].name].count,
+            result[node2.children[0].name][node1.name].count,
+            result[node2.children[1].name][node1.name].count,
+            result[node2.children[0].name][node1.children[0].name].count+result[node2.children[1].name][node1.children[1].name].count,
+            result[node2.children[1].name][node1.children[0].name].count+result[node2.children[0].name][node1.children[1].name].count
+          );
+        }
+        console.log('1:', node1.name, '2:', node2.name, 'result:', current_result.count);
+      });
+    });
+  });
+});
+  </script>
+
+</body>
+
+</html>
