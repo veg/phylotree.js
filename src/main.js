@@ -1,4 +1,8 @@
 const parseString = require('xml2js').parseString;
+const parser_registry = require('./formats/registry');
+const nexml_parser = require('./formats/nexml');
+const d3_phylotree_newick_parser = require('./formats/newick');
+const d3_phylotree_phyloxml_parser  = require('./formats/phyloxml');
 
 (function() {
   var d3_layout_phylotree_event_id = "d3.layout.phylotree.event",
@@ -12,7 +16,7 @@ const parseString = require('xml2js').parseString;
  *  ``(a,(b{TAG},(c{TAG},d{ANOTHERTAG})))``
  *
  * @param {String} nwk_str - A string representing a phylogenetic tree in Newick format.
- * @param {Object} bootstrap_values - SDS: Not clear what this does (optional).
+ * @param {Object} bootstrap_values.
  * @returns {Object} An object with keys ``json`` and ``error``.
  */
   d3.layout.newick_parser = function(nwk_str, bootstrap_values) {
@@ -706,32 +710,54 @@ const parseString = require('xml2js').parseString;
       return phylotree;
     };
 
-/**
- * An instance of a phylotree. Sets event listeners, parses tags, and creates links
- * that represent branches.
- *
- * @param {Object} nwk - A Newick string, PhyloXML string, or hierarchical JSON representation of a phylogenetic tree.
- * @param {Object} bootstrap_values - SDS: Not sure what this does.
- * @returns {Phylotree} phylotree - itself, following the builder pattern.
- */
-    function phylotree(nwk, bootstrap_values) {
+		/**
+		 * An instance of a phylotree. Sets event listeners, parses tags, and creates links
+		 * that represent branches.
+		 *
+		 * @param {Object} nwk - A Newick string, PhyloXML string, or hierarchical JSON representation of a phylogenetic tree.
+		 * @param {Object} options
+		 * - boostrap_values
+		 * - type - 
+		 * @returns {Phylotree} phylotree - itself, following the builder pattern.
+		 */
+    function phylotree(nwk, options = {}) {
+
+      var bootstrap_values = options.bootstrap_values || "";
+      var type = options.type || "";
+
       d3_phylotree_add_event_listener();
 
       var _node_data;
-      // this builds children and links;
-      if (nwk.name == 'root') {
-        // already parsed by phylotree.js
-        _node_data = { json: nwk, error: null };
-      } else if (typeof nwk != "string") {
-        // old default
-        _node_data = nwk;
-      } else if (nwk[0] == '<'){
-        // xml
-        _node_data = d3_phylotree_phyloxml_parser(nwk);
-      } else {
-        // newick string
-        _node_data = d3_phylotree_newick_parser(nwk, bootstrap_values);
-      }
+
+			if(type) {
+
+				// SW20180814 : Allowing for explicit type declaration of tree provided
+				if(type in parser_registry) {
+					_node_data = parser_registry[type](nwk, options);
+				} else {
+					// Hard failure
+					console.log("type " + type + " not in registry! Available types are " + _.keys(parser_registry))
+				}
+
+			} else {
+				// No type declaration, attempting to infer tree type
+
+				// this builds children and links;
+				if (nwk.name == 'root') {
+					// already parsed by phylotree.js
+					_node_data = { json: nwk, error: null };
+				} else if (typeof nwk != "string") {
+					// old default
+					_node_data = nwk;
+				} else if (nwk[0] == '<'){
+					// xml
+					_node_data = d3_phylotree_phyloxml_parser(nwk);
+				} else {
+					// newick string
+					_node_data = d3_phylotree_newick_parser(nwk, bootstrap_values);
+				}
+
+			}
 
       if (!_node_data["json"]) {
         nodes = [];
@@ -2902,215 +2928,7 @@ const parseString = require('xml2js').parseString;
     }, "");
   }
 
-  function d3_phylotree_newick_parser(nwk_str, bootstrap_values) {
-    var clade_stack = [];
-    function add_new_tree_level() {
-      var new_level = {
-        name: null
-      };
-      var the_parent = clade_stack[clade_stack.length - 1];
-      if (!("children" in the_parent)) {
-        the_parent["children"] = [];
-      }
-      clade_stack.push(new_level);
-      the_parent["children"].push(clade_stack[clade_stack.length - 1]);
-      clade_stack[clade_stack.length - 1]["original_child_order"] =
-        the_parent["children"].length;
-    }
 
-    function finish_node_definition() {
-      var this_node = clade_stack.pop();
-      if (bootstrap_values && "children" in this_node) {
-        this_node["bootstrap_values"] = current_node_name;
-      } else {
-        this_node["name"] = current_node_name;
-      }
-      this_node["attribute"] = current_node_attribute;
-      this_node["annotation"] = current_node_annotation;
-      current_node_name = "";
-      current_node_attribute = "";
-      current_node_annotation = "";
-    }
-
-    function generate_error(location) {
-      return {
-        json: null,
-        error:
-          "Unexpected '" +
-          nwk_str[location] +
-          "' in '" +
-          nwk_str.substring(location - 20, location + 1) +
-          "[ERROR HERE]" +
-          nwk_str.substring(location + 1, location + 20) +
-          "'"
-      };
-    }
-
-    var automaton_state = 0;
-    var current_node_name = "";
-    var current_node_attribute = "";
-    var current_node_annotation = "";
-    var quote_delimiter = null;
-    var name_quotes = {
-      "'": 1,
-      '"': 1
-    };
-
-    var tree_json = {
-      name: "root"
-    };
-    clade_stack.push(tree_json);
-
-    var space = /\s/;
-
-    for (var char_index = 0; char_index < nwk_str.length; char_index++) {
-      try {
-        var current_char = nwk_str[char_index];
-        switch (automaton_state) {
-          case 0: {
-            // look for the first opening parenthesis
-            if (current_char == "(") {
-              add_new_tree_level();
-              automaton_state = 1; // expecting node name
-            }
-            break;
-          }
-          case 1: // name
-          case 3: { // branch length
-            // reading name
-            if (current_char == ":") {
-              automaton_state = 3;
-            } else if (current_char == "," || current_char == ")") {
-              try {
-                finish_node_definition();
-                automaton_state = 1;
-                if (current_char == ",") {
-                  add_new_tree_level();
-                }
-              } catch (e) {
-                return generate_error(char_index);
-              }
-            } else if (current_char == "(") {
-              if (current_node_name.length > 0) {
-                return generate_error(char_index);
-              } else {
-                add_new_tree_level();
-              }
-            } else if (current_char in name_quotes) {
-              if (
-                automaton_state == 1 &&
-                current_node_name.length === 0 &&
-                current_node_attribute.length === 0 &&
-                current_node_annotation.length === 0
-              ) {
-                automaton_state = 2;
-                quote_delimiter = current_char;
-                continue;
-              }
-              return generate_error(char_index);
-            } else {
-              if (current_char == "[") {
-                if (current_node_annotation.length) {
-                  return generate_error(char_index);
-                } else {
-                  automaton_state = 4;
-                }
-              } else {
-                if (automaton_state == 3) {
-                  current_node_attribute += current_char;
-                } else {
-                  if (space.test(current_char)) {
-                    continue;
-                  }
-                  if (current_char == ";") { // semicolon terminates tree definition 
-                    char_index = nwk_str.length;
-                    break;
-                  } 
-                  current_node_name += current_char;
-                }
-              }
-            }
-
-            break;
-          }
-          case 2: { // inside a quoted expression
-            if (current_char == quote_delimiter) {
-              if (char_index < nwk_str.length - 1) {
-                if (nwk_str[char_index + 1] == quote_delimiter) {
-                  char_index++;
-                  current_node_name += quote_delimiter;
-                  continue;
-                }
-              }
-              quote_delimiter = 0;
-              automaton_state = 1;
-              continue;
-            } else {
-              current_node_name += current_char;
-            }
-            break;
-          }
-          case 4: { // inside a comment / attribute
-            if (current_char == "]") {
-              automaton_state = 3;
-            } else {
-              if (current_char == "[") {
-                return generate_error(char_index);
-              }
-              current_node_annotation += current_char;
-            }
-            break;
-          }
-        }
-      } catch (e) {
-        return generate_error(char_index);
-      }
-    }
-
-    if (clade_stack.length != 1) {
-      return generate_error(nwk_str.length - 1);
-    }
-
-    if (current_node_name.length) {
-        tree_json.name = current_node_name;
-    }
-
-    return {
-      json: tree_json,
-      error: null
-    };
-  }
-
-  function d3_phylotree_phyloxml_parser(xml_string) {
-    function parse_phyloxml(node, index) {
-      if(node.clade) {
-        node.clade.forEach(parse_phyloxml)
-        node.children = node.clade;
-        delete node.clade;
-      }
-      node.original_child_order = index + 1;
-
-      if(node.branch_length) {
-        node.attribute = node.branch_length[0];
-      }
-      if(node.taxonomy) {
-        node.name = node.taxonomy[0].scientific_name[0];
-      }
-      node.annotation = "";
-    }
-
-    var tree_json; 
-    parseString(xml_string, function(error, xml) {
-      tree_json = xml.phyloxml.phylogeny[0].clade[0];
-      tree_json.name = "root";
-      parse_phyloxml(tree_json);
-    });
-
-    return {
-      json: tree_json,
-      error: null
-    }
-  }
 
   function d3_add_custom_menu(node, name, callback, condition) {
     if (!("menu_items" in node)) {
@@ -3221,43 +3039,6 @@ const parseString = require('xml2js').parseString;
  * @param {Object} nexml - A NeXML string.
  * @returns {Object} trees - An array of trees contained in the NeXML object.
  */
-  d3.layout.phylotree.nexml_parser = function (xml_string) {
-    var trees;
-    parseString(xml_string, function(error, xml) {
-      trees = xml["nex:nexml"].trees[0].tree.map(function(nexml_tree) {
-        var node_list = nexml_tree.node.map(d=>d.$),
-          node_hash = node_list.reduce(function(a,b){
-            b.edges = [];
-            b.name = b.id;
-            a[b.id] = b;
-            return a;
-          }, {}),
-          roots = node_list.filter(d=>d.root),
-          root_id = roots > 0 ? roots[0].id : node_list[0].id;
-        node_hash[root_id].name = 'root';
-
-        nexml_tree.edge.map(d=>d.$)
-          .forEach(function(edge){
-            node_hash[edge.source].edges.push(edge);
-          });
-        
-        function parse_nexml(node, index) {
-          if(node.edges) {
-            var targets = _.pluck(node.edges, 'target');
-            node.children = _.values(_.pick(node_hash, targets));
-            node.children.forEach(function(child, i){
-              child.attribute = node.edges[i].length || "";
-            });
-            node.children.forEach(parse_nexml);
-            node.annotation = "";
-          }
-        }
-
-        parse_nexml(node_hash[root_id]);
-        return node_hash[root_id];
-      });
-    });
-    return trees;
-  }
+  d3.layout.phylotree.nexml_parser = nexml_parser;
 
 }.call(this));
