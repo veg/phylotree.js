@@ -74,13 +74,16 @@ const parseString = require('xml2js').parseString;
             return Math.max(0, bl);
           }
         }
-        //console.log ("No branch length for ", _node.name);
         return undefined;
       },
       branch_length_accessor = def_branch_length_accessor,
       def_node_label = function(_node) {
-        if (options["internal-names"] || d3_phylotree_is_leafnode(_node)) {
+        if (d3_phylotree_is_leafnode(_node)) {
           return _node.name || "";
+        } else {
+            if (phylotree.show_internal_name (_node)) {
+                return _node.name;
+            }
         }
         return "";
       },
@@ -138,12 +141,14 @@ const parseString = require('xml2js').parseString;
         "tagged-node": "node-tagged",
         "selected-node": "node-selected",
         "collapsed-node": "node-collapsed",
+        "root-node" : "root-node",
         branch: "branch",
         "selected-branch": "branch-selected",
         "tagged-branch": "branch-tagged",
         "tree-selection-brush": "tree-selection-brush",
         "branch-tracer": "branch-tracer",
-        clade: "clade"
+        clade: "clade",
+        node_text: "phylotree-node-text"
       },
       nodes = [],
       links = [],
@@ -255,42 +260,139 @@ const parseString = require('xml2js').parseString;
         leaf_counter = 0;
 
       function process_internal_node(a_node) {
+        /** 
+            decide if the node will be shown, and compute it's top-to-bottom (breadthwise)
+            placement 
+        */
+      
         var count_undefined = 0;
-        a_node.x = a_node.children.map(tree_layout).reduce(function(a, b) {
-          if (typeof b == "number") return a + b;
-          count_undefined += 1;
-          return a;
-        }, 0.0);
-        if (count_undefined == a_node.children.length) {
-          a_node.notshown = true;
-          a_node.x = undefined;
-          return;
-        } else {
-          a_node.x /= a_node.children.length - count_undefined;
-        }
+        
+        if (phylotree.show_internal_name (a_node)) {
+            // do in-oder traversal to allow for proper internal node spacing  
+            // (x/2) >> 0 is integer division   
+            var half_way = (a_node.children.length / 2) >> 0;
+            var displayed_children = 0;
+            var managed_to_display = false;
+            for (var child_id = 0; child_id < a_node.children.length; child_id++) {
+                var child_x = tree_layout (a_node.children[child_id]);
+                if (typeof child_x == "number") {
+                    displayed_children ++;
+                } 
+                if (displayed_children >= half_way && !managed_to_display) {
+                      _handle_single_node_layout (a_node);
+                      managed_to_display = true;
+                }
+            }
+            
+            
+            if (displayed_children == 0) {
+                a_node.notshown = true;
+                a_node.x = undefined;
+            } else {
+                if (!managed_to_display) {
+                     _handle_single_node_layout (a_node);
+                }
+            }            
+        } else { 
+            // postorder layout 
+            a_node.x = a_node.children.map(tree_layout).reduce(function(a, b) {
+              if (typeof b == "number") return a + b;
+              count_undefined += 1;
+              return a;
+            }, 0.0);
+            if (count_undefined == a_node.children.length) {
+              a_node.notshown = true;
+              a_node.x = undefined;
+            } else {
+              a_node.x /= a_node.children.length - count_undefined;
+            }
+        } 
+      }
+
+      function _handle_single_node_layout (a_node) {
+          var _node_span = node_span(a_node) / rescale_node_span;  
+                    // compute the relative size of nodes (0,1) 
+                    // sum over all nodes is 1
+
+              x = a_node.x =
+                x + separation(last_node, a_node) + (last_span + _node_span) * 0.5;
+            
+              // separation is a user-settable callback to add additional spacing on nodes
+        
+              _extents[1][1] = Math.max(_extents[1][1], a_node.y);
+              _extents[1][0] = Math.min(
+                _extents[1][0],
+                a_node.y - _node_span * 0.5
+              );
+
+              if (is_under_collapsed_parent) {
+                _extents[0][1] = Math.max(
+                  _extents[0][1],
+                  save_x +
+                    (a_node.x - save_x) * options["compression"] +
+                    save_span +
+                    (_node_span * 0.5 + separation(last_node, a_node)) *
+                      options["compression"]
+                );
+              } else {
+                _extents[0][1] = Math.max(
+                  _extents[0][1],
+                  x + _node_span * 0.5 + separation(last_node, a_node)
+                );
+              }
+
+              last_node = a_node;
+              last_span = _node_span;
       }
 
       function tree_layout(a_node) {
+        /**
+            for each node: 
+                y: the y coordinate is root to tip
+                    (left to right in cladogram layout, radius is radial layout
+                x : the x coordinate is top-most to bottom-most 
+                    (top to bottom in cladogram layout, angle in radial layout)
+                
+                
+         @return the x-coordinate of a_node or undefined in the node is not displayed
+                 (hidden or under a collapsed node)
+        */
+        
+        // do not layout hidden nodes
         if (d3_phylotree_node_notshown(a_node)) {
           return undefined;
         }
 
         var is_leaf = d3_phylotree_is_leafnode(a_node);
 
-        a_node.text_angle = null;
-        a_node.text_align = null;
-        a_node.radius = null;
-        a_node.angle = null;
+        // the next four members are radial layout options
+        a_node.text_angle = null; // the angle at which text is being laid out 
+        a_node.text_align = null; // css alignment option for node labels 
+        a_node.radius = null; // radial layout radius
+        a_node.angle = null;  // radial layout angle (in radians)
 
+        /** determine the root-to-tip location of this node;
+            
+            the root node receives the co-ordinate of 0
+            
+            if the tree has branch lengths, then the placement of each node is simply the 
+            total branch length to the root
+            
+            if the tree has no branch lengths, all leaves get the same depth ("number of internal nodes on the deepest path")
+            and all internal nodes get the depth in integer units of the # of internal nodes on the path to the root + 1
+        
+        */
+        
         if (a_node["parent"]) {
           if (do_scaling) {
             if (undef_BL) {
-              return 0;
+              return 0.;
             }
             a_node.y = branch_length_accessor(a_node);
             if (typeof a_node.y === "undefined") {
+              console.log ("Missing BL for ", a_node);
               undef_BL = true;
-              return 0;
+              return 0.;
             }
             a_node.y += a_node.parent.y;
           } else {
@@ -298,51 +400,45 @@ const parseString = require('xml2js').parseString;
           }
         } else {
           x = 0.0;
-          _extents = [[0, 0], [0, 0]];
+          _extents = [[0, 0], 
+                      [0, 0]];
+                      
+          /** _extents computes a bounding box for the tree (initially NOT in screen 
+              coordinates)
+              
+              all account for node sizes
+              
+              _extents [1][0] -- the minimum x coordinate (breadth)
+              _extents [1][1] -- the maximum y coordinate (breadth)
+              _extents [1][0] -- the minimum y coordinate (root-to-tip, or depthwise)
+              _extents [1][1] -- the maximum y coordinate (root-to-tip, or depthwise)
+              
+              
+          
+          */
+                      
           last_node = null;
+            // last node laid out in the top bottom hierarchy
           last_span = 0;
+            // the span of the last node laid out in the top to bottom hierarchy
           a_node.y = 0.0;
         }
 
-        if (is_leaf) {
-          var _node_span = node_span(a_node) / rescale_node_span;
-
-          x = a_node.x =
-            x + separation(last_node, a_node) + (last_span + _node_span) * 0.5;
-
-          _extents[1][1] = Math.max(_extents[1][1], a_node.y);
-          _extents[1][0] = Math.min(
-            _extents[1][0],
-            a_node.y - _node_span * 0.5
-          );
-
-          if (is_under_collapsed_parent) {
-            _extents[0][1] = Math.max(
-              _extents[0][1],
-              save_x +
-                (a_node.x - save_x) * options["compression"] +
-                save_span +
-                (_node_span * 0.5 + separation(last_node, a_node)) *
-                  options["compression"]
-            );
-          } else {
-            _extents[0][1] = Math.max(
-              _extents[0][1],
-              x + _node_span * 0.5 + separation(last_node, a_node)
-            );
-          }
-
-          last_node = a_node;
-          last_span = _node_span;
-        } else {
-          var count_undefined = 0;
+        /** the next block has to do with top-to-bottom spacing of nodes **/
+        
+        if (is_leaf) { 
+          // displayed internal nodes are handled in `process_internal_node`
+          _handle_single_node_layout (a_node);
+          
+        } 
+        
+        if (!is_leaf) { // for internal nodes
           if (
             d3_phylotree_is_node_collapsed(a_node) &&
             !is_under_collapsed_parent
-          ) {
+          ) { // collapsed node
             save_x = x;
             save_span = last_span * 0.5;
-
             is_under_collapsed_parent = true;
             process_internal_node(a_node);
             is_under_collapsed_parent = false;
@@ -374,22 +470,22 @@ const parseString = require('xml2js').parseString;
               a_node.collapsed.push([a_node.x, a_node.y]);
               a_node.hidden = false;
             }
-          } else {
+          } else { // normal node, or under a collapsed parent
             process_internal_node(a_node);
           }
         }
-
         return a_node.x;
       }
 
       rescale_node_span =
         nodes
           .map(function(d) {
+            if (d3_phylotree_is_leafnode(d) || phylotree.show_internal_name (d))
             return node_span(d);
           })
           .reduce(function(p, c) {
-            return Math.min(c, p || 1e200);
-          }, null) || 1;
+            return Math.min(c, p);
+          }, Number.MAX_VALUE) || 1;
 
       nodes[0].x = tree_layout(nodes[0], do_scaling);
 
@@ -398,6 +494,8 @@ const parseString = require('xml2js').parseString;
       });
 
       if (do_scaling && undef_BL) {
+        // requested scaling, but some branches had no branch lengths
+        // redo layout without branch lengths
         do_scaling = false;
         nodes[0].x = tree_layout(nodes[0]);
       }
@@ -1041,8 +1139,8 @@ const parseString = require('xml2js').parseString;
               .append("li")
               .append("a")
               .attr("tabindex", "-1")
-              .text(d[0](node))
-              .on("click", d[1]);
+              .text(d3.functor (d[0])(node))
+              .on("click", _.partial (d[1], node));
           });
         }
 
@@ -1375,6 +1473,23 @@ const parseString = require('xml2js').parseString;
       return phylotree;
     };
 
+    phylotree.internal_names = function(attr) {
+      if (!arguments.length) return options["internal-names"];
+      options["internal-names"] = attr;
+      return phylotree;
+    };
+
+    phylotree.show_internal_name = function(node) {
+      var i_names = phylotree.internal_names ();
+      if (i_names) {
+        if (typeof i_names === "function") {
+            return i_names (node);
+        }
+        return i_names;
+      }      
+      return false;
+    };
+
     phylotree.align_tips = function(attr) {
       if (!arguments.length) return options["align-tips"];
       options["align-tips"] = attr;
@@ -1552,17 +1667,20 @@ const parseString = require('xml2js').parseString;
 
       }*/
 
-    phylotree.resort_children = function(comparator) {
+    phylotree.resort_children = function(comparator, start_node, filter) {
       function sort_children(node) {
+        if (filter && !filter(node)) {
+            return phylotree;
+        }
         if (node.children) {
-          for (var k = 0; k < node.children.length; k++) {
+          for (var k = 0; k < node.children.length; ++k) {
             sort_children(node.children[k]);
           }
           node.children.sort(comparator);
         }
       }
-
-      sort_children(nodes[0]);
+        
+      sort_children(start_node ? start_node : nodes[0]);
       phylotree.update_layout(nodes);
       phylotree.update();
       return phylotree;
@@ -1690,9 +1808,16 @@ const parseString = require('xml2js').parseString;
  * Reroot the tree on the given node.
  *
  * @param {Node} node Node to reroot on.
+ * @param {fraction} if specified, partition the branch not into 0.5 : 0.5, but according to 
+                     the specified fraction
+                     
  * @returns {Phylotree} The current ``phylotree``.
  */
-    phylotree.reroot = function(node) {
+    phylotree.reroot = function(node, fraction) {
+      /** TODO add the option to root in the middle of a branch */
+      
+      fraction = fraction !== undefined ? fraction : 0.5;
+      
       if (node.parent) {
         new_json = {
           name: "new_root",
@@ -1703,6 +1828,7 @@ const parseString = require('xml2js').parseString;
         nodes.forEach(function(n) {
           n.__mapped_bl = branch_length_accessor(n);
         });
+        
         phylotree.branch_length(function(n) {
           return n.__mapped_bl;
         });
@@ -1712,11 +1838,13 @@ const parseString = require('xml2js').parseString;
           parent_length = current_node.__mapped_bl,
           stashed_bl = _.noop();
 
-        if (current_node.parent) {
-          node.__mapped_bl =
-            node.__mapped_bl === undefined ? undefined : node.__mapped_bl * 0.5;
-          stashed_bl = current_node.__mapped_bl;
-          current_node.__mapped_bl = node.__mapped_bl;
+         var apportioned_bl = node.__mapped_bl === undefined ? undefined : node.__mapped_bl * fraction;
+         stashed_bl = current_node.__mapped_bl;
+         current_node.__mapped_bl = node.__mapped_bl === undefined ? undefined : node.__mapped_bl - apportioned_bl;
+         node.__mapped_bl = apportioned_bl;
+        
+         if (current_node.parent) {
+        
           new_json.children.push(current_node);
           while (current_node.parent) {
             var remove_idx = current_node.children.indexOf(remove_me);
@@ -1739,6 +1867,7 @@ const parseString = require('xml2js').parseString;
         } else {
           var remove_idx = current_node.children.indexOf(remove_me);
           current_node.children.splice(remove_idx, 1);
+          stashed_bl = current_node.__mapped_bl;
           remove_me = new_json;
         }
 
@@ -1758,6 +1887,7 @@ const parseString = require('xml2js').parseString;
           new_node.children = current_node.children.map(function(n) {
             return n;
           });
+          
           remove_me.children.push(new_node);
         }
 
@@ -2122,7 +2252,7 @@ const parseString = require('xml2js').parseString;
         .data(nodes.filter(d3_phylotree_is_node_collapsed), function(d) {
           return d.id || (d.id = ++node_id);
         });
-
+        
       var spline = function() {};
       var spline_f = _.noop();
 
@@ -2235,6 +2365,7 @@ const parseString = require('xml2js').parseString;
             return (d.collapsed_clade = spline(d.collapsed));
           });
       }
+      
 
       var drawn_nodes = enclosure
         .selectAll(d3_phylotree_node_css_selectors(css_classes))
@@ -2404,30 +2535,33 @@ const parseString = require('xml2js').parseString;
 
     phylotree.refresh = function() {
       var self = this;
+      
+      if (svg) { // for re-entrancy
 
-      var enclosure = svg.selectAll("." + css_classes["tree-container"]);
+          var enclosure = svg.selectAll("." + css_classes["tree-container"]);
 
-      var edges = enclosure.selectAll(
-        d3_phylotree_edge_css_selectors(css_classes)
-      );
-      edges.attr("class", phylotree.reclass_edge);
+          var edges = enclosure.selectAll(
+            d3_phylotree_edge_css_selectors(css_classes)
+          );
+          edges.attr("class", phylotree.reclass_edge);
 
-      if (edge_styler) {
-        edges.each(function(d) {
-          edge_styler(d3.select(this), d);
-        });
-      }
+          if (edge_styler) {
+            edges.each(function(d) {
+              edge_styler(d3.select(this), d);
+            });
+          }
 
-      var nodes = enclosure.selectAll(
-        d3_phylotree_node_css_selectors(css_classes)
-      );
-      nodes.attr("class", phylotree.reclass_node);
+          var nodes = enclosure.selectAll(
+            d3_phylotree_node_css_selectors(css_classes)
+          );
+          nodes.attr("class", phylotree.reclass_node);
 
-      if (node_styler) {
-        nodes.each(function(d) {
-          node_styler(d3.select(this), d);
-        });
-      }
+          if (node_styler) {
+            nodes.each(function(d) {
+              node_styler(d3.select(this), d);
+            });
+          }
+        }
     };
 
     phylotree.reclass_edge = function(edge) {
@@ -2451,6 +2585,10 @@ const parseString = require('xml2js').parseString;
 
       if (d3_phylotree_item_selected(node, selection_attribute_name)) {
         class_var += " " + css_classes["selected-node"];
+      }
+      
+      if (!node["parent"]) {
+        class_var += " " + css_classes["root-node"];
       }
 
       if (
@@ -2549,10 +2687,17 @@ const parseString = require('xml2js').parseString;
     };
     phylotree.draw_node = function(container, node, transitions) {
       container = d3.select(container);
+      
+      var is_leaf = d3_phylotree_is_leafnode(node);
+      
+      if (is_leaf) {
+        container.attr ("data-node-name", node.name);
+      }
 
-      if (d3_phylotree_is_leafnode(node)) {
-        var labels = container.selectAll("text").data([node]),
-          tracers = container.selectAll("line");
+      if (is_leaf || phylotree.show_internal_name(node) && ! (d3_phylotree_is_node_collapsed(node))) {
+      
+        var labels  = container.selectAll("text").data([node]),
+            tracers = container.selectAll("line");
 
         if (transitions) {
           labels
@@ -2564,9 +2709,11 @@ const parseString = require('xml2js').parseString;
         } else {
           labels.enter().append("text");
         }
-
+        
+        
         labels
           .on("click", phylotree.handle_node_click)
+          .classed(css_classes["node_text"], true)
           .attr("dy", function(d) {
             return shown_font_size * 0.33;
           })
@@ -2683,7 +2830,9 @@ const parseString = require('xml2js').parseString;
             });
           }
         }
-      } else {
+      } 
+      
+      if (!is_leaf) {
         var circles = container.selectAll("circle").data([node]),
           radius = phylotree.node_circle_size()(node);
 
@@ -2715,6 +2864,15 @@ const parseString = require('xml2js').parseString;
  */
     phylotree.get_nodes = function() {
       return nodes;
+    };
+
+/**
+ * Get the root node.
+ *
+ * @returns the current root node of the ``phylotree``.
+ */
+    phylotree.get_root_node = function() {
+      return nodes[0];
     };
 
 /**
@@ -2880,7 +3038,8 @@ const parseString = require('xml2js').parseString;
       css_classes["node"],
       css_classes["internal-node"],
       css_classes["collapsed-node"],
-      css_classes["tagged-node"]
+      css_classes["tagged-node"],
+      css_classes["root-node"]
     ].reduce(function(p, c, i, a) {
       return (p += "g." + c + (i < a.length - 1 ? "," : ""));
     }, "");
