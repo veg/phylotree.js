@@ -2988,6 +2988,27 @@ d3.layout.phylotree = function(container) {
     return parsed_tags;
   };
 
+  /**
+   * Return most recent common ancestor of a pair of nodes.
+   *
+   * @returns An array of strings, comprising each tag that was read.
+   */
+  phylotree.mrca = function(node1, node2) {
+    if(typeof node1 == "string") node1 = phylotree.get_node_by_name(node1);
+    if(typeof node2 == "string") node2 = phylotree.get_node_by_name(node2);
+    var shallow_node = node1.depth > node2.depth ? node2 : node1,
+      deep_node = node1.depth > node2.depth ? node1 : node2;
+    const depth_difference = deep_node.depth - shallow_node.depth;
+    for(let i=0; i < depth_difference; i++) {
+      deep_node = deep_node.parent;
+    }
+    while(deep_node != shallow_node) {
+      deep_node = deep_node.parent;
+      shallow_node = shallow_node.parent;
+    }
+    return deep_node;
+  }
+
   d3.rebind(phylotree, d3_hierarchy, "sort", "children", "value");
 
   // Add an alias for nodes and links, for convenience.
