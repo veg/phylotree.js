@@ -35,17 +35,35 @@ function argmax(arr) {
   return result;
 }
 
-var tree1, tree2, best_match = [];
+var tree1, tree2, mast_leaves = [];
+
+function ladder_traverser(node) {
+  var d = 1;
+  if (node.children && node.children.length) {
+    d += d3.max (node.children, function (d) { return d["count_depth"];});
+  }
+  node["count_depth"] = d;
+}
+
+function ladder_resorter(a,b) {
+  return a["count_depth"] - b["count_depth"];
+}
+
+var step = 0;
 d3.text('lasv-l_matched_sle.new', function(error, newick1) {
   d3.text('lasv-s_matched_sle.new', function(error, newick2) {
     tree1 = d3.layout.phylotree()
       .svg(d3.select("#tree1_display"));
     tree1(newick1)
+      .traverse_and_compute(ladder_traverser)
+      .resort_children(ladder_resorter)
       .layout();
 
     tree2 = d3.layout.phylotree()
       .svg(d3.select("#tree2_display"));
     tree2(newick2)
+      .traverse_and_compute(ladder_traverser)
+      .resort_children(ladder_resorter)
       .layout();
 
     var result = {}, 
@@ -94,28 +112,41 @@ d3.text('lasv-l_matched_sle.new', function(error, newick1) {
             ])
           ]);
         }
-        if(result[node2.name][node1.name].length > best_match.length) {
-          best_match = result[node2.name][node1.name];
+        /*
+        if(result[node2.name][node1.name].indexOf("G1529-L-SLE-2011") > -1) {
+          console.log(++step, node1.name, node2.name, result[node2.name][node1.name]);
+        }
+        */
+        if(result[node2.name][node1.name].length > mast_leaves.length) {
+          mast_leaves = result[node2.name][node1.name];
         }
       });
     });
     
+
     tree1.modify_selection(function(edge) { 
-      return best_match.indexOf(edge.target.name) > -1; 
+      return mast_leaves.indexOf(edge.target.name) > -1; 
     });
 
     tree1.internal_label (function (d) { 
       return d.reduce (function (prev, curr) { return curr.selected || prev; }, false)
     }, true);
 
+    tree1.update();
+
+    tree2.traverse_and_compute(function(node) {
+      node.name = node.name.replace('-L-', '-S-');
+    });
+
     tree2.modify_selection(function(edge) { 
-      return best_match.indexOf(edge.target.name) > -1; 
+      return mast_leaves.indexOf(edge.target.name.replace('-S-', '-L-')) > -1; 
     });
 
     tree2.internal_label (function (d) { 
       return d.reduce (function (prev, curr) { return curr.selected || prev; }, false)
     }, true);
 
+    tree2.update();
   });
 });
   </script>
