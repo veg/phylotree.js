@@ -817,17 +817,19 @@ d3.layout.phylotree = function(container) {
    * @returns {Phylotree} phylotree - itself, following the builder pattern.
    */
   function phylotree(nwk, options = {}) {
+
     d3_phylotree_add_event_listener();
     var bootstrap_values = options.bootstrap_values || "";
     var type = options.type || "";
 
     var _node_data;
 
-    if (type) {
-      // SW20180814 : Allowing for explicit type declaration of tree provided
+    // SW20180814 : Allowing for explicit type declaration of tree provided
+
+    // If the type is a string, check the parser_registry
+    if (_.isString(type)) {
       if (type in parser_registry) {
         _node_data = parser_registry[type](nwk, options);
-        console.log(_node_data);
       } else {
         // Hard failure
         self.logger.error(
@@ -837,6 +839,16 @@ d3.layout.phylotree = function(container) {
             _.keys(parser_registry)
         );
       }
+    } else if (_.isFunction(type)) {
+
+      // If the type is a function, try executing the function 
+      try {
+        _node_data = type(nwk, options);
+      } catch (e) {
+        // Hard failure
+        self.logger.error("Could not parse custom format!");
+      }
+      
     } else {
       // this builds children and links;
       if (nwk.name == "root") {
