@@ -12,7 +12,6 @@ var nexml_parser = function(xml_string, options) {
   var trees;
   parseString(xml_string, function(error, xml) {
     trees = xml["nex:nexml"].trees[0].tree.map(function(nexml_tree) {
-      console.log(nexml_tree);
       var node_list = nexml_tree.node.map(d => d.$),
         node_hash = node_list.reduce(function(a, b) {
           b.edges = [];
@@ -41,7 +40,6 @@ var nexml_parser = function(xml_string, options) {
       }
 
       parse_nexml(node_hash[root_id]);
-      console.log(node_hash);
       return node_hash[root_id];
     });
   });

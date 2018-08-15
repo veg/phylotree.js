@@ -827,6 +827,7 @@ d3.layout.phylotree = function(container) {
       // SW20180814 : Allowing for explicit type declaration of tree provided
       if (type in parser_registry) {
         _node_data = parser_registry[type](nwk, options);
+        console.log(_node_data);
       } else {
         // Hard failure
         self.logger.error(
