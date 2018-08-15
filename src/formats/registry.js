@@ -1,4 +1,3 @@
-const augur_parser = require("./augur");
 const nexml_parser = require("./nexml");
 const newick_parser = require("./newick");
 const phyloxml_parser = require("./phyloxml");
@@ -8,7 +7,6 @@ const phyloxml_parser = require("./phyloxml");
  * options
  */
 var format_registry = {
-  augur: augur_parser,
   nexml: nexml_parser,
   phyloxml: phyloxml_parser,
   nwk: newick_parser
