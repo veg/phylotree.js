@@ -29,6 +29,7 @@ var newick_parser = function(nwk_str, bootstrap_values) {
 
   function finish_node_definition() {
     var this_node = clade_stack.pop();
+    this_node["name"] = current_node_name;
     if (bootstrap_values && "children" in this_node) {
       this_node["bootstrap_values"] = current_node_name;
     } else {
@@ -186,6 +187,8 @@ var newick_parser = function(nwk_str, bootstrap_values) {
 
   if (current_node_name.length) {
     tree_json.name = current_node_name;
+  } else {
+    tree_json.name = " ";
   }
 
   return {

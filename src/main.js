@@ -7,13 +7,6 @@ const d3_phylotree_phyloxml_parser = require("./formats/phyloxml");
 var d3_layout_phylotree_event_id = "d3.layout.phylotree.event",
   d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
 
-// SW20180814 TODO: Remove; Registry functions should be private
-d3.layout.newick_parser = function(nwk_str, bootstrap_values) {
-  return d3_phylotree_newick_parser(nwk_str, {
-    bootstrap_values: bootstrap_values
-  });
-};
-
 /**
  * Instantiate a phylotree.
  *
@@ -248,6 +241,15 @@ d3.layout.phylotree = function(container) {
 
   self.container = container || "body";
   self.logger = options.logger;
+
+  // SW20180814 TODO: Remove; Registry functions should be private
+  d3.layout.newick_parser = function(nwk_str, bootstrap_values) {
+    return d3_phylotree_newick_parser(nwk_str, {
+      bootstrap_values: bootstrap_values
+    });
+  };
+
+
 
   /*--------------------------------------------------------------------------------------*/
 
@@ -820,7 +822,7 @@ d3.layout.phylotree = function(container) {
 
     d3_phylotree_add_event_listener();
     var bootstrap_values = options.bootstrap_values || "";
-    var type = options.type || "";
+    var type = options.type || undefined;
 
     var _node_data;
 
