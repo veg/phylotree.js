@@ -166,12 +166,18 @@ d3.layout.phylotree = function(container) {
         return y_coord(d);
       })
       .interpolate("step-before"),
+    
+    line_segment_placer = function (edge, where) {
+       return { 'x' : x_coord(edge.target) + (x_coord(edge.source)-x_coord(edge.target))*where, 
+                'y' : y_coord(edge.target) };
+    },
+    
     ensure_size_is_in_px = function(value) {
       return typeof value === "number" ? value + "px" : value;
     },
     draw_arc = function(points) {
       var start = radial_mapper(points[0].radius, points[0].angle),
-        end = radial_mapper(points[0].radius, points[1].angle);
+          end   = radial_mapper(points[0].radius, points[1].angle);
 
       return (
         "M " +
@@ -193,10 +199,16 @@ d3.layout.phylotree = function(container) {
         "," +
         y_coord(points[1])
       );
+    },
+    
+    arc_segment_placer = function (edge, where) {
+        var r = radial_mapper (edge.target.radius + (edge.source.radius - edge.target.radius) * where , edge.target.angle);
+        return {"x": x_coord(r), "y" : y_coord (r)};
     };
-
-  (draw_branch = draw_line),
+    
+    (draw_branch = draw_line),
     (draw_scale_bar = null),
+    (edge_placer = line_segment_placer),
     (rescale_node_span = 1),
     (count_listener_handler = function() {}),
     (layout_listener_handler = function() {}),
@@ -504,8 +516,8 @@ d3.layout.phylotree = function(container) {
             return node_span(d);
         })
         .reduce(function(p, c) {
-          return Math.min(c, p);
-        }, Number.MAX_VALUE) || 1;
+            return Math.min(c, p || 1e200);
+          }, null) || 1;
 
     nodes[0].x = tree_layout(nodes[0], do_scaling);
 
@@ -569,6 +581,7 @@ d3.layout.phylotree = function(container) {
       // map the nodes to polar coordinates
 
       draw_branch = draw_arc;
+      edge_placer = arc_segment_placer;
 
       var last_child_angle = null,
         last_circ_position = null,
@@ -724,6 +737,7 @@ d3.layout.phylotree = function(container) {
       do_lr();
 
       draw_branch = draw_line;
+      edge_placer = line_segment_placer;
       right_most_leaf = 0;
       nodes.forEach(function(d) {
         d.x *= scales[0];
@@ -1218,6 +1232,8 @@ d3.layout.phylotree = function(container) {
    * its attributes can be referenced. These can be used to apply styles to
    * ``element``, which will be a D3 selection corresponding to the SVG element
    * that makes up the current node.
+   * ``transition`` is the third argument which indicates that there is an ongoing
+   * d3 transition in progress
    *
    * @param {Function} attr - Optional; if setting, the node styler function to be set.
    * @returns The ``node_styler`` function if getting, or the current ``phylotree`` if setting.
@@ -1246,6 +1262,15 @@ d3.layout.phylotree = function(container) {
     if (!arguments.length) return edge_styler;
     edge_styler = attr.bind(this);
     return phylotree;
+  };
+
+
+  /** compute x, y coordinates (in terms of the enclosing tree-wide <g> 
+      where one could place something along an edge at a given fraction of its length (0 - end, 1-start); 
+   */
+
+  phylotree.place_along_an_edge = function(e, where) {
+    return edge_placer (e, where);
   };
 
   /**
@@ -1830,25 +1855,66 @@ d3.layout.phylotree = function(container) {
    * Traverse the tree in a prescribed order, and compute a value at each node.
    *
    * @param {Function} callback A function to be called on each node.
-   * @param {String} traversal_type Either ``"pre-order"`` or ``"post-order"``.
+   * @param {String} traversal_type Either ``"pre-order"`` or ``"post-order"`` or ``"in-order"``.
+   * @param {Node} root_node start traversal here, if provided, otherwise start at root
+   * @param {Function} backtrack ; if provided, then at each node n, backtrack (n) will be called,
+                                   and if it returns TRUE, traversal will NOT continue past into this
+                                   node and its children
    */
-  phylotree.traverse_and_compute = function(callback, traversal_type) {
+  phylotree.traverse_and_compute = function(callback, traversal_type, root_node, backtrack) {
     traversal_type = traversal_type || "post-order";
 
     function post_order(node) {
-      if (node.children) {
-        for (var k = 0; k < node.children.length; k++) {
-          post_order(node.children[k]);
-        }
+      if (! (backtrack && backtrack (node))) {
+          if (node.children) {
+            for (var k = 0; k < node.children.length; k++) {
+              post_order(node.children[k]);
+            }
+          }
+          callback(node);
       }
-      callback(node);
     }
 
-    if (traversal_type == "post-order") {
-      traversal_type = post_order;
+    function pre_order(node) {
+      if (! (backtrack && backtrack (node))) {
+          callback(node);
+          if (node.children) {
+            for (var k = 0; k < node.children.length; k++) {
+              pre_order(node.children[k]);
+            }
+          }
+      } 
     }
 
-    traversal_type(nodes[0]);
+
+    function in_order(node) {
+      if (! (backtrack && backtrack (node))) {
+          if (node.children) {
+            var upto = Min (node.children.length, 1);
+            for (var k = 0; k < upto; k++) {
+              in_order(node.children[k]);
+            }
+            callback(node);
+            for (var k = upto; k < node.children; k++) {
+              in_order(node.children[k]);
+            }
+          } else {
+             callback(node);         
+          }
+        }
+    }
+    
+    if (traversal_type == "pre-order") {
+      traversal_type = pre_order;
+    } else {
+        if (traversal_type == "in-order") {
+            traversal_type = in_order;
+        } else {
+            traversal_type = post_order;
+        }
+    }
+
+    traversal_type(root_node ? root_node : nodes[0]);
     return phylotree;
   };
 
@@ -2067,6 +2133,21 @@ d3.layout.phylotree = function(container) {
     if (!arguments.length) return branch_length_accessor;
     branch_length_accessor = attr ? attr : def_branch_length_accessor;
     return phylotree;
+  };
+
+  /**
+   * Returns T/F whether every branch in the tree has a branch length
+   *
+   * @returns {Object} true if  every branch in the tree has a branch length
+   */
+  phylotree.has_branch_lengths = function() {
+    var bl = phylotree.branch_length ();
+    if (bl) {
+        return _.every (phylotree.get_nodes(), function (node) {
+            return !node.parent || !_.isUndefined (bl(node));
+        });
+    }   
+    return false;
   };
 
   /**
@@ -2736,7 +2817,7 @@ d3.layout.phylotree = function(container) {
     }
 
     if (edge_styler) {
-      edge_styler(container, edge);
+      edge_styler(container, edge, transition);
     }
 
     return phylotree;
