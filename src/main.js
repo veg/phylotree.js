@@ -1843,40 +1843,52 @@ d3.layout.phylotree = function(container) {
    *
    * @param {Function} callback A function to be called on each node.
    * @param {String} traversal_type Either ``"pre-order"`` or ``"post-order"`` or ``"in-order"``.
+   * @param {Node} root_node start traversal here, if provided, otherwise start at root
+   * @param {Function} backtrack ; if provided, then at each node n, backtrack (n) will be called,
+                                   and if it returns TRUE, traversal will NOT continue past into this
+                                   node and its children
    */
-  phylotree.traverse_and_compute = function(callback, traversal_type) {
+  phylotree.traverse_and_compute = function(callback, traversal_type, root_node, backtrack) {
     traversal_type = traversal_type || "post-order";
 
     function post_order(node) {
-      if (node.children) {
-        for (var k = 0; k < node.children.length; k++) {
-          post_order(node.children[k]);
-        }
+      if (! (backtrack && backtrack (node))) {
+          if (node.children) {
+            for (var k = 0; k < node.children.length; k++) {
+              post_order(node.children[k]);
+            }
+          }
+          callback(node);
       }
-      callback(node);
     }
 
     function pre_order(node) {
-      callback(node);
-      if (node.children) {
-        for (var k = 0; k < node.children.length; k++) {
-          pre_order(node.children[k]);
-        }
-      }
+      if (! (backtrack && backtrack (node))) {
+          callback(node);
+          if (node.children) {
+            for (var k = 0; k < node.children.length; k++) {
+              pre_order(node.children[k]);
+            }
+          }
+      } 
     }
 
 
     function in_order(node) {
-      if (node.children) {
-        var upto = Min (node.children.length, 1);
-        for (var k = 0; k < upto; k++) {
-          in_order(node.children[k]);
+      if (! (backtrack && backtrack (node))) {
+          if (node.children) {
+            var upto = Min (node.children.length, 1);
+            for (var k = 0; k < upto; k++) {
+              in_order(node.children[k]);
+            }
+            callback(node);
+            for (var k = upto; k < node.children; k++) {
+              in_order(node.children[k]);
+            }
+          } else {
+             callback(node);         
+          }
         }
-        callback(node);
-        for (var k = upto; k < node.children; k++) {
-          in_order(node.children[k]);
-        }
-      }
     }
     
     if (traversal_type == "pre-order") {
@@ -1889,7 +1901,7 @@ d3.layout.phylotree = function(container) {
         }
     }
 
-    traversal_type(nodes[0]);
+    traversal_type(root_node ? root_node : nodes[0]);
     return phylotree;
   };
 
