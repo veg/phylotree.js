@@ -3006,20 +3006,32 @@ d3.layout.phylotree = function(container) {
    *
    * @returns An array of strings, comprising each tag that was read.
    */
-  phylotree.mrca = function(node1, node2) {
-    if(typeof node1 == "string") node1 = phylotree.get_node_by_name(node1);
-    if(typeof node2 == "string") node2 = phylotree.get_node_by_name(node2);
-    var shallow_node = node1.depth > node2.depth ? node2 : node1,
-      deep_node = node1.depth > node2.depth ? node1 : node2;
-    const depth_difference = deep_node.depth - shallow_node.depth;
-    for(let i=0; i < depth_difference; i++) {
-      deep_node = deep_node.parent;
+  phylotree.mrca = function() {
+    var mrca_nodes, mrca;
+    if(arguments.length == 1) {
+      mrca_nodes = arguments[0];
     }
-    while(deep_node != shallow_node) {
-      deep_node = deep_node.parent;
-      shallow_node = shallow_node.parent;
-    }
-    return deep_node;
+    else {
+      mrca_nodes = Array.from(arguments);
+    };
+    mrca_nodes = mrca_nodes.map(function(mrca_node) {
+      return typeof mrca_node == "string" ? mrca_node : mrca_node.name;
+    });
+    this.traverse_and_compute(function(node) {
+      if(!node.children) {
+        node.mrca = _.intersection([node.name], mrca_nodes);
+      } else if(!node.parent) {
+        if(!mrca) {
+          mrca = node;
+        }
+      } else {
+        node.mrca = _.union(...node.children.map(child=>child.mrca));
+        if(!mrca && node.mrca.length == mrca_nodes.length) {
+          mrca = node;
+        }
+      }
+    });
+    return mrca;
   }
 
   d3.rebind(phylotree, d3_hierarchy, "sort", "children", "value");
