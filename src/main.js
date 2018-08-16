@@ -202,7 +202,8 @@ d3.layout.phylotree = function(container) {
     },
     
     arc_segment_placer = function (edge, where) {
-        throw ("Not implemented yet");
+        var r = radial_mapper (edge.target.radius + (edge.source.radius - edge.target.radius) * where , edge.target.angle);
+        return {"x": x_coord(r), "y" : y_coord (r)};
     };
     
     (draw_branch = draw_line),
