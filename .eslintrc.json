@@ -16,10 +16,11 @@
     "strict": [1, "never"],
     "no-unused-vars": [1, {"vars":"all", "args":"none"}],
     "no-self-assign": 1,
-    "no-unreachable": 2,
+    "no-unreachable": 1,
     "no-debugger": 2,
-    "no-console": 2,
-    "no-undef": 1
+    "no-console": 1,
+    "no-undef": 1,
+    "no-useless-escape": 1
   },
   "globals": {
     "_": false,
