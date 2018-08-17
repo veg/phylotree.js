@@ -1521,6 +1521,42 @@ d3.layout.phylotree = function(container) {
     }
     return phylotree;
   };
+  
+  /**
+    Export the nodes of the tree with all local keys to JSON
+    The return will be an array of nodes in the specified traversal_type
+    ('post-order' : default, 'pre-order', or 'in-order')
+    with parents and children referring to indices in that array
+
+  */
+  
+  phylotree.json = function (traversal_type) {
+    var index = 0;
+    phylotree.traverse_and_compute (function (n) {
+        n.json_export_index = index++;
+    }, traversal_type);
+    
+    var node_array = new Array (index);
+    index = 0;
+    phylotree.traverse_and_compute (function (n) {
+        var node_copy = _.clone (n);
+        delete node_copy.json_export_index;
+        if (n.parent) {
+            node_copy.parent = n.parent.json_export_index;  
+        } 
+        if (n.children) {
+            node_copy.children = _.map (n.children, function (c) {return c.json_export_index});
+        }
+        node_array [index++] = node_copy;
+
+    }, traversal_type);
+      
+     phylotree.traverse_and_compute (function (n) {
+        delete n.json_export_index;
+    }, traversal_type);
+   
+    return JSON.stringify (node_array);
+  };
 
   phylotree.trigger_refresh = function() {
     trigger_refresh(phylotree);
