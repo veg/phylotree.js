@@ -1,13 +1,5 @@
 const parseString = require("xml2js").parseString;
 
-/**
- * A parser for NexML. This is a separate function, since NeXML objects
- * can contain multiple trees. Results should be passed into a phylotree
- * object, as shown in the examples.
- *
- * @param {Object} nexml - A NeXML string.
- * @returns {Object} trees - An array of trees contained in the NeXML object.
- */
 var nexml_parser = function(xml_string, options) {
   var trees;
   parseString(xml_string, function(error, xml) {

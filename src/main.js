@@ -255,6 +255,19 @@ d3.layout.phylotree = function(container) {
   self.logger = options.logger;
 
   // SW20180814 TODO: Remove; Registry functions should be private
+
+/**
+ * Parses a Newick string into an equivalent JSON representation that is
+ * suitable for consumption by ``d3.layout.hierarchy``.
+ *
+ * Optionally accepts bootstrap values. Currently supports Newick strings with or without branch lengths,
+ * as well as tagged trees such as
+ *  ``(a,(b{TAG},(c{TAG},d{ANOTHERTAG})))``
+ *
+ * @param {String} nwk_str - A string representing a phylogenetic tree in Newick format.
+ * @param {Object} bootstrap_values.
+ * @returns {Object} An object with keys ``json`` and ``error``.
+ */
   d3.layout.newick_parser = function(nwk_str, bootstrap_values) {
     return d3_phylotree_newick_parser(nwk_str, {
       bootstrap_values: bootstrap_values
@@ -3107,6 +3120,39 @@ d3.layout.phylotree = function(container) {
     return parsed_tags;
   };
 
+  /**
+   * Return most recent common ancestor of a pair of nodes.
+   *
+   * @returns An array of strings, comprising each tag that was read.
+   */
+  phylotree.mrca = function() {
+    var mrca_nodes, mrca;
+    if(arguments.length == 1) {
+      mrca_nodes = arguments[0];
+    }
+    else {
+      mrca_nodes = Array.from(arguments);
+    };
+    mrca_nodes = mrca_nodes.map(function(mrca_node) {
+      return typeof mrca_node == "string" ? mrca_node : mrca_node.name;
+    });
+    this.traverse_and_compute(function(node) {
+      if(!node.children) {
+        node.mrca = _.intersection([node.name], mrca_nodes);
+      } else if(!node.parent) {
+        if(!mrca) {
+          mrca = node;
+        }
+      } else {
+        node.mrca = _.union(...node.children.map(child=>child.mrca));
+        if(!mrca && node.mrca.length == mrca_nodes.length) {
+          mrca = node;
+        }
+      }
+    });
+    return mrca;
+  }
+
   d3.rebind(phylotree, d3_hierarchy, "sort", "children", "value");
 
   // Add an alias for nodes and links, for convenience.
@@ -3336,4 +3382,12 @@ d3.layout.phylotree.is_leafnode = d3_phylotree_is_leafnode;
 d3.layout.phylotree.add_custom_menu = d3_add_custom_menu;
 d3.layout.phylotree.trigger_refresh = d3_phylotree_trigger_refresh;
 // SW20180814 TODO: Remove. Registry functions should be private.
+/**
+ * A parser for NexML. This is a separate function, since NeXML objects
+ * can contain multiple trees. Results should be passed into a phylotree
+ * object, as shown in the examples.
+ *
+ * @param {Object} nexml - A NeXML string.
+ * @returns {Object} trees - An array of trees contained in the NeXML object.
+ */
 d3.layout.phylotree.nexml_parser = nexml_parser;
