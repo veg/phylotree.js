@@ -2697,8 +2697,10 @@ d3.layout.phylotree = function(container) {
           css_classes["tree-selection-brush"]
       );
       //.remove();
+      d3_phylotree_trigger_layout(phylotree);
       return phylotree.update(transitions);
     }
+    d3_phylotree_trigger_layout(phylotree);
     return phylotree;
   };
 
