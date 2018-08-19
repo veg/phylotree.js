@@ -23,6 +23,9 @@ cache:
   - ".eslintcache"
   - node_modules
 
+install:
+  - pip install -r requirements.txt
+  
 script:
   - webpack
   - yarn lint
