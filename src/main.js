@@ -1447,12 +1447,14 @@ d3.layout.phylotree = function(container) {
         });
       }
 
+      var counts;
+
       if (do_refresh) {
         if (!skip_refresh) {
           d3_phylotree_trigger_refresh(phylotree);
         }
         if (phylotree.count_handler()) {
-          var counts = {};
+          counts = {};
           counts[attr] = links.reduce(function(p, c) {
             return p + (c[attr] ? 1 : 0);
           }, 0);
@@ -1513,7 +1515,7 @@ d3.layout.phylotree = function(container) {
           d3_phylotree_trigger_refresh(phylotree);
         }
         if (phylotree.count_handler()) {
-          var counts = {};
+          counts = {};
           counts[attr] = links.reduce(function(p, c) {
             return p + (c[attr] ? 1 : 0);
           }, 0);
@@ -1931,7 +1933,7 @@ d3.layout.phylotree = function(container) {
               in_order(node.children[k]);
             }
             callback(node);
-            for (var k = upto; k < node.children; k++) {
+            for (var k = upto; k < node.children; k++) { // eslint-disable-line no-redeclare
               in_order(node.children[k]);
             }
           } else {
@@ -1999,10 +2001,12 @@ d3.layout.phylotree = function(container) {
           : node.__mapped_bl - apportioned_bl;
       node.__mapped_bl = apportioned_bl;
 
+      var remove_idx;
+
       if (current_node.parent) {
         new_json.children.push(current_node);
         while (current_node.parent) {
-          var remove_idx = current_node.children.indexOf(remove_me);
+          remove_idx = current_node.children.indexOf(remove_me);
           if (current_node.parent.parent) {
             current_node.children.splice(remove_idx, 1, current_node.parent);
           } else {
@@ -2017,10 +2021,10 @@ d3.layout.phylotree = function(container) {
           remove_me = current_node;
           current_node = current_node.parent;
         }
-        var remove_idx = current_node.children.indexOf(remove_me);
+        remove_idx = current_node.children.indexOf(remove_me);
         current_node.children.splice(remove_idx, 1);
       } else {
-        var remove_idx = current_node.children.indexOf(remove_me);
+        remove_idx = current_node.children.indexOf(remove_me);
         current_node.children.splice(remove_idx, 1);
         stashed_bl = current_node.__mapped_bl;
         remove_me = new_json;
@@ -2991,9 +2995,11 @@ d3.layout.phylotree = function(container) {
         tracers.remove();
       }
 
+      var circles;
+
       if (options["draw-size-bubbles"]) {
         var shift = phylotree.node_bubble_size(node);
-        var circles = container.selectAll("circle").data([shift]);
+        circles = container.selectAll("circle").data([shift]);
         circles.enter().append("circle");
         if (transitions) {
           circles = circles.transition();
@@ -3020,7 +3026,7 @@ d3.layout.phylotree = function(container) {
     }
 
     if (!is_leaf) {
-      var circles = container.selectAll("circle").data([node]),
+      circles = container.selectAll("circle").data([node]),
         radius = phylotree.node_circle_size()(node);
 
       if (radius > 0) {
@@ -3132,7 +3138,7 @@ d3.layout.phylotree = function(container) {
     }
     else {
       mrca_nodes = Array.from(arguments);
-    };
+    }
     mrca_nodes = mrca_nodes.map(function(mrca_node) {
       return typeof mrca_node == "string" ? mrca_node : mrca_node.name;
     });

@@ -22,16 +22,18 @@
   },
   "devDependencies": {
     "concurrently": "^3.6.1",
+    "eslint": "^5.3.0",
     "http-server": "^0.11.1",
     "jsdom": "9.12.x",
     "prettier": "^1.14.2",
     "should": "^11.2.1",
-    "yarn": "^1.9.4",
     "webpack": "^4.6.0",
-    "webpack-cli": "^2.0.15"
+    "webpack-cli": "^2.0.15",
+    "yarn": "^1.9.4"
   },
   "scripts": {
     "docs": "sphinx-build -b html docs documentation",
-    "develop": "concurrently \"webpack --watch --mode=development\" \"http-server\""
+    "develop": "concurrently \"webpack --watch --mode=development\" \"http-server\"",
+    "lint": "eslint --ext .js --ignore-pattern data,docs,images,node_modules ./"
   }
 }
