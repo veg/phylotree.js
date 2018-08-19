@@ -24,7 +24,8 @@ cache:
   - node_modules
 
 install:
-  - pip install -r requirements.txt --user phylotree
+  - yarn add global jsdoc
+  - pip install -r requirements.txt --user
   
 script:
   - webpack
