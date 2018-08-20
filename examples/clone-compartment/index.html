@@ -324,13 +324,12 @@
 
     function loadTreeFromURL(url) {
       d3.text(url, function(error, newick) {
-
         drawATree(newick);
       });
     }
 
     $("#validate_newick").on("click", function(e) {
-      var res = d3_phylotree_newick_parser($('textarea[id$="nwk_spec"]').val(), true);
+      var res = d3.layout.newick_parser($('textarea[id$="nwk_spec"]').val(), true);
       if (res["error"] || !res["json"]) {
         var warning_div = d3.select("#newick_body").selectAll("div  .alert-danger").data([res["error"]])
         warning_div.enter().append("div");
