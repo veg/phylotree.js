@@ -13,10 +13,10 @@
     "index.html"
   ],
   "dependencies": {
-    "bootstrap": "3.x",
+    "bootstrap": "4",
     "d3": "3.x",
     "font-awesome": "4.x",
-    "jquery": "1.x",
+    "jquery": "3",
     "underscore": "1.x",
     "xml2js": "^0.4.19"
   },
@@ -24,7 +24,9 @@
     "concurrently": "^3.6.1",
     "eslint": "^5.3.0",
     "http-server": "^0.11.1",
+    "jsdoc": "^3.5.5",
     "jsdom": "9.12.x",
+    "mocha": "^5.2.0",
     "prettier": "^1.14.2",
     "should": "^11.2.1",
     "webpack": "^4.6.0",

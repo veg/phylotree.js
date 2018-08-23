@@ -1,3 +1,5 @@
+const parseString = require("xml2js").parseString;
+
 var phyloxml_parser = function(xml_string, options) {
   function parse_phyloxml(node, index) {
     if (node.clade) {
