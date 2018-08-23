@@ -1663,8 +1663,10 @@ $("#rotate_menu").on ("click", function (e) {
 
 function update_controls () {
     example_controls.selectAll ('*').remove();
-    $("[data-mode='" + (tree.radial()      ? 'radial' : 'linear') + "']").click();
-    $("[data-align='"  + (tree.align_tips () ? 'right' : 'left') + "']").click();
+    $("[data-mode='" + (tree.radial()      ? 'radial' : 'linear') + "']").addClass("active");
+    $("[data-mode='" + (tree.radial()      ? 'linear' : 'radial') + "']").removeClass("active");
+    $("[data-align='"  + (tree.align_tips () ? 'right' : 'left') + "']").addClass("active");
+    $("[data-align='"  + (tree.align_tips () ? 'left' : 'right') + "']").removeClass("active");
 }
 
 $("#example_hiv_compartments").on ("click", function (e) {
