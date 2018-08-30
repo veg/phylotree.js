@@ -4,14 +4,17 @@
 <head>
   <meta charset="utf-8">
 
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
-  <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.1/spacelab/bootstrap.min.css">
+
+  <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
+
   <script src="//code.jquery.com/jquery.js"></script>
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script src="/phylotree.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
@@ -43,9 +46,47 @@ body {
 </head>
 
 <body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="#">SIV Tanglegram</a>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="nav navbar-nav mr-auto">
+        <li>
+          <a id="current-dataset-label" class="nav-link" href="#"></a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Dataset 
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown" id="selection_name_dropdown">
+            <a id="load-bone-marrow" class="dropdown-item" href="#">Bone Marrow</a>
+            <a id="load-cd14" class="dropdown-item" href="#">CD14</a>
+            <a id="load-cd3" class="dropdown-item" href="#">CD3</a>
+            <a id="load-lung-macs" class="dropdown-item" href="#">Lung Macs</a>
+            <a id="load-plasma" class="dropdown-item" href="#">Plasma</a>
+          </div>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+           Toggle label 
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown" id="selection_name_dropdown">
+            <a id="toggle-state" class="dropdown-item" href="#">State</a>
+            <a id="toggle-time" class="dropdown-item" href="#">Time</a>
+            <a id="toggle-off" class="dropdown-item" href="#">Off</a>
+          </div>
+        </li>
+
+      </ul>
+    </div>
+  </nav>
+
+ 
+<!--
   <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
+      
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
           <span class="sr-only">Toggle navigation</span>
@@ -56,7 +97,7 @@ body {
         <a class="navbar-brand" href="#">SIV Tanglegram</a>
       </div>
 
-      <!-- Collect the nav links, forms, and other content for toggling -->
+      
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <p class="navbar-text" id="current-dataset-label"></p> 
         <ul class="nav navbar-nav">
@@ -81,9 +122,10 @@ body {
           </li>
 
         </ul>
-      </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
+  
+ 
   </nav>
+-->
   <svg id="tree_display" />
   <div id="legend-div">
     <svg id="legend" />

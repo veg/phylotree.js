@@ -1022,13 +1022,15 @@ d3.layout.phylotree = function(container) {
     if (menu_object.empty()) {
       menu_object = d3
         .select(self.container)
-        .append("ul")
+        .append("div")
         .attr("id", d3_layout_phylotree_context_menu_id)
         .attr("class", "dropdown-menu")
         .attr("role", "menu");
     }
 
-    menu_object.selectAll("li").remove();
+    menu_object.selectAll("a").remove();
+    menu_object.selectAll("h6").remove();
+    menu_object.selectAll("div").remove();
     if (node) {
       if (
         !_.some([
@@ -1043,8 +1045,8 @@ d3.layout.phylotree = function(container) {
       if (!d3_phylotree_is_leafnode(node)) {
         if (options["collapsible"]) {
           menu_object
-            .append("li")
             .append("a")
+            .attr("class", "dropdown-item")
             .attr("tabindex", "-1")
             .text(
               d3_phylotree_is_node_collapsed(node)
@@ -1056,9 +1058,9 @@ d3.layout.phylotree = function(container) {
               phylotree.toggle_collapse(node).update();
             });
           if (options["selectable"]) {
-            menu_object.append("li").attr("class", "divider");
+            menu_object.append("div").attr("class", "dropdown-divider");
             menu_object
-              .append("li")
+              .append("h6")
               .attr("class", "dropdown-header")
               .text("Toggle selection");
           }
@@ -1066,8 +1068,8 @@ d3.layout.phylotree = function(container) {
 
         if (options["selectable"]) {
           menu_object
-            .append("li")
             .append("a")
+            .attr("class", "dropdown-item")
             .attr("tabindex", "-1")
             .text("All descendant branches")
             .on("click", function(d) {
@@ -1078,8 +1080,8 @@ d3.layout.phylotree = function(container) {
             });
 
           menu_object
-            .append("li")
             .append("a")
+            .attr("class", "dropdown-item")
             .attr("tabindex", "-1")
             .text("All terminal branches")
             .on("click", function(d) {
@@ -1090,8 +1092,8 @@ d3.layout.phylotree = function(container) {
             });
 
           menu_object
-            .append("li")
             .append("a")
+            .attr("class", "dropdown-item")
             .attr("tabindex", "-1")
             .text("All internal branches")
             .on("click", function(d) {
@@ -1106,8 +1108,8 @@ d3.layout.phylotree = function(container) {
       if (node.parent) {
         if (options["selectable"]) {
           menu_object
-            .append("li")
             .append("a")
+            .attr("class", "dropdown-item")
             .attr("tabindex", "-1")
             .text("Incident branch")
             .on("click", function(d) {
@@ -1116,8 +1118,8 @@ d3.layout.phylotree = function(container) {
             });
 
           menu_object
-            .append("li")
             .append("a")
+            .attr("class", "dropdown-item")
             .attr("tabindex", "-1")
             .text("Path to root")
             .on("click", function(d) {
@@ -1126,14 +1128,14 @@ d3.layout.phylotree = function(container) {
             });
 
           if (options["reroot"] || options["hide"]) {
-            menu_object.append("li").attr("class", "divider");
+            menu_object.append("div").attr("class", "dropdown-divider");
           }
         }
 
         if (options["reroot"]) {
           menu_object
-            .append("li")
             .append("a")
+            .attr("class", "dropdown-item")
             .attr("tabindex", "-1")
             .text("Reroot on this node")
             .on("click", function(d) {
@@ -1144,8 +1146,8 @@ d3.layout.phylotree = function(container) {
 
         if (options["hide"]) {
           menu_object
-            .append("li")
             .append("a")
+            .attr("class", "dropdown-item")
             .attr("tabindex", "-1")
             .text(
               "Hide this " +
@@ -1163,8 +1165,8 @@ d3.layout.phylotree = function(container) {
 
       if (d3_phylotree_has_hidden_nodes(node)) {
         menu_object
-          .append("li")
           .append("a")
+          .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
           .text("Show all descendant nodes")
           .on("click", function(d) {
@@ -1202,12 +1204,12 @@ d3.layout.phylotree = function(container) {
           options["collapsible"]
         ];
         if (_.some(show_divider_options)) {
-          menu_object.append("li").attr("class", "divider");
+          menu_object.append("div").attr("class", "dropdown-divider");
         }
         has_user_elements.forEach(function(d) {
           menu_object
-            .append("li")
             .append("a")
+            .attr("class", "dropdown-item")
             .attr("tabindex", "-1")
             .text(d3.functor(d[0])(node))
             .on("click", _.partial(d[1], node));
