@@ -2220,7 +2220,7 @@ d3.layout.phylotree = function(container) {
     var width = 0;
 
     nodes.filter(d3_phylotree_node_visible).forEach(function(node) {
-      var node_width = node_label(node).length * _font_size * 0.6;
+      var node_width = node_label(node).length * _font_size * 0.8;
       if (node.angle !== null) {
         node_width *= Math.max(
           Math.abs(Math.cos(node.angle)),
