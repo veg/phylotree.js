@@ -15,6 +15,7 @@ var d3_layout_phylotree_event_id = "d3.layout.phylotree.event",
  * @returns {Function} phylotree - an instance of a Phylotree.
  */
 d3.layout.phylotree = function(container) {
+
   var item_selected = d3_phylotree_item_selected,
     node_visible = d3_phylotree_node_visible,
     node_notshown = d3_phylotree_node_notshown,
@@ -3054,11 +3055,19 @@ d3.layout.phylotree = function(container) {
 
   /**
    * Get an array of all nodes.
-   *
    * @returns {Array} Nodes in the current ``phylotree``.
    */
   phylotree.get_nodes = function() {
     return nodes;
+  };
+
+  /**
+   * Get the tips of the tree
+   * @returns {Array} Nodes in the current ``phylotree``.
+   */
+  phylotree.get_tips = function() {
+    // get all nodes that have no nodes
+    return _.filter(nodes, (n) => { return !_.has(n, "children")});
   };
 
   /**
@@ -3389,6 +3398,7 @@ function d3_phylotree_svg_rotate(a) {
 d3.layout.phylotree.is_leafnode = d3_phylotree_is_leafnode;
 d3.layout.phylotree.add_custom_menu = d3_add_custom_menu;
 d3.layout.phylotree.trigger_refresh = d3_phylotree_trigger_refresh;
+
 // SW20180814 TODO: Remove. Registry functions should be private.
 /**
  * A parser for NexML. This is a separate function, since NeXML objects
@@ -3399,3 +3409,4 @@ d3.layout.phylotree.trigger_refresh = d3_phylotree_trigger_refresh;
  * @returns {Object} trees - An array of trees contained in the NeXML object.
  */
 d3.layout.phylotree.nexml_parser = nexml_parser;
+
