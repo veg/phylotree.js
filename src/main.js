@@ -124,7 +124,8 @@ d3.layout.phylotree = function(container) {
       hide: true,
       "label-nodes-with-name": false,
       zoom: false,
-      "show-menu": true
+      "show-menu": true,
+      "show-labels": true
     },
     css_classes = {
       "tree-container": "phylotree-container",
@@ -572,8 +573,9 @@ d3.layout.phylotree = function(container) {
           label_width = available_width * 0.5;
         }
 
+        const _label_width = options["show-labels"] ? label_width : 0;
         scales[1] =
-          (size[1] - offsets[1] - options["left-offset"] - label_width) /
+          (size[1] - offsets[1] - options["left-offset"] - _label_width) /
           _extents[1][1];
       }
     }
@@ -961,7 +963,8 @@ d3.layout.phylotree = function(container) {
   };
 
   phylotree.pad_width = function() {
-    return offsets[1] + options["left-offset"] + label_width;
+    const _label_width = options["show-labels"] ? label_width : 0
+    return offsets[1] + options["left-offset"] + _label_width;
   };
 
   /**
@@ -1787,7 +1790,7 @@ d3.layout.phylotree = function(container) {
 
       }*/
 
-  phylotree.resort_children = function(comparator, start_node, filter) {
+  phylotree.resort_children = function(comparator, start_node, filter, skip_update) {
     function sort_children(node) {
       if (filter && !filter(node)) {
         return phylotree;
@@ -1801,8 +1804,13 @@ d3.layout.phylotree = function(container) {
     }
 
     sort_children(start_node ? start_node : nodes[0]);
-    phylotree.update_layout(nodes);
-    phylotree.update();
+    if(!skip_update) {
+      phylotree.update_layout(nodes);
+      phylotree.update();
+    } else {
+      phylotree.placenodes();
+      links = phylotree.links(nodes);
+    }
     return phylotree;
   };
 
@@ -2912,7 +2920,7 @@ d3.layout.phylotree = function(container) {
           return shown_font_size * 0.33;
         })
         .text(function(d) {
-          return node_label(d);
+          return options["show-labels"] ? node_label(d) : '';
         })
         .style("font-size", function(d) {
           return ensure_size_is_in_px(shown_font_size);
@@ -3057,8 +3065,20 @@ d3.layout.phylotree = function(container) {
    * Get an array of all nodes.
    * @returns {Array} Nodes in the current ``phylotree``.
    */
-  phylotree.get_nodes = function() {
-    return nodes;
+  phylotree.get_nodes = function(respect_layout) {
+    if(!respect_layout) {
+      return nodes;
+    } else {
+      var _nodes = [];
+      function _get_node(node) {
+        _nodes.push(node);
+        if(node.children) {
+          node.children.forEach(_get_node);
+        }
+      }
+      _get_node(nodes[0]);
+      return _nodes;
+    }
   };
 
   /**
