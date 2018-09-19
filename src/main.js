@@ -3070,7 +3070,7 @@ d3.layout.phylotree = function(container) {
       return nodes;
     } else {
       var _nodes = [];
-      function _get_node(node) {
+      var _get_node = function (node) {
         _nodes.push(node);
         if(node.children) {
           node.children.forEach(_get_node);
