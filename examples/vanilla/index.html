@@ -3,19 +3,9 @@
 
 <head>
   <meta charset="utf-8">
-
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-  <link href="/phylotree.css" rel="stylesheet">
-  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
-
-  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-  <script src="//code.jquery.com/jquery.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  <script src="http://d3js.org/d3.v3.min.js"></script>
-  <script src="/phylotree.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
+  <script src="https://d3js.org/d3.v5.js"></script>
+  <script src="https://underscorejs.org/underscore-min.js"></script>
+  <script src="/build/phylotree.js"></script>
   <style>
 #code {
   display: inline-block;
@@ -27,42 +17,18 @@
 </head>
 
 <body>
+
   <svg id="tree_display"></svg>
-  <div id="code"><pre><code class="javascript">d3.text("yokoyama.nwk", function(error, newick) {
-  var height = 400,
-    width = 400,
-
-    tree = d3.layout.phylotree()
-    .svg(d3.select("#tree_display"))
-    .options({
-      'left-right-spacing': 'fit-to-size',
-      // fit to given size top-to-bottom
-      'top-bottom-spacing': 'fit-to-size',
-      // fit to given size left-to-right
-      'selectable': false,
-      // make nodes and branches not selectable
-      'collapsible': false,
-      // turn off the menu on internal nodes
-      'transitions': false
-      // turn off d3 animations
-    })
-    .size([height, width])
-    .node_circle_size(0); // do not show "circles" at internal nodes
-
-  tree(newick)
-    // parse the Newick into a d3 hierarchy object with additional fields
-    // generate node coordinates
-    .layout();
-  // render the tree
-
-});</code></pre></div>
 
   <script>
-    d3.text("yokoyama.nwk", function(error, newick) {
-      var height = 400,
-        width = 400,
+    d3.text("yokoyama.nwk").then((newick) => {
 
-        tree = d3.layout.phylotree()
+      console.log(newick);
+
+      var height = 400,
+        width = 400;
+
+        tree = phylotree()
         .svg(d3.select("#tree_display"))
         .options({
           'left-right-spacing': 'fit-to-size',
@@ -83,12 +49,11 @@
         // parse the Newick into a d3 hierarchy object with additional fields
         // generate node coordinates
         .layout();
-      // render the tree
+        // render the tree
 
     });
 
     // for syntax highlighting
-    hljs.initHighlightingOnLoad();
   </script>
 
 </body>

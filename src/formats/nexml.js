@@ -1,4 +1,4 @@
-const parseString = require("xml2js").parseString;
+import {parseString} from 'xml2js';
 
 var nexml_parser = function(xml_string, options) {
   var trees;
@@ -38,4 +38,4 @@ var nexml_parser = function(xml_string, options) {
   return trees;
 };
 
-module.exports = nexml_parser;
+export default nexml_parser;

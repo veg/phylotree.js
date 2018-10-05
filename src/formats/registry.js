@@ -1,6 +1,7 @@
-const nexml_parser = require("./nexml");
-const newick_parser = require("./newick");
-const phyloxml_parser = require("./phyloxml");
+import {default as nexml_parser} from "./nexml";
+import {default as newick_parser} from "./newick";
+import {default as phyloxml_parser} from "./phyloxml";
+
 
 /* 
  * A parser must have two fields, the object and
@@ -12,4 +13,4 @@ var format_registry = {
   nwk: newick_parser
 };
 
-module.exports = format_registry;
+export default format_registry;

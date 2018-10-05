@@ -1,4 +1,4 @@
-const parseString = require("xml2js").parseString;
+import {parseString} from 'xml2js';
 
 var phyloxml_parser = function(xml_string, options) {
   function parse_phyloxml(node, index) {
@@ -32,4 +32,4 @@ var phyloxml_parser = function(xml_string, options) {
   };
 };
 
-module.exports = phyloxml_parser;
+export default phyloxml_parser;
