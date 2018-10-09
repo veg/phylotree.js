@@ -141,6 +141,7 @@ phylotree = function(container) {
     parsed_tags = [],
     partitions = [],
     x_coord = function(d) {
+      //console.log(d.y);
       return d.y;
     },
     y_coord = function(d) {
@@ -278,18 +279,18 @@ phylotree = function(container) {
    * @returns The current ``phylotree``.
    */
   phylotree.placenodes = function() {
-    var x = 0.0,
+
+    let x = 0.0,
       _extents = [[0, 0], [0, 0]],
       last_node = null,
       last_span = 0,
       save_x = x,
       save_span = last_span * 0.5;
 
-    var do_scaling = options["scaling"],
+    let do_scaling = options["scaling"],
       undef_BL = false,
       is_under_collapsed_parent = false,
-      max_depth = 1,
-      leaf_counter = 0;
+      max_depth = 1;
 
     function process_internal_node(a_node) {
       /** 
@@ -300,11 +301,13 @@ phylotree = function(container) {
       var count_undefined = 0;
 
       if (phylotree.show_internal_name(a_node)) {
+
         // do in-oder traversal to allow for proper internal node spacing
         // (x/2) >> 0 is integer division
         var half_way = (a_node.children.length / 2) >> 0;
         var displayed_children = 0;
         var managed_to_display = false;
+
         for (var child_id = 0; child_id < a_node.children.length; child_id++) {
           var child_x = tree_layout(a_node.children[child_id]);
           if (typeof child_x == "number") {
@@ -501,7 +504,6 @@ phylotree = function(container) {
           }
         } else {
           // normal node, or under a collapsed parent
-          //console.log(a_node);
           process_internal_node(a_node);
         }
       }
@@ -520,7 +522,7 @@ phylotree = function(container) {
     // Set initial x
     self.nodes.x = tree_layout(self.nodes, do_scaling);
 
-    max_depth = d3.max(self.nodes, function(n) {
+    max_depth = d3.max(self.nodes.descendants(), function(n) {
       return n.depth;
     });
 
@@ -602,7 +604,7 @@ phylotree = function(container) {
 
       var max_r = 0;
 
-      nodes.forEach(function(d) {
+      self.nodes.each(function(d) {
         var my_circ_position = d.x * scales[0];
         d.angle = (2 * Math.PI * my_circ_position) / effective_span;
         d.text_angle = d.angle - Math.PI / 2;
@@ -613,7 +615,7 @@ phylotree = function(container) {
 
       do_lr();
 
-      nodes.forEach(function(d) {
+      self.nodes.each(function(d) {
         d.radius = (d.y * scales[1]) / size[1];
         max_r = Math.max(d.radius, max_r);
       });
@@ -621,7 +623,7 @@ phylotree = function(container) {
       var annular_shift = 0,
         do_tip_offset = phylotree.align_tips() && !options["draw-size-bubbles"];
 
-      nodes.forEach(function(d) {
+      self.nodes.each(function(d) {
         if (!d.children) {
           var my_circ_position = d.x * scales[0];
           if (last_child_angle !== null) {
@@ -787,7 +789,6 @@ phylotree = function(container) {
         range_limit = domain_limit * (radius / _extents[1][1]);
         if (range_limit < 30) {
           var stretch = Math.ceil(30 / range_limit);
-          //console.log (stretch, domain_limit, radius, _extents[1][1], range_limit, domain_limit);
           range_limit *= stretch;
           domain_limit *= stretch;
         }
@@ -1565,7 +1566,9 @@ phylotree = function(container) {
   */
   
   phylotree.json = function (traversal_type) {
+
     var index = 0;
+
     phylotree.traverse_and_compute (function (n) {
         n.json_export_index = index++;
     }, traversal_type);
@@ -1694,7 +1697,6 @@ phylotree = function(container) {
         )
       ) {
         d[selection_attribute_name] = callback(d.children);
-        //console.log (d[selection_attribute_name]);
       }
     }
 
@@ -1804,19 +1806,23 @@ phylotree = function(container) {
       }*/
 
   phylotree.resort_children = function(comparator, start_node, filter) {
+
     function sort_children(node) {
+
+      let children = node.children;
+
       if (filter && !filter(node)) {
         return phylotree;
       }
-      if (node.children) {
-        for (var k = 0; k < node.children.length; ++k) {
-          sort_children(node.children[k]);
+      if (children) {
+        for (var k = 0; k < children.length; ++k) {
+          sort_children(children[k]);
         }
-        node.children.sort(comparator);
+        children.sort(comparator);
       }
     }
 
-    sort_children(start_node ? start_node : self.nodes[0]);
+    sort_children(start_node ? start_node : self.nodes);
     phylotree.update_layout(self.nodes);
     phylotree.update();
     return phylotree;
@@ -1847,7 +1853,7 @@ phylotree = function(container) {
         graft_at["attribute"] = lengths ? lengths[0] : null;
         graft_at["original_child_order"] = 1;
 
-        phylotree.update_layout(self.nodes[0], true);
+        phylotree.update_layout(self.nodes, true);
       }
     }
     return phylotree;
@@ -1921,13 +1927,20 @@ phylotree = function(container) {
     traversal_type = traversal_type || "post-order";
 
     function post_order(node) {
+
+      if(_.isUndefined(node)) {
+        return;
+      }
+
+      let descendants = node.children;
+
       if (! (backtrack && backtrack (node))) {
-          if (node.children) {
-            for (var k = 0; k < node.children.length; k++) {
-              post_order(node.children[k]);
+          if (!_.isUndefined(descendants)) {
+            for (let k = 0; k < descendants.length; k++) {
+              post_order(descendants[k]);
             }
+            callback(descendants[0]);
           }
-          callback(node);
       }
     }
 
@@ -1970,7 +1983,7 @@ phylotree = function(container) {
         }
     }
 
-    traversal_type(root_node ? root_node : self.nodes[0]);
+    traversal_type(root_node ? root_node : self.nodes);
     return phylotree;
   };
 
@@ -2430,11 +2443,9 @@ phylotree = function(container) {
       }).enter().insert("path", ":first-child");
 
     //if (transitions) {
-
     //  drawn_links
     //    .transition()
     //    .remove();
-
     //} else {
     //  drawn_links.remove();
     //}
@@ -2482,9 +2493,8 @@ phylotree = function(container) {
         return path_string + connecting_arc;
       };
 
-      spline = d3.svg
-        .line()
-        .interpolate(interpolator)
+      spline = d3.line()
+        .curve(interpolator)
         .y(function(d) {
           return d[0];
         })
@@ -2502,6 +2512,7 @@ phylotree = function(container) {
           return [d.screen_y, d.screen_x];
         }
       };
+
     } else {
       spline = d3.line()
         .curve(d3.curveBasis)
@@ -2675,7 +2686,7 @@ phylotree = function(container) {
         .zoom()
         .scaleExtent([0.1, 10])
         .on("zoom", function() {
-          var translate = d3.event.translate;
+          let translate = d3.event.translate;
           translate[0] += offsets[1] + options["left-offset"];
           translate[1] += phylotree.pad_height();
           d3.select("." + css_classes["tree-container"]).attr(
@@ -3020,12 +3031,11 @@ phylotree = function(container) {
         tracers.remove();
       }
 
-      var circles;
-
       if (options["draw-size-bubbles"]) {
+
         var shift = phylotree.node_bubble_size(node);
-        circles = container.selectAll("circle").data([shift]);
-        circles.enter().append("circle");
+        let circles = container.selectAll("circle").data([shift])
+                      .enter().append("circle");
         if (transitions) {
           circles = circles.transition();
         }
@@ -3051,11 +3061,10 @@ phylotree = function(container) {
     }
 
     if (!is_leaf) {
-      circles = container.selectAll("circle").data([node]),
+      let circles = container.selectAll("circle").data([node]).enter().append("circle"),
         radius = phylotree.node_circle_size()(node);
 
       if (radius > 0) {
-        circles.enter().append("circle");
         circles
           .attr("r", function(d) {
             return Math.min(shown_font_size * 0.75, radius);
@@ -3183,7 +3192,7 @@ phylotree = function(container) {
           mrca = node;
         }
       } else {
-        node.mrca = _.union(...node.children.map(child=>child.mrca));
+        node.mrca = _.union(...node.descendants().map(child=>child.mrca));
         if(!mrca && node.mrca.length == mrca_nodes.length) {
           mrca = node;
         }
@@ -3420,6 +3429,7 @@ function d3_phylotree_svg_rotate(a) {
 phylotree.is_leafnode = d3_phylotree_is_leafnode;
 phylotree.add_custom_menu = d3_add_custom_menu;
 phylotree.trigger_refresh = d3_phylotree_trigger_refresh;
+phylotree.newick_parser = d3_phylotree_newick_parser;
 
 // SW20180814 TODO: Remove. Registry functions should be private.
 /**
@@ -3431,6 +3441,5 @@ phylotree.trigger_refresh = d3_phylotree_trigger_refresh;
  * @returns {Object} trees - An array of trees contained in the NeXML object.
  */
 phylotree.nexml_parser = nexml_parser;
-
 
 export default phylotree;
