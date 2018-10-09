@@ -570,11 +570,11 @@ $("#example_hiv_compartments").on ("click", function (e) {
            if (data.children) {
                 return "";
            } else {
-               bits = data.name.split ('|');
+               bits = data.data.name.split ('|');
                if (bits.length >= 6) {
                  return bits[0] + " [" + bits[1] + "] " + bits[2];
                }
-               return data.name;
+               return data.data.name;
           }
     });
 
@@ -593,7 +593,7 @@ $("#example_influenza_color").on ("click", function (e) {
         color_scale = d3.scaleOrdinal(d3.schemeCategory20);
 
     tree.branch_name (function (d) {
-        var n = d.name.replace ("Hong_Kong", "Hong Kong").split ('_');
+        var n = d.data.name.replace ("Hong_Kong", "Hong Kong").split ('_');
         if (n.length > 13) {
              if (n[9].length == 1) {
                 return [n[10].toUpperCase(),n[11],n[13]].join (" ");
@@ -656,7 +656,7 @@ $("#example_GVZ").on ("click", function (e) {
     var colorizer = d3.scaleOrdinal(d3.schemeCategory10);
 
     tree.branch_name (function (d) {
-        var n = d.name.split ('_');
+        var n = d.data.name.split ('_');
         if (n.length > 1) {
              return n[0] + "(" + n[n.length-1] + ")";
         }
