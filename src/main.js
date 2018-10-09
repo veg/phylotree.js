@@ -55,20 +55,26 @@ phylotree = function(container) {
       }
       return undefined;
     },
+
     branch_length_accessor = def_branch_length_accessor,
+
     def_node_label = function(_node) {
+
+      _node = _node.data;
+
       if (d3_phylotree_is_leafnode(_node)) {
         return _node.name || "";
-      } else {
-        if (phylotree.show_internal_name(_node)) {
-          return _node.name;
-        }
       }
+
+      if (phylotree.show_internal_name(_node)) {
+        return _node.name;
+      }
+
       return "";
+
     },
+
     node_label = def_node_label,
-    length_attribute = null,
-    scale_attribute = "y_scaled",
     needs_redraw = true,
     svg = null,
     selection_callback = null,
@@ -320,7 +326,6 @@ phylotree = function(container) {
         }
       } else {
         // postorder layout
-        console.log(tree_layout);
         a_node.x = a_node.children.map(tree_layout).reduce(function(a, b) {
           if (typeof b == "number") return a + b;
           count_undefined += 1;
@@ -422,7 +427,6 @@ phylotree = function(container) {
             undef_BL = true;
             return 0;
           }
-          console.log(a_node.parent.y);
           a_node.y += a_node.parent.y;
         } else {
           a_node.y = is_leaf ? max_depth : a_node.depth;
@@ -729,12 +733,14 @@ phylotree = function(container) {
       size[0] = radial_center + radius / scaler;
       size[1] = radial_center + radius / scaler;
     } else {
+
       do_lr();
 
       draw_branch = draw_line;
       edge_placer = line_segment_placer;
       right_most_leaf = 0;
-      nodes.forEach(function(d) {
+      self.nodes.each(function(d) {
+
         d.x *= scales[0];
         d.y *= scales[1];
 
@@ -903,7 +909,6 @@ phylotree = function(container) {
     } else {
 
       newick_string = nwk;
-      console.log(_node_data);
       self.nodes = d3.hierarchy(_node_data.json);
 
       // Parse tags
@@ -2338,11 +2343,11 @@ phylotree = function(container) {
             {
               switch (opt[key]) {
                 case "straight": {
-                  draw_branch.interpolate("linear");
+                  draw_branch.curve(d3.curveLinear);
                   break;
                 }
                 default: {
-                  draw_branch.interpolate("step-before");
+                  draw_branch.curve(d3.curveStepBefore);
                   break;
                 }
               }
@@ -2562,14 +2567,15 @@ phylotree = function(container) {
         return d.id || (d.id = ++node_id);
       });
 
-    var append_here = drawn_nodes.enter().append("g");
+    
+    drawn_nodes = drawn_nodes.enter().append("g");
 
     if (transitions) {
-      //drawn_nodes.exit().transition ().style ("opacity", "0").remove();
       drawn_nodes
         .exit()
         .transition()
         .remove();
+
       drawn_nodes = drawn_nodes
         .attr("transform", function(d) {
           if (!_.isUndefined(d.screen_x) && !_.isUndefined(d.screen_y)) {
@@ -2583,10 +2589,13 @@ phylotree = function(container) {
 
     drawn_nodes
       .attr("transform", function(d) {
+
         const should_shift =
           options["layout"] == "right-to-left" && d3_phylotree_is_leafnode(d);
+
         d.screen_x = x_coord(d);
         d.screen_y = y_coord(d);
+
         return d3_phylotree_svg_translate([
           should_shift ? 0 : d.screen_x,
           d.screen_y
@@ -2658,7 +2667,9 @@ phylotree = function(container) {
 
       brush.call(brush_object);
     }
+
     phylotree.sync_edge_labels();
+
     if (options["zoom"]) {
       var zoom = d3.behavior
         .zoom()
@@ -2674,7 +2685,9 @@ phylotree = function(container) {
         });
       svg.call(zoom);
     }
+
     return phylotree;
+
   };
 
   /**
@@ -2889,6 +2902,7 @@ phylotree = function(container) {
     }
   };
   phylotree.draw_node = function(container, node, transitions) {
+
     container = d3.select(container);
 
     var is_leaf = d3_phylotree_is_leafnode(node);
@@ -2902,18 +2916,15 @@ phylotree = function(container) {
       (phylotree.show_internal_name(node) &&
         !d3_phylotree_is_node_collapsed(node))
     ) {
-      var labels = container.selectAll("text").data([node]),
+
+      var labels = container.selectAll("text").data([node]).enter().append("text"),
         tracers = container.selectAll("line");
 
       if (transitions) {
         labels
-          .enter()
-          .append("text")
           .style("opacity", 0)
           .transition()
           .style("opacity", 1);
-      } else {
-        labels.enter().append("text");
       }
 
       labels

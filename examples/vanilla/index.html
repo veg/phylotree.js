@@ -6,6 +6,7 @@
   <script src="https://d3js.org/d3.v5.js"></script>
   <script src="https://underscorejs.org/underscore-min.js"></script>
   <script src="/build/phylotree.js"></script>
+  <link href="//veg.github.io/phylotree.js/phylotree.css" rel="stylesheet">
   <style>
 #code {
   display: inline-block;
@@ -22,8 +23,6 @@
 
   <script>
     d3.text("yokoyama.nwk").then((newick) => {
-
-      console.log(newick);
 
       var height = 400,
         width = 400;
