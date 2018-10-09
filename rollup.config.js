@@ -9,6 +9,7 @@ const config = {
     name: "phylotree",
     format: "umd",
     indent: false,
+    sourcemap: true,
     extend: true
   },
   plugins: []
