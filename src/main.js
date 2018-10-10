@@ -141,7 +141,7 @@ phylotree = function(container) {
     parsed_tags = [],
     partitions = [],
     x_coord = function(d) {
-      console.log(d.y);
+      //console.log(d.y);
       return d.y;
     },
     y_coord = function(d) {
@@ -1766,7 +1766,7 @@ phylotree = function(container) {
     }
 
     populate_mp_matrix(self.nodes[0]);
-    self.nodes.forEach(function(d) {
+    self.nodes.each(function(d) {
       if (d.parent) {
         d.mp = d.mp[1][d.parent.mp ? 1 : 0];
       } else {
@@ -2010,7 +2010,7 @@ phylotree = function(container) {
         children: [node]
       };
 
-      self.nodes.forEach(function(n) {
+      self.nodes.each(function(n) {
         n.__mapped_bl = branch_length_accessor(n);
       });
 
@@ -2020,7 +2020,6 @@ phylotree = function(container) {
 
       var remove_me = node,
         current_node = node.parent,
-        parent_length = current_node.__mapped_bl,
         stashed_bl = _.noop();
 
       var apportioned_bl =
@@ -2096,7 +2095,7 @@ phylotree = function(container) {
    * @returns The current ``phylotree``.
    */
   phylotree.update_key_name = function(old_key, new_key) {
-    self.nodes.forEach(function(n) {
+    self.nodes.each(function(n) {
       if (old_key in n) {
         if (new_key) {
           n[new_key] = n[old_key];
@@ -2381,6 +2380,7 @@ phylotree = function(container) {
   };
 
   phylotree.transitions = function(arg) {
+
     if (arg !== undefined) {
       return arg;
     }
@@ -2388,7 +2388,8 @@ phylotree = function(container) {
       return options["transitions"];
     }
 
-    return self.nodes.length <= 300;
+    return self.nodes.descendants().length <= 300;
+
   };
 
   /**
@@ -2411,6 +2412,7 @@ phylotree = function(container) {
       .data([0])
       .enter()
       .append("g")
+      .merge(svg)
       .attr("class", css_classes["tree-container"])
       .attr("transform", function(d) {
       return d3_phylotree_svg_translate([
@@ -2444,19 +2446,23 @@ phylotree = function(container) {
       .selectAll(d3_phylotree_edge_css_selectors(css_classes))
       .data(links.filter(d3_phylotree_edge_visible), function(d) {
         return d.target.id || (d.target.id = ++node_id);
-      }).enter().insert("path", ":first-child");
+      })
 
-    //if (transitions) {
-    //  drawn_links
-    //    .transition()
-    //    .remove();
-    //} else {
-    //  drawn_links.remove();
-    //}
-
-    drawn_links.each(function(d) {
-      phylotree.draw_edge(this, d, transitions);
-    });
+    if (transitions) {
+      drawn_links
+        .transition()
+        .remove();
+    } else {
+      drawn_links.remove();
+    }
+      
+    drawn_links
+      .enter()
+      .insert("path", ":first-child")
+      .merge(drawn_links)
+      .each(function(d) {
+        phylotree.draw_edge(this, d, transitions);
+      });
 
     var collapsed_clades = enclosure
       .selectAll(d3_phylotree_clade_css_selectors(css_classes))
@@ -2539,7 +2545,7 @@ phylotree = function(container) {
       };
     }
 
-    var cce = collapsed_clades
+    collapsed_clades
       .exit()
       .each(function(d) {
         d.collapsed_clade = null;
@@ -2574,31 +2580,34 @@ phylotree = function(container) {
         });
     }
 
-    var drawn_nodes = enclosure
+    let drawn_nodes = enclosure
       .selectAll(d3_phylotree_node_css_selectors(css_classes))
       .data(self.nodes.descendants().filter(d3_phylotree_node_visible), function(d) {
         return d.id || (d.id = ++node_id);
-      }).enter().append("g");
+      });
 
-    
-    if (transitions) {
-      drawn_nodes
-        .exit()
-        .transition()
-        .remove();
+    //if (transitions) {
+    //  drawn_nodes
+    //    .exit()
+    //    .transition()
+    //    .remove();
 
-      drawn_nodes = drawn_nodes
-        .attr("transform", function(d) {
-          if (!_.isUndefined(d.screen_x) && !_.isUndefined(d.screen_y)) {
-            return "translate(" + d.screen_x + "," + d.screen_y + ")";
-          }
-        })
-        .transition();
-    } else {
-      drawn_nodes.exit().remove();
-    }
+    //  drawn_nodes.merge(drawn_nodes)
+    //    .transition()
+    //    .attr("transform", function(d) {
+    //      if (!_.isUndefined(d.screen_x) && !_.isUndefined(d.screen_y)) {
+    //        return "translate(" + d.screen_x + "," + d.screen_y + ")";
+    //      }
+    //    });
 
-    drawn_nodes
+    //} else {
+    //  drawn_nodes.exit().remove();
+    //}
+
+    drawn_nodes 
+      .enter().append("g")
+      .attr("class", phylotree.reclass_node)
+      .merge(drawn_nodes)
       .attr("transform", function(d) {
 
         const should_shift =
@@ -2612,7 +2621,6 @@ phylotree = function(container) {
           d.screen_y
         ]);
       })
-      .attr("class", phylotree.reclass_node)
       .each(function(d) {
         phylotree.draw_node(this, d, transitions);
       });
@@ -2744,9 +2752,10 @@ phylotree = function(container) {
           ",." +
           css_classes["tree-selection-brush"]
       );
+
       //.remove();
       d3_phylotree_trigger_layout(phylotree);
-      return phylotree.update(transitions);
+      return phylotree.update();
     }
 
     d3_phylotree_trigger_layout(phylotree);
@@ -2758,14 +2767,11 @@ phylotree = function(container) {
 
     if (svg) {
       // for re-entrancy
-
-      var enclosure = svg.selectAll("." + css_classes["tree-container"]);
+      let enclosure = svg.selectAll("." + css_classes["tree-container"]);
 
       let edges = enclosure.selectAll(
         d3_phylotree_edge_css_selectors(css_classes)
-      );
-
-      edges.attr("class", phylotree.reclass_edge);
+      ).attr("class", phylotree.reclass_edge);
 
       if (edge_styler) {
         edges.each(function(d) {
@@ -2775,9 +2781,7 @@ phylotree = function(container) {
 
       let nodes = enclosure.selectAll(
         d3_phylotree_node_css_selectors(css_classes)
-      );
-
-      nodes.attr("class", phylotree.reclass_node);
+      ).attr("class", phylotree.reclass_node);
 
       if (node_styler) {
         nodes.each(function(d) {
@@ -2931,10 +2935,10 @@ phylotree = function(container) {
         tracers = container.selectAll("line");
 
       if (transitions) {
-        labels
-          .style("opacity", 0)
-          .transition()
-          .style("opacity", 1);
+        //labels
+        //  .style("opacity", 0)
+        //  .transition()
+        //  .style("opacity", 1);
       }
 
       labels
