@@ -2918,6 +2918,7 @@ phylotree = function(container) {
       });
     }
   };
+
   phylotree.draw_node = function(container, node, transitions) {
 
     container = d3.select(container);
@@ -2988,15 +2989,13 @@ phylotree = function(container) {
 
       if (phylotree.align_tips()) {
 
-        tracers = tracers.data([node]).enter().append("line");
+        tracers = tracers.data([node]);
 
         if (transitions) {
           tracers
-            .style("opacity", 0)
-            .transition()
-            .style("opacity", 1);
-
-          tracers
+            .enter()
+            .append("line")
+            .classed(css_classes["branch-tracer"], true)
             .attr("x1", function(d) {
               return (
                 (d.text_align == "end" ? -1 : 1) *
@@ -3005,9 +3004,22 @@ phylotree = function(container) {
             })
             .attr("x2", 0)
             .attr("y1", 0)
-            .attr("y2", 0);
+            .attr("y2", 0)
+            .style("opacity", 0)
+            .transition()
+            .style("opacity", 1)
+            .attr("x2", function(d) {
+              if (options["layout"] == "right-to-left") {
+                return d.screen_x;
+              }
+              return phylotree.shift_tip(d)[0];
+            })
+            .attr("transform", function(d) {
+              return d3_phylotree_svg_rotate(d.text_angle);
+            });
 
           tracers
+            .merge(tracers)
             .attr("x2", function(d) {
               if (options["layout"] == "right-to-left") {
                 return d.screen_x;
@@ -3019,7 +3031,10 @@ phylotree = function(container) {
             });
 
         } else {
-          tracers.enter().append("line");
+          tracers
+          .enter()
+          .append("line")
+          .classed(css_classes["branch-tracer"], true)
           tracers
             .attr("x1", function(d) {
               return (
@@ -3037,7 +3052,6 @@ phylotree = function(container) {
             return d3_phylotree_svg_rotate(d.text_angle);
           });
         }
-        tracers.classed(css_classes["branch-tracer"], true);
       } else {
         tracers.remove();
       }
