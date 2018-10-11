@@ -396,20 +396,9 @@ $(".phylotree-align-toggler").on ("change", function (e) {
 
 
 
-function sort_nodes (asc) {
-    tree.traverse_and_compute (function (n) {
-      if(_.isUndefined(n)) {
-        return null;
-      }
-            var d = 1;
-            if (n.children && n.children.length) {
-                d += d3.max (n.children, function (d) { return d.depth;});
-            }
-            n.count_depth = d;
-        });
-        tree.resort_children (function (a,b) {
-            return (a["count_depth"] - b["count_depth"]) * (asc ? 1 : -1);
-        });
+function sort_nodes (asc) {tree.resort_children (
+      function(a, b) { return (b.height - a.height || b.value - a.value) * (asc ? 1 : -1); }
+    );
 }
 
 $("#sort_original").on ("click", function (e) {

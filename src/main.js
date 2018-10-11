@@ -1809,24 +1809,14 @@ phylotree = function(container) {
 
   phylotree.resort_children = function(comparator, start_node, filter) {
 
-    function sort_children(node) {
+    // ascending
+    self.nodes
+    .sum(function(d) { return d.value; })
+    .sort(comparator);
 
-      let children = node.children;
-
-      if (filter && !filter(node)) {
-        return phylotree;
-      }
-      if (children) {
-        for (var k = 0; k < children.length; ++k) {
-          sort_children(children[k]);
-        }
-        children.sort(comparator);
-      }
-    }
-
-    sort_children(start_node ? start_node : self.nodes);
     phylotree.update_layout(self.nodes);
     phylotree.update();
+
     return phylotree;
   };
 
