@@ -2934,17 +2934,20 @@ phylotree = function(container) {
         !d3_phylotree_is_node_collapsed(node))
     ) {
 
-      var labels = container.selectAll("text").data([node]).enter().append("text"),
+      var labels = container.selectAll("text").data([node]),
         tracers = container.selectAll("line");
 
       if (transitions) {
-        //labels
-        //  .style("opacity", 0)
-        //  .transition()
-        //  .style("opacity", 1);
+        labels
+          .style("opacity", 0)
+          .transition()
+          .style("opacity", 1);
       }
 
       labels
+        .enter()
+        .append("text")
+        .merge(labels)
         .on("click", phylotree.handle_node_click)
         .classed(css_classes["node_text"], true)
         .attr("dy", function(d) {
@@ -2958,7 +2961,7 @@ phylotree = function(container) {
         });
 
       if (phylotree.radial()) {
-        (transitions ? labels.transition() : labels)
+        labels
           .attr("transform", function(d) {
             return (
               d3_phylotree_svg_rotate(d.text_angle) +
@@ -2971,7 +2974,7 @@ phylotree = function(container) {
             return d.text_align;
           });
       } else {
-        (transitions ? labels.transition() : labels)
+        labels
           .attr("text-anchor", "start")
           .attr("transform", function(d) {
             if (options["layout"] == "right-to-left") {
@@ -2984,14 +2987,15 @@ phylotree = function(container) {
       }
 
       if (phylotree.align_tips()) {
-        tracers = tracers.data([node]);
+
+        tracers = tracers.data([node]).enter().append("line");
+
         if (transitions) {
           tracers
-            .enter()
-            .append("line")
             .style("opacity", 0)
             .transition()
             .style("opacity", 1);
+
           tracers
             .attr("x1", function(d) {
               return (
@@ -3002,8 +3006,8 @@ phylotree = function(container) {
             .attr("x2", 0)
             .attr("y1", 0)
             .attr("y2", 0);
+
           tracers
-            .transition()
             .attr("x2", function(d) {
               if (options["layout"] == "right-to-left") {
                 return d.screen_x;
@@ -3013,6 +3017,7 @@ phylotree = function(container) {
             .attr("transform", function(d) {
               return d3_phylotree_svg_rotate(d.text_angle);
             });
+
         } else {
           tracers.enter().append("line");
           tracers
