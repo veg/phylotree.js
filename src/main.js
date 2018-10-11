@@ -799,7 +799,7 @@ phylotree = function(container) {
         range_limit = size[1] - offsets[1] - options["left-offset"];
       }
 
-      var scale = d3.scaleLinear()
+      let scale = d3.scaleLinear()
           .domain([0, domain_limit])
           .range([shown_font_size, shown_font_size + range_limit]),
         scaleTickFormatter = d3.format(".2g");
@@ -2425,16 +2425,19 @@ phylotree = function(container) {
 
       let scale_bar = svg
         .selectAll("." + css_classes["tree-scale-bar"])
-        .data([0]).enter().append("g")
+        .data([0]);
+      
+      
+      scale_bar.enter().append("g")
         .attr("class", css_classes["tree-scale-bar"])
         .style("font-size", ensure_size_is_in_px(scale_bar_font_size))
+        .merge(scale_bar)
         .attr("transform", function(d) {
           return d3_phylotree_svg_translate([
             offsets[1] + options["left-offset"],
             phylotree.pad_height() - 10
           ]);
-        })
-        .call(draw_scale_bar);
+        }).call(draw_scale_bar);
 
       scale_bar.selectAll("text").style("text-anchor", "end");
 
