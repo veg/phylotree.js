@@ -8,14 +8,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
 
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.1/spacelab/bootstrap.min.css">
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
     <script src="https://d3js.org/d3.v5.js"></script>
@@ -23,6 +24,9 @@
     <link href="phylotree.css" rel="stylesheet">
 
     <style>
+        nav {
+          margin-bottom: 25px;
+        }
 
         .fa-rotate-45 {
           -webkit-transform: rotate(45deg);
@@ -45,142 +49,147 @@
             padding-top: 50px;
           }
         }
+
+        .btn {
+          height: 30px;
+        }
+
+        #toolbar {
+          display: flex;
+          justify-content: space-between;
+          width: 550px;
+        }
+        
+        #controls {
+          position: fixed;
+          left: 5px;
+        }
    </style>
 </head>
 
-<body style = 'padding-top: 70px;'>
+<body>
 
 <!--
 ###############################################################################################################################
 -->
 
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-        <a class="navbar-brand" href="#">phylotree.js</a>
-    </div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">phylotree.js</a>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Newick <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" data-toggle="modal" data-target="#newick_modal">Input Text</a></li>
-            <li><a href="#"><input type="file" id="newick_file"/></a></li>
-            <li class="divider"></li>
-            <li><a href="#" data-toggle="modal" data-target="#newick_export_modal">Export</a></li>
-          </ul>
-        </li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id = "example_hiv_scaled" >HIV-1 RT</a></li>
-            <li><a href="#" id = "example_influenza_color">Unscaled IAV HA colored by host</a></li>
-            <li><a href="#" id = "example_NGS" >NGS copy diversity</a></li>
-            <li><a href="#" id = "example_GVZ" >Compare NGS consensus</a></li>
-            <li><a href="#" id = "example_hiv_compartments" >HIV-1 env multiple timepoints and compartments</a></li>
-            <li><a href="#" id = "internal_labels" >A tree with internal nodes selectively labeled</a></li>
-        </ul>
-        </li>
-     </ul>
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="navbar-nav">
 
-
-     <div class="navbar-btn navbar-right">
-        <a class="btn btn-info" href="http://hyphy.org/resources/#labeling-branches-with-phylotree">Help</a>
-        <a class="btn btn-info" href="/documentation">Documentation</a>
-     </div>
-
-     <div class="form-group navbar-form navbar-right">
-       <input type="text" id = 'branch_filter' class="form-control" placeholder="Filter branches on">
-     </div>
-
-
-      <div class="row">
-        <div class="col-md-4 navbar-right ">
-            <div class="navbar-form " role="search">
-                 <div class="input-group">
-                    <span class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            Tag <span class="caret"></span>
-                        </button>
-                          <ul class="dropdown-menu" id = "selection_name_dropdown">
-                            <li id = "selection_new"><a href="#">New selection set</a></li>
-                            <li id = "selection_delete" class = "disabled"><a href="#">Delete selection set</a></li>
-                            <li id = "selection_rename"><a href="#">Rename selection set</a></li>
-                            <li class="divider"></li>
-                         </ul>
-                    </span>
-
-                    <input type="text" class="form-control" value = "Foreground" id = "selection_name_box" disabled>
-
-                    <span class="input-group-btn" id = "save_selection_name" style = "display: none" >
-                        <button type="button" class="btn btn-default" id = "cancel_selection_button" >
-                            Cancel
-                        </button>
-                        <button type="button" class="btn btn-default" id = "save_selection_button">
-                            Save
-                        </button>
-                    </span>
-                    <span class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Selection <span class="caret"></span></button>
-                          <ul class="dropdown-menu">
-                            <li><a href="#" id = "filter_add">Add filtered nodes to selection</a></li>
-                            <li><a href="#" id = "filter_remove">Remove filtered nodes from selection</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#" id = "select_all">Select all</a></li>
-                            <li><a href="#" id = "select_all_internal">Select all internal nodes</a></li>
-                            <li><a href="#" id = "select_all_leaves">Select all leaf nodes</a></li>
-                            <li><a href="#" id = "clear_internal">Clear all internal nodes</a></li>
-                            <li><a href="#" id = "clear_leaves">Clear all leaves</a></li>
-                            <li><a href="#" id = "select_none">Clear selection</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#" id = "mp_label">Label internal nodes using maximum parsimony</a></li>
-                            <li><a href="#" id = "and_label">Label internal nodes using conjunction (AND) </a></li>
-                            <li><a href="#" id = "or_label">Label internal nodes using disjunction (OR) </a></li>
-                         </ul>
-                    </span>
-                  </div>
-            </div>
+      <li class="nav-item dropdown">
+        <a href="#" id="newick-dropdown" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">Newick <b class="caret"></b></a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newick_modal">Input Text</a>
+          <a class="dropdown-item" href="#"><input type="file" id="newick_file"/></a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newick_export_modal">Export</a>
         </div>
-    </div>
+      </li>
 
-    </div><!-- /.navbar-collapse -->
+      <li class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">Examples <b class="caret"></b></a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" id = "example_hiv_scaled" >HIV-1 RT</a>
+          <a class="dropdown-item" href="#" id = "example_influenza_color">Unscaled IAV HA colored by host</a>
+          <a class="dropdown-item" href="#" id = "example_NGS" >NGS copy diversity</a>
+          <a class="dropdown-item" href="#" id = "example_GVZ" >Compare NGS consensus</a>
+          <a class="dropdown-item" href="#" id = "example_hiv_compartments" >HIV-1 env multiple timepoints and compartments</a>
+          <a class="dropdown-item" href="#" id = "internal_labels" >A tree with internal nodes selectively labeled</a>
+        </div>
+      </li>
+
+    </ul>
+
+    <ul class="nav navbar-nav mx-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Tag 
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown" id="selection_name_dropdown">
+          <a id="selection_new" class="dropdown-item" href="#">New selection set</a>
+          <a id="selection_delete" class="dropdown-item" href="#">Delete selection set</a>
+          <a id="selection_rename" class="dropdown-item" href="#">Rename selection set</a>
+          <div class="dropdown-divider"></div>
+        </div>
+      </li>
+
+      <li>
+        <form class="form-inline my-2 my-lg-0">
+          <input type="text" id = 'selection_name_box' class="form-control mr-sm-2" value="Foreground" disabled size=40>
+        </form>
+      </li>
+
+      <li id="save_selection_name" style="display:none;" class="my-auto">
+        <a href="#"><button id="cancel_selection_button" class="btn btn-info btn-sm">Cancel</button></a>
+        <a href="#"><button id="save_selection_button" class="btn btn-info btn-sm">Save</button></a>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Selection
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a id="filter_add" class="dropdown-item" href="#">Add filtered nodes to selection</a>
+          <a id="filter_remove" class="dropdown-item" href="#">Remove filtered nodes from selection</a>
+          <div class="dropdown-divider"></div>
+          <a id="select_all" class="dropdown-item" href="#">Select all</a>
+          <a id="select_all_internal" class="dropdown-item" href="#">Select all internal nodes</a>
+          <a id="select_all_leaves" class="dropdown-item" href="#">Select all leaf nodes</a>
+          <a id="clear_internal" class="dropdown-item" href="#">Clear all internal nodes</a>
+          <a id="clear_leaves" class="dropdown-item" href="#">Clear all leaves</a>
+          <a id="select_none" class="dropdown-item" href="#">Clear selection</a>
+          <div class="dropdown-divider"></div>
+          <a id="mp_label" class="dropdown-item" href="#">Label internal nodes using maximum parsimony</a>
+          <a id="and_label" class="dropdown-item" href="#">Label internal nodes using conjunction (AND)</a>
+          <a id="or_label" class="dropdown-item" href="#">Label internal nodes using disjunction (OR)</a>
+        </div>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav ml-auto">
+      <li>
+        <form class="form-inline my-2 my-lg-0">
+          <input type="text" id = 'branch_filter' class="form-control mr-sm-2" placeholder="Filter branches on">
+        </form>
+      </li>
+
+      <li class="my-auto">
+        <a href="http://hyphy.org/resources/#labeling-branches-with-phylotree"><button class="btn btn-info btn-sm">Help</button></a>
+        <a href="/documentation"><button class="btn btn-info btn-sm">Documentation</button></a>
+      </li>
+    </ul>
   </div><!-- /.container-fluid -->
 </nav>
 
-<div class="modal" id = 'newick_modal'>
-  <div class="modal-dialog">
+<div class="modal" id = 'newick_modal' role="dialog">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">Newick string to render</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
       </div>
       <div class="modal-body" id = 'newick_body'>
          <textarea id = 'nwk_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20 selectionStart = 1 selectionEnd = 1000>(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)</textarea>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id = 'validate_newick'>Display this tree</button>
+        <button type="button" class="btn btn-primary btn-sm" id = 'validate_newick'>Display this tree</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div class="modal" id = 'newick_export_modal'>
-  <div class="modal-dialog">
+<div class="modal" id = 'newick_export_modal' role="dialog">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body" id = 'newick_body'>
          <textarea id = 'nwk_export_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20></textarea>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
@@ -207,79 +216,69 @@
 
 <div class = 'container' id = "main_display">
 
-    <div class = 'row'>
-        <div class = 'col-md-12'>
-            <div class="btn-toolbar" role="toolbar">
-              <div class="btn-group">
-                <button type="button" class="btn btn-default btn-sm" data-direction = 'vertical' data-amount = '1' title = "Expand vertical spacing">
-                    <i class="fa fa-arrows-v" ></i>
-                </button>
-                 <button type="button" class="btn btn-default btn-sm" data-direction = 'vertical' data-amount = '-1' title = "Compress vertical spacing">
-                    <i class="fa  fa-compress fa-rotate-135" ></i>
-                </button>
-                <button type="button" class="btn btn-default btn-sm" data-direction = 'horizontal' data-amount = '1' title = "Expand horizonal spacing">
-                    <i class="fa fa-arrows-h" ></i>
-                </button>
-                 <button type="button" class="btn btn-default btn-sm" data-direction = 'horizontal' data-amount = '-1' title = "Compress horizonal spacing">
-                    <i class="fa  fa-compress fa-rotate-45" ></i>
-                </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "sort_ascending" title = "Sort deepest clades to the bototm">
-                    <i class="fa fa-sort-amount-asc" ></i>
-                </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "sort_descending" title = "Sort deepsest clades to the top">
-                    <i class="fa fa-sort-amount-desc" ></i>
-                </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "sort_original" title = "Restore original order">
-                    <i class="fa fa-sort" ></i>
-                </button>
-              </div>
-            <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default active btn-sm">
-                <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "linear" autocomplete="off" checked title = "Layout left-to-right"> Linear
-              </label>
-              <label class="btn btn-default  btn-sm">
-                <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "radial" autocomplete="off" title = "Layout radially"> Radial
-              </label>
-            </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-default btn-sm active" id = "toggle_animation" title = "Toggle animation">
-                    Animation
-                </button>
-              </label>
-            </div>
-
-            <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default active btn-sm">
-                <input type="radio" class = "phylotree-align-toggler" data-align = "left" name="options-align" autocomplete="off" checked title = "Align tips labels to branches">
-                    <i class="fa fa-align-left" ></i>
-                </input>
-
-              </label>
-              <label class="btn btn-default btn-sm">
-               <input type="radio" class = "phylotree-align-toggler" data-align = "right" name="options-align" autocomplete="off" title = "Align tips labels to the edge of the plot">
-                    <i class="fa fa-align-right" ></i>
-                </input>
-              </label>
-            </div>
-
-            <label class = "pull-right">Selected <span class="badge" id = "selected_branch_counter">0</span> and filtered <span class="badge" id = "selected_filtered_counter">0</span> branches</label>
-
-           </div>
+  <div class = 'row'>
+    <div class = 'col-md-8'>
+      <div class="btn-toolbar" role="toolbar" id='toolbar'>
+        <div class="btn-group">
+          <button type="button" class="btn btn-light btn-sm" data-direction = 'vertical' data-amount = '1' title = "Expand vertical spacing">
+              <i class="fa fa-arrows-v" ></i>
+          </button>
+           <button type="button" class="btn btn-light btn-sm" data-direction = 'vertical' data-amount = '-1' title = "Compress vertical spacing">
+              <i class="fa  fa-compress fa-rotate-135" ></i>
+          </button>
+          <button type="button" class="btn btn-light btn-sm" data-direction = 'horizontal' data-amount = '1' title = "Expand horizonal spacing">
+              <i class="fa fa-arrows-h" ></i>
+          </button>
+           <button type="button" class="btn btn-light btn-sm" data-direction = 'horizontal' data-amount = '-1' title = "Compress horizonal spacing">
+              <i class="fa  fa-compress fa-rotate-45" ></i>
+          </button>
+           <button type="button" class="btn btn-light btn-sm" id = "sort_ascending" title = "Sort deepest clades to the bototm">
+              <i class="fa fa-sort-amount-asc" ></i>
+          </button>
+           <button type="button" class="btn btn-light btn-sm" id = "sort_descending" title = "Sort deepsest clades to the top">
+              <i class="fa fa-sort-amount-desc" ></i>
+          </button>
+           <button type="button" class="btn btn-light btn-sm" id = "sort_original" title = "Restore original order">
+              <i class="fa fa-sort" ></i>
+          </button>
         </div>
+        <div class="btn-group" role="group">
+          <button class="btn btn-light btn-sm active phylotree-layout-mode" data-mode = "linear">
+            Linear
+          </button>
+          <button class="btn btn-light btn-sm phylotree-layout-mode" data-mode = "radial" >
+            Radial
+          </button>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-light btn-sm active" id = "toggle_animation" title = "Toggle animation">
+            Animation
+          </button>
+        </div>
+
+        <div class="btn-group" role="group">
+          <button class="btn btn-light btn-sm active phylotree-align-toggler" data-align= "left">
+              <i class="fa fa-align-left" ></i>
+          </button>
+          <button class="btn btn-light btn-sm phylotree-align-toggler" data-align= "right">
+              <i class="fa fa-align-right" ></i>
+          </button>
+        </div>
+      </div>
+
     </div>
 
-    <div class = 'row'>
-        <div class = 'col'>
-            <div id = 'tree_charts'></div>
-        </div>
+    <div class = 'col-md-4'>
+      <label class = "pull-right"><b>Selected</b> <span class="badge badge-secondary" id = "selected_branch_counter">0</span> <b>and filtered</b> <span class="badge badge-secondary" id = "selected_filtered_counter">0</span> <b>branches</b></label>
     </div>
-    <div class = 'row'>
-        <div class = 'col'>
-            <div id = 'tree_container' class = 'tree-widget'>
-            </div>
-        </div>
-    </div>
+  </div>
 
+  <div class = 'row'>
+    <div class = 'col-md-12'>
+      <div id = 'tree_container' class = 'tree-widget'>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!--
@@ -345,6 +344,7 @@ $("#newick_file").on ("change", function (e) {
                        .html ("&times;");
         };
 
+      $('#newick-dropdown').dropdown('toggle');
       reader.readAsText(f);
     }
 });
@@ -368,11 +368,11 @@ $ ("[data-direction]").on ("click", function (e) {
 
 
 
-$(".phylotree-layout-mode").on ("change", function (e) {
-    if ($(this).is(':checked')) {
-        if (tree.radial () != ($(this).data ("mode") == "radial")) {
-            tree.radial (!tree.radial ()).placenodes().update ();
-        }
+$(".phylotree-layout-mode").on ("click", function (e) {
+
+    if (tree.radial () != ($(this).data ("mode") == "radial")) {
+        $('.phylotree-layout-mode').toggleClass('active');
+        tree.radial (!tree.radial ()).placenodes().update ();
     }
 });
 
@@ -542,12 +542,6 @@ $("#internal_labels").on ("click", function (e) {
 
 });
 
-function update_controls () {
-    example_controls.selectAll ('*').remove();
-    $("[data-mode='" + (tree.radial()      ? 'radial' : 'linear') + "']").click();
-    $("[data-align='"  + (tree.align_tips () ? 'right' : 'left') + "']").click();
-}
-
 $("#example_hiv_compartments").on ("click", function (e) {
 
     var hiv_tree = "((((NM487|20020117|CSF|1|env|21|1.05:0.00293,(NM487|20020117|CSF|1|env|0|22.65:0.00055,((NM487|20020128|CSF|2|env|3074|1.36:0.0,NM487|20020128|CSF|1|env|3057|1.24:0.0):0.00055,NM487|20020103|PBMC|1|env|81|1.01:0.00055)0.896:0.00055)0.840:0.00409)0.656:0.00587,NM487|20020117|CSF|1|env|13|0.95:0.00300)0.255:0.00053,NM487|20020117|CSF|1|env|4|1.10:0.00300)0.331:0.00055,NM487|20020128|CSF-PELLET|1|env|0|37.88:0.00055,((NM487|20020128|CSF|2|env|0|10.49:0.0,NM487|20020128|CSF|1|env|0|10.60:0.0):0.00055,((((NM487|20020128|CSF|2|env|111|1.28:0.0,NM487|20020128|CSF|1|env|111|1.27:0.0):0.00829,((NM487|20020128|CSF|2|env|41|4.05:0.0,NM487|20020128|CSF|1|env|41|4.15:0.0):0.00054,(NM487|20020128|CSF-PELLET|1|env|40|4.21:0.0,NM487|20020117|CSF|1|env|5|1.20:0.0):0.00055)0.978:0.00050)0.890:0.00303,(((NM487|20020128|CSF|2|env|54|1.22:0.0,NM487|20020128|CSF|1|env|54|1.21:0.0):0.00055,NM487|20020117|CSF|1|env|19|2.76:0.00055)0.904:0.00278,(NM487|20020103|PBMC|1|env|26|2.32:0.00303,((NM487|20020128|CSF|1|env|59|0.93:0.00055,(((NM487|20020128|BP|1|env|40|2.31:0.00055,NM487|20020128|BP|1|env|20|1.72:0.00279)0.993:0.01716,NM487|20020128|BP|1|env|27|0.56:0.00243)0.702:0.01285,NM487|20020128|CSF-PELLET|1|env|56|0.78:0.00548)0.979:0.00051)0.315:0.00053,(NM487|20020117|CSF|1|env|20|1.05:0.00303,((NM487|20020117|BP|1|env|59|0.45:0.0,NM487|20020117|CSF|1|env|6|15.58:0.0):0.00055,(NM487|20020128|CSF|2|env|59|0.87:0.00055,(((NM487|20020128|CSF|2|env|82|1.75:0.0,NM487|20020128|CSF|1|env|82|1.80:0.0):0.00055,(((NM487|20020128|BP|1|env|2749|0.61:0.00055,NM487|20020117|BP|1|env|8|1.02:0.00301)0.851:0.00279,(NM487|20020128|BP|1|env|2790|0.94:0.00281,(NM487|20020128|CSF-PELLET|1|env|66|0.87:0.00055,(((NM487|20020103|PBMC|1|env|55|1.33:0.00055,NM487|20020128|CSF-PELLET|1|env|62|0.82:0.00055)0.861:0.00282,(((NM487|20020128|PBMC|1|env|8|8.33:0.00349,((NM487|20020128|PBMC|1|env|31|1.70:0.02485,NM487|20020128|PBMC|1|env|34|0.78:0.00054)0.940:0.01527,NM487|20020128|PBMC|1|env|33|0.79:0.03194)0.754:0.00402)0.941:0.02781,((NM487|20020128|PBMC|1|env|92|1.19:0.00316,NM487|20020128|PBMC|1|env|43|1.00:0.00303)0.935:0.01805,NM487|20020128|PBMC|1|env|10|6.24:0.01423)0.878:0.02383)0.999:0.07655,(NM487|20020128|PBMC|1|env|38|0.91:0.01340,(NM487|20020128|PBMC|1|env|9|4.34:0.00055,NM487|20020128|PBMC|1|env|0|0.70:0.01863)0.883:0.01055)0.984:0.04877)1.000:0.09435)1.000:0.00053,((((NM487|20020103|PBMC|1|env|23|1.64:0.01157,(((NM487|20020128|CSF-PELLET|1|env|37|0.75:0.0,NM487|20020117|BP|1|env|21|0.65:0.0):0.00908,((NM487|20020103|PBMC|1|env|99|0.66:0.00054,((((NM487|20020128|CSF-PELLET|1|env|12|1.09:0.0,NM487|20020117|BP|1|env|9|0.54:0.0):0.00055,(NM487|20020128|BP|1|env|2767|1.72:0.00055,NM487|20020128|BP|1|env|28|1.44:0.00866)0.913:0.00055)0.965:0.01080,NM487|20020117|BP|1|env|24|0.68:0.00055)0.124:0.00054,(NM487|20020128|CSF-PELLET|1|env|38|1.33:0.0,NM487|20020117|BP|1|env|18|3.46:0.0,NM487|20020117|CSF|1|env|15|1.10:0.0):0.00302)0.828:0.00355)0.833:0.00354,NM487|20020103|PBMC|1|env|106|0.98:0.00055)0.854:0.00353)0.115:0.00053,NM487|20020103|PBMC|1|env|2|1.62:0.00055)0.829:0.00354)0.948:0.00054,NM487|20020103|PBMC|1|env|255|0.57:0.00055)0.919:0.00055,((((NM487|20020128|CSF|2|env|62|2.60:0.0,NM487|20020128|CSF|1|env|62|2.64:0.0):0.00055,((NM487|20020128|CSF|2|env|36|1.14:0.0,NM487|20020128|CSF|1|env|36|1.13:0.0):0.00221,(NM487|20020117|BP|1|env|10|4.48:0.0,NM487|20020117|CSF|1|env|1|2.71:0.0):0.00055)0.321:0.00059)0.635:0.01578,(NM487|20020117|BP|1|env|97|0.45:0.00604,NM487|20020117|BP|1|env|13|0.40:0.00055)0.762:0.00300)0.232:0.00055,((NM487|20020117|BP|1|env|14|0.43:0.00301,(NM487|20020128|BP|1|env|2752|3.14:0.00054,NM487|20020128|CSF-PELLET|1|env|1|8.27:0.00055)0.699:0.00069)0.622:0.00158,NM487|20020128|BP|1|env|13|2.81:0.00055)0.999:0.00051)0.960:0.01011)0.831:0.00264,(NM487|20020103|PBMC|1|env|152|0.55:0.01500,NM487|20020103|PBMC|1|env|4|0.87:0.01185)0.903:0.00055)0.859:0.00265)0.827:0.00263)0.825:0.00263)1.000:0.00054)0.801:0.00298,NM487|20020128|BP|1|env|2773|0.76:0.00288)0.988:0.01722)0.297:0.00051,NM487|20020128|CSF-PELLET|1|env|15|2.48:0.00055)0.260:0.00055)0.367:0.00050)0.444:0.00051)0.489:0.01342)0.749:0.00341)0.937:0.00055)0.845:0.00055)0.648:0.00055,(NM487|20020128|CSF|2|env|33|16.42:0.0,NM487|20020128|CSF|1|env|33|16.53:0.0):0.00055)0.874:0.00051)0.231:0.00055)";
@@ -569,11 +563,9 @@ $("#example_hiv_compartments").on ("click", function (e) {
 
     tree (phylotree.newick_parser(hiv_tree)).svg(svg).layout();
     update_controls ();
-
 });
 
 $("#example_influenza_color").on ("click", function (e) {
-
     var flu_tree = "(gi_5805286_gb_AF144305_1_Influenza_A_virus_A_Goose_Guangdong_1_96_H5N1_hemagglutinin_HA_gene:0,(gi_13676824_gb_AF364334_1_AF364334_Influenza_A_virus_A_Goose_Guangdong_3_97_H5N1_segment_4_hemagglutinin_HA_gene:0.003460330275528673,((((gi_115343521_gb_DQ997087_1_Influenza_A_virus_A_chicken_Hubei_wf_2002_H5N1_hemagglutinin_HA_gene:0.005691285111443731,gi_115343549_gb_DQ997102_1_Influenza_A_virus_A_chicken_Hubei_wh_1997_H5N1_hemagglutinin_HA_gene:0.01044062060744143):0,gi_115382807_gb_DQ997122_1_Influenza_A_virus_A_chicken_Hubei_wj_1997_H5N1_segment_4:0.005146282229630558):0.003458892023492166,((((((((((((((((((((((((((((((gi_116271104_gb_DQ992733_1_Influenza_A_virus_A_duck_Guangxi_4830_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271096_gb_DQ992729_1_Influenza_A_virus_A_goose_Guangxi_4289_2005_H5N1_hemagglutinin_HA_gene:0.001731367416891582):0,(gi_116271110_gb_DQ992736_1_Influenza_A_virus_A_duck_Guangxi_5165_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271100_gb_DQ992731_1_Influenza_A_virus_A_goose_Guangxi_4513_2005_H5N1_hemagglutinin_HA_gene:0):0):0,gi_116271112_gb_DQ992737_1_Influenza_A_virus_A_duck_Guangxi_5270_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271098_gb_DQ992730_1_Influenza_A_virus_A_duck_Guangxi_4428_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271106_gb_DQ992734_1_Influenza_A_virus_A_chicken_Guangxi_4989_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271138_gb_DQ992750_1_Influenza_A_virus_A_duck_Guangxi_804_2006_H5N1_hemagglutinin_HA_gene:0):0,(gi_116271132_gb_DQ992747_1_Influenza_A_virus_A_goose_Guangxi_582_2006_H5N1_hemagglutinin_HA_gene:0.001844537761868173,gi_116664738_gb_DQ999872_1_Influenza_A_virus_A_chicken_Thailand_NP_172_2006_H5N1_hemagglutinin_gene:0.01148521138314443):0):0,(gi_116271212_gb_DQ992787_1_Influenza_A_virus_A_duck_Hunan_5106_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271214_gb_DQ992788_1_Influenza_A_virus_A_duck_Hunan_5152_2005_H5N1_hemagglutinin_HA_gene:0):0.003460794024231023):0,((gi_116271116_gb_DQ992739_1_Influenza_A_virus_A_duck_Guangxi_5457_2005_H5N1_hemagglutinin_HA_gene:0.001722809077664727,gi_116271122_gb_DQ992742_1_Influenza_A_virus_A_duck_Guangxi_150_2006_H5N1_hemagglutinin_HA_gene:0):0.001719134242840447,(gi_116271310_gb_DQ992836_1_Influenza_A_virus_A_chicken_Hong_Kong_282_2006_H5N1_hemagglutinin_HA_gene:0.001740861832069726,gi_116271320_gb_DQ992841_1_Influenza_A_virus_A_chicken_Hong_Kong_947_2006_H5N1_hemagglutinin_HA_gene:0):0.001721140743888223):0):0,((((gi_116271690_gb_DQ993026_1_Influenza_A_virus_A_chicken_Guangxi_1951_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271692_gb_DQ993027_1_Influenza_A_virus_A_goose_Guangxi_1458_2006_H5N1_hemagglutinin_HA_gene:0.003492498390440192):0.003468421626776727,gi_116271124_gb_DQ992743_1_Influenza_A_virus_A_goose_Guangxi_224_2006_H5N1_hemagglutinin_HA_gene:0):0,((((gi_116271128_gb_DQ992745_1_Influenza_A_virus_A_chicken_Guangxi_463_2006_H5N1_hemagglutinin_HA_gene:0,(gi_116271126_gb_DQ992744_1_Influenza_A_virus_A_duck_Guangxi_288_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271686_gb_DQ993024_1_Influenza_A_virus_A_goose_Guangxi_1898_2006_H5N1_hemagglutinin_HA_gene:0):0):0,gi_116271682_gb_DQ993022_1_Influenza_A_virus_A_duck_Guangxi_2143_2006_H5N1_hemagglutinin_HA_gene:0.003465325984019963):0,((gi_116271684_gb_DQ993023_1_Influenza_A_virus_A_duck_Guangxi_1830_2006_H5N1_hemagglutinin_HA_gene:0.003461661165967627,gi_116271688_gb_DQ993025_1_Influenza_A_virus_A_goose_Guangxi_1633_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271130_gb_DQ992746_1_Influenza_A_virus_A_duck_Guangxi_392_2006_H5N1_hemagglutinin_HA_gene:0.001856906294832496):0):0,gi_116271136_gb_DQ992749_1_Influenza_A_virus_A_duck_Guangxi_744_2006_H5N1_hemagglutinin_HA_gene:0.001857439720249489):0):0.001731549330460619,gi_116271164_gb_DQ992763_1_Influenza_A_virus_A_chicken_Guiyang_29_2006_H5N1_hemagglutinin_HA_gene:0.003496658145480596):0):0,((((((gi_116271156_gb_DQ992759_1_Influenza_A_virus_A_chicken_Guiyang_3721_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271162_gb_DQ992762_1_Influenza_A_virus_A_chicken_Guiyang_4059_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271166_gb_DQ992764_1_Influenza_A_virus_A_duck_Guiyang_293_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271172_gb_DQ992767_1_Influenza_A_virus_A_duck_Guiyang_497_2006_H5N1_hemagglutinin_HA_gene:0.001721140743888223):0):0):0,(gi_116271158_gb_DQ992760_1_Influenza_A_virus_A_duck_Guiyang_3834_2005_H5N1_hemagglutinin_HA_gene:0.001847390505740832,gi_116271160_gb_DQ992761_1_Influenza_A_virus_A_duck_Guiyang_3996_2005_H5N1_hemagglutinin_HA_gene:0):0):0.001720137493364335,(gi_116271302_gb_DQ992832_1_Influenza_A_virus_A_duck_Fujian_668_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271304_gb_DQ992833_1_Influenza_A_virus_A_duck_Fujian_671_2006_H5N1_hemagglutinin_HA_gene:0):0.003496949847231326):0,gi_116271316_gb_DQ992839_1_Influenza_A_virus_A_common_magpie_Hong_Kong_645_2006_H5N1_hemagglutinin_HA_gene:0.003486465671281922):0,(gi_116271222_gb_DQ992792_1_Influenza_A_virus_A_duck_Hunan_856_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271224_gb_DQ992793_1_Influenza_A_virus_A_duck_Hunan_988_2006_H5N1_hemagglutinin_HA_gene:0):0.001722809077664727):0,(gi_116271872_gb_DQ993117_1_Influenza_A_virus_A_goose_Guangxi_532_2006_H5N1_hemagglutinin_HA_gene:0,(gi_116271204_gb_DQ992783_1_Influenza_A_virus_A_goose_Shantou_3265_2006_H5N1_hemagglutinin_HA_gene:0.001732986459249654,gi_116271206_gb_DQ992784_1_Influenza_A_virus_A_goose_Shantou_3295_2006_H5N1_hemagglutinin_HA_gene:0.001721805827140838):0.005190868402890893):0.001720137493364335):0):0,(((gi_116271282_gb_DQ992822_1_Influenza_A_virus_A_chicken_Fujian_10039_2005_H5N1_hemagglutinin_HA_gene:0,((gi_116271288_gb_DQ992825_1_Influenza_A_virus_A_duck_Fujian_10934_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271292_gb_DQ992827_1_Influenza_A_virus_A_duck_Fujian_11311_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271290_gb_DQ992826_1_Influenza_A_virus_A_duck_Fujian_11094_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271296_gb_DQ992829_1_Influenza_A_virus_A_duck_Fujian_12032_2005_H5N1_hemagglutinin_HA_gene:0):0):0):0,((gi_116271280_gb_DQ992821_1_Influenza_A_virus_A_chicken_Fujian_9821_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271276_gb_DQ992819_1_Influenza_A_virus_A_duck_Fujian_9651_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271278_gb_DQ992820_1_Influenza_A_virus_A_duck_Fujian_9713_2005_H5N1_hemagglutinin_HA_gene:0):0):0):0,((gi_116271294_gb_DQ992828_1_Influenza_A_virus_A_chicken_Fujian_11933_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271298_gb_DQ992830_1_Influenza_A_virus_A_chicken_Fujian_12239_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271300_gb_DQ992831_1_Influenza_A_virus_A_chicken_Fujian_584_2006_H5N1_hemagglutinin_HA_gene:0):0.001731983208725766):0.01235111046553835,(gi_116271208_gb_DQ992785_1_Influenza_A_virus_A_chicken_Shantou_3840_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271210_gb_DQ992786_1_Influenza_A_virus_A_chicken_Shantou_3923_2006_H5N1_hemagglutinin_HA_gene:0):0.001722809077664727):0):0,(gi_116271190_gb_DQ992776_1_Influenza_A_virus_A_duck_Shantou_13323_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271196_gb_DQ992779_1_Influenza_A_virus_A_chicken_Shantou_1233_2006_H5N1_hemagglutinin_HA_gene:0.006916223581789416):0.001718514203919168):0.001720137493364335):0,(((gi_116271218_gb_DQ992790_1_Influenza_A_virus_A_duck_Hunan_324_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271220_gb_DQ992791_1_Influenza_A_virus_A_duck_Hunan_344_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271314_gb_DQ992838_1_Influenza_A_virus_A_crested_myna_Hong_Kong_540_2006_H5N1_hemagglutinin_HA_gene:0.003469728163064682):0,((((gi_116271322_gb_DQ992842_1_Influenza_A_virus_A_Japanese_white_eye_Hong_Kong_1038_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271318_gb_DQ992840_1_Influenza_A_virus_A_little_egret_Hong_Kong_718_2006_H5N1_hemagglutinin_HA_gene:0):0.001736616249742598,(((gi_116271324_gb_DQ992843_1_Influenza_A_virus_A_common_magpie_Hong_Kong_2125_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271328_gb_DQ992845_1_Influenza_A_virus_A_munia_Hong_Kong_2454_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271338_gb_DQ992850_1_Influenza_A_virus_A_common_magpie_Hong_Kong_3033_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271330_gb_DQ992846_1_Influenza_A_virus_A_white_backed_munia_Hong_Kong_2469_2006_H5N1_hemagglutinin_HA_gene:0):0.0017187003645753):0,gi_116271326_gb_DQ992844_1_Influenza_A_virus_A_common_magpie_Hong_Kong_2256_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271332_gb_DQ992847_1_Influenza_A_virus_A_large_billed_crow_Hong_Kong_2512_2006_H5N1_hemagglutinin_HA_gene:0):0.003449554482991331):0):0,gi_116271114_gb_DQ992738_1_Influenza_A_virus_A_goose_Guangxi_5414_2005_H5N1_hemagglutinin_HA_gene:0.007168451271311083):0.01254688926380664,(gi_116271148_gb_DQ992755_1_Influenza_A_virus_A_chicken_Guiyang_3055_2005_H5N1_hemagglutinin_HA_gene:0,((gi_116271154_gb_DQ992758_1_Influenza_A_virus_A_chicken_Guiyang_3570_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271152_gb_DQ992757_1_Influenza_A_virus_A_goose_Guiyang_3422_2005_H5N1_hemagglutinin_HA_gene:0):0.001745987560952093,gi_116271150_gb_DQ992756_1_Influenza_A_virus_A_duck_Guiyang_3242_2005_H5N1_hemagglutinin_HA_gene:0):0):0.00364056800620153):0.001609132453519785,((gi_41207462_gb_AY518362_1_Influenza_A_virus_A_duck_China_E319_2_03_H5N1_hemagglutinin_subtype_H5_H5_gene:0.003460923098550844,((gi_57916028_gb_AY737296_1_Influenza_A_virus_A_chicken_Guangdong_178_04_H5N1_segment_4:0.003504518642431752,((gi_84797179_gb_DQ320898_1_Influenza_A_virus_A_chicken_Guangxi_604_2005_H5N1_hemagglutinin_HA_gene:0,gi_84797177_gb_DQ320897_1_Influenza_A_virus_A_quail_Guangxi_575_2005_H5N1_hemagglutinin_HA_gene:0.003507468039006941):0,gi_84797181_gb_DQ320899_1_Influenza_A_virus_A_duck_Guangxi_793_2005_H5N1_hemagglutinin_HA_gene:0):0.003505713585118946):0,((((((((((gi_116271074_gb_DQ992718_1_Influenza_A_virus_A_chicken_Guangxi_3154_2005_H5N1_hemagglutinin_HA_gene:0.003492056678231004,((gi_116271086_gb_DQ992724_1_Influenza_A_virus_A_chicken_Guangxi_3791_2005_H5N1_hemagglutinin_HA_gene:0.005244386268594013,(gi_116271072_gb_DQ992717_1_Influenza_A_virus_A_duck_Guangxi_3085_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271084_gb_DQ992723_1_Influenza_A_virus_A_duck_Guangxi_3741_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271088_gb_DQ992725_1_Influenza_A_virus_A_duck_Guangxi_3819_2005_H5N1_hemagglutinin_HA_gene:0.00174062564237789):0.001741051570312646):0):0,gi_116271234_gb_DQ992798_1_Influenza_A_virus_A_goose_Yunnan_4494_2005_H5N1_hemagglutinin_HA_gene:0.003506246058869184):0):0,gi_116271238_gb_DQ992800_1_Influenza_A_virus_A_goose_Yunnan_4804_2005_H5N1_hemagglutinin_HA_gene:0.001734090925302022):0,((((((gi_116271140_gb_DQ992751_1_Influenza_A_virus_A_chicken_Guiyang_2147_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271142_gb_DQ992752_1_Influenza_A_virus_A_chicken_Guiyang_2173_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271230_gb_DQ992796_1_Influenza_A_virus_A_goose_Yunnan_4129_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271244_gb_DQ992803_1_Influenza_A_virus_A_duck_Yunnan_5251_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_116271236_gb_DQ992799_1_Influenza_A_virus_A_duck_Yunnan_4589_2005_H5N1_hemagglutinin_HA_gene:0.001726182062582588):0.001734383374482937,gi_116271254_gb_DQ992808_1_Influenza_A_virus_A_goose_Yunnan_6027_2005_H5N1_hemagglutinin_HA_gene:0.001837329801065454):0,gi_116271252_gb_DQ992807_1_Influenza_A_virus_A_duck_Yunnan_5877_2005_H5N1_hemagglutinin_HA_gene:0):0):0,gi_116271070_gb_DQ992716_1_Influenza_A_virus_A_goose_Guangxi_3017_2005_H5N1_hemagglutinin_HA_gene:0.001742768846430097):0,((gi_116271078_gb_DQ992720_1_Influenza_A_virus_A_duck_Guangxi_3364_2005_H5N1_hemagglutinin_HA_gene:0,(gi_116271092_gb_DQ992727_1_Influenza_A_virus_A_duck_Guangxi_4184_2005_H5N1_hemagglutinin_HA_gene:0.003491075058688987,gi_116271094_gb_DQ992728_1_Influenza_A_virus_A_duck_Guangxi_4196_2005_H5N1_hemagglutinin_HA_gene:0.003487199649459728):0):0,(gi_116271102_gb_DQ992732_1_Influenza_A_virus_A_duck_Guangxi_4665_2005_H5N1_hemagglutinin_HA_gene:0,gi_116271120_gb_DQ992741_1_Influenza_A_virus_A_duck_Guangxi_89_2006_H5N1_hemagglutinin_HA_gene:0.005216214682668413):0):0.003488705422378522):0,gi_116271080_gb_DQ992721_1_Influenza_A_virus_A_duck_Guangxi_3548_2005_H5N1_hemagglutinin_HA_gene:0.003476000461681531):0.00349298803704163,gi_84797175_gb_DQ320896_1_Influenza_A_virus_A_goose_Guangxi_345_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_84797183_gb_DQ320900_1_Influenza_A_virus_A_duck_Guangxi_951_2005_H5N1_hemagglutinin_HA_gene:0.003508232560535233):0,((gi_116271076_gb_DQ992719_1_Influenza_A_virus_A_goose_Guangxi_3316_2005_H5N1_hemagglutinin_HA_gene:0.001742838231854784,((gi_116070383_gb_CY017051_1_Influenza_A_virus_A_quail_Viet_Nam_15_2005_H5N1_segment_4:0.00174656797544696,gi_116070364_gb_CY017059_1_Influenza_A_virus_A_chicken_Viet_Nam_17_2005_H5N1_segment_4:0.001737729919792751):0.001747752139180657,gi_115951804_gb_CY016883_1_Influenza_A_virus_A_duck_Viet_Nam_12_2005_H5N1_segment_4:0):0):0.007002541202113411,gi_115953503_gb_CY016867_1_Influenza_A_virus_A_chicken_Viet_Nam_10_2005_H5N1_segment_4:0.001775134289606655):0.005273592074853607):0,(gi_116271090_gb_DQ992726_1_Influenza_A_virus_A_duck_Guangxi_4016_2005_H5N1_hemagglutinin_HA_gene:0,((gi_84797205_gb_DQ320911_1_Influenza_A_virus_A_duck_Hunan_1265_2005_H5N1_hemagglutinin_HA_gene:0.001745539503253515,(gi_84797207_gb_DQ320912_1_Influenza_A_virus_A_duck_Hunan_1608_2005_H5N1_hemagglutinin_HA_gene:0,gi_84797209_gb_DQ320913_1_Influenza_A_virus_A_duck_Hunan_1652_2005_H5N1_hemagglutinin_HA_gene:0):0.003507231073277777):0.003500834024181884,gi_116271202_gb_DQ992782_1_Influenza_A_virus_A_pheasant_Shantou_2239_2006_H5N1_hemagglutinin_HA_gene:0.005641833103278633):0):0):0.003490204404840275):0.003538784804755077):0.001862991816476043,(gi_57915979_gb_AY737289_1_Influenza_A_virus_A_chicken_Guangdong_191_04_H5N1_segment_4:0.01598362221225046,gi_84797203_gb_DQ320910_1_Influenza_A_virus_A_chicken_Hunan_999_2005_H5N1_hemagglutinin_HA_gene:0.007034379432321841):0):0):0.00703139748397562,((((((((((gi_115608030_gb_CY016787_1_Influenza_A_virus_A_chicken_Afghanistan_1207_2006_H5N1_segment_4:0.003511449664033359,gi_133983148_gb_CY020637_1_Influenza_A_virus_A_chicken_Afghanistan_1573_92_2006_H5N1_segment_4:0.001754494339595659):0,gi_133982943_gb_CY020621_1_Influenza_A_virus_A_chicken_Afghanistan_1573_47_2006_H5N1_segment_4:0):0,gi_134048315_gb_CY021373_1_Influenza_A_virus_A_chicken_Afghanistan_1573_7_2006_H5N1_segment_4:0):0,(gi_118495726_dbj_AB284324_1_Influenza_A_virus_A_common_goldeneye_Mongolia_12_2006_H5N1_HA_gene_for_haemagglutinin:0,gi_109809721_dbj_AB263752_1_Influenza_A_virus_A_whooper_swan_Mongolia_2_06_H5N1_genomic_RNA:0):0.001751550733838528):0,gi_133983049_gb_CY020629_1_Influenza_A_virus_A_chicken_Afghanistan_1573_65_2006_H5N1_segment_4:0):0.001758565238909,gi_115608011_gb_CY016779_1_Influenza_A_virus_A_cygnus_cygnus_Iran_754_2006_H5N1_segment_4:0.001771683307730219):0.001745909746397546,((((((((((gi_91984128_gb_DQ095621_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_12_05_H5N1_hemagglutinin_HA_gene:0,gi_91984122_gb_DQ095616_2_Influenza_A_virus_A_Brown_headed_Gull_Qinghai_3_05_H5N1_hemagglutinin_HA_gene:0):0,gi_70955425_gb_DQ095615_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_60_05_H5N1_hemagglutinin_HA_gene:0):0,gi_91984126_gb_DQ095618_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_61_05_H5N1_hemagglutinin_HA_gene:0):0,gi_70955436_gb_DQ095623_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_67_05_H5N1_hemagglutinin_HA_gene:0):0.001740820029756551,((gi_91984124_gb_DQ095617_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_5_05_H5N1_hemagglutinin_HA_gene:0,gi_91984117_gb_DQ095612_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_59_05_H5N1_hemagglutinin_HA_gene:0):0,gi_91984119_gb_DQ095613_2_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_68_05_H5N1_hemagglutinin_HA_gene:0):0):0,gi_75911269_gb_DQ137873_1_Influenza_A_virus_A_bar_headed_goose_Qinghai_0510_05_H5N1_hemagglutinin_HA_gene:0.008948779051035626):0.001748530742438644,gi_70955434_gb_DQ095622_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_65_05_H5N1_hemagglutinin_HA_gene:0.001748849136493507):2.430208080900173e-05,(gi_84797225_gb_DQ320921_1_Influenza_A_virus_A_migratory_duck_Jiangxi_2300_2005_H5N1_hemagglutinin_HA_gene:0.001750882519308859,(gi_116271198_gb_DQ992780_1_Influenza_A_virus_A_Guinea_fowl_Shantou_1341_2006_H5N1_hemagglutinin_HA_gene:0.001746411978623663,((gi_81687114_dbj_AB233319_1_Influenza_A_virus_A_bar_headed_goose_Mongolia_1_05_H5N1_HA_gene_for_hemagglutinin:0.005299777309901594,(gi_148340550_gb_EF619980_1_Influenza_A_virus_A_turkey_Turkey_1_2005_H5N1_segment_4_hemagglutinin_HA_gene:0,gi_89475499_gb_DQ407519_1_Influenza_A_virus_A_turkey_Turkey_1_2005_H5N1_hemagglutinin_HA_gene:0):0.003506592037900718):0,gi_81687118_dbj_AB233320_1_Influenza_A_virus_A_whooper_swan_Mongolia_3_05_H5N1_HA_gene_for_hemagglutinin:0.00174313565797341):0.001744001646625024):0):0):0,gi_70955429_gb_DQ095619_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_75_05_H5N1_hemagglutinin_HA_gene:0):0,gi_70955431_gb_DQ095620_1_Influenza_A_virus_A_Bar_headed_Goose_Qinghai_62_05_H5N1_hemagglutinin_HA_gene:0):0):0,gi_70955423_gb_DQ095614_1_Influenza_A_virus_A_Great_Black_headed_Gull_Qinghai_2_05_H5N1_hemagglutinin_HA_gene:0):0.0143400964840308,((((gi_115526929_gb_DQ997163_1_Influenza_A_virus_A_duck_Hubei_wp_2003_H5N1_segment_4:0,gi_116490085_gb_DQ997172_1_Influenza_A_virus_A_duck_Hubei_wq_2003_H5N1_segment_4:0):0.001747870699263072,gi_47716772_gb_AY609312_1_Influenza_A_virus_A_chicken_Guangdong_174_04_H5N1_segment_4:0.00882635445876988):0,((((gi_58531138_dbj_AB188824_1_Influenza_A_virus_A_chicken_Kyoto_3_2004_H5N1_HA_gene_for_hemagglutinin:0,gi_58531156_dbj_AB189053_1_Influenza_A_virus_A_crow_Kyoto_53_2004_H5N1_HA_gene_for_hemagglutinin:0):0.001745244159294016,gi_58531088_dbj_AB166862_1_Influenza_A_virus_A_chicken_Yamaguchi_7_2004_H5N1_HA_gene_for_hemagglutinin:0.001745244159294016):0,gi_58531174_dbj_AB189061_1_Influenza_A_virus_A_crow_Osaka_102_2004_H5N1_HA_gene_for_hemagglutinin:0.001747870699263072):0,(gi_58531120_dbj_AB188816_1_Influenza_A_virus_A_chicken_Oita_8_2004_H5N1_HA_gene_for_hemagglutinin:0.00351509482326328,(gi_56548875_gb_AY676035_1_Influenza_A_virus_A_chicken_Korea_ES_03_H5N1_hemagglutinin_HA_gene:0.00176284034995723,gi_56548877_gb_AY676036_1_Influenza_A_virus_A_duck_Korea_ESD1_03_H5N1_hemagglutinin_HA_gene:0.001757740891130333):0.00174887394978696):0.001750990387508705):0.005285677271026387):0,(gi_115527022_gb_DQ997276_1_Influenza_A_virus_A_goose_Jilin_hb_2003_H5N1_segment_4:0,(gi_116271200_gb_DQ992781_1_Influenza_A_virus_A_goose_Shantou_2086_2006_H5N1_hemagglutinin_HA_gene:0,gi_116271194_gb_DQ992778_1_Influenza_A_virus_A_goose_Shantou_239_2006_H5N1_hemagglutinin_HA_gene:0.001790841868806692):0.02386659091534147):0.005301266756554381):0.001794716682841031):0.003468852192565371,((gi_86753761_gb_DQ366330_1_Influenza_A_virus_A_chicken_Guangxi_12_2004_H5N1_hemagglutinin_mRNA:0,gi_86753763_gb_DQ366338_1_Influenza_A_virus_A_duck_Guangxi_13_2004_H5N1_hemagglutinin_mRNA:0):0.01256241508045397,(((gi_50296026_gb_AY651321_1_Influenza_A_virus_A_Ck_Indonesia_BL_2003_H5N1_hemagglutinin_HA_gene:0,gi_50296028_gb_AY651322_1_Influenza_A_virus_A_Dk_Indonesia_MS_2004_H5N1_hemagglutinin_HA_gene:0):0,gi_50296024_gb_AY651320_1_Influenza_A_virus_A_Ck_Indonesia_PA_2003_H5N1_hemagglutinin_HA_gene:0):0,(((gi_93008282_gb_DQ497667_1_Influenza_A_virus_A_chicken_Dairi_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0,gi_93008278_gb_DQ497665_1_Influenza_A_virus_A_chicken_Simalanggang_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0.005271934201278639):0,(gi_93008284_gb_DQ497668_1_Influenza_A_virus_A_chicken_Deli_Serdang_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0,(gi_93008286_gb_DQ497669_1_Influenza_A_virus_A_chicken_Tarutung_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0.001750794214619565,gi_93008280_gb_DQ497666_1_Influenza_A_virus_A_chicken_Tebing_Tinggi_BPPVI_2005_H5N1_hemagglutinin_HA_gene:0):0.001750497239232128):0):0.007283613623137076,((((gi_93008250_gb_DQ497651_1_Influenza_A_virus_A_chicken_Gunung_Kidal_BBVW_2005_H5N1_hemagglutinin_HA_gene:0.00349233927623722,gi_93008234_gb_DQ497643_1_Influenza_A_virus_A_chicken_Magetan_BBVW_2005_H5N1_hemagglutinin_HA_gene:0):0.003493450654475125,gi_93008266_gb_DQ497659_1_Influenza_A_virus_A_duck_Parepare_BBVM_2005_H5N1_hemagglutinin_HA_gene:0.005235145270217313):0,gi_113494600_gb_CY014185_1_Influenza_A_virus_A_chicken_Indonesia_CDC25_2005_H5N1_segment_4_sequence:0.001856775200055526):0.00536109450307212,gi_93008244_gb_DQ497648_1_Influenza_A_virus_A_chicken_Purworejo_BBVW_2005_H5N1_hemagglutinin_HA_gene:0.00717066861369088):0.003555063307150324):0.005153039596277611):0.005273602859159524):0):0):0.002348210859726875,gi_57916076_gb_AY737304_1_Influenza_A_virus_A_duck_Guangdong_173_04_H5N1_segment_4:0.01778012982633171):0.001168066004265154,(gi_56548873_gb_AY676034_1_Influenza_A_virus_A_egret_Hong_Kong_757_2_03_H5N1_hemagglutinin_HA_gene:0.001776352376955264,((((((((gi_54873457_gb_AY770991_1_Influenza_A_virus_A_chicken_Ayutthaya_Thailand_CU_23_04_H5N1_hemagglutinin_gene:0,(gi_48431281_gb_AY590568_2_Influenza_A_virus_A_chicken_Nakorn_Patom_Thailand_CU_K2_2004_H5N1_hemagglutinin_gene:0.001722594452666358,(gi_116664740_gb_DQ999880_1_Influenza_A_virus_A_chicken_Thailand_PC_168_2006_H5N1_hemagglutinin_gene:0.005191391777814957,(gi_50296070_gb_AY651343_1_Influenza_A_virus_A_Ck_Viet_Nam_C57_2004_H5N1_hemagglutinin_HA_gene:0,gi_58618439_gb_AY818136_1_Influenza_A_virus_A_chicken_Vietnam_C58_04_H5N1_hemagglutinin_HA_gene:0):0.005172019605630252):0):0.001718586608544867):0,gi_126568051_gb_AY553802_2_Influenza_A_virus_A_little_grebe_Thailand_Phichit_01_2004_H5N1_hemagglutinin_HA_gene:0.001717095230686608):0,(gi_50296040_gb_AY651328_1_Influenza_A_virus_A_Ck_Thailand_9_1_2004_H5N1_hemagglutinin_HA_gene:0,gi_50296042_gb_AY651329_1_Influenza_A_virus_A_Qa_Thailand_57_2004_H5N1_hemagglutinin_HA_gene:0.003455373081744809):0):0,gi_50296044_gb_AY651330_1_Influenza_A_virus_A_bird_Thailand_3_1_2004_H5N1_hemagglutinin_HA_gene:0):0,gi_119368941_gb_DQ989969_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD0404F_2004_H5N1_hemagglutinin_HA_gene:0):0,(((gi_119368922_gb_DQ989961_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD0104F_2004_H5N1_hemagglutinin_HA_gene:0,gi_119368964_gb_DQ989979_1_Influenza_A_virus_A_open_billed_stork_Suphanburi_TSD0912F_2004_H5N1_hemagglutinin_HA_gene:0):0,((gi_85062766_gb_DQ334760_1_Influenza_A_virus_A_chicken_Thailand_Kanchanaburi_CK_160_2005_H5N1_hemagglutinin_gene:0,gi_85062798_gb_DQ334776_1_Influenza_A_virus_A_chicken_Thailand_Nontaburi_CK_162_2005_H5N1_hemagglutinin_gene:0.001736070028232976):0.001736070028232976,(gi_85062782_gb_DQ334768_1_Influenza_A_virus_A_quail_Thailand_Nakhon_Pathom_QA_161_2005_H5N1_hemagglutinin_gene:0.001737422291339462,gi_116664736_gb_DQ999887_1_Influenza_A_virus_A_chicken_Thailand_PC_170_2006_H5N1_hemagglutinin_gene:0.00711789381930134):0):0.001727537941145114):0.001719018028398754,((((gi_115609697_gb_CY016827_1_Influenza_A_virus_A_duck_Viet_Nam_1_2005_H5N1_segment_4:0.001728975069934149,gi_115952217_gb_CY016875_1_Influenza_A_virus_A_chicken_Viet_Nam_11_2005_H5N1_segment_4:0):0,(gi_115609756_gb_CY016891_1_Influenza_A_virus_A_duck_Viet_Nam_20_2005_H5N1_segment_4:0,gi_117571349_gb_CY017187_1_Influenza_A_virus_A_duck_Viet_Nam_19_2005_H5N1_segment_4:0):0.001729978320458038):0,(gi_115953078_gb_CY016835_1_Influenza_A_virus_A_chicken_Viet_Nam_2_2005_H5N1_segment_4:0.001727971819410261,((gi_115952998_gb_CY016843_1_Influenza_A_virus_A_chicken_Viet_Nam_6_2005_H5N1_segment_4:0,gi_115952885_gb_CY016851_1_Influenza_A_virus_A_chicken_Viet_Nam_8_2005_H5N1_segment_4:0):0,gi_115952786_gb_CY016859_1_Influenza_A_virus_A_chicken_Viet_Nam_9_2005_H5N1_segment_4:0):0.001730338025698383):0):0,gi_116070093_gb_CY017067_1_Influenza_A_virus_A_duck_Viet_Nam_18_2005_H5N1_segment_4:0.003470454620237002):0.00346227322945086):0):0,((gi_119369021_gb_DQ990003_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBA3011M_2005_H5N1_hemagglutinin_HA_gene:0.006930334787652858,gi_119368983_gb_DQ989987_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD1521J_2005_H5N1_hemagglutinin_HA_gene:0):0,gi_119369002_gb_DQ989995_1_Influenza_A_virus_A_open_billed_stork_Nakhonsawan_BBD2616F_2005_H5N1_hemagglutinin_HA_gene:0):0.00171769596142812):0,(((((gi_50296060_gb_AY651338_1_Influenza_A_virus_A_Ck_Viet_Nam_35_2004_H5N1_hemagglutinin_HA_gene:0,gi_72398640_gb_DQ099755_1_Influenza_A_virus_A_chicken_Viet_Nam_TN_025_2004_H5N1_segment_4_hemagglutinin_HA_gene:0):0,(gi_50296062_gb_AY651339_1_Influenza_A_virus_A_Ck_Viet_Nam_36_2004_H5N1_hemagglutinin_HA_gene:0,gi_58618441_gb_AY818137_1_Influenza_A_virus_A_quail_Vietnam_36_04_H5N1_hemagglutinin_HA_gene:0):0):0,gi_50296066_gb_AY651341_1_Influenza_A_virus_A_Ck_Viet_Nam_38_2004_H5N1_hemagglutinin_HA_gene:0.001723898787024601):0,(gi_50296064_gb_AY651340_1_Influenza_A_virus_A_Ck_Viet_Nam_37_2004_H5N1_hemagglutinin_HA_gene:0,gi_72398646_gb_DQ099758_1_Influenza_A_virus_A_chicken_Viet_Nam_TG_023_2004_H5N1_segment_4_hemagglutinin_HA_gene:0):0):0,(gi_50296058_gb_AY651337_1_Influenza_A_virus_A_chicken_Viet_Nam_33_2004_H5N1_hemagglutinin_HA_gene:0,gi_72398650_gb_DQ099760_1_Influenza_A_virus_A_chicken_Viet_Nam_LD_080_2004_H5N1_segment_4_hemagglutinin_HA_gene:0.001717095230686608):0):0.001720021278922643):0.01055766215265053):0.005358448309668883):0.001761840501632868,(((gi_115526951_gb_DQ997531_1_Influenza_A_virus_A_duck_Shanghai_xj_2002_H5N1_segment_4:0.005278794819343816,gi_84797211_gb_DQ320914_1_Influenza_A_virus_A_duck_Shantou_4610_2003_H5N1_hemagglutinin_HA_gene:0.01284488324698502):0.001757640774884637,(((gi_61698017_gb_AY950232_1_Influenza_A_virus_A_Chicken_Henan_12_2004_H5N1_segment_4:0,(gi_61698021_gb_AY950234_1_Influenza_A_virus_A_Chicken_Henan_16_2004_H5N1_segment_4:0.001735066777709088,gi_61698013_gb_AY950230_1_Influenza_A_virus_A_chicken_Henan_01_2004_H5N1_segment_4:0.008978464942589802):0):0,gi_61698019_gb_AY950233_1_Influenza_A_virus_A_Chicken_Henan_13_2004_H5N1_segment_4:0):0.001751797465143454,(((gi_61698015_gb_AY950231_1_Influenza_A_virus_A_Chicken_Henan_210_2004_H5N1_segment_4:0,gi_115382756_gb_DQ997219_1_Influenza_A_virus_A_chicken_Henan_wu_2004_H5N1_hemagglutinin_HA_gene:0):0,((gi_50956627_gb_AY684706_1_Influenza_A_virus_A_chicken_Hubei_327_2004_H5N1_hemagglutinin_HA_gene:0.005217432951488556,gi_55233227_gb_AY770079_1_Influenza_A_virus_A_chicken_Hubei_489_2004_H5N1_hemagglutinin_HA_gene:0):0,gi_61698025_gb_AY950236_1_Influenza_A_virus_A_swan_Guangxi_307_2004_H5N1_segment_4:0):0):0,(gi_115527053_gb_DQ997218_1_Influenza_A_virus_A_mallard_Guangxi_wt_2004_H5N1_segment_4:0,gi_61698023_gb_AY950235_1_Influenza_A_virus_A_WildDuck_Guangdong_314_2004_H5N1_segment_4:0):0):0.001750850272480137):0.001728264706498331):0,((((gi_84797135_gb_DQ320876_1_Influenza_A_virus_A_chicken_Fujian_1042_2005_H5N1_hemagglutinin_HA_gene:0,gi_84797133_gb_DQ320875_1_Influenza_A_virus_A_duck_Fujian_897_2005_H5N1_hemagglutinin_HA_gene:0.003528528430078331):0.00176015440510442,gi_84797213_gb_DQ320915_1_Influenza_A_virus_A_goose_Shantou_2216_2005_H5N1_hemagglutinin_HA_gene:0.003526004140535911):0.001770926944004256,(gi_116271066_gb_DQ992714_1_Influenza_A_virus_A_duck_Guangxi_2775_2005_H5N1_hemagglutinin_HA_gene:0.005386569420247741,gi_84797185_gb_DQ320901_1_Influenza_A_virus_A_duck_Guangzhou_20_2005_H5N1_hemagglutinin_HA_gene:0.01072223777210778):0.001717835561053442):0,gi_50296108_gb_AY651362_1_Influenza_A_virus_A_peregrine_falcon_HK_D0028_2004_H5N1_hemagglutinin_HA_gene:0.00177682351679038):0.005290923206695382):0):0.003536628933780002,(gi_115502972_gb_DQ997283_1_Influenza_A_virus_A_chicken_Jilin_hd_2002_H5N1_segment_4:0,gi_50365728_gb_AY653200_1_Influenza_A_virus_A_chicken_Jilin_9_2004_H5N1_segment_4:0):0.001720594756813111):0.001780878816563647,(((((((gi_85062566_gb_DQ343151_1_Influenza_A_virus_A_chicken_Hebei_718_2001_H5N1_hemagglutinin_HA_gene:0.006438546315122176,gi_115526911_gb_DQ997513_1_Influenza_A_virus_A_duck_Guangxi_xa_2001_H5N1_segment_4:0.005474178307851131):0.001575023537889367,(gi_115526992_gb_DQ997405_1_Influenza_A_virus_A_goose_Fujian_bb_2003_H5N1_segment_4:0.01068132475604614,(((gi_116271170_gb_DQ992766_1_Influenza_A_virus_A_chicken_Guiyang_441_2006_H5N1_hemagglutinin_HA_gene:0.001789803345977126,gi_116271168_gb_DQ992765_1_Influenza_A_virus_A_goose_Guiyang_337_2006_H5N1_hemagglutinin_HA_gene:0):0,gi_116271144_gb_DQ992753_1_Influenza_A_virus_A_duck_Guiyang_2231_2005_H5N1_hemagglutinin_HA_gene:0.003614908465910373):0.02017560843466733,gi_47834879_gb_AY575875_1_Influenza_A_virus_A_Ck_HK_31_4_02_H5N1_hemagglutinin_HA_gene:0):0):0.008906830791496819):0,gi_19697773_gb_AY059482_1_Influenza_A_virus_A_Goose_Hong_Kong_3014_8_2000_H5N1_segment_4_hemagglutinin_HA_gene:0.008822165717130889):0.001750850272480137,((gi_19697771_gb_AY059481_1_Influenza_A_virus_A_Duck_Hong_Kong_2986_1_2000_H5N1_segment_4_hemagglutinin_HA_gene:0.003510650328248212,(gi_28810752_gb_AY221529_1_Influenza_A_virus_A_Chicken_HongKong_YU562_01_H5N1_hemagglutinin_HA_gene:0.002990908644525998,(gi_28810155_gb_AY221528_1_Influenza_A_virus_A_Chicken_HongKong_YU822_2_01_H5N1_hemagglutinin_HA_gene:0,gi_28809438_gb_AY221527_1_Influenza_A_virus_A_Chicken_HongKong_YU822_2_01_MB_H5N1_hemagglutinin_HA_gene:0.001733606498170934):0.002541251581346716):0.00148601536196278):0,((((gi_28807565_gb_AY221524_1_Influenza_A_virus_A_Chicken_HongKong_FY150_01_H5N1_hemagglutinin_HA_gene:0,gi_28807284_gb_AY221523_1_Influenza_A_virus_A_Chicken_HongKong_FY150_01_MB_H5N1_hemagglutinin_HA_gene:0):0.001746003867343182,gi_28808108_gb_AY221525_1_Influenza_A_virus_A_Pheasant_HongKong_FY155_01_MB_H5N1_hemagglutinin_HA_gene:0):0,gi_28808463_gb_AY221526_1_Influenza_A_virus_A_Pheasant_HongKong_FY155_01_H5N1_hemagglutinin_HA_gene:0):0.001748101923847095,(gi_28806384_gb_AY221522_1_Influenza_A_virus_A_Chicken_HongKong_NT873_3_01_H5N1_hemagglutinin_HA_gene:0,gi_28805557_gb_AY221521_1_Influenza_A_virus_A_Chicken_HongKong_NT873_3_01_MB_H5N1_hemagglutinin_HA_gene:0):0.005295685193056846):0):0):0,gi_115526968_gb_DQ997410_1_Influenza_A_virus_A_duck_Zhejiang_bj_2002_H5N1_segment_4:0.02872234987509528):0.003338659947999436,(gi_115382881_gb_DQ997182_1_Influenza_A_virus_A_chicken_Jiangsu_cz1_2002_H5N1_segment_4:0.00549839256281252,(gi_115502990_gb_DQ997377_1_Influenza_A_virus_A_chicken_Jilin_hf_2002_H5N1_segment_4:0.003730202066910738,(gi_115502941_gb_DQ997156_1_Influenza_A_virus_A_chicken_Hubei_wo_2003_H5N1_segment_4:0.01412399896869351,((gi_85062564_gb_DQ343150_1_Influenza_A_virus_A_chicken_Hebei_326_2005_H5N1_hemagglutinin_HA_gene:0.0119832032416233,gi_117414797_gb_DQ914814_1_Influenza_A_virus_A_chicken_Shanxi_2_2006_H5N1_segment_4:0.02646581670056432):0.01769230714106282,(gi_116271242_gb_DQ992802_1_Influenza_A_virus_A_duck_Yunnan_5236_2005_H5N1_hemagglutinin_HA_gene:0.009792926891152985,gi_116271226_gb_DQ992794_1_Influenza_A_virus_A_goose_Yunnan_3315_2005_H5N1_hemagglutinin_HA_gene:0.005533019462053305):0.005744816263230659):0):0.007231174873218021):0.006995706222144872):0.001737446897022598):0.002021056990540436,(((gi_84797149_gb_DQ320883_1_Influenza_A_virus_A_duck_Guangxi_1311_2004_H5N1_hemagglutinin_HA_gene:0,gi_84797161_gb_DQ320889_1_Influenza_A_virus_A_goose_Guangxi_2112_2004_H5N1_hemagglutinin_HA_gene:0):0.001754122782637976,gi_84797157_gb_DQ320887_1_Influenza_A_virus_A_duck_Guangxi_1793_2004_H5N1_hemagglutinin_HA_gene:0):0.009191254905631475,gi_71000185_dbj_AB212280_1_Influenza_A_virus_A_duck_Yokohama_aq10_2003_H5N1_HA_gene_for_hemagglutinin:0.007412816692354494):0.003236971178251705):0):0,gi_115397012_gb_DQ997308_1_Influenza_A_virus_A_chicken_Jilin_hh_2002_H5N1_hemagglutinin_HA_gene:0.001753119532114087):0.001816732100401747,(gi_101918580_dbj_AB259712_1_Influenza_A_virus_A_duck_Hokkaido_Vac_1_04_H5N1_genomic_RNA:0.005232751641785671,gi_109452300_dbj_AB263192_1_Influenza_A_virus_A_R_duck_Mongolia_54_01_duck_Mongolia_47_01_H5N1_genomic_RNA:0):0.07044093106693458):0.001723190782503228,gi_115502957_gb_DQ997268_1_Influenza_A_virus_A_chicken_Jilin_ha_2003_H5N1_segment_4:0.008922628548613474):0.00170676096400408,(gi_19697757_gb_AY059474_1_Influenza_A_virus_A_Goose_Hong_Kong_ww26_2000_H5N1_segment_4_hemagglutinin_HA_gene:0.001713731003501752,gi_19697759_gb_AY059475_1_Influenza_A_virus_A_Goose_Hong_Kong_ww28_2000_H5N1_segment_4_hemagglutinin_HA_gene:0):0.003450010292730959):0,((((gi_21359659_gb_AF468837_1_Influenza_A_virus_A_Duck_Anyang_AVL_1_2001_H5N1_hemagglutinin_H5_H5_gene:0.003500645154619918,gi_115527004_gb_DQ997522_1_Influenza_A_virus_A_goose_Guangdong_xb_2001_H5N1_segment_4:0.006873622954156017):0.001712727752977863,gi_85062568_gb_DQ343152_1_Influenza_A_virus_A_chicken_Hebei_108_02_H5N1_hemagglutinin_HA_gene:0.01228531746654179):0,gi_58374179_gb_AY854190_1_Influenza_A_virus_A_duck_Shandong_093_2004_H5N1_segment_4:0.005238169550378956):0.003443369809696002,gi_116583103_gb_DQ997538_1_Influenza_A_virus_A_chicken_Jilin_xv_2002_H5N1_hemagglutinin_HA_gene:0):0.003479506662947322):0.00181199504389235,(((gi_9863931_gb_AF216737_1_AF216737_Influenza_A_virus_A_Environment_Hong_Kong_437_10_99_H5N1_hemagglutinin_5_gene:0.001725835220679303,gi_9863913_gb_AF216729_1_AF216729_Influenza_A_virus_A_Environment_Hong_Kong_437_8_99_H5N1_hemagglutinin_5_gene:0.003478758783969347):0,gi_9863876_gb_AF216713_1_AF216713_Influenza_A_virus_A_Environment_Hong_Kong_437_4_99_H5N1_hemagglutinin_5_gene:0.001726021381335435):0,gi_9863895_gb_AF216721_1_AF216721_Influenza_A_virus_A_Environment_Hong_Kong_437_6_99_H5N1_hemagglutinin_5_gene:0.001725835220679303):0.007059043784511681):0.003388649089806319,gi_115503009_gb_DQ997547_1_Influenza_A_virus_A_chicken_Jilin_xw_2003_H5N1_segment_4:0):0.001721598007336999,gi_115382830_gb_DQ997133_1_Influenza_A_virus_A_chicken_Hubei_wl_1997_H5N1_segment_4:0.00521837847365329):0.003474838797059389):0,(((gi_4240437_gb_AF082035_1_Influenza_A_virus_A_Chicken_Hong_Kong_786_97_H5N1_hemagglutinin_H5_mRNA:0,gi_4240435_gb_AF082034_1_Influenza_A_virus_A_Chicken_Hong_Kong_728_97_H5N1_hemagglutinin_H5_mRNA:0.001733707092688165):0,((gi_3068720_gb_AF057291_1_AF057291_Influenza_A_virus_A_chicken_Hong_Kong_258_97_H5N1_hemagglutinin_mRNA:0.001733707092688165,(gi_86753755_gb_DQ366306_1_Influenza_A_virus_A_duck_Vietnam_1_2005_H5N1_hemagglutinin_mRNA:0.01506376995644411,gi_86753759_gb_DQ366322_1_Influenza_A_virus_A_duck_Vietnam_8_05_H5N1_hemagglutinin_mRNA:0.03873457055623361):0.009942760047882547):0,gi_86753757_gb_DQ366314_1_Influenza_A_virus_A_goose_Vietnam_3_05_H5N1_hemagglutinin_mRNA:0.001735713593735941):0.00173131949665679):0.001874828124024311,(gi_6048756_gb_AF098543_1_AF098543_Influenza_A_virus_A_Duck_Hong_Kong_p46_97_H5N1_hemagglutinin_gene:0,gi_6048760_gb_AF098545_1_AF098545_Influenza_A_virus_A_Goose_Hong_Kong_w355_97_H5N1_hemagglutinin_gene:0.00173842554186335):0.00159343086596657):0.01069237564731552):0.005156783435137814):0.)";
     var res = phylotree.newick_parser( flu_tree );
     default_tree_settings ();
@@ -666,7 +658,49 @@ $("#example_GVZ").on ("click", function (e) {
 
 });
 
-// need to include colorizer here
+
+
+
+
+function node_colorizer (element, data) {
+try{
+   var count_class = 0;
+
+    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("fill", color_scheme(i), i == current_selection_id ?  "important" : null);}});
+
+    if (count_class > 1) {
+
+    } else {
+        if (count_class == 0) {
+            element.style ("fill", null);
+       }
+    }
+}
+catch (e) {
+
+}
+
+}
+
+function edge_colorizer (element, data) {
+   //console.log (data[current_selection_name]);
+try {
+    var count_class = 0;
+
+    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("stroke", color_scheme(i), i == current_selection_id ?  "important" : null);}});
+
+    if (count_class > 1) {
+        element.classed ("branch-multiple", true);
+    } else
+    if (count_class == 0) {
+             element.style ("stroke", null)
+                   .classed ("branch-multiple", false);
+    }
+}
+catch (e) {
+}
+
+}
 
 var valid_id = new RegExp ("^[\\w]+$");
 
@@ -679,7 +713,7 @@ $("#selection_name_box").on ("input propertychange", function (e) {
    d3.select ("#save_selection_button").classed ("disabled", accept_name ? null : true );
 });
 
-$("#selection_rename > a").on ("click", function (e) {
+$("#selection_rename").on ("click", function (e) {
 
     d3.select ("#save_selection_button")
            .classed ("disabled",true)
@@ -708,7 +742,7 @@ $("#selection_rename > a").on ("click", function (e) {
     e.preventDefault    ();
 });
 
-$("#selection_delete > a").on ("click", function (e) {
+$("#selection_delete").on ("click", function (e) {
 
     tree.update_key_name (selection_set[current_selection_id], null)
     selection_set.splice (current_selection_id, 1);
@@ -727,7 +761,7 @@ $("#selection_delete > a").on ("click", function (e) {
 
 });
 
-$("#selection_new > a").on ("click", function (e) {
+$("#selection_new").on ("click", function (e) {
 
     d3.select ("#save_selection_button")
                .classed ("disabled",true)
@@ -778,9 +812,8 @@ function update_selection_names (id, skip_rebuild) {
           .selectAll (".selection_set")
           .data (selection_set)
           .enter()
-          .append ("li")
-          .attr ("class", "selection_set")
           .append ("a")
+          .attr ("class", "selection_set dropdown-item")
           .attr ("href", "#")
           .text (function (d) { return d;})
           .style ("color", function (d,i) {return color_scheme(i);})
@@ -807,24 +840,22 @@ var width  = 800, //$(container_id).width(),
 
 var tree = phylotree("body")
     .size([height, width]);
+    //.node_span (function (a) {if (a.children && a.children.length) return 1; return isNaN (parseFloat (a["attribute"]) * 100) ? 1 : parseFloat (a["attribute"]) * 100; });
 
 var test_string = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)myroot";
 var container_id = '#tree_container';
+//var test_string = "(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)";
+
+//window.setInterval (function () {});
 
 var example_controls = d3.select ("#controls_form").append ("form");
-
-$("#controls").affix({
-  offset: {
-    top: 100,
-    bottom: function () {
-      return (this.bottom = $('.footer').outerHeight(true))
-    }
-  }
-});
 
 var svg = d3.select(container_id).append("svg")
     .attr("width", width)
     .attr("height", height);
+    
+
+
 
 function selection_handler_name_box (e) {
     var name_box = d3.select (this);
@@ -884,7 +915,7 @@ function selection_handler_name_dropdown (e) {
 
 function selection_handler_delete (e) {
     var element = d3.select (this);
-    $(this).tooltip('destroy');
+    $(this).tooltip('dispose');
     switch (e.detail[0]) {
         case 'save':
         case 'cancel':
@@ -901,60 +932,8 @@ function selection_handler_delete (e) {
 
     }}
 
-function node_colorizer(element, data) {
-  try {
-    var count_class = 0;
-
-    selection_set.forEach(function(d, i) {
-      if (data[d]) {
-        count_class++;
-        element.style(
-          "fill",
-          color_scheme(i),
-          i == current_selection_id ? "important" : null
-        );
-      }
-    });
-
-    if (count_class > 1) {
-    } else {
-      if (count_class === 0) {
-        element.style("fill", null);
-      }
-    }
-  } catch (e) {}
-}
-
-// TODO: Describe what this does
-function edge_colorizer(element, data) {
-
-  try {
-    var count_class = 0;
-
-    selection_set.forEach(function(d, i) {
-      if (data[d]) {
-        count_class++;
-        element.style(
-          "stroke",
-          color_scheme(i),
-          i == current_selection_id ? "important" : null
-        );
-      }
-    });
-
-    if (count_class > 1) {
-      element.classed("branch-multiple", true);
-    } else if (count_class === 0) {
-      element.style("stroke", null).classed("branch-multiple", false);
-    }
-  } catch (e) {}
-
-}
-
-
 
 $( document ).ready( function () {
-
     default_tree_settings();
     tree(test_string).svg (svg).layout();
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
@@ -966,7 +945,6 @@ $( document ).ready( function () {
     $("#save_selection_name").get(0).addEventListener(selection_menu_element_action,selection_handler_save_selection_name,false);
     $("#selection_name_dropdown").get(0).addEventListener(selection_menu_element_action,selection_handler_name_dropdown,false);
     update_selection_names();
-
 });
 
 </script>

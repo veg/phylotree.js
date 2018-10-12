@@ -117,7 +117,8 @@ phylotree = function(container) {
       hide: true,
       "label-nodes-with-name": false,
       zoom: false,
-      "show-menu": true
+      "show-menu": true,
+      "show-labels": true
     },
     css_classes = {
       "tree-container": "phylotree-container",
@@ -580,8 +581,9 @@ phylotree = function(container) {
           label_width = available_width * 0.5;
         }
 
+        const _label_width = options["show-labels"] ? label_width : 0;
         scales[1] =
-          (size[1] - offsets[1] - options["left-offset"] - label_width) /
+          (size[1] - offsets[1] - options["left-offset"] - _label_width) /
           _extents[1][1];
       }
     }
@@ -985,7 +987,8 @@ phylotree = function(container) {
   };
 
   phylotree.pad_width = function() {
-    return offsets[1] + options["left-offset"] + label_width;
+    const _label_width = options["show-labels"] ? label_width : 0
+    return offsets[1] + options["left-offset"] + _label_width;
   };
 
   /**
@@ -2949,7 +2952,7 @@ phylotree = function(container) {
           return shown_font_size * 0.33;
         })
         .text(function(d) {
-          return node_label(d);
+          return options["show-labels"] ? node_label(d) : '';
         })
         .style("font-size", function(d) {
           return ensure_size_is_in_px(shown_font_size);
