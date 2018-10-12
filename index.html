@@ -385,8 +385,12 @@ $("#toggle_animation").on ("click", function (e) {
 
 
 $(".phylotree-align-toggler").on ("click", function (e) {
-  if (tree.align_tips ($(this).data ("align") == "right")) {
-      console.log('hi');
+
+  var button_align = $(this).data ("align");
+  var tree_align = tree.options.align_tips;
+
+  if (tree_align != button_align) {
+      tree.align_tips(button_align == "right");
       $('.phylotree-align-toggler').toggleClass('active');
       tree.update ();
   }
