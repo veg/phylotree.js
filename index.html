@@ -384,12 +384,12 @@ $("#toggle_animation").on ("click", function (e) {
 });
 
 
-$(".phylotree-align-toggler").on ("change", function (e) {
-    if ($(this).is(':checked')) {
-        if (tree.align_tips ($(this).data ("align") == "right")) {
-            tree.update ();
-        }
-    }
+$(".phylotree-align-toggler").on ("click", function (e) {
+  if (tree.align_tips ($(this).data ("align") == "right")) {
+      console.log('hi');
+      $('.phylotree-align-toggler').toggleClass('active');
+      tree.update ();
+  }
 });
 
 
