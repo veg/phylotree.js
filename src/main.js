@@ -28,7 +28,7 @@ phylotree = function(container) {
   var self = {},
     size = [1, 1],
     phylo_attr = [1, 1],
-    newick_string = null,
+    newick_string = "",
     rescale_node_span = 1,
     separation = function(_node, _previos) {
       return 0;
@@ -473,18 +473,22 @@ phylotree = function(container) {
           d3_phylotree_is_node_collapsed(a_node) &&
           !is_under_collapsed_parent
         ) {
+
           // collapsed node
           save_x = x;
           save_span = last_span * 0.5;
           is_under_collapsed_parent = true;
           process_internal_node(a_node);
           is_under_collapsed_parent = false;
+
           if (typeof a_node.x === "number") {
+
             a_node.x =
               save_x + (a_node.x - save_x) * options["compression"] + save_span;
             a_node.collapsed = [[a_node.x, a_node.y]];
 
             var map_me = function(n) {
+
               n.hidden = true;
               if (d3_phylotree_is_leafnode(n)) {
                 x = n.x =
@@ -502,7 +506,9 @@ phylotree = function(container) {
             a_node.collapsed.push([x, a_node.y]);
             a_node.collapsed.push([a_node.x, a_node.y]);
             a_node.hidden = false;
+
           }
+
         } else {
           // normal node, or under a collapsed parent
           process_internal_node(a_node);
@@ -567,7 +573,8 @@ phylotree = function(container) {
         label_width = phylotree._label_width(shown_font_size);
         at_least_one_dimension_fixed = true;
 
-        var available_width = size[1] - offsets[1] - options["left-offset"];
+        let available_width = size[1] - offsets[1] - options["left-offset"];
+
         if (available_width * 0.5 < label_width) {
           shown_font_size *= (available_width * 0.5) / label_width;
           label_width = available_width * 0.5;
@@ -580,19 +587,18 @@ phylotree = function(container) {
     }
 
     if (phylotree.radial()) {
-      // map the nodes to polar coordinates
 
+      // map the nodes to polar coordinates
       draw_branch = draw_arc;
       edge_placer = arc_segment_placer;
 
-      var last_child_angle = null,
+      let last_child_angle = null,
         last_circ_position = null,
         last_child_radius = null,
         min_radius = 0,
-        zero_length = null,
         effective_span = _extents[0][1] * scales[0];
 
-      var compute_distance = function(r1, r2, a1, a2, annular_shift) {
+      let compute_distance = function(r1, r2, a1, a2, annular_shift) {
         annular_shift = annular_shift || 0;
         return Math.sqrt(
           (r2 - r1) * (r2 - r1) +
@@ -606,7 +612,7 @@ phylotree = function(container) {
       var max_r = 0;
 
       self.nodes.each(function(d) {
-        var my_circ_position = d.x * scales[0];
+        let my_circ_position = d.x * scales[0];
         d.angle = (2 * Math.PI * my_circ_position) / effective_span;
         d.text_angle = d.angle - Math.PI / 2;
         d.text_angle = d.text_angle > 0 && d.text_angle < Math.PI;
@@ -621,14 +627,13 @@ phylotree = function(container) {
         max_r = Math.max(d.radius, max_r);
       });
 
-      var annular_shift = 0,
-        do_tip_offset = phylotree.align_tips() && !options["draw-size-bubbles"];
+      let annular_shift = 0;
 
       self.nodes.each(function(d) {
         if (!d.children) {
-          var my_circ_position = d.x * scales[0];
+          let my_circ_position = d.x * scales[0];
           if (last_child_angle !== null) {
-            var required_spacing = my_circ_position - last_circ_position,
+            let required_spacing = my_circ_position - last_circ_position,
               radial_dist = compute_distance(
                 d.radius,
                 last_child_radius,
@@ -637,14 +642,14 @@ phylotree = function(container) {
                 annular_shift
               );
 
-            var local_mr =
+            let local_mr =
               radial_dist > 0
                 ? required_spacing / radial_dist
                 : 10 * options["max-radius"];
 
             if (local_mr > options["max-radius"]) {
               // adjust the annular shift
-              var dd = required_spacing / options["max-radius"],
+              let dd = required_spacing / options["max-radius"],
                 b = d.radius + last_child_radius,
                 c =
                   d.radius * last_child_radius -
@@ -686,14 +691,16 @@ phylotree = function(container) {
       }
 
       radial_center = radius_pad_for_bubbles = radius;
-      var scaler = 1;
+
+      let scaler = 1;
 
       if (annular_shift) {
         scaler = max_r / (max_r + annular_shift);
         radius *= scaler;
       }
 
-      nodes.forEach(function(d) {
+      self.nodes.each(function(d) {
+
         cartesian_to_polar(d, radius, annular_shift);
 
         max_r = Math.max(max_r, d.radius);
@@ -709,14 +716,15 @@ phylotree = function(container) {
 
         if (d.collapsed) {
           d.collapsed = d.collapsed.map(function(p) {
-            var z = {};
+            let z = {};
             z.x = p[0];
             z.y = p[1];
             z = cartesian_to_polar(z, radius, annular_shift);
             return [z.x, z.y];
           });
 
-          var last_point = d.collapsed[1];
+          let last_point = d.collapsed[1];
+
           d.collapsed = d.collapsed.filter(function(p, i) {
             if (i < 3 || i > d.collapsed.length - 4) return true;
             if (
@@ -735,6 +743,8 @@ phylotree = function(container) {
 
       size[0] = radial_center + radius / scaler;
       size[1] = radial_center + radius / scaler;
+
+
     } else {
 
       do_lr();
@@ -764,7 +774,8 @@ phylotree = function(container) {
             return [(p[0] *= scales[0]), (p[1] *= scales[1])];
           });
 
-          var last_x = d.collapsed[1][0];
+          let last_x = d.collapsed[1][0];
+
           d.collapsed = d.collapsed.filter(function(p, i) {
             if (i < 3 || i > d.collapsed.length - 4) return true;
             if (p[0] - last_x > 3) {
@@ -779,7 +790,7 @@ phylotree = function(container) {
 
     if (draw_scale_bar) {
 
-      var domain_limit, range_limit;
+      let domain_limit, range_limit;
 
       if (phylotree.radial()) {
         range_limit = Math.min(radius / 5, 50);
@@ -823,7 +834,7 @@ phylotree = function(container) {
 
         let round = function(x, n) { return n ? Math.round(x * (n = Math.pow(10, n))) / n : Math.round(x) }
 
-        var my_ticks = scale.ticks();
+        let my_ticks = scale.ticks();
         my_ticks = my_ticks.length > 1 ? my_ticks[1] : my_ticks[0];
         draw_scale_bar.ticks(
           Math.min(
@@ -984,6 +995,7 @@ phylotree = function(container) {
    * @returns {Array} An array of descendant nodes.
    */
   phylotree.descendants = function(n) {
+
     var desc = [];
 
     function recurse_d(nd) {
@@ -993,8 +1005,10 @@ phylotree = function(container) {
         nd.children.forEach(recurse_d);
       }
     }
+
     recurse_d(n);
     return desc;
+
   };
 
   /**
@@ -2402,8 +2416,6 @@ phylotree = function(container) {
       .selectAll("." + css_classes["tree-container"])
       .data([0]);
 
-    console.log(enclosure);
-
     enclosure
       .enter()
       .append("g")
@@ -2477,42 +2489,15 @@ phylotree = function(container) {
 
     // Collapse radial differently
     if (phylotree.radial()) {
-      // create interpolator
-      var interpolator = function(points) {
-        points.pop();
-
-        var center_node = points.shift();
-        var path_string = points.join("L");
-
-        var polar_coords = cartesian_mapper(center_node[0], center_node[1]);
-
-        var first_angle = cartesian_mapper(points[0][0], points[0][1])[1];
-        var last_angle = cartesian_mapper(
-          points[points.length - 1][0],
-          points[points.length - 1][1]
-        )[1];
-
-        var connecting_arc =
-          "A " +
-          polar_coords[0] +
-          " " +
-          polar_coords[0] +
-          " " +
-          (first_angle > last_angle ? 1 : 0) +
-          " 0 0 " +
-          points[0].join(",");
-
-        return path_string + connecting_arc;
-      };
 
       spline = d3.line()
-        .curve(interpolator)
         .y(function(d) {
           return d[0];
         })
         .x(function(d) {
           return d[1];
-        });
+        })
+        .curve(d3.lineRadial);
 
       spline_f = function(coord, i, d, init_0, init_1) {
         if (i) {
@@ -2909,7 +2894,7 @@ phylotree = function(container) {
 
   phylotree.clear_internal_nodes = function(respect) {
     if (!respect) {
-      nodes.forEach(function(d) {
+      self.nodes.each(function(d) {
         if (!d3_phylotree_is_leafnode(d)) {
           d[selection_attribute_name] = false;
         }
