@@ -8,6 +8,7 @@ import {default as d3_phylotree_phyloxml_parser} from "./formats/phyloxml";
 
 import {x_coord, y_coord} from "./coordinates"
 import {draw_arc, cartesian_to_polar, arc_segment_placer} from './radial';
+import {draw_line, line_segment_placer} from './cartesian';
 
 // replacement for d3.functor
 function constant(x) {
@@ -18,8 +19,6 @@ function constant(x) {
 
 var d3_layout_phylotree_event_id = "phylotree.event",
   d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
-
-
 
 /**
  * Instantiate a phylotree.
@@ -152,20 +151,6 @@ phylotree = function(container) {
     scale_bar_font_size = 12,
     offsets = [0, font_size / 2],
 
-    draw_line = d3.line()
-      .x(function(d) {
-        return x_coord(d);
-      })
-      .y(function(d) {
-        return y_coord(d);
-      })
-      .curve(d3.curveStepBefore),
-    
-    line_segment_placer = function (edge, where) {
-       return { 'x' : x_coord(edge.target) + (x_coord(edge.source)-x_coord(edge.target))*where, 
-                'y' : y_coord(edge.target) };
-    },
-    
     ensure_size_is_in_px = function(value) {
       return typeof value === "number" ? value + "px" : value;
     }
@@ -313,8 +298,6 @@ phylotree = function(container) {
       bootstrap_values: bootstrap_values
     });
   };
-
-
 
   /*--------------------------------------------------------------------------------------*/
 
@@ -738,6 +721,7 @@ phylotree = function(container) {
       }
 
       radial_center = radius_pad_for_bubbles = radius;
+      draw_branch = _.partial(draw_arc, _, radial_center);
 
       let scaler = 1;
 
