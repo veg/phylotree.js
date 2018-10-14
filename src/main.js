@@ -6,6 +6,9 @@ import {default as nexml_parser} from "./formats/nexml";
 import {default as d3_phylotree_newick_parser} from "./formats/newick";
 import {default as d3_phylotree_phyloxml_parser} from "./formats/phyloxml";
 
+import {x_coord, y_coord} from "./coordinates"
+import {draw_arc, cartesian_to_polar, arc_segment_placer} from './radial';
+
 // replacement for d3.functor
 function constant(x) {
   return function() {
@@ -143,14 +146,6 @@ phylotree = function(container) {
     links = [],
     parsed_tags = [],
     partitions = [],
-    x_coord = function(d) {
-      //console.log(d.y);
-      return d.y;
-    },
-    y_coord = function(d) {
-      //console.log(d.x);
-      return d.x;
-    },
     scales = [1, 1],
     fixed_width = [15, 20],
     font_size = 12,
@@ -173,38 +168,7 @@ phylotree = function(container) {
     
     ensure_size_is_in_px = function(value) {
       return typeof value === "number" ? value + "px" : value;
-    },
-
-    draw_arc = function(points) {
-      var start = radial_mapper(points[0].radius, points[0].angle),
-          end   = radial_mapper(points[0].radius, points[1].angle);
-
-      return (
-        "M " +
-        x_coord(start) +
-        "," +
-        y_coord(start) +
-        " A " +
-        points[0].radius +
-        "," +
-        points[0].radius +
-        " 0,0, " +
-        (points[1].angle > points[0].angle ? 1 : 0) +
-        " " +
-        x_coord(end) +
-        "," +
-        y_coord(end) +
-        " L " +
-        x_coord(points[1]) +
-        "," +
-        y_coord(points[1])
-      );
-    },
-    
-    arc_segment_placer = function (edge, where) {
-        var r = radial_mapper (edge.target.radius + (edge.source.radius - edge.target.radius) * where , edge.target.angle);
-        return {"x": x_coord(r), "y" : y_coord (r)};
-    };
+    }
 
     let update_collapsed_clades = function(transitions) {
 
@@ -325,35 +289,7 @@ phylotree = function(container) {
     label_width = 0,
     radial_center = 0,
     radius = 1,
-    radius_pad_for_bubbles = 0,
-    radial_mapper = function(r, a) {
-      return {
-        x: radial_center + r * Math.sin(a),
-        y: radial_center + r * Math.cos(a)
-      };
-    },
-    cartesian_mapper = function(x, y) {
-      return polar_to_cartesian(x - radial_center, y - radial_center);
-    },
-    cartesian_to_polar = function(node, radius, radial_root_offset) {
-      node.radius = radius * (node.radius + radial_root_offset);
-
-      if (!node.angle) {
-        node.angle = (2 * Math.PI * node.x * scales[0]) / size[0];
-      }
-
-      var radial = radial_mapper(node.radius, node.angle);
-
-      node.x = radial.x;
-      node.y = radial.y;
-
-      return node;
-    },
-    polar_to_cartesian = function(x, y) {
-      r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-      a = Math.atan2(y, x);
-      return [r, a];
-    };
+    radius_pad_for_bubbles = 0;
 
   self.container = container || "body";
   self.logger = options.logger;
@@ -700,7 +636,7 @@ phylotree = function(container) {
     if (phylotree.radial()) {
 
       // map the nodes to polar coordinates
-      draw_branch = draw_arc;
+      draw_branch = _.partial(draw_arc, _, radial_center);
       edge_placer = arc_segment_placer;
 
       let last_child_angle = null,
@@ -812,7 +748,7 @@ phylotree = function(container) {
 
       self.nodes.each(function(d) {
 
-        cartesian_to_polar(d, radius, annular_shift);
+        cartesian_to_polar(d, radius, annular_shift, radial_center);
 
         max_r = Math.max(max_r, d.radius);
 
@@ -830,7 +766,7 @@ phylotree = function(container) {
             let z = {};
             z.x = p[0];
             z.y = p[1];
-            z = cartesian_to_polar(z, radius, annular_shift);
+            z = cartesian_to_polar(z, radius, annular_shift, radial_center);
             return [z.x, z.y];
           });
 
@@ -2952,7 +2888,7 @@ phylotree = function(container) {
       let labels = container.selectAll("text").data([node]),
         tracers = container.selectAll("line");
 
-      labels
+      labels = labels
         .enter()
         .append("text")
         .classed(css_classes["node_text"], true)
@@ -2970,9 +2906,7 @@ phylotree = function(container) {
 
       if (phylotree.radial()) {
 
-        labels = container.selectAll("text").data([node]);
-
-        labels
+        labels = labels
           .attr("transform", function(d) {
             return (
               d3_phylotree_svg_rotate(d.text_angle) +
@@ -2984,11 +2918,10 @@ phylotree = function(container) {
           .attr("text-anchor", function(d) {
             return d.text_align;
           });
+
       } else {
 
-        labels = container.selectAll("text").data([node]);
-
-        labels
+        labels = labels
           .attr("text-anchor", "start")
           .attr("transform", function(d) {
             if (options["layout"] == "right-to-left") {
@@ -3005,7 +2938,7 @@ phylotree = function(container) {
         tracers = tracers.data([node]);
 
         if (transitions) {
-          tracers
+          tracers = tracers
             .enter()
             .append("line")
             .classed(css_classes["branch-tracer"], true)
@@ -3039,7 +2972,7 @@ phylotree = function(container) {
             });
 
         } else {
-          tracers
+          tracers = tracers
           .enter()
           .append("line")
           .classed(css_classes["branch-tracer"], true)
@@ -3066,17 +2999,16 @@ phylotree = function(container) {
       if (options["draw-size-bubbles"]) {
 
         var shift = phylotree.node_bubble_size(node);
+
         let circles = container.selectAll("circle").data([shift])
                       .enter().append("circle");
-        if (transitions) {
-          circles = circles.transition();
-        }
+
         circles.attr("r", function(d) {
           return d;
         });
 
         if (shown_font_size >= 5) {
-          labels.attr("dx", function(d) {
+          labels = labels.attr("dx", function(d) {
             return (
               (d.text_align == "end" ? -1 : 1) *
               ((phylotree.align_tips() ? 0 : shift) + shown_font_size * 0.33)
@@ -3085,7 +3017,7 @@ phylotree = function(container) {
         }
       } else {
         if (shown_font_size >= 5) {
-          labels.attr("dx", function(d) {
+          labels = labels.attr("dx", function(d) {
             return (d.text_align == "end" ? -1 : 1) * shown_font_size * 0.33;
           });
         }
