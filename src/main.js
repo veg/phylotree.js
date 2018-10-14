@@ -2451,7 +2451,7 @@ phylotree = function(container) {
       .selectAll("." + css_classes["tree-container"])
       .data([0]);
 
-    enclosure
+    enclosure = enclosure
       .enter()
       .append("g")
       .attr("class", css_classes["tree-container"])
@@ -2504,10 +2504,10 @@ phylotree = function(container) {
         .exit()
         .remove();
     } else {
-      drawn_links.remove();
+      drawn_links.exit().remove();
     }
-      
-    drawn_links
+
+    drawn_links = drawn_links
       .enter()
       .insert("path", ":first-child")
       .merge(drawn_links)
@@ -2523,16 +2523,14 @@ phylotree = function(container) {
       });
 
     if (transitions) {
-
       drawn_nodes
         .exit()
         .remove();
-
     } else {
       drawn_nodes.exit().remove();
     }
 
-    drawn_nodes
+    drawn_nodes = drawn_nodes
       .enter().append("g")
       .attr("class", phylotree.reclass_node)
       .merge(drawn_nodes)
@@ -2561,7 +2559,7 @@ phylotree = function(container) {
 
 
     if (options["label-nodes-with-name"]) {
-      drawn_nodes.attr("id", function(d) {
+      drawn_nodes = drawn_nodes.attr("id", function(d) {
         return "node-" + d.name;
       });
     }
@@ -2805,7 +2803,7 @@ phylotree = function(container) {
 
     container = d3.select(container);
 
-    container.attr("class", phylotree.reclass_edge).on("click", function(d) {
+    container = container.attr("class", phylotree.reclass_edge).on("click", function(d) {
       phylotree.modify_selection([d.target], selection_attribute_name);
     });
 
@@ -2813,14 +2811,15 @@ phylotree = function(container) {
 
     if (transition) {
       if (container.datum().existing_path) {
-        container.attr("d", function(d) {
+        container = container.attr("d", function(d) {
           return d.existing_path;
         });
       }
-      container.attr("d", new_branch_path);
+      container = container.attr("d", new_branch_path);
     } else {
-      container.attr("d", new_branch_path);
+      container = container.attr("d", new_branch_path);
     }
+
     edge.existing_path = new_branch_path;
 
     var bl = branch_length_accessor(edge.target);
@@ -2860,7 +2859,7 @@ phylotree = function(container) {
     var is_leaf = d3_phylotree_is_leafnode(node);
 
     if (is_leaf) {
-      container.attr("data-node-name", node.name);
+      container = container.attr("data-node-name", node.name);
     }
 
     if (
@@ -3055,7 +3054,7 @@ phylotree = function(container) {
    * @returns the current root node of the ``phylotree``.
    */
   phylotree.get_root_node = function() {
-    return nodes[0];
+    return self.nodes[0];
   };
 
   /**
