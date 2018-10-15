@@ -732,7 +732,7 @@ phylotree = function(container) {
 
       self.nodes.each(function(d) {
 
-        cartesian_to_polar(d, radius, annular_shift, radial_center);
+        cartesian_to_polar(d, radius, annular_shift, radial_center, scales, size);
 
         max_r = Math.max(max_r, d.radius);
 
@@ -750,7 +750,7 @@ phylotree = function(container) {
             let z = {};
             z.x = p[0];
             z.y = p[1];
-            z = cartesian_to_polar(z, radius, annular_shift, radial_center);
+            z = cartesian_to_polar(z, radius, annular_shift, radial_center, scales, size);
             return [z.x, z.y];
           });
 

@@ -17,7 +17,7 @@ function polar_to_cartesian(x, y) {
   return [r, a];
 }
 
-export function cartesian_to_polar(node, radius, radial_root_offset, radial_center) {
+export function cartesian_to_polar(node, radius, radial_root_offset, radial_center, scales, size) {
   node.radius = radius * (node.radius + radial_root_offset);
 
   if (!node.angle) {
