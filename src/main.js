@@ -1963,7 +1963,7 @@ const parseString = require('xml2js').parseString;
  * @returns The selected SVG element if getting, or the current ``phylotree`` if setting.`
  */
     phylotree.svg = function(svg_element) {
-      if (!arguments.length) return svg_element;
+      if (!arguments.length) return svg;
       if (svg !== svg_element) {
         svg = svg_element;
         if(css_classes["tree-container"] == "phylotree-container"){
