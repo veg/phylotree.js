@@ -24,7 +24,8 @@ describe('Phylotree', function(){
   });
 
   it('Equal scaling factor when invoking spacing functions.', function(){
-    function is_leaf(node){ return node.name && node.name != 'root';}
+    function is_leaf(node){ return node.data.name && node.data.name != 'root';}
+
     var original_spacing = tree.spacing_y(),
       original_ys = {},
       scaling_factor = 0,

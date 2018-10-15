@@ -1,5 +1,6 @@
 var newick_parser = function(nwk_str, bootstrap_values) {
-  var clade_stack = [];
+
+  let clade_stack = [];
 
   function add_new_tree_level() {
     var new_level = {
@@ -44,19 +45,20 @@ var newick_parser = function(nwk_str, bootstrap_values) {
     };
   }
 
-  var automaton_state = 0;
-  var current_node_name = "";
-  var current_node_attribute = "";
-  var current_node_annotation = "";
-  var quote_delimiter = null;
-  var name_quotes = {
+  let automaton_state = 0;
+  let current_node_name = "";
+  let current_node_attribute = "";
+  let current_node_annotation = "";
+  let quote_delimiter = null;
+  let name_quotes = {
     "'": 1,
     '"': 1
   };
 
-  var tree_json = {
+  let tree_json = {
     name: "root"
   };
+
   clade_stack.push(tree_json);
 
   var space = /\s/;
@@ -173,11 +175,11 @@ var newick_parser = function(nwk_str, bootstrap_values) {
     return generate_error(nwk_str.length - 1);
   }
 
-  if (current_node_name.length) {
-    tree_json.name = current_node_name;
-  } else {
-    tree_json.name = " ";
-  }
+  //if (current_node_name.length) {
+  //  tree_json.name = current_node_name;
+  //} else {
+  //  tree_json.name = " ";
+  //}
 
   return {
     json: tree_json,
@@ -185,4 +187,4 @@ var newick_parser = function(nwk_str, bootstrap_values) {
   };
 };
 
-module.exports = newick_parser;
+export default newick_parser;
