@@ -2228,6 +2228,7 @@ d3.layout.phylotree = function(container) {
 
     var width = 0;
 
+
     nodes.filter(d3_phylotree_node_visible).forEach(function(node) {
       var node_width = 12 + node_label(node).length * _font_size * 0.8;
       if (node.angle !== null) {
@@ -2277,7 +2278,7 @@ d3.layout.phylotree = function(container) {
    * @returns The selected SVG element if getting, or the current ``phylotree`` if setting.`
    */
   phylotree.svg = function(svg_element) {
-    if (!arguments.length) return svg_element;
+    if (!arguments.length) return svg;
     if (svg !== svg_element) {
       svg = svg_element;
       if (css_classes["tree-container"] == "phylotree-container") {
