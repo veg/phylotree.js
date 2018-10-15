@@ -15,6 +15,12 @@ Phylo-bar
   * `View Phylo-bar example </examples/phylo-bar>`_
   * `View Phylo-bar source <https://github.com/veg/phylotree.js/blob/master/examples/phylo-bar/index.html>`_
 
+Maximum agreement subtrees
+  Computing maximum agreement subtrees between two closely related trees.
+
+  * `View Maximum agreement subtree example </examples/mast>`_
+  * `View Maximum agreement subtree source <https://github.com/veg/phylotree.js/blob/master/examples/mast/index.html>`_
+
 Vanilla
   The simplest tree possible, with all default features disabled.
 

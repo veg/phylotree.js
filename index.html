@@ -8,23 +8,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
 
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.1/spacelab/bootstrap.min.css">
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
 
     <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="/phylotree.js"></script>
+    <script src="phylotree.js"></script>
 
     <link href="phylotree.css" rel="stylesheet">
 
     <style>
+        nav {
+          margin-bottom: 25px;
+        }
 
         .fa-rotate-45 {
           -webkit-transform: rotate(45deg);
@@ -47,228 +51,236 @@
             padding-top: 50px;
           }
         }
+
+        .btn {
+          height: 30px;
+        }
+
+        #toolbar {
+          display: flex;
+          justify-content: space-between;
+          width: 550px;
+        }
+        
+        #controls {
+          position: fixed;
+          left: 5px;
+        }
    </style>
 </head>
 
-<body style = 'padding-top: 70px;'>
+<body>
 
 <!--
 ###############################################################################################################################
 -->
 
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-  <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-        <a class="navbar-brand" href="#">phylotree.js</a>
-    </div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">phylotree.js</a>
 
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Newick <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" data-toggle="modal" data-target="#newick_modal">Input Text</a></li>
-            <li><a href="#"><input type="file" id="newick_file"/></a></li>
-            <li class="divider"></li>
-            <li><a href="#" data-toggle="modal" data-target="#newick_export_modal">Export</a></li>
-          </ul>
-        </li>
-        <!--<li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Display options <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id = 'display_dengrogram'>Dendrogram</a></li>
-            <li><a href="#" id = 'display_tree'>Tree</a></li>
-             <li class="divider"></li>
-            <li><a href="#">Horizontal</a></li>
-            <li><a href="#">Vertical</a></li>
-          </ul>
-        </li>-->
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="#" id = "example_hiv_scaled" >HIV-1 RT</a></li>
-            <li><a href="#" id = "example_influenza_color">Unscaled IAV HA colored by host</a></li>
-            <li><a href="#" id = "example_NGS" >NGS copy diversity</a></li>
-            <li><a href="#" id = "example_GVZ" >Compare NGS consensus</a></li>
-            <li><a href="#" id = "example_hiv_compartments" >HIV-1 env multiple timepoints and compartments</a></li>
-          </ul>
-        </li>
-     </ul>
+  <!-- Collect the nav links, forms, and other content for toggling -->
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="navbar-nav">
 
-
-        <div class="navbar-btn navbar-right">
-        <a class="btn btn-info" href="http://hyphy.org/resources/#labeling-branches-with-phylotree">Help</a>
-        <a class="btn btn-info" href="/documentation">Documentation</a>
+      <li class="nav-item dropdown">
+        <a href="#" id="newick-dropdown" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">Newick <b class="caret"></b></a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newick_modal">Input Text</a>
+          <a class="dropdown-item" href="#"><input type="file" id="newick_file"/></a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newick_export_modal">Export</a>
         </div>
+      </li>
 
-        <div class="form-group navbar-form navbar-right">
-          <input type="text" id = 'branch_filter' class="form-control" placeholder="Filter branches on">
+      <li class="nav-item dropdown">
+        <a href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">Examples <b class="caret"></b></a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" id = "example_hiv_scaled" >HIV-1 RT</a>
+          <a class="dropdown-item" href="#" id = "example_influenza_color">Unscaled IAV HA colored by host</a>
+          <a class="dropdown-item" href="#" id = "example_NGS" >NGS copy diversity</a>
+          <a class="dropdown-item" href="#" id = "example_GVZ" >Compare NGS consensus</a>
+          <a class="dropdown-item" href="#" id = "example_hiv_compartments" >HIV-1 env multiple timepoints and compartments</a>
+          <a class="dropdown-item" href="#" id = "internal_labels" >A tree with internal nodes selectively labeled</a>
         </div>
+      </li>
 
+    </ul>
 
-
-
-
-      <div class="row">
-        <div class="col-md-4 navbar-right ">
-            <div class="navbar-form " role="search">
-                 <div class="input-group">
-                    <span class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            Tag <span class="caret"></span>
-                        </button>
-                          <ul class="dropdown-menu" id = "selection_name_dropdown">
-                            <li id = "selection_new"><a href="#">New selection set</a></li>
-                            <li id = "selection_delete" class = "disabled"><a href="#">Delete selection set</a></li>
-                            <li id = "selection_rename"><a href="#">Rename selection set</a></li>
-                            <li class="divider"></li>
-                         </ul>
-                    </span>
-
-                    <input type="text" class="form-control" value = "Foreground" id = "selection_name_box" disabled>
-
-                    <span class="input-group-btn" id = "save_selection_name" style = "display: none" >
-                        <button type="button" class="btn btn-default" id = "cancel_selection_button" >
-                            Cancel
-                        </button>
-                        <button type="button" class="btn btn-default" id = "save_selection_button">
-                            Save
-                        </button>
-                    </span>
-                    <span class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Selection <span class="caret"></span></button>
-                          <ul class="dropdown-menu">
-                            <li><a href="#" id = "filter_add">Add filtered nodes to selection</a></li>
-                            <li><a href="#" id = "filter_remove">Remove filtered nodes from selection</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#" id = "select_all">Select all</a></li>
-                            <li><a href="#" id = "select_all_internal">Select all internal nodes</a></li>
-                            <li><a href="#" id = "select_all_leaves">Select all leaf nodes</a></li>
-                            <li><a href="#" id = "clear_internal">Clear all internal nodes</a></li>
-                            <li><a href="#" id = "clear_leaves">Clear all leaves</a></li>
-                            <li><a href="#" id = "select_none">Clear selection</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#" id = "mp_label">Label internal nodes using maximum parsimony</a></li>
-                            <li><a href="#" id = "and_label">Label internal nodes using conjunction (AND) </a></li>
-                            <li><a href="#" id = "or_label">Label internal nodes using disjunction (OR) </a></li>
-                         </ul>
-                    </span>
-                  </div>
-            </div>
+    <ul class="nav navbar-nav mx-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Tag 
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown" id="selection_name_dropdown">
+          <a id="selection_new" class="dropdown-item" href="#">New selection set</a>
+          <a id="selection_delete" class="dropdown-item" href="#">Delete selection set</a>
+          <a id="selection_rename" class="dropdown-item" href="#">Rename selection set</a>
+          <div class="dropdown-divider"></div>
         </div>
-    </div>
+      </li>
 
-    </div><!-- /.navbar-collapse -->
+      <li>
+        <form class="form-inline my-2 my-lg-0">
+          <input type="text" id = 'selection_name_box' class="form-control mr-sm-2" value="Foreground" disabled size=40>
+        </form>
+      </li>
+
+      <li id="save_selection_name" style="display:none;" class="my-auto">
+        <a href="#"><button id="cancel_selection_button" class="btn btn-info btn-sm">Cancel</button></a>
+        <a href="#"><button id="save_selection_button" class="btn btn-info btn-sm">Save</button></a>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Selection
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a id="filter_add" class="dropdown-item" href="#">Add filtered nodes to selection</a>
+          <a id="filter_remove" class="dropdown-item" href="#">Remove filtered nodes from selection</a>
+          <div class="dropdown-divider"></div>
+          <a id="select_all" class="dropdown-item" href="#">Select all</a>
+          <a id="select_all_internal" class="dropdown-item" href="#">Select all internal nodes</a>
+          <a id="select_all_leaves" class="dropdown-item" href="#">Select all leaf nodes</a>
+          <a id="clear_internal" class="dropdown-item" href="#">Clear all internal nodes</a>
+          <a id="clear_leaves" class="dropdown-item" href="#">Clear all leaves</a>
+          <a id="select_none" class="dropdown-item" href="#">Clear selection</a>
+          <div class="dropdown-divider"></div>
+          <a id="mp_label" class="dropdown-item" href="#">Label internal nodes using maximum parsimony</a>
+          <a id="and_label" class="dropdown-item" href="#">Label internal nodes using conjunction (AND)</a>
+          <a id="or_label" class="dropdown-item" href="#">Label internal nodes using disjunction (OR)</a>
+        </div>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav ml-auto">
+      <li>
+        <form class="form-inline my-2 my-lg-0">
+          <input type="text" id = 'branch_filter' class="form-control mr-sm-2" placeholder="Filter branches on">
+        </form>
+      </li>
+
+      <li class="my-auto">
+        <a href="http://hyphy.org/resources/#labeling-branches-with-phylotree"><button class="btn btn-info btn-sm">Help</button></a>
+        <a href="/documentation"><button class="btn btn-info btn-sm">Documentation</button></a>
+      </li>
+    </ul>
   </div><!-- /.container-fluid -->
 </nav>
 
-<div class="modal" id = 'newick_modal'>
-  <div class="modal-dialog">
+<div class="modal" id = 'newick_modal' role="dialog">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">Newick string to render</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
       </div>
       <div class="modal-body" id = 'newick_body'>
          <textarea id = 'nwk_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20 selectionStart = 1 selectionEnd = 1000>(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)</textarea>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id = 'validate_newick'>Display this tree</button>
+        <button type="button" class="btn btn-primary btn-sm" id = 'validate_newick'>Display this tree</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div class="modal" id = 'newick_export_modal'>
-  <div class="modal-dialog">
+<div class="modal" id = 'newick_export_modal' role="dialog">
+  <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body" id = 'newick_body'>
          <textarea id = 'nwk_export_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20></textarea>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
       </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div class="modal" id = 'progress_model'>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Task in progress</h4>
+      </div>
+      <div class="modal-body" id = 'progress_model_body'>
+         
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id = 'controls'>
+    <form id = 'controls_form' style = 'width:200px;'>
+    </form>
+</div>
+
 <div class = 'container' id = "main_display">
 
-    <div class = 'row'>
-        <div class = 'col-md-12'>
-            <div class="btn-toolbar" role="toolbar">
-              <div class="btn-group">
-                <button type="button" class="btn btn-default btn-sm" data-direction = 'vertical' data-amount = '1' title = "Expand vertical spacing">
-                    <i class="fa fa-arrows-v" ></i>
-                </button>
-                 <button type="button" class="btn btn-default btn-sm" data-direction = 'vertical' data-amount = '-1' title = "Compress vertical spacing">
-                    <i class="fa  fa-compress fa-rotate-135" ></i>
-                </button>
-                <button type="button" class="btn btn-default btn-sm" data-direction = 'horizontal' data-amount = '1' title = "Expand horizonal spacing">
-                    <i class="fa fa-arrows-h" ></i>
-                </button>
-                 <button type="button" class="btn btn-default btn-sm" data-direction = 'horizontal' data-amount = '-1' title = "Compress horizonal spacing">
-                    <i class="fa  fa-compress fa-rotate-45" ></i>
-                </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "sort_ascending" title = "Sort deepest clades to the bototm">
-                    <i class="fa fa-sort-amount-asc" ></i>
-                </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "sort_descending" title = "Sort deepsest clades to the top">
-                    <i class="fa fa-sort-amount-desc" ></i>
-                </button>
-                 <button type="button" class="btn btn-default btn-sm" id = "sort_original" title = "Restore original order">
-                    <i class="fa fa-sort" ></i>
-                </button>
-              </div>
-            <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default active btn-sm">
-                <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "linear" autocomplete="off" checked title = "Layout left-to-right"> Linear
-              </label>
-              <label class="btn btn-default  btn-sm">
-                <input type="radio" name="options" class = "phylotree-layout-mode" data-mode = "radial" autocomplete="off" title = "Layout radially"> Radial
-              </label>
-            </div>
-            <div class="btn-group">
-                <button type="button" class="btn btn-default btn-sm active" id = "toggle_animation" title = "Toggle animation">
-                    Animation
-                </button>
-              </label>
-            </div>
-
-            <div class="btn-group" data-toggle="buttons">
-              <label class="btn btn-default active btn-sm">
-                <input type="radio" class = "phylotree-align-toggler" data-align = "left" name="options-align" autocomplete="off" checked title = "Align tips labels to branches">
-                    <i class="fa fa-align-left" ></i>
-                </input>
-
-              </label>
-              <label class="btn btn-default btn-sm">
-               <input type="radio" class = "phylotree-align-toggler" data-align = "right" name="options-align" autocomplete="off" title = "Align tips labels to the edge of the plot">
-                    <i class="fa fa-align-right" ></i>
-                </input>
-              </label>
-            </div>
-
-            <label class = "pull-right">Selected <span class="badge" id = "selected_branch_counter">0</span> and filtered <span class="badge" id = "selected_filtered_counter">0</span> branches</label>
-
-           </div>
+  <div class = 'row'>
+    <div class = 'col-md-8'>
+      <div class="btn-toolbar" role="toolbar" id='toolbar'>
+        <div class="btn-group">
+          <button type="button" class="btn btn-light btn-sm" data-direction = 'vertical' data-amount = '1' title = "Expand vertical spacing">
+              <i class="fa fa-arrows-v" ></i>
+          </button>
+           <button type="button" class="btn btn-light btn-sm" data-direction = 'vertical' data-amount = '-1' title = "Compress vertical spacing">
+              <i class="fa  fa-compress fa-rotate-135" ></i>
+          </button>
+          <button type="button" class="btn btn-light btn-sm" data-direction = 'horizontal' data-amount = '1' title = "Expand horizonal spacing">
+              <i class="fa fa-arrows-h" ></i>
+          </button>
+           <button type="button" class="btn btn-light btn-sm" data-direction = 'horizontal' data-amount = '-1' title = "Compress horizonal spacing">
+              <i class="fa  fa-compress fa-rotate-45" ></i>
+          </button>
+           <button type="button" class="btn btn-light btn-sm" id = "sort_ascending" title = "Sort deepest clades to the bototm">
+              <i class="fa fa-sort-amount-asc" ></i>
+          </button>
+           <button type="button" class="btn btn-light btn-sm" id = "sort_descending" title = "Sort deepsest clades to the top">
+              <i class="fa fa-sort-amount-desc" ></i>
+          </button>
+           <button type="button" class="btn btn-light btn-sm" id = "sort_original" title = "Restore original order">
+              <i class="fa fa-sort" ></i>
+          </button>
         </div>
+        <div class="btn-group" role="group">
+          <button class="btn btn-light btn-sm active phylotree-layout-mode" data-mode = "linear">
+            Linear
+          </button>
+          <button class="btn btn-light btn-sm phylotree-layout-mode" data-mode = "radial" >
+            Radial
+          </button>
+        </div>
+        <div class="btn-group">
+          <button type="button" class="btn btn-light btn-sm active" id = "toggle_animation" title = "Toggle animation">
+            Animation
+          </button>
+        </div>
+
+        <div class="btn-group" role="group">
+          <button class="btn btn-light btn-sm active phylotree-align-toggler" data-align= "left">
+              <i class="fa fa-align-left" ></i>
+          </button>
+          <button class="btn btn-light btn-sm phylotree-align-toggler" data-align= "right">
+              <i class="fa fa-align-right" ></i>
+          </button>
+        </div>
+      </div>
+
     </div>
 
-    <div class = 'row'>
-        <div class = 'col-md-12'>
-            <div id = 'tree_container' class = 'tree-widget'>
-            </div>
-        </div>
+    <div class = 'col-md-4'>
+      <label class = "pull-right"><b>Selected</b> <span class="badge badge-secondary" id = "selected_branch_counter">0</span> <b>and filtered</b> <span class="badge badge-secondary" id = "selected_filtered_counter">0</span> <b>branches</b></label>
     </div>
+  </div>
+
+  <div class = 'row'>
+    <div class = 'col-md-12'>
+      <div id = 'tree_container' class = 'tree-widget'>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!--
@@ -277,6 +289,7 @@
 
 <script>
 
+var phylotree_extensions = new Object ();
 
 $('#newick_export_modal').on('show.bs.modal', function (e) {
     $('textarea[id$="nwk_export_spec"]').val(
@@ -333,6 +346,7 @@ $("#newick_file").on ("change", function (e) {
                        .html ("&times;");
         };
 
+      $('#newick-dropdown').dropdown('toggle');
       reader.readAsText(f);
     }
 });
@@ -356,11 +370,11 @@ $ ("[data-direction]").on ("click", function (e) {
 
 
 
-$(".phylotree-layout-mode").on ("change", function (e) {
-    if ($(this).is(':checked')) {
-        if (tree.radial () != ($(this).data ("mode") == "radial")) {
-            tree.radial (!tree.radial ()).placenodes().update ();
-        }
+$(".phylotree-layout-mode").on ("click", function (e) {
+
+    if (tree.radial () != ($(this).data ("mode") == "radial")) {
+        $('.phylotree-layout-mode').toggleClass('active');
+        tree.radial (!tree.radial ()).placenodes().update ();
     }
 });
 
@@ -372,11 +386,13 @@ $("#toggle_animation").on ("click", function (e) {
 });
 
 
-$(".phylotree-align-toggler").on ("change", function (e) {
-    if ($(this).is(':checked')) {
-        if (tree.align_tips ($(this).data ("align") == "right")) {
-            tree.placenodes().update ();
-        }
+$(".phylotree-align-toggler").on ("click", function (e) {
+    var tree_align = tree.align_tips() ? 'right' : 'left';
+    var button_align = $(this).data ("align");
+    if (tree_align != button_align){
+        $('.phylotree-align-toggler').toggleClass('active');
+        tree.align_tips(!tree.align_tips());
+        tree.placenodes().update ();
     }
 });
 
@@ -498,7 +514,12 @@ function default_tree_settings () {
     tree.style_edges (edge_colorizer);
     tree.selection_label (current_selection_name);
     tree.node_circle_size (undefined);
-    tree.radial (false);
+    tree.radial (false).separation (function (a,b) {return 0;})
+    .count_handler (function (count) {
+            $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
+            $("#selected_filtered_counter").text (count.tag);
+        }
+    );
 }
 
 $("#example_hiv_scaled").on ("click", function (e) {
@@ -515,10 +536,23 @@ $("#example_hiv_scaled").on ("click", function (e) {
 
 });
 
-function update_controls () {
-    $("[data-mode='" + (tree.radial()      ? 'radial' : 'linear') + "']").click();
-    $("[data-align='"  + (tree.align_tips () ? 'right' : 'left') + "']").click();
-}
+$("#internal_labels").on ("click", function (e) {
+    var labeled_tree = "(((EELA:0.150276,CONGERA:0.213019)Label1:0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835)Label2:0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)";
+    //var labeled_tree = "((((NM487|20020117|CSF|1|env|21|1.05:0.00293,(NM487|20020117|CSF|1|env|0|22.65:0.00055,((NM487|20020128|CSF|2|env|3074|1.36:0.0,NM487|20020128|CSF|1|env|3057|1.24:0.0):0.00055,NM487|20020103|PBMC|1|env|81|1.01:0.00055)0.896:0.00055)0.840:0.00409)0.656:0.00587,NM487|20020117|CSF|1|env|13|0.95:0.00300)0.255:0.00053,NM487|20020117|CSF|1|env|4|1.10:0.00300)0.331:0.00055,NM487|20020128|CSF-PELLET|1|env|0|37.88:0.00055,((NM487|20020128|CSF|2|env|0|10.49:0.0,NM487|20020128|CSF|1|env|0|10.60:0.0):0.00055,((((NM487|20020128|CSF|2|env|111|1.28:0.0,NM487|20020128|CSF|1|env|111|1.27:0.0):0.00829,((NM487|20020128|CSF|2|env|41|4.05:0.0,NM487|20020128|CSF|1|env|41|4.15:0.0):0.00054,(NM487|20020128|CSF-PELLET|1|env|40|4.21:0.0,NM487|20020117|CSF|1|env|5|1.20:0.0):0.00055)0.978:0.00050)0.890:0.00303,(((NM487|20020128|CSF|2|env|54|1.22:0.0,NM487|20020128|CSF|1|env|54|1.21:0.0):0.00055,NM487|20020117|CSF|1|env|19|2.76:0.00055)0.904:0.00278,(NM487|20020103|PBMC|1|env|26|2.32:0.00303,((NM487|20020128|CSF|1|env|59|0.93:0.00055,(((NM487|20020128|BP|1|env|40|2.31:0.00055,NM487|20020128|BP|1|env|20|1.72:0.00279)0.993:0.01716,NM487|20020128|BP|1|env|27|0.56:0.00243)0.702:0.01285,NM487|20020128|CSF-PELLET|1|env|56|0.78:0.00548)0.979:0.00051)0.315:0.00053,(NM487|20020117|CSF|1|env|20|1.05:0.00303,((NM487|20020117|BP|1|env|59|0.45:0.0,NM487|20020117|CSF|1|env|6|15.58:0.0):0.00055,(NM487|20020128|CSF|2|env|59|0.87:0.00055,(((NM487|20020128|CSF|2|env|82|1.75:0.0,NM487|20020128|CSF|1|env|82|1.80:0.0):0.00055,(((NM487|20020128|BP|1|env|2749|0.61:0.00055,NM487|20020117|BP|1|env|8|1.02:0.00301)0.851:0.00279,(NM487|20020128|BP|1|env|2790|0.94:0.00281,(NM487|20020128|CSF-PELLET|1|env|66|0.87:0.00055,(((NM487|20020103|PBMC|1|env|55|1.33:0.00055,NM487|20020128|CSF-PELLET|1|env|62|0.82:0.00055)0.861:0.00282,(((NM487|20020128|PBMC|1|env|8|8.33:0.00349,((NM487|20020128|PBMC|1|env|31|1.70:0.02485,NM487|20020128|PBMC|1|env|34|0.78:0.00054)0.940:0.01527,NM487|20020128|PBMC|1|env|33|0.79:0.03194)0.754:0.00402)0.941:0.02781,((NM487|20020128|PBMC|1|env|92|1.19:0.00316,NM487|20020128|PBMC|1|env|43|1.00:0.00303)0.935:0.01805,NM487|20020128|PBMC|1|env|10|6.24:0.01423)0.878:0.02383)0.999:0.07655,(NM487|20020128|PBMC|1|env|38|0.91:0.01340,(NM487|20020128|PBMC|1|env|9|4.34:0.00055,NM487|20020128|PBMC|1|env|0|0.70:0.01863)0.883:0.01055)0.984:0.04877)1.000:0.09435)1.000:0.00053,((((NM487|20020103|PBMC|1|env|23|1.64:0.01157,(((NM487|20020128|CSF-PELLET|1|env|37|0.75:0.0,NM487|20020117|BP|1|env|21|0.65:0.0):0.00908,((NM487|20020103|PBMC|1|env|99|0.66:0.00054,((((NM487|20020128|CSF-PELLET|1|env|12|1.09:0.0,NM487|20020117|BP|1|env|9|0.54:0.0):0.00055,(NM487|20020128|BP|1|env|2767|1.72:0.00055,NM487|20020128|BP|1|env|28|1.44:0.00866)0.913:0.00055)0.965:0.01080,NM487|20020117|BP|1|env|24|0.68:0.00055)0.124:0.00054,(NM487|20020128|CSF-PELLET|1|env|38|1.33:0.0,NM487|20020117|BP|1|env|18|3.46:0.0,NM487|20020117|CSF|1|env|15|1.10:0.0):0.00302)0.828:0.00355)0.833:0.00354,NM487|20020103|PBMC|1|env|106|0.98:0.00055)0.854:0.00353)0.115:0.00053,NM487|20020103|PBMC|1|env|2|1.62:0.00055)0.829:0.00354)0.948:0.00054,NM487|20020103|PBMC|1|env|255|0.57:0.00055)0.919:0.00055,((((NM487|20020128|CSF|2|env|62|2.60:0.0,NM487|20020128|CSF|1|env|62|2.64:0.0):0.00055,((NM487|20020128|CSF|2|env|36|1.14:0.0,NM487|20020128|CSF|1|env|36|1.13:0.0):0.00221,(NM487|20020117|BP|1|env|10|4.48:0.0,NM487|20020117|CSF|1|env|1|2.71:0.0):0.00055)0.321:0.00059)0.635:0.01578,(NM487|20020117|BP|1|env|97|0.45:0.00604,NM487|20020117|BP|1|env|13|0.40:0.00055)0.762:0.00300)0.232:0.00055,((NM487|20020117|BP|1|env|14|0.43:0.00301,(NM487|20020128|BP|1|env|2752|3.14:0.00054,NM487|20020128|CSF-PELLET|1|env|1|8.27:0.00055)0.699:0.00069)0.622:0.00158,NM487|20020128|BP|1|env|13|2.81:0.00055)0.999:0.00051)0.960:0.01011)0.831:0.00264,(NM487|20020103|PBMC|1|env|152|0.55:0.01500,NM487|20020103|PBMC|1|env|4|0.87:0.01185)0.903:0.00055)0.859:0.00265)0.827:0.00263)0.825:0.00263)1.000:0.00054)0.801:0.00298,NM487|20020128|BP|1|env|2773|0.76:0.00288)0.988:0.01722)0.297:0.00051,NM487|20020128|CSF-PELLET|1|env|15|2.48:0.00055)0.260:0.00055)0.367:0.00050)0.444:0.00051)0.489:0.01342)0.749:0.00341)0.937:0.00055)0.845:0.00055)0.648:0.00055,(NM487|20020128|CSF|2|env|33|16.42:0.0,NM487|20020128|CSF|1|env|33|16.53:0.0):0.00055)0.874:0.00051)0.231:0.00055)";
+    var res = d3.layout.newick_parser( labeled_tree );
+    default_tree_settings ();
+    tree.internal_names (function (n) {return n.name && n.name.length > 0;});
+    tree.options ({'draw-size-bubbles' : true}, false);
+    tree.node_span (function (node) { 
+        if (d3.layout.phylotree.is_leafnode (node)) {
+            return 1;
+        }
+        return tree.show_internal_name(node) ? 10 : 1;
+    });
+    tree (res).svg (svg).layout();
+    update_controls ();
+
+});
 
 $("#example_hiv_compartments").on ("click", function (e) {
 
@@ -691,7 +725,7 @@ $("#selection_name_box").on ("input propertychange", function (e) {
    d3.select ("#save_selection_button").classed ("disabled", accept_name ? null : true );
 });
 
-$("#selection_rename > a").on ("click", function (e) {
+$("#selection_rename").on ("click", function (e) {
 
     d3.select ("#save_selection_button")
            .classed ("disabled",true)
@@ -720,7 +754,7 @@ $("#selection_rename > a").on ("click", function (e) {
     e.preventDefault    ();
 });
 
-$("#selection_delete > a").on ("click", function (e) {
+$("#selection_delete").on ("click", function (e) {
 
     tree.update_key_name (selection_set[current_selection_id], null)
     selection_set.splice (current_selection_id, 1);
@@ -739,7 +773,7 @@ $("#selection_delete > a").on ("click", function (e) {
 
 });
 
-$("#selection_new > a").on ("click", function (e) {
+$("#selection_new").on ("click", function (e) {
 
     d3.select ("#save_selection_button")
                .classed ("disabled",true)
@@ -790,9 +824,8 @@ function update_selection_names (id, skip_rebuild) {
           .selectAll (".selection_set")
           .data (selection_set)
           .enter()
-          .append ("li")
-          .attr ("class", "selection_set")
           .append ("a")
+          .attr ("class", "selection_set dropdown-item")
           .attr ("href", "#")
           .text (function (d) { return d;})
           .style ("color", function (d,i) {return color_scheme(i);})
@@ -818,13 +851,7 @@ var width  = 800, //$(container_id).width(),
     selection_menu_element_action = "phylotree_menu_element_action";
 
 var tree = d3.layout.phylotree("body")
-    .size([height, width])
-    .separation (function (a,b) {return 0;})
-    .count_handler (function (count) {
-            $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
-            $("#selected_filtered_counter").text (count.tag);
-        }
-    );
+    .size([height, width]);
     //.node_span (function (a) {if (a.children && a.children.length) return 1; return isNaN (parseFloat (a["attribute"]) * 100) ? 1 : parseFloat (a["attribute"]) * 100; });
 
 var test_string = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)myroot";
@@ -833,9 +860,12 @@ var container_id = '#tree_container';
 
 //window.setInterval (function () {});
 
+var example_controls = d3.select ("#controls_form").append ("form");
+
 var svg = d3.select(container_id).append("svg")
     .attr("width", width)
     .attr("height", height);
+    
 
 
 
@@ -897,7 +927,7 @@ function selection_handler_name_dropdown (e) {
 
 function selection_handler_delete (e) {
     var element = d3.select (this);
-    $(this).tooltip('destroy');
+    $(this).tooltip('dispose');
     switch (e.detail[0]) {
         case 'save':
         case 'cancel':
