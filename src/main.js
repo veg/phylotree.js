@@ -56,36 +56,12 @@ phylotree = function(container) {
       }
       return undefined;
     },
+    nodes = [],
+    links = [],
+    parsed_tags = [],
+    partitions = [],
     branch_length_accessor = def_branch_length_accessor,
     options = options;
-  (node_label = def_node_label), (svg = null), (selection_callback = null), (css_classes = {
-    "tree-container": "phylotree-container",
-    "tree-scale-bar": "tree-scale-bar",
-    node: "node",
-    "internal-node": "internal-node",
-    "tagged-node": "node-tagged",
-    "selected-node": "node-selected",
-    "collapsed-node": "node-collapsed",
-    "root-node": "root-node",
-    branch: "branch",
-    "selected-branch": "branch-selected",
-    "tagged-branch": "branch-tagged",
-    "tree-selection-brush": "tree-selection-brush",
-    "branch-tracer": "branch-tracer",
-    clade: "clade",
-    node_text: "phylotree-node-text"
-  }), (nodes = []), (links = []), (parsed_tags = []), (partitions = []), (scales = [
-    1,
-    1
-  ]), (fixed_width = [
-    15,
-    20
-  ]), (font_size = 12), (scale_bar_font_size = 12), (offsets = [
-    0,
-    font_size / 2
-  ]), (ensure_size_is_in_px = function(value) {
-    return typeof value === "number" ? value + "px" : value;
-  });
 
   self.container = container || "body";
   self.logger = options.logger;
@@ -108,8 +84,6 @@ phylotree = function(container) {
     });
   };
 
-  /*--------------------------------------------------------------------------------------*/
-
   /**
    * An instance of a phylotree. Sets event listeners, parses tags, and creates links
    * that represent branches.
@@ -121,6 +95,7 @@ phylotree = function(container) {
    * @returns {Phylotree} phylotree - itself, following the builder pattern.
    */
   function phylotree(nwk, options = {}) {
+
     d3_phylotree_add_event_listener();
 
     var bootstrap_values = options.bootstrap_values || "";
@@ -133,6 +108,7 @@ phylotree = function(container) {
       if (type in parser_registry) {
         _node_data = parser_registry[type](nwk, options);
       } else {
+
         // Hard failure
         self.logger.error(
           "type " +
@@ -141,7 +117,9 @@ phylotree = function(container) {
             _.keys(parser_registry)
         );
       }
+
     } else if (_.isFunction(type)) {
+
       // If the type is a function, try executing the function
       try {
         _node_data = type(nwk, options);
@@ -149,6 +127,7 @@ phylotree = function(container) {
         // Hard failure
         self.logger.error("Could not parse custom format!");
       }
+
     } else {
       // this builds children and links;
       if (nwk.name == "root") {
@@ -218,44 +197,6 @@ phylotree = function(container) {
 
   phylotree.handle_node_click = function(node) {
     menus.node_dropdown_menu(node, self.container, phylotree, options);
-  };
-
-  /**
-   * Get or set node styler. If setting, pass a function of two arguments,
-   * ``element`` and ``data``. ``data`` exposes the underlying node so that
-   * its attributes can be referenced. These can be used to apply styles to
-   * ``element``, which will be a D3 selection corresponding to the SVG element
-   * that makes up the current node.
-   * ``transition`` is the third argument which indicates that there is an ongoing
-   * d3 transition in progress
-   *
-   * @param {Function} attr - Optional; if setting, the node styler function to be set.
-   * @returns The ``node_styler`` function if getting, or the current ``phylotree`` if setting.
-   */
-  phylotree.style_nodes = function(attr) {
-    if (!arguments.length) return node_styler;
-    node_styler = attr;
-    return phylotree;
-  };
-
-  /**
-   * Get or set edge styler. If setting, pass a function of two arguments,
-   * ``element`` and ``data``. ``data`` exposes the underlying edge so that
-   * its attributes can be referenced. These can be used to apply styles to
-   * ``element``, which will be a D3 selection corresponding to the SVG element
-   * that makes up the current edge.
-   *
-   * Note that, in accordance with the D3 hierarchy layout, edges will have
-   * a ``source`` and ``target`` field, corresponding to the nodes that make up
-   * up the associated branch.
-   *
-   * @param {Function} attr - Optional; if setting, the node styler function to be set.
-   * @returns The ``edge_styler`` function if getting, or the current ``phylotree`` if setting.
-   */
-  phylotree.style_edges = function(attr) {
-    if (!arguments.length) return edge_styler;
-    edge_styler = attr.bind(this);
-    return phylotree;
   };
 
   /**

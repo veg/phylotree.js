@@ -1,5 +1,4 @@
 import * as inspector from "./inspectors";
-
 import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./radial";
 import { draw_line, line_segment_placer } from "./cartesian";
 
@@ -15,6 +14,24 @@ function def_node_label(_node) {
   }
 
   return "";
+}
+
+const css_classes = {
+  "tree-container": "phylotree-container",
+  "tree-scale-bar": "tree-scale-bar",
+  node: "node",
+  "internal-node": "internal-node",
+  "tagged-node": "node-tagged",
+  "selected-node": "node-selected",
+  "collapsed-node": "node-collapsed",
+  "root-node": "root-node",
+  branch: "branch",
+  "selected-branch": "branch-selected",
+  "tagged-branch": "branch-tagged",
+  "tree-selection-brush": "tree-selection-brush",
+  "branch-tracer": "branch-tracer",
+  clade: "clade",
+  node_text: "phylotree-node-text"
 }
 
 class TreeRender {
@@ -35,6 +52,32 @@ class TreeRender {
       radial_center = 0,
       radius = 1,
       radius_pad_for_bubbles = 0;
+  }
+
+  let settings = {
+    node_label = def_node_label, 
+    svg = null,
+    selection_callback = null,
+    scales = [
+      1,
+      1
+    ], 
+    fixed_width = [
+      15,
+      20
+    ], 
+    font_size = 12, 
+    scale_bar_font_size = 12, 
+
+    offsets = [
+      0,
+      font_size / 2
+    ], 
+
+    ensure_size_is_in_px = function(value) {
+      return typeof value === "number" ? value + "px" : value;
+    };
+
   }
 
   pad_height() {
@@ -1114,3 +1157,42 @@ class TreeRender {
 
 
 }
+
+/**
+ * Get or set node styler. If setting, pass a function of two arguments,
+ * ``element`` and ``data``. ``data`` exposes the underlying node so that
+ * its attributes can be referenced. These can be used to apply styles to
+ * ``element``, which will be a D3 selection corresponding to the SVG element
+ * that makes up the current node.
+ * ``transition`` is the third argument which indicates that there is an ongoing
+ * d3 transition in progress
+ *
+ * @param {Function} attr - Optional; if setting, the node styler function to be set.
+ * @returns The ``node_styler`` function if getting, or the current ``phylotree`` if setting.
+ */
+export function style_nodes(attr) {
+  if (!arguments.length) return node_styler;
+  node_styler = attr;
+  return phylotree;
+};
+
+/**
+ * Get or set edge styler. If setting, pass a function of two arguments,
+ * ``element`` and ``data``. ``data`` exposes the underlying edge so that
+ * its attributes can be referenced. These can be used to apply styles to
+ * ``element``, which will be a D3 selection corresponding to the SVG element
+ * that makes up the current edge.
+ *
+ * Note that, in accordance with the D3 hierarchy layout, edges will have
+ * a ``source`` and ``target`` field, corresponding to the nodes that make up
+ * up the associated branch.
+ *
+ * @param {Function} attr - Optional; if setting, the node styler function to be set.
+ * @returns The ``edge_styler`` function if getting, or the current ``phylotree`` if setting.
+ */
+export function style_edges(attr) {
+  if (!arguments.length) return edge_styler;
+  edge_styler = attr.bind(this);
+  return phylotree;
+};
+
