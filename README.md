@@ -2,6 +2,10 @@
 
 A JavaScript library for developing applications and interactive visualizations involving [phylogenetic trees](https://en.wikipedia.org/wiki/Phylogenetic_tree), written as an extension of the [D3](http://d3js.org) [hierarchy layout](https://github.com/d3/d3-3.x-api-reference/blob/master/Hierarchy-Layout.md). It generates high quality SVG vector graphics, allows a great degree of customizability (CSS or JavaScript callbacks), and comes with a lot of *built-in* convenience features. 
 
+If you publish results that utilize phylotree.js, please cite the [associated publication](https://doi.org/10.1186/s12859-018-2283-2): 
+
+Stephen D. Shank, Steven Weaver, Sergei L. Kosakovsky Pond. phylotree.js - a JavaScript library for application development and interactive data visualization in phylogenetics. BMC Bioinformatics, 2018, Volume 19, Number 1, Page 1
+
 ## Documentation
 
 Documentation for phylotree.js can be [found here](http://phylotree.hyphy.org/documentation).
