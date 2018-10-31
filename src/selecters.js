@@ -234,4 +234,49 @@ export function selection_callback(callback) {
   return phylotree;
 };
 
+/**
+ * Update a given key name in each node.
+ *
+ * @param {String} old_key The old key name.
+ * @param {String} new_key The new key name.
+ * @returns The current ``phylotree``.
+ */
+export function update_key_name(old_key, new_key) {
+  self.nodes.each(function(n) {
+    if (old_key in n) {
+      if (new_key) {
+        n[new_key] = n[old_key];
+      }
+      delete n[old_key];
+    }
+  });
+  phylotree.sync_edge_labels();
+  return phylotree;
+};
+
+/**
+ * Get or set branch length accessor.
+ *
+ * @param {Function} attr Empty if getting, or new branch length accessor if setting.
+ * @returns {Object} The branch length accessor if getting, or the current phylotree if setting.
+ */
+export function branch_length(attr) {
+  if (!arguments.length) return branch_length_accessor;
+  branch_length_accessor = attr ? attr : def_branch_length_accessor;
+  return phylotree;
+};
+
+/**
+ * Get or set branch name accessor.
+ *
+ * @param {Function} attr (Optional) If setting, a function that accesses a branch name
+ * from a node.
+ * @returns The ``node_label`` accessor if getting, or the current ``phylotree`` if setting.
+ */
+export function branch_name(attr) {
+  if (!arguments.length) return node_label;
+  node_label = attr ? attr : def_node_label;
+  return phylotree;
+};
+
 

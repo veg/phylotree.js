@@ -1,34 +1,58 @@
-var newick_parser = function(nwk_str, bootstrap_values) {
+/**
+ * Parses a Newick string into an equivalent JSON representation that is
+ * suitable for consumption by ``hierarchy``.
+ *
+ * Optionally accepts bootstrap values. Currently supports Newick strings with or without branch lengths,
+ * as well as tagged trees such as
+ *  ``(a,(b{TAG},(c{TAG},d{ANOTHERTAG})))``
+ *
+ * @param {String} nwk_str - A string representing a phylogenetic tree in Newick format.
+ * @param {Object} bootstrap_values.
+ * @returns {Object} An object with keys ``json`` and ``error``.
+ */
+function newick_parser(nwk_str, bootstrap_values) {
 
   let clade_stack = [];
 
   function add_new_tree_level() {
+
     var new_level = {
       name: null
     };
+
     var the_parent = clade_stack[clade_stack.length - 1];
+
     if (!("children" in the_parent)) {
       the_parent["children"] = [];
     }
+
     clade_stack.push(new_level);
+
     the_parent["children"].push(clade_stack[clade_stack.length - 1]);
+
     clade_stack[clade_stack.length - 1]["original_child_order"] =
       the_parent["children"].length;
+
   }
 
   function finish_node_definition() {
-    var this_node = clade_stack.pop();
+
+    let this_node = clade_stack.pop();
+
     this_node["name"] = current_node_name;
+
     if (bootstrap_values && "children" in this_node) {
       this_node["bootstrap_values"] = current_node_name;
     } else {
       this_node["name"] = current_node_name;
     }
+
     this_node["attribute"] = current_node_attribute;
     this_node["annotation"] = current_node_annotation;
     current_node_name = "";
     current_node_attribute = "";
     current_node_annotation = "";
+
   }
 
   function generate_error(location) {
@@ -175,16 +199,12 @@ var newick_parser = function(nwk_str, bootstrap_values) {
     return generate_error(nwk_str.length - 1);
   }
 
-  //if (current_node_name.length) {
-  //  tree_json.name = current_node_name;
-  //} else {
-  //  tree_json.name = " ";
-  //}
-
   return {
     json: tree_json,
     error: null
   };
+
 };
 
 export default newick_parser;
+
