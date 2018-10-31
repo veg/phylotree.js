@@ -391,4 +391,5 @@ Phylotree.prototype = {
 	traverse_and_compute : traverse_and_compute
 };
 
-export default phylotree;
+export default Phylotree;
+
