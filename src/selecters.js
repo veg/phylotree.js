@@ -1,20 +1,26 @@
+import * as inspector from "./inspectors";
+import {def_branch_length_accessor} from './options';
+
 // List of all selecters that can be used with the restricted-selectable option
-predefined_selecters = {
-  all: d => {
+let predefined_selecters = {
+
+  all : d => {
     return true;
   },
-  none: d => {
+  none : d => {
     return false;
   },
-  "all-leaf-nodes": d => {
+  "all-leaf-nodes" : d => {
     return inspector.is_leafnode(d.target);
   },
-  "all-internal-nodes": d => {
+  "all-internal-nodes" : d => {
     return !inspector.is_leafnode(d.target);
   }
-};
+
+}
 
 /**
+ *
  * Modify the current selection, via functional programming.
  *
  * @param {Function} node_selecter A function to apply to each node, which
@@ -25,7 +31,8 @@ predefined_selecters = {
  * @param {Boolean} place (Optional) Whether or not ``placenodes`` should be called.
  * @param {Boolean} skip_refresh (Optional) Whether or not a refresh is called.
  * @param {String} mode (Optional) Can be ``"toggle"``, ``"true"``, or ``"false"``.
- * @returns The current ``phylotree``.
+ * @returns The current ``this``.
+ *
  */
 export function modify_selection(
   node_selecter,
@@ -35,12 +42,12 @@ export function modify_selection(
   mode
 ) {
 
-  attr = attr || selection_attribute_name;
+  attr = attr || this.selection_attribute_name;
   mode = mode || "toggle";
 
   // check if node_selecter is a value of pre-defined selecters
 
-  if (options["restricted-selectable"].length) {
+  if (this.options["restricted-selectable"].length) {
     // the selection must be from a list of pre-determined selections
     if (_.contains(_.keys(predefined_selecters), node_selecter)) {
       node_selecter = predefined_selecters[node_selecter];
@@ -50,8 +57,8 @@ export function modify_selection(
   }
 
   if (
-    (options["restricted-selectable"] || options["selectable"]) &&
-    !options["binary-selectable"]
+    (this.options["restricted-selectable"] || this.options["selectable"]) &&
+    !this.options["binary-selectable"]
   ) {
 
     var do_refresh = false;
@@ -96,25 +103,25 @@ export function modify_selection(
 
     if (do_refresh) {
       if (!skip_refresh) {
-        d3_phylotree_trigger_refresh(phylotree);
+        d3_this_trigger_refresh(this);
       }
-      if (phylotree.count_handler()) {
+      if (this.count_handler()) {
         counts = {};
         counts[attr] = links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
-        d3_phylotree_trigger_count_update(
-          phylotree,
+        d3_this_trigger_count_update(
+          this,
           counts,
-          phylotree.count_handler()
+          this.count_handler()
         );
       }
 
       if (place) {
-        phylotree.placenodes();
+        this.placenodes();
       }
     }
-  } else if (options["binary-selectable"]) {
+  } else if (this.options["binary-selectable"]) {
     if (typeof node_selecter === "function") {
       links.forEach(function(d) {
         var select_me = node_selecter(d);
@@ -126,7 +133,7 @@ export function modify_selection(
           d.target[attr] = select_me;
         }
 
-        options["attribute-list"].forEach(function(type) {
+        this.options["attribute-list"].forEach(function(type) {
           if (type != attr && d[attr] === true) {
             d[type] = false;
             d.target[type] = false;
@@ -146,7 +153,7 @@ export function modify_selection(
 
       links.forEach(function(d) {
         d[attr] = d.target[attr];
-        options["attribute-list"].forEach(function(type) {
+        this.options["attribute-list"].forEach(function(type) {
           if (type != attr && d[attr] !== true) {
             d[type] = false;
             d.target[type] = false;
@@ -157,31 +164,31 @@ export function modify_selection(
 
     if (do_refresh) {
       if (!skip_refresh) {
-        d3_phylotree_trigger_refresh(phylotree);
+        d3_this_trigger_refresh(this);
       }
-      if (phylotree.count_handler()) {
+      if (this.count_handler()) {
         counts = {};
         counts[attr] = links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
-        d3_phylotree_trigger_count_update(
-          phylotree,
+        d3_this_trigger_count_update(
+          this,
           counts,
-          phylotree.count_handler()
+          this.count_handler()
         );
       }
 
       if (place) {
-        phylotree.placenodes();
+        this.placenodes();
       }
     }
   }
   if (selection_callback && attr != "tag") {
-    selection_callback(phylotree.get_selection());
+    selection_callback(this.get_selection());
   }
-  return phylotree;
+  return this;
 
-};
+}
 
 /**
  * Select all descendents of a given node, with options for selecting
@@ -209,7 +216,7 @@ export function select_all_descendants (node, terminal, internal) {
   }
   sel(node);
   return selection;
-};
+}
 
 export function path_to_root(node) {
   let selection = [];
@@ -218,7 +225,7 @@ export function path_to_root(node) {
     node = node.parent;
   }
   return selection;
-};
+}
 
 /**
  * Getter/setter for the selection callback. This function is called
@@ -226,23 +233,24 @@ export function path_to_root(node) {
  * an array of nodes that make up the current selection.
  *
  * @param {Function} callback (Optional) The selection callback function.
- * @returns The current ``selection_callback`` if getting, or the current ``phylotree`` if setting.
+ * @returns The current ``selection_callback`` if getting, or the current ``this`` if setting.
  */
 export function selection_callback(callback) {
-  if (!callback) return selection_callback;
-  selection_callback = callback;
-  return phylotree;
-};
+  if (!callback) return this.selection_callback;
+  this.selection_callback = callback;
+  return this;
+}
 
 /**
  * Update a given key name in each node.
  *
  * @param {String} old_key The old key name.
  * @param {String} new_key The new key name.
- * @returns The current ``phylotree``.
+ * @returns The current ``this``.
  */
 export function update_key_name(old_key, new_key) {
-  self.nodes.each(function(n) {
+
+  this.nodes.each(function(n) {
     if (old_key in n) {
       if (new_key) {
         n[new_key] = n[old_key];
@@ -250,33 +258,35 @@ export function update_key_name(old_key, new_key) {
       delete n[old_key];
     }
   });
-  phylotree.sync_edge_labels();
-  return phylotree;
-};
+
+  this.sync_edge_labels();
+  return this;
+
+}
 
 /**
  * Get or set branch length accessor.
  *
  * @param {Function} attr Empty if getting, or new branch length accessor if setting.
- * @returns {Object} The branch length accessor if getting, or the current phylotree if setting.
+ * @returns {Object} The branch length accessor if getting, or the current this if setting.
  */
 export function branch_length(attr) {
-  if (!arguments.length) return branch_length_accessor;
-  branch_length_accessor = attr ? attr : def_branch_length_accessor;
-  return phylotree;
-};
+  if (!arguments.length) return this.branch_length_accessor;
+  this.branch_length_accessor = attr ? attr : def_branch_length_accessor;
+  return this;
+}
 
 /**
  * Get or set branch name accessor.
  *
  * @param {Function} attr (Optional) If setting, a function that accesses a branch name
  * from a node.
- * @returns The ``node_label`` accessor if getting, or the current ``phylotree`` if setting.
+ * @returns The ``node_label`` accessor if getting, or the current ``this`` if setting.
  */
 export function branch_name(attr) {
   if (!arguments.length) return node_label;
   node_label = attr ? attr : def_node_label;
-  return phylotree;
-};
+  return this;
+}
 
 

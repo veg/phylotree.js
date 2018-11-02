@@ -1,15 +1,19 @@
+//TODO : move to render
 export function item_selected(item, tag) {
   return item[tag] || false;
 }
 
+//TODO : move to render
 export function node_visible(node) {
   return !(node.hidden || node.notshown || false);
 }
 
+//TODO : move to render
 export function node_notshown(node) {
   return node.notshown;
 }
 
+//TODO : move to render
 export function edge_visible(edge) {
   return !(edge.target.hidden || edge.target.notshown || false);
 }
@@ -37,6 +41,7 @@ export function is_node_collapsed(node) {
 }
 
 export function node_css_selectors(css_classes) {
+
   return [
     css_classes["node"],
     css_classes["internal-node"],
@@ -46,6 +51,7 @@ export function node_css_selectors(css_classes) {
   ].reduce(function(p, c, i, a) {
     return (p += "g." + c + (i < a.length - 1 ? "," : ""));
   }, "");
+
 }
 
 export function edge_css_selectors(css_classes) {
@@ -79,3 +85,4 @@ export function rootpath(attr_name, store_name) {
 
   return this[store_name];
 }
+

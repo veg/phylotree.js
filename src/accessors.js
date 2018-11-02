@@ -7,7 +7,7 @@ export function internal_names = function(attr) {
 export function radial(attr) {
   if (!arguments.length) return options["is-radial"];
   options["is-radial"] = attr;
-  return phylotree;
+  return this;
 };
 
 export function show_internal_name (node) {
@@ -258,5 +258,4 @@ export function sync_edge_labels() {
     );
   }
 };
-
 

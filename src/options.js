@@ -1,4 +1,11 @@
-export default options = {
+// replacement for d3.functor
+function constant(x) {
+  return function() {
+    return x;
+  };
+}
+
+var options = {
   layout: "left-to-right",
   logger: console,
   branches: "step",
@@ -40,3 +47,21 @@ export default options = {
   "show-menu": true,
   "show-labels": true
 }
+
+export function def_branch_length_accessor(_node) {
+  let _node_data = _node.data;
+
+  if (
+    "attribute" in _node_data &&
+    _node_data["attribute"] &&
+    _node_data["attribute"].length
+  ) {
+    let bl = parseFloat(_node_data["attribute"]);
+    if (!isNaN(bl)) {
+      return Math.max(0, bl);
+    }
+  }
+  return undefined;
+}
+
+export default options;

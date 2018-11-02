@@ -1,3 +1,5 @@
+import d3 from "d3";
+
 import { x_coord, y_coord } from "./coordinates";
 
 export var draw_line = d3

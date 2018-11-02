@@ -8,7 +8,7 @@ const config = {
     file: `dist/${meta.name}.js`,
     name: "phylotree",
     format: "umd",
-    indent: false,
+    indent: true,
     sourcemap: true,
     extend: true
   },
