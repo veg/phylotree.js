@@ -1,12 +1,18 @@
+import * as inspector from "./inspectors";
+
 export function graft_a_node(graft_at, new_child, new_parent, lengths) {
+
+  let nodes = this.nodes.descendants();
 
   if (graft_at.parent) {
 
-    var node_index = self.nodes.indexOf(graft_at);
-    if (node_index >= 0) {
-      var parent_index = graft_at.parent.children.indexOf(graft_at);
+    let node_index = nodes.indexOf(graft_at);
 
-      var new_split = {
+    if (node_index >= 0) {
+
+      let parent_index = graft_at.parent.children.indexOf(graft_at);
+
+      let new_split = {
           name: new_parent,
           parent: graft_at.parent,
           attribute: lengths ? lengths[2] : null,
@@ -25,13 +31,13 @@ export function graft_a_node(graft_at, new_child, new_parent, lengths) {
       graft_at["attribute"] = lengths ? lengths[0] : null;
       graft_at["original_child_order"] = 1;
 
-      //phylotree.update_layout(self.nodes, true);
     }
+
   }
 
-  return phylotree;
+  return this;
 
-};
+}
 
 /**
  * Delete a given node.
@@ -40,18 +46,26 @@ export function graft_a_node(graft_at, new_child, new_parent, lengths) {
  * @returns The current ``phylotree``.
  */
 export function delete_a_node(index) {
+
+  let nodes = this.nodes.descendants();
+
   if (typeof index != "number") {
-    return phylotree.delete_a_node(self.nodes.indexOf(index));
+    return this.delete_a_node(nodes.indexOf(index));
   }
 
-  if (index > 0 && index < self.nodes.length) {
-    var node = nodes[index];
+  if (index > 0 && index < nodes.length) {
+
+    let node = nodes[index];
+
     if (node.parent) {
+
       // can only delete nodes that are not the root
-      var delete_me_idx = node.parent.children.indexOf(node);
+      let delete_me_idx = node.parent.children.indexOf(node);
 
       if (delete_me_idx >= 0) {
-        self.nodes.splice(index, 1);
+
+        nodes.splice(index, 1);
+
         if (node.children) {
           node.children.forEach(function(d) {
             d["original_child_order"] = node.parent.children.length;
@@ -70,31 +84,35 @@ export function delete_a_node(index) {
               node.parent.children[1 - delete_me_idx];
             node.parent.children[1 - delete_me_idx].parent =
               node.parent.parent;
-            self.nodes.splice(nodes.indexOf(node.parent), 1);
+            nodes.splice(nodes.indexOf(node.parent), 1);
           } else {
-            self.nodes.splice(0, 1);
-            self.nodes.parent = null;
-            delete self.nodes.data["attribute"];
-            delete self.nodes.data["annotation"];
-            delete self.nodes.data["original_child_order"];
-            self.nodes.name = "root";
-            self.nodes.data.name = "root";
+            nodes.splice(0, 1);
+            nodes.parent = null;
+            delete nodes.data["attribute"];
+            delete nodes.data["annotation"];
+            delete nodes.data["original_child_order"];
+            nodes.name = "root";
+            nodes.data.name = "root";
           }
         }
-        //phylotree.update_layout(self.nodes, true);
       }
     }
   }
-  return phylotree;
-};
+
+  return this;
+
+}
 
 export function update_has_hidden_nodes () {
 
-  for (let k = self.nodes.length - 1; k >= 0; k -= 1) {
-    if (inspector.is_leafnode(self.nodes[k])) {
-      self.nodes[k].has_hidden_nodes = self.nodes[k].notshown;
+  let nodes = this.nodes.descendants();
+
+  for (let k = nodes.length - 1; k >= 0; k -= 1) {
+
+    if (inspector.is_leafnode(nodes[k])) {
+      nodes[k].has_hidden_nodes = nodes[k].notshown;
     } else {
-      self.nodes[k].has_hidden_nodes = self.nodes[k].children.reduce(function(
+      nodes[k].has_hidden_nodes = nodes[k].children.reduce(function(
         p,
         c
       ) {
@@ -103,8 +121,22 @@ export function update_has_hidden_nodes () {
     }
   }
 
-  return phylotree;
+  return this;
 
-};
+}
+
+export function def_node_label(_node) {
+  _node = _node.data;
+
+  if (inspector.is_leafnode(_node)) {
+    return _node.name || "";
+  }
+
+  if (this.show_internal_name(_node)) {
+    return _node.name;
+  }
+
+  return "";
+}
 
 

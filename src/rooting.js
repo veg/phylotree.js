@@ -1,3 +1,5 @@
+import d3 from "d3";
+
 /**
 * Reroot the tree on the given node.
 *
@@ -8,44 +10,54 @@
 * @returns {Phylotree} The current ``phylotree``.
 */
 export function reroot(node, fraction) {
+
   /** TODO add the option to root in the middle of a branch */
+
+  let nodes = this.nodes.descendants();
 
   fraction = fraction !== undefined ? fraction : 0.5;
 
   if (node.parent) {
-    new_json = {
+
+    var new_json = d3.hierarchy({
       name: "new_root",
       __mapped_bl: undefined,
       children: [node]
-    };
-
-    self.nodes.each(function(n) {
-      n.__mapped_bl = branch_length_accessor(n);
     });
 
-    phylotree.branch_length(function(n) {
-      return n.__mapped_bl;
+    nodes.forEach(n => {
+      n.__mapped_bl = this.branch_length_accessor(n);
+      n.data.__mapped_bl = this.branch_length_accessor(n);
     });
 
-    var remove_me = node,
+    this.branch_length(function(n) {
+      return n.__mapped_bl || n.data.__mapped_bl;
+    });
+
+    let remove_me = node,
       current_node = node.parent,
       stashed_bl = _.noop();
 
-    var apportioned_bl =
+    let apportioned_bl =
       node.__mapped_bl === undefined
         ? undefined
         : node.__mapped_bl * fraction;
+
     stashed_bl = current_node.__mapped_bl;
+
     current_node.__mapped_bl =
       node.__mapped_bl === undefined
         ? undefined
         : node.__mapped_bl - apportioned_bl;
+
     node.__mapped_bl = apportioned_bl;
 
     var remove_idx;
 
     if (current_node.parent) {
+
       new_json.children.push(current_node);
+
       while (current_node.parent) {
         remove_idx = current_node.children.indexOf(remove_me);
         if (current_node.parent.parent) {
@@ -54,7 +66,7 @@ export function reroot(node, fraction) {
           current_node.children.splice(remove_idx, 1);
         }
 
-        var t = current_node.parent.__mapped_bl;
+        let t = current_node.parent.__mapped_bl;
         if (t !== undefined) {
           current_node.parent.__mapped_bl = stashed_bl;
           stashed_bl = t;
@@ -75,23 +87,35 @@ export function reroot(node, fraction) {
     // the tree through
 
     if (current_node.children.length == 1) {
+
       if (stashed_bl) {
         current_node.children[0].__mapped_bl += stashed_bl;
       }
       remove_me.children = remove_me.children.concat(current_node.children);
+
     } else {
-      var new_node = {
-        name: "__reroot_top_clade"
+
+      let name = "__reroot_top_clade"
+
+      let new_node = {
+        name : name
       };
+
+      new_node = new d3.hierarchy({name:name, _mapped_bl : stashed_bl });
+
       new_node.__mapped_bl = stashed_bl;
       new_node.children = current_node.children.map(function(n) {
         return n;
       });
 
       remove_me.children.push(new_node);
+
     }
 
-    phylotree.update_layout(new_json, true);
   }
-  return phylotree;
-};
+
+  this.update(new_json);
+
+  return this;
+
+}

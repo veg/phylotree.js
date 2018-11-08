@@ -2,18 +2,22 @@ import d3 from "d3";
 
 import { default as parser_registry } from "./formats/registry";
 import { default as nexml_parser } from "./formats/nexml";
-import { default as newick_parser } from "./formats/newick";
+import { default as newick_parser, get_newick } from "./formats/newick";
 import { default as phyloxml_parser } from "./formats/phyloxml";
 
-import { x_coord, y_coord } from "./coordinates";
-import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./radial";
-import { draw_line, line_segment_placer } from "./cartesian";
-import * as inspector from "./inspectors";
-import * as menus from "./menus";
-import * as selecter from "./selecters";
-import { options as opts, def_branch_length_accessor } from "./options";
+import { x_coord, y_coord } from "./render/coordinates";
+import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./render/radial";
+import { draw_line, line_segment_placer } from "./render/cartesian";
 
-import {default as has_branch_lengths} from "./branches";
+import * as inspector from "./inspectors";
+import * as menus from "./render/menus";
+import * as selecter from "./selecters";
+
+import {default as has_branch_lengths, def_branch_length_accessor} from "./branches";
+
+import * as node_operations from "./nodes";
+import * as rooting from "./rooting";
+
 
 /**
  * Change option settings.
@@ -31,8 +35,10 @@ function options(opt, run_update) {
 
   for (var key in options) {
     if (key in opt && opt[key] != options[key]) {
+
       do_update = true;
       options[key] = opt[key];
+
       switch (key) {
         case "branches":
           {
@@ -76,10 +82,10 @@ function resort_children(comparator, start_node, filter) {
     })
     .sort(comparator);
 
-  phylotree.update_layout(this.nodes);
-  phylotree.update();
+  this.update_layout(this.nodes);
+  this.update();
 
-  return phylotree;
+  return this;
 
 }
 
@@ -356,12 +362,21 @@ let Phylotree = class {
     menus.node_dropdown_menu(node, self.container, self, options);
   }
 
+  update(json) {
+    // update with new hiearchy layout
+    this.nodes = json;
+  }
+
 };
 
 Phylotree.prototype.is_leafnode = inspector.is_leafnode;
 Phylotree.prototype.menus = menus;
 Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.has_branch_lengths = has_branch_lengths;
+Phylotree.prototype.get_newick = get_newick;
+
 _.extend(Phylotree.prototype, selecter);
+_.extend(Phylotree.prototype, node_operations);
+_.extend(Phylotree.prototype, rooting);
 
 export default Phylotree;

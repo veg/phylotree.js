@@ -1,4 +1,4 @@
-import clear_internal_nodes;
+//import clear_internal_nodes;
 
 export default function max_parsimony (respect_existing) {
 

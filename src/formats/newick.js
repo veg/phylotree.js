@@ -1,3 +1,5 @@
+import * as inspector from "../inspectors";
+
 /**
  * Parses a Newick string into an equivalent JSON representation that is
  * suitable for consumption by ``hierarchy``.
@@ -16,11 +18,11 @@ function newick_parser(nwk_str, bootstrap_values) {
 
   function add_new_tree_level() {
 
-    var new_level = {
+    let new_level = {
       name: null
     };
 
-    var the_parent = clade_stack[clade_stack.length - 1];
+    let the_parent = clade_stack[clade_stack.length - 1];
 
     if (!("children" in the_parent)) {
       the_parent["children"] = [];
@@ -204,7 +206,62 @@ function newick_parser(nwk_str, bootstrap_values) {
     error: null
   };
 
-};
+}
+
+/**
+ * Return Newick string representation of a phylotree.
+ *
+ * @param {Function} annotator - Function to apply to each node, determining
+ * what label is written (optional).
+ * @returns {String} newick - Phylogenetic tree serialized as a Newick string.
+ */
+
+// TODO: break this out into two seperate functions
+export function get_newick(annotator) {
+
+  let self = this;
+
+  if (!annotator) annotator = d => d.name;
+
+  function escape_string(nn) {
+    let need_escape = /[\s\[\]\,\)\(\:\'\"]/;
+    let enquote = need_escape.test(nn);
+    return enquote ? "'" + nn.replace("'", "''") + "'" : nn;
+  }
+
+  function node_display (n) {
+    if (!inspector.is_leafnode(n)) {
+      element_array.push("(");
+      n.children.forEach(function(d, i) {
+        if (i) {
+          element_array.push(",");
+        }
+        node_display(d);
+      });
+      element_array.push(")");
+    }
+
+    element_array.push(escape_string(self.node_label(n)));
+    element_array.push(annotator(n));
+
+    let bl = this.branch_length_accessor(n);
+
+    if (bl !== undefined) {
+      element_array.push(":" + bl);
+    }
+  }
+
+  let element_array = [];
+
+  annotator = annotator || "";
+
+  node_display(this.nodes);
+
+  return element_array.join("");
+
+}
+
+
 
 export default newick_parser;
 

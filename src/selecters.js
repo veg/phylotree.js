@@ -1,5 +1,6 @@
 import * as inspector from "./inspectors";
-import {def_branch_length_accessor} from './options';
+import {def_branch_length_accessor} from './branches';
+import {def_node_label} from './nodes';
 
 // List of all selecters that can be used with the restricted-selectable option
 let predefined_selecters = {

@@ -16,3 +16,23 @@ export default function has_branch_lengths () {
   return false;
 
 }
+
+export function def_branch_length_accessor(_node) {
+
+  let _node_data = _node.data;
+
+  if (
+    "attribute" in _node_data &&
+    _node_data["attribute"] &&
+    _node_data["attribute"].length
+  ) {
+
+    let bl = parseFloat(_node_data["attribute"]);
+    if (!isNaN(bl)) {
+      return Math.max(0, bl);
+    }
+  }
+
+  return undefined;
+}
+
