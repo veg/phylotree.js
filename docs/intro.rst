@@ -27,13 +27,7 @@ If you are developing web applications in the traditional manner (i.e., by inclu
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
   <script type='text/javascript' src='phylotree.js'></script>
 
-Phylotree.js is also available as an `NPM package`_. It can be imported as an ES6 module and bundled with a module-bundler like `Webpack`_. Install with NPM via
-
-.. code-block:: bash
-
-  npm install phylotree
-
-or yarn via
+Phylotree.js is also available as an `NPM package`_. It can be imported as an ES6 module and bundled with a module-bundler like `Webpack`_. Install with yarn via
 
 .. code-block:: bash
 

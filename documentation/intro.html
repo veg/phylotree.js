@@ -186,7 +186,7 @@ also requires <a class="reference external" href="https://d3js.org/">D3</a>, <a 
 in your project.</p>
 <p>If you are developing web applications in the traditional manner (i.e., by including Javascript and CSS files in HTML files), acquire the source code at Github by
 <a class="reference external" href="https://github.com/veg/phylotree.js/releases">downloading a compressed version of the latest release</a>. Then, include the Javascript and CSS as usual:</p>
-<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css&quot;</span><span class="p">&gt;</span>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css&quot;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css&quot;</span><span class="p">&gt;</span>
 <span class="p">&lt;</span><span class="nt">link</span> <span class="na">rel</span><span class="o">=</span><span class="s">&quot;stylesheet&quot;</span> <span class="na">href</span><span class="o">=</span><span class="s">&quot;phylotree.css&quot;</span><span class="p">&gt;</span>
 
@@ -197,16 +197,12 @@ in your project.</p>
 <span class="p">&lt;</span><span class="nt">script</span> <span class="na">type</span><span class="o">=</span><span class="s">&#39;text/javascript&#39;</span> <span class="na">src</span><span class="o">=</span><span class="s">&#39;phylotree.js&#39;</span><span class="p">&gt;&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-<p>Phylotree.js is also available as an <a class="reference external" href="https://www.npmjs.com/package/phylotree">NPM package</a>. It can be imported as an ES6 module and bundled with a module-bundler like <a class="reference external" href="https://webpack.js.org/">Webpack</a>. Install with NPM via</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>npm install phylotree
-</pre></div>
-</div>
-<p>or yarn via</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>yarn add phylotree
+<p>Phylotree.js is also available as an <a class="reference external" href="https://www.npmjs.com/package/phylotree">NPM package</a>. It can be imported as an ES6 module and bundled with a module-bundler like <a class="reference external" href="https://webpack.js.org/">Webpack</a>. Install with yarn via</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>yarn add phylotree
 </pre></div>
 </div>
 <p>to obtain the source code. Then include the necessary Javascript and CSS using the following ES6 syntax:</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="nx">require</span><span class="p">(</span><span class="s2">&quot;phylotree&quot;</span><span class="p">);</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="nx">require</span><span class="p">(</span><span class="s2">&quot;phylotree&quot;</span><span class="p">);</span>
 <span class="nx">require</span><span class="p">(</span><span class="s2">&quot;phylotree.css&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
@@ -214,8 +210,8 @@ in your project.</p>
 <div class="section" id="a-minimal-working-example">
 <h2>A minimal working example<a class="headerlink" href="#a-minimal-working-example" title="Permalink to this headline">¶</a></h2>
 <p>If you have a tree in Newick format, you are ready to go with the following four lines of Javascript. Below,
-we assume such a string to be stored in the variable <code class="docutils literal"><span class="pre">example_tree</span></code>.</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">tree</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">phylotree</span><span class="p">()</span>
+we assume such a string to be stored in the variable <code class="docutils literal notranslate"><span class="pre">example_tree</span></code>.</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">tree</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">phylotree</span><span class="p">()</span>
   <span class="p">.</span><span class="nx">svg</span><span class="p">(</span><span class="nx">d3</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="s2">&quot;#tree_display&quot;</span><span class="p">));</span>
 <span class="nx">tree</span><span class="p">(</span><span class="nx">example_tree</span><span class="p">)</span>
   <span class="p">.</span><span class="nx">layout</span><span class="p">();</span>
@@ -228,7 +224,7 @@ we assume such a string to be stored in the variable <code class="docutils liter
 <p>The above example comes complete with selectable branches, nodes with drop down menus, clades that collapse, and
 so on. These can be toggled with the options method. The following code snippet simply displays a tree, disabling
 the default options.</p>
-<div class="highlight-javascript"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">height</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="kd">var</span> <span class="nx">height</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span>
   <span class="nx">width</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span>
 
   <span class="nx">tree</span> <span class="o">=</span> <span class="nx">d3</span><span class="p">.</span><span class="nx">layout</span><span class="p">.</span><span class="nx">phylotree</span><span class="p">()</span>
@@ -311,6 +307,7 @@ the default options.</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

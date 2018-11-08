@@ -189,16 +189,16 @@ proper arguments (set).</p>
 <p>Phylotree supports the <a class="reference external" href="https://en.wikipedia.org/wiki/Newick_format">Newick format</a>, as well the extension of this format that is used
 by <a class="reference external" href="https://hyphy.org">HyPhy</a>. This allows assigning a category to each branch by the use of curly braces directly after
 identifiers, e.g.:</p>
-<p><code class="docutils literal"><span class="pre">((((Pig:0.147969,Cow:0.21343):0.085099,Horse:0.165787,Cat:0.264806):0.058611,</span></code>
-<code class="docutils literal"><span class="pre">((RhMonkey{Foreground}:0.002015,Baboon{Foreground}:0.003108){Foreground}:0.022733</span></code>
-<code class="docutils literal"><span class="pre">,(Human{Foreground}:0.004349,Chimp{Foreground}:0.000799){Foreground}:0.011873):0.101856)</span></code>
-<code class="docutils literal"><span class="pre">:0.340802,Rat:0.050958,Mouse:0.09795)</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">((((Pig:0.147969,Cow:0.21343):0.085099,Horse:0.165787,Cat:0.264806):0.058611,</span></code>
+<code class="docutils literal notranslate"><span class="pre">((RhMonkey{Foreground}:0.002015,Baboon{Foreground}:0.003108){Foreground}:0.022733</span></code>
+<code class="docutils literal notranslate"><span class="pre">,(Human{Foreground}:0.004349,Chimp{Foreground}:0.000799){Foreground}:0.011873):0.101856)</span></code>
+<code class="docutils literal notranslate"><span class="pre">:0.340802,Rat:0.050958,Mouse:0.09795)</span></code></p>
 <p>Additionally, it supports two common XML formats in phylogenetics, namely the <a class="reference external" href="http://www.phyloxml.org/">PhyloXML</a> and <a class="reference external" href="http://nexml.org/">NeXML</a> formats.</p>
 </div>
 <div class="section" id="reading-and-writing-trees">
 <h2>Reading and writing trees<a class="headerlink" href="#reading-and-writing-trees" title="Permalink to this headline">¶</a></h2>
 <p>The following is the main method for instantiating a phylotree. It is
-attached to the <code class="docutils literal"><span class="pre">d3.layout</span></code> namespace.</p>
+attached to the <code class="docutils literal notranslate"><span class="pre">d3.layout</span></code> namespace.</p>
 <dl class="function">
 <dt id="d3.layout.phylotree">
 <code class="descclassname">d3.layout.</code><code class="descname">phylotree</code><span class="sig-paren">(</span><span class="optional">[</span><em>container</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#d3.layout.phylotree" title="Permalink to this definition">¶</a></dt>
@@ -273,11 +273,11 @@ such as those used by HyPhy or Beast, are (partially) supported.</p>
 <dt id="d3.layout.newick_parser">
 <code class="descclassname">d3.layout.</code><code class="descname">newick_parser</code><span class="sig-paren">(</span><em>nwk_str</em><span class="optional">[</span>, <em>bootstrap_values</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#d3.layout.newick_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parses a Newick string into an equivalent JSON representation that is
-suitable for consumption by <code class="docutils literal"><span class="pre">d3.layout.hierarchy</span></code>.</p>
+suitable for consumption by <code class="docutils literal notranslate"><span class="pre">d3.layout.hierarchy</span></code>.</p>
 <p>Optionally accepts bootstrap values. Currently supports Newick strings with or without branch lengths,
 as well as tagged trees such as</p>
 <blockquote>
-<div><code class="docutils literal"><span class="pre">(a,(b{TAG},(c{TAG},d{ANOTHERTAG})))</span></code></div></blockquote>
+<div><code class="docutils literal notranslate"><span class="pre">(a,(b{TAG},(c{TAG},d{ANOTHERTAG})))</span></code></div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -288,7 +288,7 @@ as well as tagged trees such as</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Object</strong> – An object with keys <code class="docutils literal"><span class="pre">json</span></code> and <code class="docutils literal"><span class="pre">error</span></code>.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Object</strong> – An object with keys <code class="docutils literal notranslate"><span class="pre">json</span></code> and <code class="docutils literal notranslate"><span class="pre">error</span></code>.</p>
 </td>
 </tr>
 </tbody>
@@ -349,7 +349,7 @@ can specify which svg to render within with the following function.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The selected SVG element if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.`</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The selected SVG element if getting, or the current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code> if setting.`</p>
 </td>
 </tr>
 </tbody>
@@ -371,7 +371,7 @@ the tree.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal"><span class="pre">phylotree</span></code>.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code>.</p>
 </td>
 </tr>
 </tbody>
@@ -391,11 +391,11 @@ the tree.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first simple">
-<li><strong>attr</strong> (<em>Array</em>) – (optional) An array of the form <code class="docutils literal"><span class="pre">[height,</span> <span class="pre">width]</span></code>.</li>
+<li><strong>attr</strong> (<em>Array</em>) – (optional) An array of the form <code class="docutils literal notranslate"><span class="pre">[height,</span> <span class="pre">width]</span></code>.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Phylotree</strong> – The current <code class="docutils literal"><span class="pre">size</span></code> array if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Phylotree</strong> – The current <code class="docutils literal notranslate"><span class="pre">size</span></code> array if getting, or the current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code> if setting.</p>
 </td>
 </tr>
 </tbody>
@@ -416,7 +416,7 @@ the tree.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal"><span class="pre">spacing_x</span></code> value if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal notranslate"><span class="pre">spacing_x</span></code> value if getting, or the current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code> if setting.</p>
 </td>
 </tr>
 </tbody>
@@ -437,7 +437,7 @@ the tree.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal"><span class="pre">spacing_y</span></code> value if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal notranslate"><span class="pre">spacing_y</span></code> value if getting, or the current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code> if setting.</p>
 </td>
 </tr>
 </tbody>
@@ -457,7 +457,7 @@ the tree.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal"><span class="pre">font_size</span></code> accessor if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal notranslate"><span class="pre">font_size</span></code> accessor if getting, or the current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code> if setting.</p>
 </td>
 </tr>
 </tbody>
@@ -521,6 +521,7 @@ the tree.</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

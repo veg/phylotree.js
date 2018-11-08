@@ -189,7 +189,7 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>Array</strong> – Nodes in the current <code class="docutils literal"><span class="pre">phylotree</span></code>.</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>Array</strong> – Nodes in the current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code>.</td>
 </tr>
 </tbody>
 </table>
@@ -236,9 +236,9 @@
 <dt id="phylotree.style_nodes">
 <code class="descclassname">phylotree.</code><code class="descname">style_nodes</code><span class="sig-paren">(</span><span class="optional">[</span><em>attr</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.style_nodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get or set node styler. If setting, pass a function of two arguments,
-<code class="docutils literal"><span class="pre">element</span></code> and <code class="docutils literal"><span class="pre">data</span></code>. <code class="docutils literal"><span class="pre">data</span></code> exposes the underlying node so that
+<code class="docutils literal notranslate"><span class="pre">element</span></code> and <code class="docutils literal notranslate"><span class="pre">data</span></code>. <code class="docutils literal notranslate"><span class="pre">data</span></code> exposes the underlying node so that
 its attributes can be referenced. These can be used to apply styles to
-<code class="docutils literal"><span class="pre">element</span></code>, which will be a D3 selection corresponding to the SVG element
+<code class="docutils literal notranslate"><span class="pre">element</span></code>, which will be a D3 selection corresponding to the SVG element
 that makes up the current node.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -249,7 +249,7 @@ that makes up the current node.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The <code class="docutils literal"><span class="pre">node_styler</span></code> function if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The <code class="docutils literal notranslate"><span class="pre">node_styler</span></code> function if getting, or the current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code> if setting.</p>
 </td>
 </tr>
 </tbody>
@@ -262,7 +262,7 @@ that makes up the current node.</p>
 <dd><p>Get or set the current node span. If setting, the argument should
 be a function of a node which returns a number, so that node spans
 can be determined dynamically. Alternatively, the argument can be the
-string <code class="docutils literal"><span class="pre">&quot;equal&quot;</span></code>, to give all nodes an equal span.</p>
+string <code class="docutils literal notranslate"><span class="pre">&quot;equal&quot;</span></code>, to give all nodes an equal span.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -272,7 +272,7 @@ string <code class="docutils literal"><span class="pre">&quot;equal&quot;</span>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The <code class="docutils literal"><span class="pre">node_span</span></code> if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The <code class="docutils literal notranslate"><span class="pre">node_span</span></code> if getting, or the current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code> if setting.</p>
 </td>
 </tr>
 </tbody>
@@ -292,7 +292,7 @@ string <code class="docutils literal"><span class="pre">&quot;equal&quot;</span>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal"><span class="pre">phylotree</span></code>.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code>.</p>
 </td>
 </tr>
 </tbody>
@@ -309,7 +309,7 @@ string <code class="docutils literal"><span class="pre">&quot;equal&quot;</span>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Arguments:</th><td class="field-body"><ul class="first last simple">
 <li><strong>callback</strong> (<em>function</em>) – A function to be called on each node.</li>
-<li><strong>traversal_type</strong> (<em>String</em>) – Either <code class="docutils literal"><span class="pre">&quot;pre-order&quot;</span></code> or <code class="docutils literal"><span class="pre">&quot;post-order&quot;</span></code>.</li>
+<li><strong>traversal_type</strong> (<em>String</em>) – Either <code class="docutils literal notranslate"><span class="pre">&quot;pre-order&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;post-order&quot;</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -330,7 +330,7 @@ string <code class="docutils literal"><span class="pre">&quot;equal&quot;</span>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Phylotree</strong> – The current <code class="docutils literal"><span class="pre">phylotree</span></code>.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Phylotree</strong> – The current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code>.</p>
 </td>
 </tr>
 </tbody>
@@ -352,7 +352,7 @@ previously collapsed.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Phylotree</strong> – The current <code class="docutils literal"><span class="pre">phylotree</span></code>.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>Phylotree</strong> – The current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code>.</p>
 </td>
 </tr>
 </tbody>
@@ -366,12 +366,12 @@ previously collapsed.</p>
 <dt id="phylotree.style_edges">
 <code class="descclassname">phylotree.</code><code class="descname">style_edges</code><span class="sig-paren">(</span><span class="optional">[</span><em>attr</em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#phylotree.style_edges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get or set edge styler. If setting, pass a function of two arguments,
-<code class="docutils literal"><span class="pre">element</span></code> and <code class="docutils literal"><span class="pre">data</span></code>. <code class="docutils literal"><span class="pre">data</span></code> exposes the underlying edge so that
+<code class="docutils literal notranslate"><span class="pre">element</span></code> and <code class="docutils literal notranslate"><span class="pre">data</span></code>. <code class="docutils literal notranslate"><span class="pre">data</span></code> exposes the underlying edge so that
 its attributes can be referenced. These can be used to apply styles to
-<code class="docutils literal"><span class="pre">element</span></code>, which will be a D3 selection corresponding to the SVG element
+<code class="docutils literal notranslate"><span class="pre">element</span></code>, which will be a D3 selection corresponding to the SVG element
 that makes up the current edge.</p>
 <p>Note that, in accordance with the D3 hierarchy layout, edges will have
-a <code class="docutils literal"><span class="pre">source</span></code> and <code class="docutils literal"><span class="pre">target</span></code> field, corresponding to the nodes that make up
+a <code class="docutils literal notranslate"><span class="pre">source</span></code> and <code class="docutils literal notranslate"><span class="pre">target</span></code> field, corresponding to the nodes that make up
 up the associated branch.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -382,7 +382,7 @@ up the associated branch.</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The <code class="docutils literal"><span class="pre">edge_styler</span></code> function if getting, or the current <code class="docutils literal"><span class="pre">phylotree</span></code> if setting.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The <code class="docutils literal notranslate"><span class="pre">edge_styler</span></code> function if getting, or the current <code class="docutils literal notranslate"><span class="pre">phylotree</span></code> if setting.</p>
 </td>
 </tr>
 </tbody>
@@ -466,6 +466,7 @@ up the associated branch.</p>
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
