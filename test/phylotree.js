@@ -82,10 +82,7 @@ tape("phylotree newick export", function(test) {
 
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
-
-  phylo.get_newick();
-
-  test.equal();
+  test.equal(phylo.get_newick().length, 18347);
   test.end();
   
 });
@@ -101,9 +98,7 @@ tape("phylotree nodes", function(test) {
   let after = phylo.nodes.descendants().length;
 
   test.equal(before - after, 1);
-
   test.ok(phylo.update_has_hidden_nodes());
-
   test.end();
   
 });
@@ -115,7 +110,6 @@ tape("phylotree rooting ", function(test) {
 
   phylo.reroot(phylo.nodes.descendants()[520]);
   test.equal(phylo.nodes.data.name, 'new_root');
-
   test.end();
   
 });

@@ -17,6 +17,8 @@ import {default as has_branch_lengths, def_branch_length_accessor} from "./branc
 
 import * as node_operations from "./nodes";
 import * as rooting from "./rooting";
+import * as accessors from "./accessors";
+import * as render from "./render/draw";
 
 
 /**
@@ -91,7 +93,6 @@ function resort_children(comparator, start_node, filter) {
 
 /**
  * Return most recent common ancestor of a pair of nodes.
- *
  * @returns An array of strings, comprising each tag that was read.
  */
 function mrca() {
@@ -374,9 +375,12 @@ Phylotree.prototype.menus = menus;
 Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.has_branch_lengths = has_branch_lengths;
 Phylotree.prototype.get_newick = get_newick;
+Phylotree.prototype.node_label = node_operations.def_node_label;
+Phylotree.prototype.render = render;
 
 _.extend(Phylotree.prototype, selecter);
 _.extend(Phylotree.prototype, node_operations);
 _.extend(Phylotree.prototype, rooting);
+_.extend(Phylotree.prototype, accessors);
 
 export default Phylotree;

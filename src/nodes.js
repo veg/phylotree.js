@@ -126,6 +126,7 @@ export function update_has_hidden_nodes () {
 }
 
 export function def_node_label(_node) {
+
   _node = _node.data;
 
   if (inspector.is_leafnode(_node)) {

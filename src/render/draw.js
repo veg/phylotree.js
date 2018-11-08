@@ -1,7 +1,7 @@
-import * as inspector from "./inspectors";
+import * as inspector from "../inspectors";
 import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./radial";
 import { draw_line, line_segment_placer } from "./cartesian";
-import {def_node_label} from './nodes';
+import { def_node_label } from "../nodes";
 
 // replacement for d3.functor
 function constant(x) {
@@ -26,99 +26,83 @@ const css_classes = {
   "branch-tracer": "branch-tracer",
   clade: "clade",
   node_text: "phylotree-node-text"
-}
+};
 
 class TreeRender {
 
   constructor(container) {
 
     // TODO: inherit `this` from Phylotree
+    this.node_label = def_node_label;
+    this.svg = null;
+    this.selection_callback = null;
+    this.scales = [1, 1];
+    this.fixed_width = [15, 20];
+    this.font_size = 12;
+    this.scale_bar_font_size = 12;
+    this.offsets = [0, this.font_size / 2];
 
-    let draw_branch = draw_line,
-      draw_scale_bar = null,
-      edge_placer = line_segment_placer,
-      count_listener_handler = function() {},
-      layout_listener_handler = function() {},
-      node_styler = undefined,
-      edge_styler = undefined,
-      shown_font_size = font_size,
-      selection_attribute_name = "selected",
-      right_most_leaf = 0,
-      label_width = 0,
-      radial_center = 0,
-      radius = 1,
-      radius_pad_for_bubbles = 0;
+    this.draw_branch = draw_line;
+    this.draw_scale_bar = null;
+    this.edge_placer = line_segment_placer;
+    this.count_listener_handler = function() {};
+    this.layout_listener_handler = function() {};
+    this.node_styler = undefined;
+    this.edge_styler = undefined;
+    this.shown_font_size = this.font_size;
+    this.selection_attribute_name = "selected";
+    this.right_most_leaf = 0;
+    this.label_width = 0;
+    this.radial_center = 0;
+    this.radius = 1;
+    this.radius_pad_for_bubbles = 0;
 
-      let options = {
-        layout: "left-to-right",
-        logger: console,
-        branches: "step",
-        scaling: true,
-        bootstrap: false,
-        "color-fill": true,
-        "internal-names": false,
-        selectable: true,
-        // restricted-selectable can take an array of predetermined
-        // selecters that are defined in phylotree.predefined_selecters
-        // only the defined functions will be allowed when selecting
-        // branches
-        "restricted-selectable": false,
-        collapsible: true,
-        "left-right-spacing": "fixed-step", //'fit-to-size',
-        "top-bottom-spacing": "fixed-step",
-        "left-offset": 0,
-        "show-scale": "top",
-        // currently not implemented to support any other positioning
-        "draw-size-bubbles": false,
-        "binary-selectable": false,
-        "is-radial": false,
-        "attribute-list": [],
-        "max-radius": 768,
-        "annular-limit": 0.38196601125010515,
-        compression: 0.2,
-        "align-tips": false,
-        "maximum-per-node-spacing": 100,
-        "minimum-per-node-spacing": 2,
-        "maximum-per-level-spacing": 100,
-        "minimum-per-level-spacing": 10,
-        node_circle_size: constant(3),
-        transitions: null,
-        brush: true,
-        reroot: true,
-        hide: true,
-        "label-nodes-with-name": false,
-        zoom: false,
-        "show-menu": true,
-        "show-labels": true
-      }
+    let options = {
+      layout: "left-to-right",
+      logger: console,
+      branches: "step",
+      scaling: true,
+      bootstrap: false,
+      "color-fill": true,
+      "internal-names": false,
+      selectable: true,
+      // restricted-selectable can take an array of predetermined
+      // selecters that are defined in phylotree.predefined_selecters
+      // only the defined functions will be allowed when selecting
+      // branches
+      "restricted-selectable": false,
+      collapsible: true,
+      "left-right-spacing": "fixed-step", //'fit-to-size',
+      "top-bottom-spacing": "fixed-step",
+      "left-offset": 0,
+      "show-scale": "top",
+      // currently not implemented to support any other positioning
+      "draw-size-bubbles": false,
+      "binary-selectable": false,
+      "is-radial": false,
+      "attribute-list": [],
+      "max-radius": 768,
+      "annular-limit": 0.38196601125010515,
+      compression: 0.2,
+      "align-tips": false,
+      "maximum-per-node-spacing": 100,
+      "minimum-per-node-spacing": 2,
+      "maximum-per-level-spacing": 100,
+      "minimum-per-level-spacing": 10,
+      node_circle_size: constant(3),
+      transitions: null,
+      brush: true,
+      reroot: true,
+      hide: true,
+      "label-nodes-with-name": false,
+      zoom: false,
+      "show-menu": true,
+      "show-labels": true
+    };
 
-      this.node_label = def_node_label;
-      this.svg = null;
-      this.selection_callback = null;
-
-      this.scales = [
-        1,
-        1
-      ];
-
-      this.fixed_width = [
-        15,
-        20
-      ];
-
-      this.font_size = 12;
-      this.scale_bar_font_size = 12;
-
-      this.offsets = [
-        0,
-        this.font_size / 2
-      ];
-
-      const ensure_size_is_in_px = function(value) {
-        return typeof value === "number" ? value + "px" : value;
-      }
-
-
+    this.ensure_size_is_in_px = function(value) {
+      return typeof value === "number" ? value + "px" : value;
+    };
 
   }
 
@@ -154,22 +138,21 @@ class TreeRender {
    * if setting.
    */
   size(attr) {
-    if (arguments.length) {
-      phylo_attr = attr;
-    }
-
-    if (options["top-bottom-spacing"] != "fixed-step") {
-      size[0] = phylo_attr[0];
-    }
-    if (options["left-right-spacing"] != "fixed-step") {
-      size[1] = phylo_attr[1];
-    }
 
     if (!arguments.length) {
-      return size;
+      return this.size;
     }
 
-    return phylotree;
+    let phylo_attr = attr;
+
+    if (this.options["top-bottom-spacing"] != "fixed-step") {
+      this.size[0] = phylo_attr[0];
+    }
+    if (this.options["left-right-spacing"] != "fixed-step") {
+      this.size[1] = phylo_attr[1];
+    }
+
+    return this;
   }
 
   /**
@@ -179,38 +162,43 @@ class TreeRender {
    * @returns The selected SVG element if getting, or the current ``phylotree`` if setting.`
    */
   svg(svg_element) {
-    if (!arguments.length) return svg;
-    if (svg !== svg_element) {
-      svg = svg_element;
-      if (css_classes["tree-container"] == "phylotree-container") {
-        svg.selectAll("*").remove();
-        svg.append("defs");
+
+    if (!arguments.length) return this.svg;
+
+    if (this.svg !== svg_element) {
+      this.svg = svg_element;
+
+      if (this.css_classes["tree-container"] == "phylotree-container") {
+        this.svg.selectAll("*").remove();
+        this.svg.append("defs");
       }
 
-      d3.select(self.container).on(
+      d3.select(this.container).on(
         "click",
         function(d) {
-          phylotree.handle_node_click(null);
+          //TODO
+          this.handle_node_click(null);
         },
         true
       );
     }
-    return phylotree;
+    return this;
   }
 
   update_layout(new_json, do_hierarchy) {
     if (do_hierarchy) {
-      self.nodes = d3.hierarchy(new_json);
+      this.nodes = d3.hierarchy(new_json);
 
-      self.nodes.each(function(d) {
+      this.nodes.each(function(d) {
         d.id = null;
       });
     }
 
-    phylotree.placenodes();
-    links = self.nodes.links();
-    phylotree.sync_edge_labels();
-    d3_phylotree_trigger_layout(phylotree);
+    this.placenodes();
+    this.links = this.nodes.links();
+    this.sync_edge_labels();
+    d3_phylotree_trigger_layout(this);
+
   }
 
   /**
@@ -1040,8 +1028,7 @@ class TreeRender {
     return this;
   }
 
-  _label_width (_font_size) {
-
+  _label_width(_font_size) {
     _font_size = _font_size || this.shown_font_size;
 
     var width = 0;
@@ -1061,7 +1048,6 @@ class TreeRender {
       });
 
     return width;
-
   }
 
   /**
@@ -1070,25 +1056,25 @@ class TreeRender {
    * @param {Function} attr Empty if getting, or new font size if setting.
    * @returns The current ``font_size`` accessor if getting, or the current ``phylotree`` if setting.
    */
-  font_size (attr) {
+  font_size(attr) {
     if (!arguments.length) return this.font_size;
     this.font_size = attr === undefined ? 12 : attr;
     return this;
   }
 
-  scale_bar_font_size (attr) {
+  scale_bar_font_size(attr) {
     if (!arguments.length) return this.scale_bar_font_size;
     this.scale_bar_font_size = attr === undefined ? 12 : attr;
     return this;
   }
 
-  node_circle_size (attr, attr2) {
+  node_circle_size(attr, attr2) {
     if (!arguments.length) return this.options["node_circle_size"];
     options["node_circle_size"] = constant(attr === undefined ? 3 : attr);
     return phylotree;
   }
 
-  css (opt) {
+  css(opt) {
     if (arguments.length === 0) return this.css_classes;
     if (arguments.length > 2) {
       var arg = {};
@@ -1105,7 +1091,6 @@ class TreeRender {
   }
 
   transitions(arg) {
-
     if (arg !== undefined) {
       return arg;
     }
@@ -1114,7 +1099,6 @@ class TreeRender {
     }
 
     return this.nodes.descendants().length <= 300;
-
   }
 
   /**
@@ -1150,56 +1134,54 @@ class TreeRender {
    * @param {Boolean} transitions Specify whether or not transitions should occur.
    * @returns The current ``phylotree``.
    */
-  layout (transitions) {
+  layout(transitions) {
     if (this.svg) {
       this.svg.selectAll(
         "." +
-          css_classes["tree-container"] +
+          this.css_classes["tree-container"] +
           ",." +
-          css_classes["tree-scale-bar"] +
+          this.css_classes["tree-scale-bar"] +
           ",." +
-          css_classes["tree-selection-brush"]
+          this.css_classes["tree-selection-brush"]
       );
 
       //.remove();
-      d3_phylotree_trigger_layout(phylotree);
-      return phylotree.update();
+      d3_phylotree_trigger_layout(this);
+      return this.update();
     }
 
-    d3_phylotree_trigger_layout(phylotree);
-    return phylotree;
+    d3_phylotree_trigger_layout(this);
+    return this;
   }
 
-  refresh () {
-
-    if (svg) {
+  refresh() {
+    if (this.svg) {
       // for re-entrancy
-      let enclosure = svg.selectAll("." + css_classes["tree-container"]);
+      let enclosure = this.svg.selectAll(
+        "." + this.css_classes["tree-container"]
+      );
 
       let edges = enclosure
-        .selectAll(inspector.edge_css_selectors(css_classes))
-        .attr("class", phylotree.reclass_edge);
+        .selectAll(inspector.edge_css_selectors(this.css_classes))
+        .attr("class", this.reclass_edge);
 
-      if (edge_styler) {
+      if (this.edge_styler) {
         edges.each(function(d) {
-          edge_styler(d3.select(this), d);
+          this.edge_styler(d3.select(this), d);
         });
       }
 
-      let nodes = enclosure
-        .selectAll(inspector.node_css_selectors(css_classes))
-        .attr("class", phylotree.reclass_node);
+      let nodes = this.enclosure
+        .selectAll(inspector.node_css_selectors(this.css_classes))
+        .attr("class", this.reclass_node);
 
-      if (node_styler) {
+      if (this.node_styler) {
         nodes.each(function(d) {
-          node_styler(d3.select(this), d);
+          this.node_styler(d3.select(this), d);
         });
       }
     }
-
-  };
-
-
+  }
 }
 
 /**
@@ -1215,10 +1197,10 @@ class TreeRender {
  * @returns The ``node_styler`` function if getting, or the current ``phylotree`` if setting.
  */
 export function style_nodes(attr) {
-  if (!arguments.length) return node_styler;
-  node_styler = attr;
-  return phylotree;
-};
+  if (!arguments.length) return this.node_styler;
+  this.node_styler = attr;
+  return this;
+}
 
 /**
  * Get or set edge styler. If setting, pass a function of two arguments,
@@ -1235,8 +1217,9 @@ export function style_nodes(attr) {
  * @returns The ``edge_styler`` function if getting, or the current ``phylotree`` if setting.
  */
 export function style_edges(attr) {
-  if (!arguments.length) return edge_styler;
-  edge_styler = attr.bind(this);
-  return phylotree;
-};
+  if (!arguments.length) return this.edge_styler;
+  this.edge_styler = attr.bind(this);
+  return this;
+}
 
+export default TreeRender;
