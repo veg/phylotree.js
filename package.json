@@ -14,11 +14,13 @@
   ],
   "dependencies": {
     "bootstrap": "4",
-    "d3": "5",
+    "d3": "^5.7.0",
     "d3-hierarchy": "^1.1.8",
+    "d3-line": "^0.0.1",
     "font-awesome": "4.x",
     "jquery": "3",
     "lodash": "^4.17.11",
+    "rollup-plugin-node-resolve": "^3.4.0",
     "underscore": "1.x",
     "xml2js": "^0.4.19"
   },

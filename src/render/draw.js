@@ -1,6 +1,6 @@
 import * as inspector from "../inspectors";
 import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./radial";
-import { draw_line, line_segment_placer } from "./cartesian";
+import { default as draw_line, line_segment_placer } from "./cartesian";
 import { def_node_label } from "../nodes";
 
 // replacement for d3.functor

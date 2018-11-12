@@ -7,7 +7,7 @@ import { default as phyloxml_parser } from "./formats/phyloxml";
 
 import { x_coord, y_coord } from "./render/coordinates";
 import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./render/radial";
-import { draw_line, line_segment_placer } from "./render/cartesian";
+import { default as draw_line, line_segment_placer } from "./render/cartesian";
 
 import * as inspector from "./inspectors";
 import * as menus from "./render/menus";
@@ -216,6 +216,7 @@ let Phylotree = class {
     if (!_node_data["json"]) {
       self.nodes = [];
     } else {
+
       self.nodes = d3.hierarchy(_node_data.json);
 
       // Parse tags

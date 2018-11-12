@@ -940,12 +940,15 @@ function selection_handler_delete (e) {
             element.classed ("disabled", true);
             break;
 
-    }}
+  }
+}
 
 
 $( document ).ready( function () {
-    default_tree_settings();
-    tree(test_string).svg (svg).layout();
+    //default_tree_settings();
+    var tree = new phylotree.phylotree(test_string);
+    //tree(test_string).svg (svg).layout();
+    console.log(tree);
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
     $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
     $("#selection_delete").get(0).addEventListener(selection_menu_element_action,selection_handler_delete,false);
