@@ -1,2 +1,2 @@
-export { default as phylotree } from "./src/main.js";
-export * from "./src/inspectors.js";
+export { default as phylotree } from "./main.js";
+export * from "./inspectors.js";

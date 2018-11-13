@@ -1,3 +1,4 @@
+import * as _ from "underscore";
 //import clear_internal_nodes;
 
 export default function max_parsimony (respect_existing) {

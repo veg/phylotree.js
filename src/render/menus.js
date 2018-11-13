@@ -1,3 +1,4 @@
+import * as _ from "underscore";
 import * as inspector from '../inspectors';
 
 let d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";

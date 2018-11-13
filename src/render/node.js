@@ -1,3 +1,4 @@
+import * as _ from "underscore";
 
 export function clear_internal_nodes(respect) {
   if (!respect) {

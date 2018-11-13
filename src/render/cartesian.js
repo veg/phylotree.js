@@ -1,4 +1,5 @@
-import d3 from "d3";
+import * as d3 from "d3";
+import * as _ from "underscore";
 import { x_coord, y_coord } from "./coordinates";
 
 export function draw_line() {
@@ -16,12 +17,14 @@ export function draw_line() {
 }
 
 export function line_segment_placer(edge, where) {
+
   return {
     x:
       x_coord(edge.target) +
       (x_coord(edge.source) - x_coord(edge.target)) * where,
     y: y_coord(edge.target)
   };
+
 }
 
 export default draw_line;

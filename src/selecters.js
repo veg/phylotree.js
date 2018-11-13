@@ -1,3 +1,4 @@
+import * as _ from "underscore";
 import * as inspector from "./inspectors";
 import {def_branch_length_accessor} from './branches';
 import {def_node_label} from './nodes';

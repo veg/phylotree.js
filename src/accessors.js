@@ -1,3 +1,4 @@
+import * as _ from "underscore";
 import * as inspector from "./inspectors";
 
 export function internal_names (attr) {

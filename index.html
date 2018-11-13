@@ -19,11 +19,12 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
-    <script src="https://d3js.org/d3.v5.js"></script>
+    <script src="//d3js.org/d3.v5.js"></script>
     <script src="/build/phylotree.js"></script>
     <link href="phylotree.css" rel="stylesheet">
 
     <style>
+
         nav {
           margin-bottom: 25px;
         }
@@ -946,7 +947,7 @@ function selection_handler_delete (e) {
 
 $( document ).ready( function () {
     //default_tree_settings();
-    var tree = new phylotree.phylotree(test_string);
+    tree = new phylotree.phylotree(test_string);
     //tree(test_string).svg (svg).layout();
     console.log(tree);
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
@@ -957,7 +958,7 @@ $( document ).ready( function () {
     $("#selection_name_box").get(0).addEventListener(selection_menu_element_action,selection_handler_name_box,false);
     $("#save_selection_name").get(0).addEventListener(selection_menu_element_action,selection_handler_save_selection_name,false);
     $("#selection_name_dropdown").get(0).addEventListener(selection_menu_element_action,selection_handler_name_dropdown,false);
-    update_selection_names();
+    //update_selection_names();
 });
 
 </script>

@@ -2,7 +2,7 @@ var fs = require("fs"),
     _  = require("underscore");
 
 var tape = require("tape"),
-    phylotree = require("../");
+    phylotree = require("../build/phylotree");
 
 tape("phylotree should load newick tree", function(test) {
 

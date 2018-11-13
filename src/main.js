@@ -1,4 +1,5 @@
-import d3 from "d3";
+import * as d3 from "d3";
+import * as _ from "underscore";
 
 import { default as parser_registry } from "./formats/registry";
 import { default as nexml_parser } from "./formats/nexml";
@@ -18,8 +19,7 @@ import {default as has_branch_lengths, def_branch_length_accessor} from "./branc
 import * as node_operations from "./nodes";
 import * as rooting from "./rooting";
 import * as accessors from "./accessors";
-import * as render from "./render/draw";
-
+import {default as TreeRender} from "./render/draw";
 
 /**
  * Change option settings.
@@ -369,6 +369,12 @@ let Phylotree = class {
     this.nodes = json;
   }
 
+  // Warning : Requires DOM!
+  render(container) {
+    this.display = new TreeRender(this, container);
+    return this.display;
+  }
+
 };
 
 Phylotree.prototype.is_leafnode = inspector.is_leafnode;
@@ -377,7 +383,6 @@ Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.has_branch_lengths = has_branch_lengths;
 Phylotree.prototype.get_newick = get_newick;
 Phylotree.prototype.node_label = node_operations.def_node_label;
-Phylotree.prototype.render = render;
 
 _.extend(Phylotree.prototype, selecter);
 _.extend(Phylotree.prototype, node_operations);

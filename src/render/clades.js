@@ -1,3 +1,5 @@
+import * as _ from "underscore";
+
 export function update_collapsed_clades (transitions) {
 
   let enclosure = svg.selectAll("." + css_classes["tree-container"]);

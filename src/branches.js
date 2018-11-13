@@ -1,3 +1,5 @@
+import * as _ from "underscore";
+
 /**
  * Returns T/F whether every branch in the tree has a branch length
  *

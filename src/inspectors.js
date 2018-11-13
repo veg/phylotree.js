@@ -1,3 +1,5 @@
+import * as _ from "underscore";
+
 //TODO : move to render
 export function item_selected(item, tag) {
   return item[tag] || false;

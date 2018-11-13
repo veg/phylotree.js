@@ -1,3 +1,4 @@
+import * as _ from "underscore";
 import * as inspector from "./inspectors";
 
 export function graft_a_node(graft_at, new_child, new_parent, lengths) {

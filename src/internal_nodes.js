@@ -1,6 +1,7 @@
+import * as _ from "underscore";
 import * as inspector from "./inspectors";
 
-export function internal_label = function(callback, respect_existing) {
+export function internal_label (callback, respect_existing) {
 
   clear_internal_nodes(respect_existing);
 

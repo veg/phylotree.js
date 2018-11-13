@@ -1,3 +1,5 @@
+import * as _ from "underscore";
+
 export function draw_edge(container, edge, transition) {
   container = d3.select(container);
 

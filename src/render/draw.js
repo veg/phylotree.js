@@ -1,7 +1,9 @@
+import * as _ from "underscore";
 import * as inspector from "../inspectors";
 import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./radial";
 import { default as draw_line, line_segment_placer } from "./cartesian";
 import { def_node_label } from "../nodes";
+import { x_coord, ycoord} from "./coordinates";
 
 // replacement for d3.functor
 function constant(x) {
@@ -30,7 +32,9 @@ const css_classes = {
 
 class TreeRender {
 
-  constructor(container) {
+  constructor(phylotree, container) {
+
+    this.phylotree = phylotree;
 
     // TODO: inherit `this` from Phylotree
     this.node_label = def_node_label;
@@ -115,8 +119,8 @@ class TreeRender {
   }
 
   pad_width() {
-    const _label_width = options["show-labels"] ? label_width : 0;
-    return offsets[1] + options["left-offset"] + _label_width;
+    const _label_width = this.options["show-labels"] ? this.label_width : 0;
+    return this.offsets[1] + this.options["left-offset"] + _label_width;
   }
 
   /**
@@ -153,6 +157,7 @@ class TreeRender {
     }
 
     return this;
+
   }
 
   /**
@@ -186,6 +191,7 @@ class TreeRender {
   }
 
   update_layout(new_json, do_hierarchy) {
+
     if (do_hierarchy) {
       this.nodes = d3.hierarchy(new_json);
 
@@ -209,13 +215,13 @@ class TreeRender {
    * @returns The current ``phylotree``.
    */
   update(transitions) {
-    if (!phylotree.svg) return phylotree;
+    if (!this.svg) return this;
 
-    transitions = phylotree.transitions(transitions);
+    transitions = this.transitions(transitions);
 
     let node_id = 0;
 
-    let enclosure = svg
+    let enclosure = this.svg
       .selectAll("." + css_classes["tree-container"])
       .data([0]);
 
@@ -226,13 +232,13 @@ class TreeRender {
       .merge(enclosure)
       .attr("transform", function(d) {
         return d3_phylotree_svg_translate([
-          offsets[1] + options["left-offset"],
-          phylotree.pad_height()
+          this.offsets[1] + this.options["left-offset"],
+          this.pad_height()
         ]);
       });
 
-    if (draw_scale_bar) {
-      let scale_bar = svg
+    if (this.draw_scale_bar) {
+      let scale_bar = this.svg
         .selectAll("." + css_classes["tree-scale-bar"])
         .data([0]);
 
@@ -240,28 +246,28 @@ class TreeRender {
         .enter()
         .append("g")
         .attr("class", css_classes["tree-scale-bar"])
-        .style("font-size", this.ensure_size_is_in_px(scale_bar_font_size))
+        .style("font-size", this.ensure_size_is_in_px(this.scale_bar_font_size))
         .merge(scale_bar)
         .attr("transform", function(d) {
           return d3_phylotree_svg_translate([
-            offsets[1] + options["left-offset"],
-            phylotree.pad_height() - 10
+            this.offsets[1] + this.options["left-offset"],
+            this.pad_height() - 10
           ]);
         })
-        .call(draw_scale_bar);
+        .call(this.draw_scale_bar);
 
       scale_bar.selectAll("text").style("text-anchor", "end");
     } else {
-      svg.selectAll("." + css_classes["tree-scale-bar"]).remove();
+      this.svg.selectAll("." + css_classes["tree-scale-bar"]).remove();
     }
 
-    enclosure = svg.selectAll("." + css_classes["tree-container"]).data([0]);
+    enclosure = this.svg.selectAll("." + css_classes["tree-container"]).data([0]);
 
-    update_collapsed_clades(transitions);
+    this.update_collapsed_clades(transitions);
 
     let drawn_links = enclosure
       .selectAll(inspector.edge_css_selectors(css_classes))
-      .data(links.filter(inspector.edge_visible), function(d) {
+      .data(this.phylotree.links.filter(inspector.edge_visible), function(d) {
         return d.target.id || (d.target.id = ++node_id);
       });
 
@@ -276,7 +282,7 @@ class TreeRender {
       .insert("path", ":first-child")
       .merge(drawn_links)
       .each(function(d) {
-        phylotree.draw_edge(this, d, transitions);
+        this.draw_edge(this, d, transitions);
       });
 
     let drawn_nodes = enclosure
@@ -296,7 +302,7 @@ class TreeRender {
     drawn_nodes = drawn_nodes
       .enter()
       .append("g")
-      .attr("class", phylotree.reclass_node)
+      .attr("class", this.phylotree.reclass_node)
       .merge(drawn_nodes)
       .attr("transform", function(d) {
         const should_shift =
