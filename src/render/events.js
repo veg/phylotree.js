@@ -1,5 +1,4 @@
-import * as _ from "underscore";
-import * as inspector from "./inspectors";
+import * as inspector from "../inspectors";
 
 let d3_layout_phylotree_event_id = "phylotree.event";
 
@@ -29,12 +28,11 @@ export function toggle_collapse(node) {
     node.collapsed = true;
   }
 
-  phylotree.placenodes();
-  return phylotree;
-};
+  this.placenodes();
+  return this;
 
-//------------------------------------------------------------------------------
-//export function d3_phylotree_resize_svg(tree, svg, tr) {
+}
+
 export function resize_svg(tree, svg, tr) {
   var sizes = tree.size();
 
@@ -114,7 +112,7 @@ export function d3_phylotree_trigger_layout(tree) {
   document.dispatchEvent(event);
 }
 
-function d3_phylotree_event_listener(event) {
+export function d3_phylotree_event_listener(event) {
   switch (event.detail[0]) {
     case "refresh":
       event.detail[1].refresh();
@@ -127,7 +125,7 @@ function d3_phylotree_event_listener(event) {
   return true;
 }
 
-function d3_phylotree_add_event_listener() {
+export function d3_phylotree_add_event_listener() {
   document.addEventListener(
     d3_layout_phylotree_event_id,
     d3_phylotree_event_listener,
@@ -135,7 +133,7 @@ function d3_phylotree_add_event_listener() {
   );
 }
 
-function d3_phylotree_svg_translate(x) {
+export function d3_phylotree_svg_translate(x) {
   if (x && (x[0] !== null || x[1] !== null))
     return (
       "translate (" +
@@ -148,7 +146,7 @@ function d3_phylotree_svg_translate(x) {
   return "";
 }
 
-function d3_phylotree_svg_rotate(a) {
+export function d3_phylotree_svg_rotate(a) {
   if (a !== null) {
     return "rotate (" + a + ") ";
   }
