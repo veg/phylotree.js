@@ -147,9 +147,6 @@ let Phylotree = class {
     this.phylo_attr = [1, 1];
     this.newick_string = "";
     this.rescale_node_span = 1;
-    this.separation = function(_node, _previous) {
-      return 0;
-    };
 
     this.node_span = function(_node) {
       return 1;
@@ -371,8 +368,10 @@ let Phylotree = class {
 
   // Warning : Requires DOM!
   render(container) {
+
     this.display = new TreeRender(this, container);
     return this.display;
+
   }
 
 };

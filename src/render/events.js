@@ -11,10 +11,13 @@ let d3_layout_phylotree_event_id = "phylotree.event";
  * @returns {Phylotree} The current ``phylotree``.
  */
 export function toggle_collapse(node) {
+
   if (node.collapsed) {
+
     node.collapsed = false;
 
     let unhide = function(n) {
+
       if (!inspector.is_leafnode(n)) {
         if (!n.collapsed) {
           n.children.forEach(unhide);
@@ -24,8 +27,11 @@ export function toggle_collapse(node) {
     };
 
     unhide(node);
+
   } else {
+
     node.collapsed = true;
+
   }
 
   this.placenodes();
@@ -34,6 +40,7 @@ export function toggle_collapse(node) {
 }
 
 export function resize_svg(tree, svg, tr) {
+
   var sizes = tree.size();
 
   if (tree.radial()) {
