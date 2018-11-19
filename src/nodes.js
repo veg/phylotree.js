@@ -1,5 +1,6 @@
 import * as _ from "underscore";
 import * as inspector from "./inspectors";
+import * as accessors from "./accessors";
 
 export function graft_a_node(graft_at, new_child, new_parent, lengths) {
 

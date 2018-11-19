@@ -1,12 +1,13 @@
 import * as _ from "underscore";
+import * as inspector from "../inspectors";
 
 export function update_collapsed_clades (transitions) {
 
-  let enclosure = svg.selectAll("." + css_classes["tree-container"]);
+  let enclosure = this.svg.selectAll("." + this.css_classes["tree-container"]);
 
   let collapsed_clades = enclosure
-    .selectAll(inspector.clade_css_selectors(css_classes))
-    .data(self.nodes.descendants().filter(inspector.is_node_collapsed), function(d) {
+    .selectAll(inspector.clade_css_selectors(this.css_classes))
+    .data(this.phylotree.nodes.descendants().filter(inspector.is_node_collapsed), function(d) {
       return d.id || (d.id = ++node_id);
     });
 
@@ -14,7 +15,7 @@ export function update_collapsed_clades (transitions) {
   let spline_f = _.noop();
 
   // Collapse radial differently
-  if (phylotree.radial()) {
+  if (this.phylotree.radial()) {
 
     spline = d3.line()
       .curve(d3.curveBasis)
@@ -69,7 +70,7 @@ export function update_collapsed_clades (transitions) {
 
     collapsed_clades
       .enter().insert("path", ":first-child")
-      .attr("class", css_classes["clade"])
+      .attr("class", this.css_classes["clade"])
       .merge(collapsed_clades)
       .attr("d", function(d) {
 
@@ -96,7 +97,7 @@ export function update_collapsed_clades (transitions) {
 
     collapsed_clades
       .enter().insert("path", ":first-child")
-      .attr("class", css_classes["clade"])
+      .attr("class", this.css_classes["clade"])
       .merge(collapsed_clades)
       .attr("d", function(d) {
         return (d.collapsed_clade = spline(d.collapsed));

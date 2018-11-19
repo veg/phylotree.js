@@ -947,7 +947,7 @@ function selection_handler_delete (e) {
 $( document ).ready( function () {
     //default_tree_settings();
     tree = new phylotree.phylotree(test_string);
-    tree.render();
+    tree.render("#main_display");
     //tree(test_string).svg (svg).layout();
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
     $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);

@@ -41,7 +41,7 @@ export function toggle_collapse(node) {
 
 export function resize_svg(tree, svg, tr) {
 
-  var sizes = tree.size();
+  var sizes = this.size();
 
   if (tree.radial()) {
     var pad_radius = tree.pad_width(),
@@ -70,12 +70,12 @@ export function resize_svg(tree, svg, tr) {
   } else {
     sizes = [
       sizes[1] +
-        (tree.options()["left-right-spacing"] != "fit-to-size"
-          ? tree.pad_width()
+        (this.options["left-right-spacing"] != "fit-to-size"
+          ? this.pad_width()
           : 0),
       sizes[0] +
-        (tree.options()["top-bottom-spacing"] != "fit-to-size"
-          ? tree.pad_height()
+        (this.options["top-bottom-spacing"] != "fit-to-size"
+          ? this.pad_height()
           : 0)
     ];
   }

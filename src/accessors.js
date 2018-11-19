@@ -240,8 +240,6 @@ export function sync_edge_labels() {
     d.tag = d.target.tag || false;
   });
 
-  d3_phylotree_trigger_refresh(this);
-
   if (this.count_handler()) {
 
     let counts = {};
@@ -254,11 +252,11 @@ export function sync_edge_labels() {
       return p + (inspector.item_tagged(c) ? 1 : 0);
     }, 0);
 
-    d3_phylotree_trigger_count_update(
-      this,
-      counts,
-      this.count_handler()
-    );
+    //d3_phylotree_trigger_count_update(
+    //  this,
+    //  counts,
+    //  this.count_handler()
+    //);
   }
 }
 
