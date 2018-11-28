@@ -227,10 +227,12 @@ export function reclass_edge(edge) {
  * @returns The current selection label if getting, or the current ``phylotree`` if setting.
  */
 export function selection_label(attr) {
+
   if (!arguments.length) return this.selection_attribute_name;
   this.selection_attribute_name = attr;
   this.sync_edge_labels();
   return this;
+
 }
 
 export function sync_edge_labels() {

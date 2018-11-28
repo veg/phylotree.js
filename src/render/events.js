@@ -44,6 +44,7 @@ export function resize_svg(tree, svg, tr) {
   var sizes = this.size();
 
   if (tree.radial()) {
+
     var pad_radius = tree.pad_width(),
       vertical_offset =
         tree.options()["top-bottom-spacing"] != "fit-to-size"

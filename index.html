@@ -717,12 +717,14 @@ catch (e) {
 var valid_id = new RegExp ("^[\\w]+$");
 
 $("#selection_name_box").on ("input propertychange", function (e) {
+
    var name = $(this).val();
 
    var accept_name = (selection_set.indexOf (name) < 0) &&
-                     valid_id.exec (name) ;
+                     valid_id.exec (name);
 
-   d3.select ("#save_selection_button").classed ("disabled", accept_name ? null : true );
+   d3.select ("#save_selection_button").classed("disabled", accept_name ? null : true );
+
 });
 
 $("#selection_rename").on ("click", function (e) {
@@ -752,6 +754,7 @@ $("#selection_rename").on ("click", function (e) {
     send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
                                  {'detail' : ['rename', this]}));
     e.preventDefault    ();
+
 });
 
 $("#selection_delete").on ("click", function (e) {
@@ -947,7 +950,7 @@ function selection_handler_delete (e) {
 $( document ).ready( function () {
     //default_tree_settings();
     tree = new phylotree.phylotree(test_string);
-    tree.render("#main_display");
+    let rendered_tree = tree.render("#tree_container");
     //tree(test_string).svg (svg).layout();
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
     $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);

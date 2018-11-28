@@ -38,6 +38,7 @@ export function update_collapsed_clades (transitions) {
     };
 
   } else {
+
     spline = d3.line()
       .curve(d3.curveBasis)
       .y(function(d) {
@@ -57,6 +58,7 @@ export function update_collapsed_clades (transitions) {
         return [d.screen_y, d.screen_x];
       }
     };
+
   }
 
   collapsed_clades

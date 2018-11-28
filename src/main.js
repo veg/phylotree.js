@@ -389,3 +389,4 @@ _.extend(Phylotree.prototype, rooting);
 _.extend(Phylotree.prototype, accessors);
 
 export default Phylotree;
+

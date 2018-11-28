@@ -53,7 +53,6 @@ class TreeRender {
           return Math.min(c, p || 1e200);
         }, null) || 1;
 
-    // TODO: inherit `this` from Phylotree
     this.node_label = def_node_label;
     this.svg = null;
     this.selection_callback = null;
@@ -77,6 +76,9 @@ class TreeRender {
     this.radial_center = 0;
     this.radius = 1;
     this.radius_pad_for_bubbles = 0;
+
+    this.width = width || 800;
+    this.height = height || 600;
 
     let options = {
       layout: "left-to-right",
@@ -200,35 +202,41 @@ class TreeRender {
                    .attr("height", this.height);
 
       if (this.css_classes["tree-container"] == "phylotree-container") {
+
         this.svg.selectAll("*").remove();
         this.svg.append("defs");
+
       }
 
       d3.select(this.container).on(
         "click",
         function(d) {
-          //TODO
           this.handle_node_click(null);
         },
         true
       );
     }
+
     return this;
+
   }
 
   update_layout(new_json, do_hierarchy) {
-    if (do_hierarchy) {
-      this.nodes = d3.hierarchy(new_json);
 
+    if (do_hierarchy) {
+
+      this.nodes = d3.hierarchy(new_json);
       this.nodes.each(function(d) {
         d.id = null;
       });
+
     }
 
     this.placenodes();
     this.links = this.phylotree.nodes.links();
     this.phylotree.sync_edge_labels();
     this.d3_phylotree_trigger_layout(this);
+
   }
 
   /**
@@ -250,6 +258,7 @@ class TreeRender {
       .selectAll("." + css_classes["tree-container"])
       .data([0]);
 
+
     enclosure = enclosure
       .enter()
       .append("g")
@@ -263,6 +272,7 @@ class TreeRender {
       });
 
     if (this.draw_scale_bar) {
+
       let scale_bar = this.svg
         .selectAll("." + css_classes["tree-scale-bar"])
         .data([0]);
@@ -282,6 +292,7 @@ class TreeRender {
         .call(this.draw_scale_bar);
 
       scale_bar.selectAll("text").style("text-anchor", "end");
+
     } else {
       this.svg.selectAll("." + css_classes["tree-scale-bar"]).remove();
     }
@@ -330,6 +341,7 @@ class TreeRender {
       .attr("class", self.phylotree.reclass_node)
       .merge(drawn_nodes)
       .attr("transform", (d) => {
+
         const should_shift =
           this.options["layout"] == "right-to-left" && inspector.is_leafnode(d);
 
@@ -340,6 +352,7 @@ class TreeRender {
           should_shift ? 0 : d.screen_x,
           d.screen_y
         ]);
+
       })
       .each((d) => {
         this.draw_node(this.container, d, transitions);
@@ -356,9 +369,12 @@ class TreeRender {
       });
     }
 
+    return 1;
+
     this.resize_svg(this.phylotree, this.svg, transitions);
 
     if (this.options["brush"]) {
+
       var brush = enclosure
         .selectAll("." + css_classes["tree-selection-brush"])
         .data([0])
@@ -405,11 +421,13 @@ class TreeRender {
         });
 
       brush.call(brush_object);
+
     }
 
     this.phylotree.sync_edge_labels();
 
     if (this.options["zoom"]) {
+
       let zoom = d3.behavior
         .zoom()
         .scaleExtent([0.1, 10])
@@ -427,9 +445,11 @@ class TreeRender {
         });
 
       this.svg.call(zoom);
+
     }
 
     return this;
+
   }
 
   _handle_single_node_layout(
@@ -451,7 +471,6 @@ class TreeRender {
       (last_span + _node_span) * 0.5;
 
     // separation is a user-settable callback to add additional spacing on nodes
-
     this._extents[1][1] = Math.max(this._extents[1][1], a_node.y);
     this._extents[1][0] = Math.min(
       this._extents[1][0],
@@ -478,6 +497,7 @@ class TreeRender {
     last_span = _node_span;
 
     return [last_node, last_span];
+
   }
 
   tree_layout(a_node) {
@@ -523,17 +543,15 @@ class TreeRender {
 
     /** _extents computes a bounding box for the tree (initially NOT in screen 
             coordinates)
-            
-            all account for node sizes
-            
-            _extents [1][0] -- the minimum x coordinate (breadth)
-            _extents [1][1] -- the maximum y coordinate (breadth)
-            _extents [1][0] -- the minimum y coordinate (root-to-tip, or depthwise)
-            _extents [1][1] -- the maximum y coordinate (root-to-tip, or depthwise)
-            
-            
-        
-        */
+
+        all account for node sizes
+
+        _extents [1][0] -- the minimum x coordinate (breadth)
+        _extents [1][1] -- the maximum y coordinate (breadth)
+        _extents [1][0] -- the minimum y coordinate (root-to-tip, or depthwise)
+        _extents [1][1] -- the maximum y coordinate (root-to-tip, or depthwise)
+
+    */
 
     let last_node = null;
     // last node laid out in the top bottom hierarchy
@@ -541,6 +559,7 @@ class TreeRender {
     let is_under_collapsed_parent = false;
 
     if (a_node["parent"]) {
+
       if (this.do_scaling) {
         if (undef_BL) {
           return 0;
@@ -557,10 +576,13 @@ class TreeRender {
       } else {
         a_node.y = is_leaf ? this.max_depth : a_node.depth;
       }
+
     } else {
+
       this.x = 0.0;
       // the span of the last node laid out in the top to bottom hierarchy
       a_node.y = 0.0;
+
     }
 
     /** the next block has to do with top-to-bottom spacing of nodes **/
@@ -575,6 +597,7 @@ class TreeRender {
         is_under_collapsed_parent,
         0.0
       );
+
     }
 
 
@@ -732,7 +755,6 @@ class TreeRender {
 
     let x = 0.0,
       _extents = [[0, 0], [0, 0]],
-      last_node = null,
       last_span = 0,
       save_x = x,
       save_span = last_span * 0.5;
@@ -1114,8 +1136,8 @@ class TreeRender {
   }
 
   _label_width(_font_size) {
-    _font_size = _font_size || this.shown_font_size;
 
+    _font_size = _font_size || this.shown_font_size;
     var width = 0;
 
     this.phylotree.nodes
@@ -1223,7 +1245,9 @@ class TreeRender {
    * @returns The current ``phylotree``.
    */
   layout(transitions) {
+
     if (this.svg) {
+
       this.svg.selectAll(
         "." +
           this.css_classes["tree-container"] +
@@ -1236,6 +1260,7 @@ class TreeRender {
       //.remove();
       this.d3_phylotree_trigger_layout(this);
       return this.update();
+
     }
 
     this.d3_phylotree_trigger_layout(this);
@@ -1243,6 +1268,7 @@ class TreeRender {
   }
 
   refresh() {
+
     if (this.svg) {
       // for re-entrancy
       let enclosure = this.svg.selectAll(

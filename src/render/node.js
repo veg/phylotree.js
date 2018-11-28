@@ -20,13 +20,13 @@ export function draw_node (container, node, transitions) {
     container = container.attr("data-node-name", node.name);
   }
 
+  let labels = container.selectAll("text").data([node]),
+    tracers = container.selectAll("line");
+
   if (
     is_leaf ||
     (this.phylotree.show_internal_name(node) && !inspector.is_node_collapsed(node))
   ) {
-
-    let labels = container.selectAll("text").data([node]),
-      tracers = container.selectAll("line");
 
     labels = labels
       .enter()
@@ -44,7 +44,11 @@ export function draw_node (container, node, transitions) {
         return this.ensure_size_is_in_px(this.shown_font_size);
       });
 
+    console.log(container);
+    console.log(labels);
+
     if (this.phylotree.radial()) {
+
       labels = labels
         .attr("transform", (d) => {
           return (
@@ -57,23 +61,30 @@ export function draw_node (container, node, transitions) {
         .attr("text-anchor", (d) => {
           return d.text_align;
         });
+
     } else {
+
       labels = labels
         .attr("text-anchor", "start")
         .attr("transform", (d) => {
+
           if (this.options["layout"] == "right-to-left") {
             return this.d3_phylotree_svg_translate([-20, 0]);
           }
           return this.d3_phylotree_svg_translate(
             this.phylotree.align_tips() ? this.phylotree.shift_tip(d) : null
           );
+
         });
+
     }
 
     if (this.phylotree.align_tips()) {
+
       tracers = tracers.data([node]);
 
       if (transitions) {
+
         tracers = tracers
           .enter()
           .append("line")
@@ -89,10 +100,13 @@ export function draw_node (container, node, transitions) {
           .attr("y1", 0)
           .attr("y2", 0)
           .attr("x2", (d) => {
+
             if (this.options["layout"] == "right-to-left") {
               return d.screen_x;
             }
+
             return this.phylotree.shift_tip(d)[0];
+
           })
           .attr("transform", (d) => {
             return this.d3_phylotree_svg_rotate(d.text_angle);
@@ -106,7 +120,9 @@ export function draw_node (container, node, transitions) {
           .attr("transform", (d) => {
             return this.d3_phylotree_svg_rotate(d.text_angle);
           });
+
       } else {
+
         tracers = tracers
           .enter()
           .append("line")
@@ -126,12 +142,14 @@ export function draw_node (container, node, transitions) {
         tracers.attr("transform", (d) => {
           return this.d3_phylotree_svg_rotate(d.text_angle);
         });
+
       }
     } else {
       tracers.remove();
     }
 
     if (this.options["draw-size-bubbles"]) {
+
       var shift = this.phylotree.node_bubble_size(node);
 
       let circles = container
@@ -145,23 +163,32 @@ export function draw_node (container, node, transitions) {
       });
 
       if (this.shown_font_size >= 5) {
+
         labels = labels.attr("dx", (d) => {
           return (
             (d.text_align == "end" ? -1 : 1) *
             ((this.phylotree.align_tips() ? 0 : shift) + this.shown_font_size * 0.33)
           );
         });
+
       }
+
     } else {
+
       if (this.shown_font_size >= 5) {
+
         labels = labels.attr("dx", (d) => {
           return (d.text_align == "end" ? -1 : 1) * this.shown_font_size * 0.33;
         });
+
       }
+
     }
+
   }
 
   if (!is_leaf) {
+
     let circles = container
         .selectAll("circle")
         .data([node])
@@ -180,6 +207,7 @@ export function draw_node (container, node, transitions) {
     } else {
       circles.remove();
     }
+
   }
 
   if (this.node_styler) {
