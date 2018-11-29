@@ -17,7 +17,7 @@ export function draw_node (container, node, transitions) {
   var is_leaf = inspector.is_leafnode(node);
 
   if (is_leaf) {
-    container = container.attr("data-node-name", node.name);
+    container = container.attr("data-node-name", node.data.name);
   }
 
   let labels = container.selectAll("text").data([node]),
@@ -43,9 +43,6 @@ export function draw_node (container, node, transitions) {
       .style("font-size", (d) => {
         return this.ensure_size_is_in_px(this.shown_font_size);
       });
-
-    console.log(container);
-    console.log(labels);
 
     if (this.phylotree.radial()) {
 
@@ -189,6 +186,7 @@ export function draw_node (container, node, transitions) {
 
   if (!is_leaf) {
 
+    //console.log(node);
     let circles = container
         .selectAll("circle")
         .data([node])
@@ -198,6 +196,7 @@ export function draw_node (container, node, transitions) {
 
     if (radius > 0) {
       circles
+        .merge(circles)
         .attr("r", (d) => {
           return Math.min(this.shown_font_size * 0.75, radius);
         })

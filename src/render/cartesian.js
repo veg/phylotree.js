@@ -2,9 +2,7 @@ import * as d3 from "d3";
 import * as _ from "underscore";
 import { x_coord, y_coord } from "./coordinates";
 
-export function draw_line() {
-
-  return d3
+export var draw_line = d3
     .line()
     .x(function(d) {
       return x_coord(d);
@@ -14,7 +12,6 @@ export function draw_line() {
     })
     .curve(d3.curveStepBefore);
 
-}
 
 export function line_segment_placer(edge, where) {
 

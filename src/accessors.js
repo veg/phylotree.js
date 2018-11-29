@@ -1,6 +1,26 @@
 import * as _ from "underscore";
 import * as inspector from "./inspectors";
 
+export const css_classes = {
+  "tree-container": "phylotree-container",
+  "tree-scale-bar": "tree-scale-bar",
+  node: "node",
+  "internal-node": "internal-node",
+  "tagged-node": "node-tagged",
+  "selected-node": "node-selected",
+  "collapsed-node": "node-collapsed",
+  "root-node": "root-node",
+  branch: "branch",
+  "selected-branch": "branch-selected",
+  "tagged-branch": "branch-tagged",
+  "tree-selection-brush": "tree-selection-brush",
+  "branch-tracer": "branch-tracer",
+  clade: "clade",
+  node_text: "phylotree-node-text"
+};
+
+
+
 export function internal_names (attr) {
   if (!arguments.length) return this.options["internal-names"];
   this.options["internal-names"] = attr;
@@ -181,22 +201,22 @@ export function assign_attributes (attributes) {
 export function reclass_node (node) {
 
   let class_var =
-    this.css_classes[inspector.is_leafnode(node) ? "node" : "internal-node"];
+    css_classes[inspector.is_leafnode(node) ? "node" : "internal-node"];
 
   if (inspector.item_tagged(node)) {
-    class_var += " " + this.css_classes["tagged-node"];
+    class_var += " " + css_classes["tagged-node"];
   }
 
   if (inspector.item_selected(node, this.selection_attribute_name)) {
-    class_var += " " + this.css_classes["selected-node"];
+    class_var += " " + css_classes["selected-node"];
   }
 
   if (!node["parent"]) {
-    class_var += " " + this.css_classes["root-node"];
+    class_var += " " + css_classes["root-node"];
   }
 
   if (inspector.is_node_collapsed(node) || inspector.has_hidden_nodes(node)) {
-    class_var += " " + this.css_classes["collapsed-node"];
+    class_var += " " + css_classes["collapsed-node"];
   }
 
   return class_var;
@@ -205,14 +225,14 @@ export function reclass_node (node) {
 
 export function reclass_edge(edge) {
 
-  let class_var = this.css_classes["branch"];
+  let class_var = css_classes["branch"];
 
   if (inspector.item_tagged(edge)) {
-    class_var += " " + this.css_classes["tagged-branch"];
+    class_var += " " + css_classes["tagged-branch"];
   }
 
   if (inspector.item_selected(edge, this.selection_attribute_name)) {
-    class_var += " " + this.css_classes["selected-branch"];
+    class_var += " " + css_classes["selected-branch"];
   }
 
   return class_var;

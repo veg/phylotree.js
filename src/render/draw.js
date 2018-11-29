@@ -6,7 +6,9 @@ import { def_node_label } from "../nodes";
 import { x_coord, y_coord } from "./coordinates";
 import * as clades from "./clades";
 import * as render_nodes from "./node";
+import * as render_edges from "./edge";
 import * as events from "./events";
+import {css_classes} from "../accessors";
 
 // replacement for d3.functor
 function constant(x) {
@@ -15,28 +17,11 @@ function constant(x) {
   };
 }
 
-const css_classes = {
-  "tree-container": "phylotree-container",
-  "tree-scale-bar": "tree-scale-bar",
-  node: "node",
-  "internal-node": "internal-node",
-  "tagged-node": "node-tagged",
-  "selected-node": "node-selected",
-  "collapsed-node": "node-collapsed",
-  "root-node": "root-node",
-  branch: "branch",
-  "selected-branch": "branch-selected",
-  "tagged-branch": "branch-tagged",
-  "tree-selection-brush": "tree-selection-brush",
-  "branch-tracer": "branch-tracer",
-  clade: "clade",
-  node_text: "phylotree-node-text"
-};
-
 class TreeRender {
 
   constructor(phylotree, container) {
 
+    this.css_classes = css_classes;
     this.phylotree = phylotree;
     this.container = container;
     this.separation = function(_node, _previous) {
@@ -130,9 +115,9 @@ class TreeRender {
     this.options = options;
 
     this.initialize_svg(this.container);
+    this.links = this.phylotree.nodes.links();
     this.placenodes();
     this.update();
-    console.log(this);
 
   }
 
@@ -233,7 +218,6 @@ class TreeRender {
     }
 
     this.placenodes();
-    this.links = this.phylotree.nodes.links();
     this.phylotree.sync_edge_labels();
     this.d3_phylotree_trigger_layout(this);
 
@@ -247,6 +231,8 @@ class TreeRender {
    * @returns The current ``phylotree``.
    */
   update(transitions) {
+
+    var self = this;
 
     if (!this.svg) return this;
 
@@ -305,7 +291,7 @@ class TreeRender {
 
     let drawn_links = enclosure
       .selectAll(inspector.edge_css_selectors(css_classes))
-      .data(this.phylotree.links.filter(inspector.edge_visible), (d) => {
+      .data(this.links.filter(inspector.edge_visible), (d) => {
         return d.target.id || (d.target.id = ++node_id);
       });
 
@@ -319,8 +305,8 @@ class TreeRender {
       .enter()
       .insert("path", ":first-child")
       .merge(drawn_links)
-      .each((d) => {
-        this.draw_edge(this, d, transitions);
+      .each(function(d) {
+        self.draw_edge(this, d, transitions);
       });
 
     let drawn_nodes = enclosure
@@ -338,7 +324,7 @@ class TreeRender {
     drawn_nodes = drawn_nodes
       .enter()
       .append("g")
-      .attr("class", self.phylotree.reclass_node)
+      .attr("class", this.phylotree.reclass_node)
       .merge(drawn_nodes)
       .attr("transform", (d) => {
 
@@ -354,8 +340,8 @@ class TreeRender {
         ]);
 
       })
-      .each((d) => {
-        this.draw_node(this.container, d, transitions);
+      .each(function(d){
+        self.draw_node(this, d, transitions);
       })
       .attr("transform", (d) => {
         if (!_.isUndefined(d.screen_x) && !_.isUndefined(d.screen_y)) {
@@ -368,8 +354,6 @@ class TreeRender {
         return "node-" + d.name;
       });
     }
-
-    return 1;
 
     this.resize_svg(this.phylotree, this.svg, transitions);
 
@@ -1300,6 +1284,7 @@ class TreeRender {
 
 _.extend(TreeRender.prototype, clades);
 _.extend(TreeRender.prototype, render_nodes);
+_.extend(TreeRender.prototype, render_edges);
 _.extend(TreeRender.prototype, events);
 
 /**

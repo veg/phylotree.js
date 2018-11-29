@@ -276,8 +276,7 @@
 
   <div class = 'row'>
     <div class = 'col-md-12'>
-      <div id = 'tree_container' class = 'tree-widget'>
-      </div>
+      <div id = 'tree_container' class = 'tree-widget'></div>
     </div>
   </div>
 </div>
@@ -334,7 +333,7 @@ $("#newick_file").on ("change", function (e) {
                 selection_set.forEach((d,i) => update_selection_names(i))
                 current_selection_name = selection_set[0];
                 update_selection_names(0);
-                tree.svg (svg).layout();
+                //tree.svg (svg).layout();
                 warning_div.attr ("class", "alert alert-success alert-dismissable")
                             .html ("Loaded a tree from  file <strong>" + f.name +": </strong>");
             }
@@ -492,7 +491,7 @@ $("#validate_newick").on ("click", function (e) {
 
     } else {
         default_tree_settings ();
-         tree (res).svg (svg).layout();
+         //tree (res).svg (svg).layout();
         $('#newick_modal').modal('hide');
     }
 });
@@ -526,7 +525,7 @@ $("#example_hiv_scaled").on ("click", function (e) {
     //tree.options ({'top-bottom-spacing' : 'fit-to-size'}, false);
     //tree.options ({'left-right-spacing' : 'fit-to-size'}, false);
     //tree.size ([1500,1500]);
-    tree (res).svg (svg).layout();
+    //tree (res).svg (svg).layout();
     //update_controls ();
 
 });
@@ -543,7 +542,7 @@ $("#internal_labels").on ("click", function (e) {
         }
         return tree.show_internal_name(node) ? 10 : 1;
     });
-    tree (res).svg (svg).layout();
+    //tree (res).svg (svg).layout();
     update_controls ();
 
 });
@@ -567,7 +566,7 @@ $("#example_hiv_compartments").on ("click", function (e) {
           }
     });
 
-    tree (phylotree.newick_parser(hiv_tree)).svg(svg).layout();
+    //tree (phylotree.newick_parser(hiv_tree)).svg(svg).layout();
     update_controls ();
 });
 
@@ -863,9 +862,9 @@ var container_id = '#tree_container';
 
 var example_controls = d3.select ("#controls_form").append ("form");
 
-var svg = d3.select(container_id).append("svg")
-    .attr("width", width)
-    .attr("height", height);
+//var svg = d3.select(container_id).append("svg")
+//    .attr("width", width)
+//    .attr("height", height);
     
 
 
