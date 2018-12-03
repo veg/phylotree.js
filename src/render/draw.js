@@ -42,7 +42,7 @@ class TreeRender {
     this.svg = null;
     this.selection_callback = null;
     this.scales = [1, 1];
-    this.fixed_width = [15, 20];
+    this.fixed_width = [30, 20];
     this.font_size = 12;
     this.scale_bar_font_size = 12;
     this.offsets = [0, this.font_size / 2];
@@ -512,15 +512,15 @@ class TreeRender {
 
     /** determine the root-to-tip location of this node;
             
-            the root node receives the co-ordinate of 0
-            
-            if the tree has branch lengths, then the placement of each node is simply the 
-            total branch length to the root
-            
-            if the tree has no branch lengths, all leaves get the same depth ("number of internal nodes on the deepest path")
-            and all internal nodes get the depth in integer units of the # of internal nodes on the path to the root + 1
+      the root node receives the co-ordinate of 0
+      
+      if the tree has branch lengths, then the placement of each node is simply the 
+      total branch length to the root
+      
+      if the tree has no branch lengths, all leaves get the same depth ("number of internal nodes on the deepest path")
+      and all internal nodes get the depth in integer units of the # of internal nodes on the path to the root + 1
         
-        */
+    */
 
     let undef_BL = false;
     this._extents = [[0, 0], [0, 0]];
@@ -538,6 +538,7 @@ class TreeRender {
     */
 
     let last_node = null;
+
     // last node laid out in the top bottom hierarchy
     let last_span = 0;
     let is_under_collapsed_parent = false;
@@ -545,6 +546,7 @@ class TreeRender {
     if (a_node["parent"]) {
 
       if (this.do_scaling) {
+
         if (undef_BL) {
           return 0;
         }
@@ -560,6 +562,7 @@ class TreeRender {
       } else {
         a_node.y = is_leaf ? this.max_depth : a_node.depth;
       }
+
 
     } else {
 
@@ -597,21 +600,26 @@ class TreeRender {
         is_under_collapsed_parent = false;
 
         if (typeof a_node.x === "number") {
+
           a_node.x =
             save_x +
             (a_node.x - save_x) * this.options["compression"] +
             save_span;
+
           a_node.collapsed = [[a_node.x, a_node.y]];
 
           var map_me = (n) => {
             n.hidden = true;
 
             if (inspector.is_leafnode(n)) {
+
               this.x = n.x =
                 save_x +
                 (n.x - save_x) * this.options["compression"] +
                 save_span;
+
               a_node.collapsed.push([n.x, n.y]);
+
             } else {
               n.children.map(map_me);
             }
@@ -624,7 +632,9 @@ class TreeRender {
           a_node.collapsed.push([this.x, a_node.y]);
           a_node.collapsed.push([a_node.x, a_node.y]);
           a_node.hidden = false;
+
         }
+
       } else {
         // normal node, or under a collapsed parent
         this.process_internal_node(a_node);
@@ -632,6 +642,7 @@ class TreeRender {
     }
 
     return a_node.x;
+
   }
 
   process_internal_node(a_node) {
@@ -671,6 +682,7 @@ class TreeRender {
         }
       }
     } else {
+
       // postorder layout
       a_node.x = a_node.children
         .map(this.tree_layout.bind(this))
@@ -679,12 +691,14 @@ class TreeRender {
           count_undefined += 1;
           return a;
         }, 0.0);
+
       if (count_undefined == a_node.children.length) {
         a_node.notshown = true;
         a_node.x = undefined;
       } else {
         a_node.x /= a_node.children.length - count_undefined;
       }
+
     }
   }
 
@@ -743,30 +757,31 @@ class TreeRender {
       save_x = x,
       save_span = last_span * 0.5;
 
-    let do_scaling = this.options["scaling"],
-      undef_BL = false;
+    this.do_scaling = this.options["scaling"];
+    let undef_BL = false;
 
     this.is_under_collapsed_parent = false;
     this.max_depth = 1;
 
     // Set initial x
-    // TODO shouldn't place x location directly in nodes
-    this.phylotree.nodes.x = this.tree_layout(this.phylotree.nodes, do_scaling);
+    this.phylotree.nodes.x = this.tree_layout(this.phylotree.nodes, this.do_scaling);
 
     this.max_depth = d3.max(this.phylotree.nodes.descendants(), (n) => {
       return n.depth;
     });
 
-    if (do_scaling && undef_BL) {
+    if (this.do_scaling && undef_BL) {
+
       // requested scaling, but some branches had no branch lengths
       // redo layout without branch lengths
-      do_scaling = false;
+      this.do_scaling = false;
       this.phylotree.nodes.x = this.tree_layout(this.phylotree.nodes);
+
     }
 
     let at_least_one_dimension_fixed = false;
 
-    this.draw_scale_bar = this.options["show-scale"] && do_scaling;
+    this.draw_scale_bar = this.options["show-scale"] && this.do_scaling;
 
     // this is a hack so that phylotree.pad_height would return ruler spacing
     if (this.options["top-bottom-spacing"] == "fixed-step") {
@@ -959,6 +974,7 @@ class TreeRender {
 
       this.size[0] = this.radial_center + this.radius / scaler;
       this.size[1] = this.radial_center + this.radius / scaler;
+
     } else {
 
       this.do_lr();
@@ -984,6 +1000,7 @@ class TreeRender {
         }
 
         if (d.collapsed) {
+
           d.collapsed.map((p) => {
             return [(p[0] *= this.scales[0]), (p[1] *= this.scales[1])];
           });
@@ -1000,9 +1017,11 @@ class TreeRender {
           });
         }
       });
+
     }
 
     if (this.draw_scale_bar) {
+
       let domain_limit, range_limit;
 
       if (this.phylotree.radial()) {
@@ -1032,11 +1051,13 @@ class TreeRender {
         scaleTickFormatter = d3.format(".2g");
 
       this.draw_scale_bar = d3.axisTop().scale(scale).tickFormat(function(d) {
+
         if (d === 0) {
           return "";
         }
 
         return scaleTickFormatter(d);
+
       });
 
       if (this.phylotree.radial()) {
@@ -1280,6 +1301,7 @@ class TreeRender {
       }
     }
   }
+
 }
 
 _.extend(TreeRender.prototype, clades);

@@ -1,6 +1,7 @@
 import * as inspector from "../inspectors";
 
 export function clear_internal_nodes(respect) {
+
   if (!respect) {
     self.nodes.each(function(d) {
       if (!inspector.is_leafnode(d)) {
@@ -8,9 +9,10 @@ export function clear_internal_nodes(respect) {
       }
     });
   }
+
 }
 
-export function draw_node (container, node, transitions) {
+export function draw_node(container, node, transitions) {
 
   container = d3.select(container);
 
@@ -186,7 +188,6 @@ export function draw_node (container, node, transitions) {
 
   if (!is_leaf) {
 
-    //console.log(node);
     let circles = container
         .selectAll("circle")
         .data([node])
