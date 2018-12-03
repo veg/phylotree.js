@@ -38,8 +38,6 @@
     "should": "^11.2.1",
     "tape": "4",
     "uglify-js": "2",
-    "webpack": "^4.6.0",
-    "webpack-cli": "^2.0.15",
     "yarn": "^1.9.4"
   },
   "scripts": {
@@ -48,7 +46,6 @@
     "dev": "rm -rf build && mkdir build && rollup -m -c -w -f umd -o build/phylotree.js -- src/index.js",
     "pretest": "rm -rf build && mkdir build && rollup -c -f umd -o build/phylotree.js -- src/index.js",
     "test": "tape 'test/*-test.js'",
-    "prepublish": "npm run test && uglifyjs build/phylotree.js -c -m -o build/phylotree.min.js",
     "postpublish": "zip -j build/phylotree.js.zip -- LICENSE README.md build/phylotree.js build/phylotree.min.js"
   },
   "files": [
