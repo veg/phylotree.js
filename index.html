@@ -362,7 +362,7 @@ $("#mp_label").on ("click", function (e) {
 });
 
 $ ("[data-direction]").on ("click", function (e) {
-    var which_function = $(this).data ("direction") == 'vertical' ? tree.spacing_x : tree.spacing_y;
+    var which_function = $(this).data ("direction") == 'vertical' ? tree.display.spacing_x.bind(tree.display) : tree.display.spacing_y.bind(tree.display);
     which_function (which_function () + (+ $(this).data ("amount"))).update();
 });
 
@@ -373,7 +373,7 @@ $(".phylotree-layout-mode").on ("click", function (e) {
 
     if (tree.radial () != ($(this).data ("mode") == "radial")) {
         $('.phylotree-layout-mode').toggleClass('active');
-        tree.radial (!tree.radial ()).placenodes().update ();
+        tree.radial(!tree.radial()).display.update();
     }
 });
 
@@ -401,9 +401,12 @@ $(".phylotree-align-toggler").on ("click", function (e) {
 
 
 
-function sort_nodes (asc) {tree.resort_children (
+function sort_nodes (asc) {
+
+    tree.resort_children (
       function(a, b) { return (b.height - a.height || b.value - a.value) * (asc ? 1 : -1); }
     );
+
 }
 
 $("#sort_original").on ("click", function (e) {

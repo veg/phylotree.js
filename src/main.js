@@ -84,8 +84,11 @@ function resort_children(comparator, start_node, filter) {
     })
     .sort(comparator);
 
-  this.update_layout(this.nodes);
-  this.update();
+  // if a tree is rendered in the DOM
+  if(this.display) {
+    this.display.update_layout(this.nodes);
+    this.display.update();
+  }
 
   return this;
 
@@ -381,6 +384,7 @@ Phylotree.prototype.menus = menus;
 Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.has_branch_lengths = has_branch_lengths;
 Phylotree.prototype.get_newick = get_newick;
+Phylotree.prototype.resort_children = resort_children;
 Phylotree.prototype.node_label = node_operations.def_node_label;
 
 _.extend(Phylotree.prototype, selecter);

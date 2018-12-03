@@ -13,17 +13,23 @@ function cartesian_mapper(x, y, radial_center) {
 }
 
 function polar_to_cartesian(x, y) {
-  r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-  a = Math.atan2(y, x);
+  let r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+  let a = Math.atan2(y, x);
   return [r, a];
 }
 
 export function cartesian_to_polar(node, radius, radial_root_offset, radial_center, scales, size) {
+
   node.radius = radius * (node.radius + radial_root_offset);
 
-  if (!node.angle) {
-    node.angle = 2 * Math.PI * node.x * scales[0] / size[0];
-  }
+  //if (!node.angle) {
+  node.angle = 2 * Math.PI * node.x * scales[0] / size[0];
+  //}
+
+  console.log('angle');
+  console.log(scales[0]);
+  console.log(size[0]);
+  console.log(node.angle);
 
   let radial = radial_mapper(node.radius, node.angle, radial_center);
 

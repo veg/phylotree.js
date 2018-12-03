@@ -42,6 +42,7 @@ class TreeRender {
     this.svg = null;
     this.selection_callback = null;
     this.scales = [1, 1];
+    this.size = [1, 1];
     this.fixed_width = [30, 20];
     this.font_size = 12;
     this.scale_bar_font_size = 12;
@@ -131,6 +132,11 @@ class TreeRender {
 
   pad_width() {
     const _label_width = this.options["show-labels"] ? this.label_width : 0;
+
+    console.log(_label_width);
+    console.log(this.options["left-offset"]);
+    console.log(this.offsets[1]);
+
     return this.offsets[1] + this.options["left-offset"] + _label_width;
   }
 
@@ -152,7 +158,7 @@ class TreeRender {
    * @returns {Phylotree} The current ``size`` array if getting, or the current ``phylotree``
    * if setting.
    */
-  size(attr) {
+  set_size(attr) {
     if (!arguments.length) {
       return this.size;
     }
@@ -219,7 +225,6 @@ class TreeRender {
 
     this.placenodes();
     this.phylotree.sync_edge_labels();
-    this.d3_phylotree_trigger_layout(this);
 
   }
 
@@ -235,6 +240,8 @@ class TreeRender {
     var self = this;
 
     if (!this.svg) return this;
+
+    this.placenodes();
 
     transitions = this.transitions(transitions);
 
@@ -717,7 +724,7 @@ class TreeRender {
       this.label_width = this._label_width(this.shown_font_size);
 
       if (this.phylotree.radial()) {
-        //label_width *= 2;
+        this.label_width *= 2;
       }
     } else {
       this.label_width = this._label_width(this.shown_font_size);
@@ -789,7 +796,7 @@ class TreeRender {
         this.font_size,
         -_extents[1][0] * this.fixed_width[0]
       );
-      this.size[0] = _extents[0][1] * this.fixed_width[0];
+      this.size[0] = this._extents[0][1] * this.fixed_width[0];
       this.scales[0] = this.fixed_width[0];
     } else {
       this.scales[0] = (this.size[0] - this.pad_height()) / _extents[0][1];
@@ -809,7 +816,7 @@ class TreeRender {
         last_circ_position = null,
         last_child_radius = null,
         min_radius = 0,
-        effective_span = _extents[0][1] * this.scales[0];
+        effective_span = this._extents[0][1] * this.scales[0];
 
       let compute_distance = function(r1, r2, a1, a2, annular_shift) {
         annular_shift = annular_shift || 0;
@@ -1125,6 +1132,8 @@ class TreeRender {
    * @returns The current ``spacing_y`` value if getting, or the current ``phylotree`` if setting.
    */
   spacing_y(attr, skip_render) {
+
+
     if (!arguments.length) return this.fixed_width[1];
 
     if (
@@ -1151,6 +1160,7 @@ class TreeRender {
       .forEach((node) => {
         let node_width = 12 + this.phylotree.node_label(node).length * _font_size * 0.8;
         if (node.angle !== null) {
+          console.log(node.angle);
           node_width *= Math.max(
             Math.abs(Math.cos(node.angle)),
             Math.abs(Math.sin(node.angle))
@@ -1160,6 +1170,7 @@ class TreeRender {
       });
 
     return width;
+
   }
 
   /**

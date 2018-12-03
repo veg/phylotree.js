@@ -1,4 +1,5 @@
 import * as inspector from "../inspectors";
+import {css_classes} from "../accessors";
 
 let d3_layout_phylotree_event_id = "phylotree.event";
 
@@ -41,14 +42,14 @@ export function toggle_collapse(node) {
 
 export function resize_svg(tree, svg, tr) {
 
-  var sizes = this.size();
+  var sizes = this.size;
 
-  if (tree.radial()) {
+  if (this.phylotree.radial()) {
 
-    var pad_radius = tree.pad_width(),
+    let pad_radius = this.pad_width(),
       vertical_offset =
-        tree.options()["top-bottom-spacing"] != "fit-to-size"
-          ? tree.pad_height()
+        this.options["top-bottom-spacing"] != "fit-to-size"
+          ? this.pad_height()
           : 0;
 
     sizes = [
@@ -58,7 +59,7 @@ export function resize_svg(tree, svg, tr) {
 
     if (svg) {
       svg
-        .selectAll("." + tree.css_classes()["tree-container"])
+        .selectAll("." + css_classes["tree-container"])
         .attr(
           "transform",
           "translate (" +
