@@ -132,11 +132,6 @@ class TreeRender {
 
   pad_width() {
     const _label_width = this.options["show-labels"] ? this.label_width : 0;
-
-    console.log(_label_width);
-    console.log(this.options["left-offset"]);
-    console.log(this.offsets[1]);
-
     return this.offsets[1] + this.options["left-offset"] + _label_width;
   }
 
@@ -1160,7 +1155,6 @@ class TreeRender {
       .forEach((node) => {
         let node_width = 12 + this.phylotree.node_label(node).length * _font_size * 0.8;
         if (node.angle !== null) {
-          console.log(node.angle);
           node_width *= Math.max(
             Math.abs(Math.cos(node.angle)),
             Math.abs(Math.sin(node.angle))

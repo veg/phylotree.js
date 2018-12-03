@@ -1,5 +1,28 @@
 import * as inspector from "../inspectors";
 
+export function shift_tip (d) {
+
+  if (this.options["is-radial"]) {
+
+    console.log(this.radius_pad_for_bubbles);
+    console.log(d.radius);
+
+    return [
+      (d.text_align == "end" ? -1 : 1) * (this.radius_pad_for_bubbles - d.radius),
+      0
+    ];
+  }
+
+  if (this.options["right-to-left"]) {
+    return [this.right_most_leaf - d.screen_x, 0];
+  }
+
+  return [this.right_most_leaf - d.screen_x, 0];
+
+}
+
+
+
 export function clear_internal_nodes(respect) {
 
   if (!respect) {
@@ -53,7 +76,7 @@ export function draw_node(container, node, transitions) {
           return (
             this.d3_phylotree_svg_rotate(d.text_angle) +
             this.d3_phylotree_svg_translate(
-              this.phylotree.align_tips() ? this.phylotree.shift_tip(d) : null
+              this.phylotree.align_tips() ? this.shift_tip(d) : null
             )
           );
         })
@@ -71,7 +94,7 @@ export function draw_node(container, node, transitions) {
             return this.d3_phylotree_svg_translate([-20, 0]);
           }
           return this.d3_phylotree_svg_translate(
-            this.phylotree.align_tips() ? this.phylotree.shift_tip(d) : null
+            this.phylotree.align_tips() ? this.shift_tip(d) : null
           );
 
         });
@@ -104,7 +127,7 @@ export function draw_node(container, node, transitions) {
               return d.screen_x;
             }
 
-            return this.phylotree.shift_tip(d)[0];
+            return this.shift_tip(d)[0];
 
           })
           .attr("transform", (d) => {
@@ -114,7 +137,7 @@ export function draw_node(container, node, transitions) {
             if (this.options["layout"] == "right-to-left") {
               return d.screen_x;
             }
-            return this.phylotree.shift_tip(d)[0];
+            return this.shift_tip(d)[0];
           })
           .attr("transform", (d) => {
             return this.d3_phylotree_svg_rotate(d.text_angle);
@@ -136,7 +159,7 @@ export function draw_node(container, node, transitions) {
           .attr("y2", 0)
           .attr("y1", 0)
           .attr("x2", (d) => {
-            return this.phylotree.shift_tip(d)[0];
+            return this.shift_tip(d)[0];
           });
         tracers.attr("transform", (d) => {
           return this.d3_phylotree_svg_rotate(d.text_angle);

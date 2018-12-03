@@ -393,7 +393,7 @@ $(".phylotree-align-toggler").on ("click", function (e) {
   if (tree_align != button_align) {
       tree.align_tips(button_align == "right");
       $('.phylotree-align-toggler').toggleClass('active');
-      tree.update ();
+      tree.display.update();
   }
 });
 

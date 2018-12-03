@@ -67,6 +67,7 @@ export function node_bubble_size (node) {
 }
 
 export function shift_tip (d) {
+
   if (this.options["is-radial"]) {
     return [
       (d.text_align == "end" ? -1 : 1) * (this.radius_pad_for_bubbles - d.radius),
