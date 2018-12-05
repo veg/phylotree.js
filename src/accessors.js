@@ -78,23 +78,6 @@ export function shift_tip (d) {
   return [this.right_most_leaf - d.screen_x, 0];
 }
 
-/**
- * Get nodes which are currently selected.
- *
- * @returns {Array} An array of nodes that match the current selection.
- */
-export function get_selection() {
-  return this.nodes.filter(function(d) {
-    return d[this.selection_attribute_name];
-  });
-}
-
-export function count_handler(attr) {
-  if (!arguments.length) return this.count_listener_handler;
-  this.count_listener_handler = attr;
-  return this;
-}
-
 export function layout_handler(attr) {
   if (!arguments.length) return this.layout_listener_handler;
   this.layout_listener_handler = attr;
@@ -216,22 +199,6 @@ export function reclass_node (node) {
 
   if (inspector.is_node_collapsed(node) || inspector.has_hidden_nodes(node)) {
     class_var += " " + css_classes["collapsed-node"];
-  }
-
-  return class_var;
-
-}
-
-export function reclass_edge(edge) {
-
-  let class_var = css_classes["branch"];
-
-  if (inspector.item_tagged(edge)) {
-    class_var += " " + css_classes["tagged-branch"];
-  }
-
-  if (inspector.item_selected(edge, this.selection_attribute_name)) {
-    class_var += " " + css_classes["selected-branch"];
   }
 
   return class_var;

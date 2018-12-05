@@ -2,7 +2,6 @@ import * as inspector from "../inspectors";
 
 export function shift_tip (d) {
 
-
   if (this.phylotree.radial()) {
 
     return [

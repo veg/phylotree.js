@@ -1,15 +1,15 @@
 import * as _ from "underscore";
+import * as inspector from "../inspectors";
+import {css_classes} from "../accessors";
 
 export function draw_edge(container, edge, transition) {
 
   container = d3.select(container);
 
   container = container
-    .attr("class", this.phylotree.reclass_edge)
-    .on("click", function(d) {
-
-      this.modify_selection([d.target], selection_attribute_name);
-
+    .attr("class", d => { return this.reclass_edge(d) })
+    .on("click", d => {
+      this.modify_selection([d.target], this.selection_attribute_name);
     });
 
   let new_branch_path = this.draw_branch([edge.source, edge.target]);
@@ -49,3 +49,22 @@ export function draw_edge(container, edge, transition) {
   return this.phylotree;
 
 }
+
+export function reclass_edge(edge) {
+
+  let class_var = css_classes["branch"];
+
+  if (inspector.item_tagged(edge)) {
+    class_var += " " + css_classes["tagged-branch"];
+  }
+
+  if (inspector.item_selected(edge, this.selection_attribute_name)) {
+    class_var += " " + css_classes["selected-branch"];
+  }
+
+  console.log(class_var);
+
+  return class_var;
+
+}
+

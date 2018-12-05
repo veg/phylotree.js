@@ -847,7 +847,7 @@ function update_selection_names (id, skip_rebuild) {
 }
 
 var width  = 800, //$(container_id).width(),
-    height = 600, //$(container_id).height()
+    height = 800, //$(container_id).height()
     selection_set = ['Foreground'],
     current_selection_name = $("#selection_name_box").val(),
     current_selection_id = 0,
@@ -953,7 +953,6 @@ $( document ).ready( function () {
     //default_tree_settings();
     tree = new phylotree.phylotree(test_string);
     let rendered_tree = tree.render("#tree_container");
-    //tree(test_string).svg (svg).layout();
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
     $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
     $("#selection_delete").get(0).addEventListener(selection_menu_element_action,selection_handler_delete,false);

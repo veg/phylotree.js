@@ -9,6 +9,7 @@ import * as render_nodes from "./node";
 import * as render_edges from "./edge";
 import * as events from "./events";
 import {css_classes} from "../accessors";
+import * as menus from "./menus";
 
 // replacement for d3.functor
 function constant(x) {
@@ -197,7 +198,7 @@ class TreeRender {
 
       d3.select(this.container).on(
         "click",
-        function(d) {
+        d => {
           this.handle_node_click(null);
         },
         true
@@ -1285,6 +1286,10 @@ class TreeRender {
     return this;
   }
 
+  handle_node_click(node) {
+    menus.node_dropdown_menu(node, this.container, this, this.options);
+  }
+
   refresh() {
 
     if (this.svg) {
@@ -1295,7 +1300,7 @@ class TreeRender {
 
       let edges = enclosure
         .selectAll(inspector.edge_css_selectors(this.css_classes))
-        .attr("class", this.reclass_edge);
+        .attr("class", this.reclass_edge.bind(this));
 
       if (this.edge_styler) {
         edges.each(function(d) {
@@ -1303,17 +1308,25 @@ class TreeRender {
         });
       }
 
-      let nodes = this.enclosure
-        .selectAll(inspector.node_css_selectors(this.css_classes))
-        .attr("class", this.reclass_node);
+      //let nodes = this.enclosure
+      //  .selectAll(inspector.node_css_selectors(this.css_classes))
+      //  .attr("class", this.phylotree.reclass_node);
 
-      if (this.node_styler) {
-        nodes.each(function(d) {
-          this.node_styler(d3.select(this), d);
-        });
-      }
+      //if (this.node_styler) {
+      //  nodes.each(function(d) {
+      //    this.node_styler(d3.select(this), d);
+      //  });
+      //}
     }
   }
+
+  count_handler(attr) {
+    if (!arguments.length) return this.count_listener_handler;
+    this.count_listener_handler = attr;
+    return this;
+  }
+
+
 
 }
 
@@ -1321,6 +1334,7 @@ _.extend(TreeRender.prototype, clades);
 _.extend(TreeRender.prototype, render_nodes);
 _.extend(TreeRender.prototype, render_edges);
 _.extend(TreeRender.prototype, events);
+_.extend(TreeRender.prototype, menus);
 
 /**
  * Get or set node styler. If setting, pass a function of two arguments,

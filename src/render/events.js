@@ -100,7 +100,7 @@ export function trigger_refresh(tree) {
   document.dispatchEvent(event);
 }
 
-export function d3_phylotree_trigger_count_update(tree, counts) {
+export function count_update(tree, counts) {
   var event = new CustomEvent(d3_layout_phylotree_event_id, {
     detail: ["count_update", counts, tree.count_handler()]
   });
