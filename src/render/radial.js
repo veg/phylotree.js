@@ -26,11 +26,6 @@ export function cartesian_to_polar(node, radius, radial_root_offset, radial_cent
   node.angle = 2 * Math.PI * node.x * scales[0] / size[0];
   //}
 
-  console.log('angle');
-  console.log(scales[0]);
-  console.log(size[0]);
-  console.log(node.angle);
-
   let radial = radial_mapper(node.radius, node.angle, radial_center);
 
   node.x = radial.x;

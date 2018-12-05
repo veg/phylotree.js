@@ -123,6 +123,7 @@ class TreeRender {
   }
 
   pad_height() {
+
     if (this.draw_scale_bar) {
       return this.scale_bar_font_size + 25;
     }
@@ -1027,23 +1028,30 @@ class TreeRender {
       let domain_limit, range_limit;
 
       if (this.phylotree.radial()) {
+
+
         range_limit = Math.min(this.radius / 5, 50);
         domain_limit = Math.pow(
           10,
           Math.ceil(
-            Math.log(_extents[1][1] * range_limit / this.radius) / Math.log(10)
+            Math.log(this._extents[1][1] * range_limit / this.radius) / Math.log(10)
           )
         );
-        range_limit = domain_limit * (this.radius / _extents[1][1]);
+
+        range_limit = domain_limit * (this.radius / this._extents[1][1]);
+
         if (range_limit < 30) {
           let stretch = Math.ceil(30 / range_limit);
           range_limit *= stretch;
           domain_limit *= stretch;
         }
+
       } else {
-        domain_limit = _extents[1][1];
+
+        domain_limit = this._extents[1][1];
         range_limit =
           this.size[1] - this.offsets[1] - this.options["left-offset"];
+
       }
 
       let scale = d3
