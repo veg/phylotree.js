@@ -2,10 +2,8 @@ import * as inspector from "../inspectors";
 
 export function shift_tip (d) {
 
-  if (this.options["is-radial"]) {
 
-    console.log(this.radius_pad_for_bubbles);
-    console.log(d.radius);
+  if (this.phylotree.radial()) {
 
     return [
       (d.text_align == "end" ? -1 : 1) * (this.radius_pad_for_bubbles - d.radius),
@@ -20,8 +18,6 @@ export function shift_tip (d) {
   return [this.right_most_leaf - d.screen_x, 0];
 
 }
-
-
 
 export function clear_internal_nodes(respect) {
 

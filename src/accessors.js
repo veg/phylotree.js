@@ -19,8 +19,6 @@ export const css_classes = {
   node_text: "phylotree-node-text"
 };
 
-
-
 export function internal_names (attr) {
   if (!arguments.length) return this.options["internal-names"];
   this.options["internal-names"] = attr;
