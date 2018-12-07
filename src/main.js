@@ -11,7 +11,6 @@ import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./render/radia
 import { default as draw_line, line_segment_placer } from "./render/cartesian";
 
 import * as inspector from "./inspectors";
-import * as menus from "./render/menus";
 import * as selecter from "./selecters";
 
 import {default as has_branch_lengths, def_branch_length_accessor} from "./branches";
@@ -241,6 +240,8 @@ let Phylotree = class {
       self.parsed_tags = Object.keys(_parsed_tags);
     }
 
+    self.links = self.nodes.links();
+
     return self;
   }
 
@@ -360,13 +361,10 @@ let Phylotree = class {
     return this;
   }
 
-  handle_node_click(node) {
-    menus.node_dropdown_menu(node, self.container, self, options);
-  }
-
   update(json) {
     // update with new hiearchy layout
     this.nodes = json;
+    this.links = this.nodes.links();
   }
 
   // Warning : Requires DOM!
@@ -380,7 +378,6 @@ let Phylotree = class {
 };
 
 Phylotree.prototype.is_leafnode = inspector.is_leafnode;
-Phylotree.prototype.menus = menus;
 Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.has_branch_lengths = has_branch_lengths;
 Phylotree.prototype.get_newick = get_newick;

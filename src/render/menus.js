@@ -319,7 +319,7 @@ export function modify_selection(
         }
       });
 
-      this.phylotree.links.forEach(function(d) {
+      this.links.forEach(function(d) {
         d[attr] = d.target[attr];
       });
     }

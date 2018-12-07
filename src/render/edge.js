@@ -62,9 +62,35 @@ export function reclass_edge(edge) {
     class_var += " " + css_classes["selected-branch"];
   }
 
-  console.log(class_var);
-
   return class_var;
+
+}
+
+export function sync_edge_labels() {
+
+  this.phylotree.links.forEach(d => {
+    d[this.selection_attribute_name] = d.target[this.selection_attribute_name] || false;
+    d.tag = d.target.tag || false;
+  });
+
+  if (this.count_handler()) {
+
+    let counts = {};
+
+    counts[this.selection_attribute_name] = this.phylotree.links.reduce((p, c) => {
+      return p + (c[this.selection_attribute_name] ? 1 : 0);
+    }, 0);
+
+    counts["tagged"] = this.phylotree.links.reduce(function(p, c) {
+      return p + (inspector.item_tagged(c) ? 1 : 0);
+    }, 0);
+
+    this.count_update(
+      this,
+      counts,
+      this.count_handler()
+    );
+  }
 
 }
 

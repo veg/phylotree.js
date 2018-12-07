@@ -221,7 +221,7 @@ class TreeRender {
     }
 
     this.placenodes();
-    this.phylotree.sync_edge_labels();
+    this.sync_edge_labels();
 
   }
 
@@ -393,7 +393,7 @@ class TreeRender {
               });
 
           this.modify_selection(
-            this.links.map((d) => {
+            this.phylotree.links.map((d) => {
               return d.target;
             }),
             "tag",
@@ -412,7 +412,7 @@ class TreeRender {
 
     }
 
-    this.phylotree.sync_edge_labels();
+    this.sync_edge_labels();
 
     if (this.options["zoom"]) {
 
