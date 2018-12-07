@@ -53,7 +53,7 @@ export function draw_node(container, node, transitions) {
       .append("text")
       .classed(this.css_classes["node_text"], true)
       .merge(labels)
-      .on("click", this.phylotree.handle_node_click)
+      .on("click", this.handle_node_click)
       .attr("dy", (d) => {
         return this.shown_font_size * 0.33;
       })
@@ -220,7 +220,7 @@ export function draw_node(container, node, transitions) {
           return Math.min(this.shown_font_size * 0.75, radius);
         })
         .on("click", (d) => {
-          this.phylotree.handle_node_click(d);
+          this.handle_node_click(d);
         });
     } else {
       circles.remove();

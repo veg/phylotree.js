@@ -417,7 +417,7 @@ export function modify_selection(
   return this;
 
 }
-
+j
 /**
  * Get nodes which are currently selected.
  *
