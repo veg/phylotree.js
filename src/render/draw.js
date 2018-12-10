@@ -470,7 +470,7 @@ class TreeRender {
         this._extents[0][1],
         save_x +
           (a_node.x - save_x) * this.options["compression"] +
-          save_span +
+          this.save_span +
           (_node_span * 0.5 + this.separation(last_node, a_node)) *
             this.options["compression"]
       );
@@ -483,6 +483,9 @@ class TreeRender {
 
     last_node = a_node;
     last_span = _node_span;
+
+    this.last_node = last_node;
+    this.last_span = last_span;
 
     return [last_node, last_span];
 
@@ -598,7 +601,7 @@ class TreeRender {
 
         // collapsed node
         let save_x = this.x;
-        let save_span = this.last_span * 0.5;
+        this.save_span = this.last_span * 0.5;
         is_under_collapsed_parent = true;
         this.process_internal_node(a_node);
         is_under_collapsed_parent = false;
@@ -608,7 +611,7 @@ class TreeRender {
           a_node.x =
             save_x +
             (a_node.x - save_x) * this.options["compression"] +
-            save_span;
+            this.save_span;
 
           a_node.collapsed = [[a_node.x, a_node.y]];
 
@@ -620,7 +623,7 @@ class TreeRender {
               this.x = n.x =
                 save_x +
                 (n.x - save_x) * this.options["compression"] +
-                save_span;
+                this.save_span;
 
               a_node.collapsed.push([n.x, n.y]);
 
@@ -757,9 +760,10 @@ class TreeRender {
 
     let x = 0.0,
       _extents = [[0, 0], [0, 0]],
-      last_span = 0,
-      save_x = x,
-      save_span = last_span * 0.5;
+      last_span = 0;
+
+    this.save_x = x,
+    this.save_span = last_span * 0.5;
 
     this.do_scaling = this.options["scaling"];
     let undef_BL = false;
@@ -1287,7 +1291,7 @@ class TreeRender {
   }
 
   handle_node_click(node) {
-    menus.node_dropdown_menu(node, this.container, this, this.options);
+    this.node_dropdown_menu(node, this.container, this, this.options);
   }
 
   refresh() {

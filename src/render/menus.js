@@ -47,9 +47,9 @@ export function node_dropdown_menu(node, container, phylotree, options) {
               ? "Expand Subtree"
               : "Collapse Subtree"
           )
-          .on("click", function(d) {
+          .on("click", d => {
             menu_object.style("display", "none");
-            phylotree.toggle_collapse(node).update();
+            this.toggle_collapse(node).update();
           });
         if (options["selectable"]) {
           menu_object.append("div").attr("class", "dropdown-divider");
