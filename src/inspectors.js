@@ -71,6 +71,7 @@ export function clade_css_selectors(css_classes) {
 }
 
 export function rootpath(attr_name, store_name) {
+
   attr_name = attr_name || "attribute";
   store_name = store_name || "y_scaled";
 
