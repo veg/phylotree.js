@@ -105,28 +105,6 @@ export function delete_a_node(index) {
 
 }
 
-export function update_has_hidden_nodes () {
-
-  let nodes = this.nodes.descendants();
-
-  for (let k = nodes.length - 1; k >= 0; k -= 1) {
-
-    if (inspector.is_leafnode(nodes[k])) {
-      nodes[k].has_hidden_nodes = nodes[k].notshown;
-    } else {
-      nodes[k].has_hidden_nodes = nodes[k].children.reduce(function(
-        p,
-        c
-      ) {
-        return c.notshown || p;
-      }, false);
-    }
-  }
-
-  return this;
-
-}
-
 export function def_node_label(_node) {
 
   _node = _node.data;

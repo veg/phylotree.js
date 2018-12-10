@@ -236,3 +236,25 @@ export function draw_node(container, node, transitions) {
 
 }
 
+export function update_has_hidden_nodes () {
+
+  let nodes = this.phylotree.nodes.descendants();
+
+  for (let k = nodes.length - 1; k >= 0; k -= 1) {
+
+    if (inspector.is_leafnode(nodes[k])) {
+      nodes[k].has_hidden_nodes = nodes[k].notshown;
+    } else {
+      nodes[k].has_hidden_nodes = nodes[k].children.reduce(function(
+        p,
+        c
+      ) {
+        return c.notshown || p;
+      }, false);
+    }
+  }
+
+  return this;
+
+}
+

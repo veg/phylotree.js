@@ -86,21 +86,21 @@ tape("phylotree newick export", function(test) {
   
 });
 
-tape("phylotree nodes", function(test) {
+//tape("phylotree nodes", function(test) {
 
-  let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
-  let phylo = new phylotree.phylotree(newick_string);
+//  let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
+//  let phylo = new phylotree.phylotree(newick_string);
 
-  // delete a node
-  let before = phylo.nodes.descendants().length;
-  phylo.delete_a_node(4);
-  let after = phylo.nodes.descendants().length;
+//  // delete a node
+//  let before = phylo.nodes.descendants().length;
+//  phylo.delete_a_node(4);
+//  let after = phylo.nodes.descendants().length;
 
-  test.equal(before - after, 1);
-  test.ok(phylo.update_has_hidden_nodes());
-  test.end();
+//  test.equal(before - after, 1);
+//  test.ok(phylo.update_has_hidden_nodes());
+//  test.end();
   
-});
+//});
 
 tape("phylotree rooting ", function(test) {
 

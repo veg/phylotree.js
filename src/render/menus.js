@@ -116,9 +116,9 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
           .text("Path to root")
-          .on("click", function(d) {
+          .on("click", d => {
             menu_object.style("display", "none");
-            phylotree.modify_selection(phylotree.path_to_root(node));
+            this.modify_selection(this.phylotree.path_to_root(node));
           });
 
         if (options["reroot"] || options["hide"]) {
@@ -147,9 +147,9 @@ export function node_dropdown_menu(node, container, phylotree, options) {
             "Hide this " +
               (inspector.is_leafnode(node) ? "node" : "subtree")
           )
-          .on("click", function(d) {
+          .on("click", d => {
             menu_object.style("display", "none");
-            phylotree
+            this
               .modify_selection([node], "notshown", true, true)
               .update_has_hidden_nodes()
               .update();
