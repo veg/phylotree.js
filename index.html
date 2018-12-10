@@ -486,17 +486,20 @@ $("#branch_filter").on ("input propertychange", function (e) {
 });
 
 $("#validate_newick").on ("click", function (e) {
-    var res = phylotree.newick_parser ( $('textarea[id$="nwk_spec"]').val(), true);
-    if (res["error"] || ! res["json"]) {
+
+    let test_string = $('textarea[id$="nwk_spec"]').val()
+    tree = new phylotree.phylotree(test_string);
+
+    if (!tree["json"]) {
         var warning_div = d3.select ("#newick_body").selectAll ("div  .alert-danger").data ([res["error"]])
         warning_div.enter ().append ("div");
         warning_div.html (function (d) {return d;}).attr ("class", "alert-danger");
 
     } else {
-        default_tree_settings ();
-         //tree (res).svg (svg).layout();
+        let rendered_tree = tree.render("#tree_container");
         $('#newick_modal').modal('hide');
     }
+
 });
 
 function default_tree_settings () {

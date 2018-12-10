@@ -184,6 +184,8 @@ class TreeRender {
 
     if (this.svg !== svg_element) {
 
+      d3.select(svg_element).select("svg").remove();
+
       this.svg = d3.select(svg_element)
                    .append("svg")
                    .attr("width", this.width)
@@ -1322,6 +1324,9 @@ class TreeRender {
       //  });
       //}
     }
+
+    return this;
+
   }
 
   count_handler(attr) {

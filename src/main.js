@@ -364,7 +364,7 @@ let Phylotree = class {
   update(json) {
     // update with new hiearchy layout
     this.nodes = json;
-    this.links = this.nodes.links();
+    //this.links = this.nodes.links();
   }
 
   // Warning : Requires DOM!

@@ -132,9 +132,10 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
           .text("Reroot on this node")
-          .on("click", function(d) {
+          .on("click", d => {
             menu_object.style("display", "none");
-            phylotree.reroot(node).update();
+            this.phylotree.reroot(node);
+            this.refresh().update();
           });
       }
 
