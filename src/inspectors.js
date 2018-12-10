@@ -43,7 +43,6 @@ export function is_node_collapsed(node) {
 }
 
 export function node_css_selectors(css_classes) {
-
   return [
     css_classes["node"],
     css_classes["internal-node"],
@@ -53,7 +52,6 @@ export function node_css_selectors(css_classes) {
   ].reduce(function(p, c, i, a) {
     return (p += "g." + c + (i < a.length - 1 ? "," : ""));
   }, "");
-
 }
 
 export function edge_css_selectors(css_classes) {
@@ -73,24 +71,17 @@ export function clade_css_selectors(css_classes) {
 }
 
 export function rootpath(attr_name, store_name) {
-
   attr_name = attr_name || "attribute";
   store_name = store_name || "y_scaled";
 
   if ("parent" in this) {
-
     let my_value = parseFloat(this[attr_name]);
 
     this[store_name] =
       this.parent[store_name] + (isNaN(my_value) ? 0.1 : my_value);
-
   } else {
-
     this[store_name] = 0.0;
-
   }
 
   return this[store_name];
-
 }
-

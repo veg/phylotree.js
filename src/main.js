@@ -7,18 +7,25 @@ import { default as newick_parser, get_newick } from "./formats/newick";
 import { default as phyloxml_parser } from "./formats/phyloxml";
 
 import { x_coord, y_coord } from "./render/coordinates";
-import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./render/radial";
+import {
+  draw_arc,
+  cartesian_to_polar,
+  arc_segment_placer
+} from "./render/radial";
 import { default as draw_line, line_segment_placer } from "./render/cartesian";
 
 import * as inspector from "./inspectors";
 import * as selecter from "./selecters";
 
-import {default as has_branch_lengths, def_branch_length_accessor} from "./branches";
+import {
+  default as has_branch_lengths,
+  def_branch_length_accessor
+} from "./branches";
 
 import * as node_operations from "./nodes";
 import * as rooting from "./rooting";
 import * as accessors from "./accessors";
-import {default as TreeRender} from "./render/draw";
+import { default as TreeRender } from "./render/draw";
 
 /**
  * Change option settings.
@@ -29,14 +36,12 @@ import {default as TreeRender} from "./render/draw";
  * @returns The current ``phylotree``.
  */
 function options(opt, run_update) {
-
   if (!arguments.length) return options;
 
   let do_update = false;
 
   for (var key in options) {
     if (key in opt && opt[key] != options[key]) {
-
       do_update = true;
       options[key] = opt[key];
 
@@ -64,7 +69,6 @@ function options(opt, run_update) {
   }
 
   return phylotree;
-
 }
 
 // replacement for d3.functor
@@ -75,7 +79,6 @@ function constant(x) {
 }
 
 function resort_children(comparator, start_node, filter) {
-
   // ascending
   this.nodes
     .sum(function(d) {
@@ -84,13 +87,12 @@ function resort_children(comparator, start_node, filter) {
     .sort(comparator);
 
   // if a tree is rendered in the DOM
-  if(this.display) {
+  if (this.display) {
     this.display.update_layout(this.nodes);
     this.display.update();
   }
 
   return this;
-
 }
 
 /**
@@ -98,7 +100,6 @@ function resort_children(comparator, start_node, filter) {
  * @returns An array of strings, comprising each tag that was read.
  */
 function mrca() {
-
   var mrca_nodes, mrca;
 
   if (arguments.length == 1) {
@@ -127,7 +128,6 @@ function mrca() {
   });
 
   return mrca;
-
 }
 
 /**
@@ -141,11 +141,9 @@ function mrca() {
  * @returns {Phylotree} phylotree - itself, following the builder pattern.
  */
 let Phylotree = class {
-
   constructor(nwk, options = {}) {
-
     // attribute assignment
-    this.size = [1, 1]; 
+    this.size = [1, 1];
     this.phylo_attr = [1, 1];
     this.newick_string = "";
     this.rescale_node_span = 1;
@@ -162,7 +160,7 @@ let Phylotree = class {
     this.links = [];
     this.parsed_tags = [];
     this.partitions = [];
-    this.branch_length_accessor = def_branch_length_accessor; 
+    this.branch_length_accessor = def_branch_length_accessor;
     this.options = options;
     this.container = "body";
     this.logger = options.logger;
@@ -215,7 +213,6 @@ let Phylotree = class {
     if (!_node_data["json"]) {
       self.nodes = [];
     } else {
-
       self.nodes = d3.hierarchy(_node_data.json);
 
       // Parse tags
@@ -297,7 +294,6 @@ let Phylotree = class {
                                    node and its children
    */
   traverse_and_compute(callback, traversal_type, root_node, backtrack) {
-
     traversal_type = traversal_type || "post-order";
 
     function post_order(node) {
@@ -369,12 +365,9 @@ let Phylotree = class {
 
   // Warning : Requires DOM!
   render(container) {
-
     this.display = new TreeRender(this, container);
     return this.display;
-
   }
-
 };
 
 Phylotree.prototype.is_leafnode = inspector.is_leafnode;
@@ -390,4 +383,3 @@ _.extend(Phylotree.prototype, rooting);
 _.extend(Phylotree.prototype, accessors);
 
 export default Phylotree;
-

@@ -1,5 +1,5 @@
 import * as inspector from "../inspectors";
-import {css_classes} from "../accessors";
+import { css_classes } from "../accessors";
 
 let d3_layout_phylotree_event_id = "phylotree.event";
 
@@ -12,13 +12,10 @@ let d3_layout_phylotree_event_id = "phylotree.event";
  * @returns {Phylotree} The current ``phylotree``.
  */
 export function toggle_collapse(node) {
-
   if (node.collapsed) {
-
     node.collapsed = false;
 
     let unhide = function(n) {
-
       if (!inspector.is_leafnode(n)) {
         if (!n.collapsed) {
           n.children.forEach(unhide);
@@ -28,24 +25,18 @@ export function toggle_collapse(node) {
     };
 
     unhide(node);
-
   } else {
-
     node.collapsed = true;
-
   }
 
   this.placenodes();
   return this;
-
 }
 
 export function resize_svg(tree, svg, tr) {
-
   var sizes = this.size;
 
   if (this.phylotree.radial()) {
-
     let pad_radius = this.pad_width(),
       vertical_offset =
         this.options["top-bottom-spacing"] != "fit-to-size"
@@ -83,7 +74,6 @@ export function resize_svg(tree, svg, tr) {
   }
 
   return sizes;
-
 }
 
 export function rescale(scale, attr_name) {
@@ -154,5 +144,3 @@ export function d3_phylotree_svg_rotate(a) {
   }
   return "";
 }
-
-

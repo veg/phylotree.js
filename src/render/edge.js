@@ -1,13 +1,14 @@
 import * as _ from "underscore";
 import * as inspector from "../inspectors";
-import {css_classes} from "../accessors";
+import { css_classes } from "../accessors";
 
 export function draw_edge(container, edge, transition) {
-
   container = d3.select(container);
 
   container = container
-    .attr("class", d => { return this.reclass_edge(d) })
+    .attr("class", d => {
+      return this.reclass_edge(d);
+    })
     .on("click", d => {
       this.modify_selection([d.target], this.selection_attribute_name);
     });
@@ -30,14 +31,12 @@ export function draw_edge(container, edge, transition) {
   var bl = this.phylotree.branch_length_accessor(edge.target);
 
   if (bl !== undefined) {
-
     var haz_title = container.selectAll("title");
 
     if (haz_title.empty()) {
       haz_title = container.append("title");
     }
     haz_title.text("Length = " + bl);
-
   } else {
     container.selectAll("title").remove();
   }
@@ -47,11 +46,9 @@ export function draw_edge(container, edge, transition) {
   }
 
   return this.phylotree;
-
 }
 
 export function reclass_edge(edge) {
-
   let class_var = css_classes["branch"];
 
   if (inspector.item_tagged(edge)) {
@@ -63,21 +60,21 @@ export function reclass_edge(edge) {
   }
 
   return class_var;
-
 }
 
 export function sync_edge_labels() {
-
   this.phylotree.links.forEach(d => {
-    d[this.selection_attribute_name] = d.target[this.selection_attribute_name] || false;
+    d[this.selection_attribute_name] =
+      d.target[this.selection_attribute_name] || false;
     d.tag = d.target.tag || false;
   });
 
   if (this.count_handler()) {
-
     let counts = {};
 
-    counts[this.selection_attribute_name] = this.phylotree.links.reduce((p, c) => {
+    counts[
+      this.selection_attribute_name
+    ] = this.phylotree.links.reduce((p, c) => {
       return p + (c[this.selection_attribute_name] ? 1 : 0);
     }, 0);
 
@@ -85,12 +82,6 @@ export function sync_edge_labels() {
       return p + (inspector.item_tagged(c) ? 1 : 0);
     }, 0);
 
-    this.count_update(
-      this,
-      counts,
-      this.count_handler()
-    );
+    this.count_update(this, counts, this.count_handler());
   }
-
 }
-

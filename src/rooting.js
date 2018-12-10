@@ -11,7 +11,6 @@ import * as d3 from "d3";
 * @returns {Phylotree} The current ``phylotree``.
 */
 export function reroot(node, fraction) {
-
   /** TODO add the option to root in the middle of a branch */
 
   let nodes = this.nodes.descendants();
@@ -19,7 +18,6 @@ export function reroot(node, fraction) {
   fraction = fraction !== undefined ? fraction : 0.5;
 
   if (node.parent) {
-
     var new_json = d3.hierarchy({
       name: "new_root",
       __mapped_bl: undefined,
@@ -40,9 +38,7 @@ export function reroot(node, fraction) {
       stashed_bl = _.noop();
 
     let apportioned_bl =
-      node.__mapped_bl === undefined
-        ? undefined
-        : node.__mapped_bl * fraction;
+      node.__mapped_bl === undefined ? undefined : node.__mapped_bl * fraction;
 
     stashed_bl = current_node.__mapped_bl;
 
@@ -56,7 +52,6 @@ export function reroot(node, fraction) {
     var remove_idx;
 
     if (current_node.parent) {
-
       new_json.children.push(current_node);
 
       while (current_node.parent) {
@@ -88,21 +83,18 @@ export function reroot(node, fraction) {
     // the tree through
 
     if (current_node.children.length == 1) {
-
       if (stashed_bl) {
         current_node.children[0].__mapped_bl += stashed_bl;
       }
       remove_me.children = remove_me.children.concat(current_node.children);
-
     } else {
-
-      let name = "__reroot_top_clade"
+      let name = "__reroot_top_clade";
 
       let new_node = {
-        name : name
+        name: name
       };
 
-      new_node = new d3.hierarchy({name:name, _mapped_bl : stashed_bl });
+      new_node = new d3.hierarchy({ name: name, _mapped_bl: stashed_bl });
 
       new_node.__mapped_bl = stashed_bl;
       new_node.children = current_node.children.map(function(n) {
@@ -110,13 +102,10 @@ export function reroot(node, fraction) {
       });
 
       remove_me.children.push(new_node);
-
     }
-
   }
 
   this.update(new_json);
 
   return this;
-
 }

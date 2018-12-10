@@ -1,8 +1,7 @@
 import * as _ from "underscore";
-import {default as nexml_parser} from "./nexml";
-import {default as newick_parser} from "./newick";
-import {default as phyloxml_parser} from "./phyloxml";
-
+import { default as nexml_parser } from "./nexml";
+import { default as newick_parser } from "./newick";
+import { default as phyloxml_parser } from "./phyloxml";
 
 /* 
  * A parser must have two fields, the object and

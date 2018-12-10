@@ -3,15 +3,12 @@ import * as inspector from "./inspectors";
 import * as accessors from "./accessors";
 
 export function graft_a_node(graft_at, new_child, new_parent, lengths) {
-
   let nodes = this.nodes.descendants();
 
   if (graft_at.parent) {
-
     let node_index = nodes.indexOf(graft_at);
 
     if (node_index >= 0) {
-
       let parent_index = graft_at.parent.children.indexOf(graft_at);
 
       let new_split = {
@@ -32,13 +29,10 @@ export function graft_a_node(graft_at, new_child, new_parent, lengths) {
       graft_at.parent = new_split;
       graft_at["attribute"] = lengths ? lengths[0] : null;
       graft_at["original_child_order"] = 1;
-
     }
-
   }
 
   return this;
-
 }
 
 /**
@@ -48,7 +42,6 @@ export function graft_a_node(graft_at, new_child, new_parent, lengths) {
  * @returns The current ``phylotree``.
  */
 export function delete_a_node(index) {
-
   let nodes = this.nodes.descendants();
 
   if (typeof index != "number") {
@@ -56,16 +49,13 @@ export function delete_a_node(index) {
   }
 
   if (index > 0 && index < nodes.length) {
-
     let node = nodes[index];
 
     if (node.parent) {
-
       // can only delete nodes that are not the root
       let delete_me_idx = node.parent.children.indexOf(node);
 
       if (delete_me_idx >= 0) {
-
         nodes.splice(index, 1);
 
         if (node.children) {
@@ -84,8 +74,7 @@ export function delete_a_node(index) {
               node.parent.parent.children.indexOf(node.parent)
             ] =
               node.parent.children[1 - delete_me_idx];
-            node.parent.children[1 - delete_me_idx].parent =
-              node.parent.parent;
+            node.parent.children[1 - delete_me_idx].parent = node.parent.parent;
             nodes.splice(nodes.indexOf(node.parent), 1);
           } else {
             nodes.splice(0, 1);
@@ -102,11 +91,9 @@ export function delete_a_node(index) {
   }
 
   return this;
-
 }
 
 export function def_node_label(_node) {
-
   _node = _node.data;
 
   if (inspector.is_leafnode(_node)) {
@@ -119,5 +106,3 @@ export function def_node_label(_node) {
 
   return "";
 }
-
-

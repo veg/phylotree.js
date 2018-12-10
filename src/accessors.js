@@ -19,7 +19,7 @@ export const css_classes = {
   node_text: "phylotree-node-text"
 };
 
-export function internal_names (attr) {
+export function internal_names(attr) {
   if (!arguments.length) return this.options["internal-names"];
   this.options["internal-names"] = attr;
   return this;
@@ -31,8 +31,7 @@ export function radial(attr) {
   return this;
 }
 
-export function show_internal_name (node) {
-
+export function show_internal_name(node) {
   const i_names = this.internal_names();
 
   if (i_names) {
@@ -43,10 +42,9 @@ export function show_internal_name (node) {
   }
 
   return false;
-
 }
 
-export function align_tips (attr) {
+export function align_tips(attr) {
   if (!arguments.length) return this.options["align-tips"];
   this.options["align-tips"] = attr;
   return this;
@@ -58,17 +56,17 @@ export function align_tips (attr) {
  * @param {Node} A node in the phylotree.
  * @returns {Float} The size of the bubble associated to this node.
  */
-export function node_bubble_size (node) {
+export function node_bubble_size(node) {
   return this.options["draw-size-bubbles"]
     ? this.relative_node_span(node) * this.scales[0] * 0.5
     : 0;
 }
 
-export function shift_tip (d) {
-
+export function shift_tip(d) {
   if (this.options["is-radial"]) {
     return [
-      (d.text_align == "end" ? -1 : 1) * (this.radius_pad_for_bubbles - d.radius),
+      (d.text_align == "end" ? -1 : 1) *
+        (this.radius_pad_for_bubbles - d.radius),
       0
     ];
   }
@@ -93,7 +91,7 @@ export function layout_handler(attr) {
  * @param {Function} attr Optional; if setting, the node_span function.
  * @returns The ``node_span`` if getting, or the current ``phylotree`` if setting.
  */
-export function node_span (attr) {
+export function node_span(attr) {
   if (!arguments.length) return this.node_span;
   if (typeof attr == "string" && attr == "equal") {
     this.node_span = function(d) {
@@ -151,14 +149,13 @@ export function get_nodes() {
   return this.nodes;
 }
 
-
 /**
  * Get a node by name.
  *
  * @param {String} name Name of the desired node.
  * @returns {Node} Desired node.
  */
-export function get_node_by_name (name) {
+export function get_node_by_name(name) {
   // TODO
   return _.findWhere(this.nodes, { name: name });
 }
@@ -170,7 +167,7 @@ export function get_node_by_name (name) {
  * @param {Object} attributes An object whose keys are the names of nodes
  * to modify, and whose values are the new attributes to add.
  */
-export function assign_attributes (attributes) {
+export function assign_attributes(attributes) {
   //return nodes;
   // add annotations to each matching node
   _.each(this.nodes, function(d) {
@@ -180,8 +177,7 @@ export function assign_attributes (attributes) {
   });
 }
 
-export function reclass_node (node) {
-
+export function reclass_node(node) {
   let class_var =
     css_classes[inspector.is_leafnode(node) ? "node" : "internal-node"];
 
@@ -202,7 +198,6 @@ export function reclass_node (node) {
   }
 
   return class_var;
-
 }
 
 /**
@@ -213,23 +208,20 @@ export function reclass_node (node) {
  * @returns The current selection label if getting, or the current ``phylotree`` if setting.
  */
 export function selection_label(attr) {
-
   if (!arguments.length) return this.selection_attribute_name;
   this.selection_attribute_name = attr;
   this.sync_edge_labels();
   return this;
-
 }
 
 export function sync_edge_labels() {
-
   this.links.forEach(function(d) {
-    d[this.selection_attribute_name] = d.target[this.selection_attribute_name] || false;
+    d[this.selection_attribute_name] =
+      d.target[this.selection_attribute_name] || false;
     d.tag = d.target.tag || false;
   });
 
   if (this.count_handler()) {
-
     let counts = {};
 
     counts[this.selection_attribute_name] = this.links.reduce(function(p, c) {
@@ -247,4 +239,3 @@ export function sync_edge_labels() {
     //);
   }
 }
-

@@ -1,23 +1,25 @@
 import * as _ from "underscore";
 import * as inspector from "../inspectors";
 
-export function update_collapsed_clades (transitions) {
-
+export function update_collapsed_clades(transitions) {
   let enclosure = this.svg.selectAll("." + this.css_classes["tree-container"]);
 
   let collapsed_clades = enclosure
     .selectAll(inspector.clade_css_selectors(this.css_classes))
-    .data(this.phylotree.nodes.descendants().filter(inspector.is_node_collapsed), function(d) {
-      return d.id || (d.id = ++node_id);
-    });
+    .data(
+      this.phylotree.nodes.descendants().filter(inspector.is_node_collapsed),
+      function(d) {
+        return d.id || (d.id = ++node_id);
+      }
+    );
 
   let spline = function() {};
   let spline_f = _.noop();
 
   // Collapse radial differently
   if (this.phylotree.radial()) {
-
-    spline = d3.line()
+    spline = d3
+      .line()
       .curve(d3.curveBasis)
       .y(function(d) {
         return d[0];
@@ -36,10 +38,9 @@ export function update_collapsed_clades (transitions) {
         return [d.screen_y, d.screen_x];
       }
     };
-
   } else {
-
-    spline = d3.line()
+    spline = d3
+      .line()
       .curve(d3.curveBasis)
       .y(function(d) {
         return d[0];
@@ -58,7 +59,6 @@ export function update_collapsed_clades (transitions) {
         return [d.screen_y, d.screen_x];
       }
     };
-
   }
 
   collapsed_clades
@@ -69,13 +69,12 @@ export function update_collapsed_clades (transitions) {
     .remove();
 
   if (transitions) {
-
     collapsed_clades
-      .enter().insert("path", ":first-child")
+      .enter()
+      .insert("path", ":first-child")
       .attr("class", this.css_classes["clade"])
       .merge(collapsed_clades)
       .attr("d", function(d) {
-
         if (d.collapsed_clade) {
           return d.collapsed_clade;
         }
@@ -89,23 +88,18 @@ export function update_collapsed_clades (transitions) {
             return spline_f(coord, i, d, init_0, init_1);
           })
         );
-
       })
       .attr("d", function(d) {
         return (d.collapsed_clade = spline(d.collapsed));
       });
-
   } else {
-
     collapsed_clades
-      .enter().insert("path", ":first-child")
+      .enter()
+      .insert("path", ":first-child")
       .attr("class", this.css_classes["clade"])
       .merge(collapsed_clades)
       .attr("d", function(d) {
         return (d.collapsed_clade = spline(d.collapsed));
       });
-
   }
-
 }
-

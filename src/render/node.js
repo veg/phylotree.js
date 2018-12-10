@@ -1,11 +1,10 @@
 import * as inspector from "../inspectors";
 
-export function shift_tip (d) {
-
+export function shift_tip(d) {
   if (this.phylotree.radial()) {
-
     return [
-      (d.text_align == "end" ? -1 : 1) * (this.radius_pad_for_bubbles - d.radius),
+      (d.text_align == "end" ? -1 : 1) *
+        (this.radius_pad_for_bubbles - d.radius),
       0
     ];
   }
@@ -15,11 +14,9 @@ export function shift_tip (d) {
   }
 
   return [this.right_most_leaf - d.screen_x, 0];
-
 }
 
 export function clear_internal_nodes(respect) {
-
   if (!respect) {
     self.nodes.each(function(d) {
       if (!inspector.is_leafnode(d)) {
@@ -27,11 +24,9 @@ export function clear_internal_nodes(respect) {
       }
     });
   }
-
 }
 
 export function draw_node(container, node, transitions) {
-
   container = d3.select(container);
 
   var is_leaf = inspector.is_leafnode(node);
@@ -45,29 +40,28 @@ export function draw_node(container, node, transitions) {
 
   if (
     is_leaf ||
-    (this.phylotree.show_internal_name(node) && !inspector.is_node_collapsed(node))
+    (this.phylotree.show_internal_name(node) &&
+      !inspector.is_node_collapsed(node))
   ) {
-
     labels = labels
       .enter()
       .append("text")
       .classed(this.css_classes["node_text"], true)
       .merge(labels)
       .on("click", this.handle_node_click)
-      .attr("dy", (d) => {
+      .attr("dy", d => {
         return this.shown_font_size * 0.33;
       })
-      .text((d) => {
+      .text(d => {
         return this.options["show-labels"] ? this.node_label(d) : "";
       })
-      .style("font-size", (d) => {
+      .style("font-size", d => {
         return this.ensure_size_is_in_px(this.shown_font_size);
       });
 
     if (this.phylotree.radial()) {
-
       labels = labels
-        .attr("transform", (d) => {
+        .attr("transform", d => {
           return (
             this.d3_phylotree_svg_rotate(d.text_angle) +
             this.d3_phylotree_svg_translate(
@@ -75,39 +69,30 @@ export function draw_node(container, node, transitions) {
             )
           );
         })
-        .attr("text-anchor", (d) => {
+        .attr("text-anchor", d => {
           return d.text_align;
         });
-
     } else {
-
-      labels = labels
-        .attr("text-anchor", "start")
-        .attr("transform", (d) => {
-
-          if (this.options["layout"] == "right-to-left") {
-            return this.d3_phylotree_svg_translate([-20, 0]);
-          }
-          return this.d3_phylotree_svg_translate(
-            this.phylotree.align_tips() ? this.shift_tip(d) : null
-          );
-
-        });
-
+      labels = labels.attr("text-anchor", "start").attr("transform", d => {
+        if (this.options["layout"] == "right-to-left") {
+          return this.d3_phylotree_svg_translate([-20, 0]);
+        }
+        return this.d3_phylotree_svg_translate(
+          this.phylotree.align_tips() ? this.shift_tip(d) : null
+        );
+      });
     }
 
     if (this.phylotree.align_tips()) {
-
       tracers = tracers.data([node]);
 
       if (transitions) {
-
         tracers = tracers
           .enter()
           .append("line")
           .classed(this.css_classes["branch-tracer"], true)
           .merge(tracers)
-          .attr("x1", (d) => {
+          .attr("x1", d => {
             return (
               (d.text_align == "end" ? -1 : 1) *
               this.phylotree.node_bubble_size(node)
@@ -116,36 +101,32 @@ export function draw_node(container, node, transitions) {
           .attr("x2", 0)
           .attr("y1", 0)
           .attr("y2", 0)
-          .attr("x2", (d) => {
-
+          .attr("x2", d => {
             if (this.options["layout"] == "right-to-left") {
               return d.screen_x;
             }
 
             return this.shift_tip(d)[0];
-
           })
-          .attr("transform", (d) => {
+          .attr("transform", d => {
             return this.d3_phylotree_svg_rotate(d.text_angle);
           })
-          .attr("x2", (d) => {
+          .attr("x2", d => {
             if (this.options["layout"] == "right-to-left") {
               return d.screen_x;
             }
             return this.shift_tip(d)[0];
           })
-          .attr("transform", (d) => {
+          .attr("transform", d => {
             return this.d3_phylotree_svg_rotate(d.text_angle);
           });
-
       } else {
-
         tracers = tracers
           .enter()
           .append("line")
           .classed(this.css_classes["branch-tracer"], true)
           .merge(tracers)
-          .attr("x1", (d) => {
+          .attr("x1", d => {
             return (
               (d.text_align == "end" ? -1 : 1) *
               this.phylotree.node_bubble_size(node)
@@ -153,20 +134,18 @@ export function draw_node(container, node, transitions) {
           })
           .attr("y2", 0)
           .attr("y1", 0)
-          .attr("x2", (d) => {
+          .attr("x2", d => {
             return this.shift_tip(d)[0];
           });
-        tracers.attr("transform", (d) => {
+        tracers.attr("transform", d => {
           return this.d3_phylotree_svg_rotate(d.text_angle);
         });
-
       }
     } else {
       tracers.remove();
     }
 
     if (this.options["draw-size-bubbles"]) {
-
       var shift = this.phylotree.node_bubble_size(node);
 
       let circles = container
@@ -180,32 +159,24 @@ export function draw_node(container, node, transitions) {
       });
 
       if (this.shown_font_size >= 5) {
-
-        labels = labels.attr("dx", (d) => {
+        labels = labels.attr("dx", d => {
           return (
             (d.text_align == "end" ? -1 : 1) *
-            ((this.phylotree.align_tips() ? 0 : shift) + this.shown_font_size * 0.33)
+            ((this.phylotree.align_tips() ? 0 : shift) +
+              this.shown_font_size * 0.33)
           );
         });
-
       }
-
     } else {
-
       if (this.shown_font_size >= 5) {
-
-        labels = labels.attr("dx", (d) => {
+        labels = labels.attr("dx", d => {
           return (d.text_align == "end" ? -1 : 1) * this.shown_font_size * 0.33;
         });
-
       }
-
     }
-
   }
 
   if (!is_leaf) {
-
     let circles = container
         .selectAll("circle")
         .data([node])
@@ -216,16 +187,15 @@ export function draw_node(container, node, transitions) {
     if (radius > 0) {
       circles
         .merge(circles)
-        .attr("r", (d) => {
+        .attr("r", d => {
           return Math.min(this.shown_font_size * 0.75, radius);
         })
-        .on("click", (d) => {
+        .on("click", d => {
           this.handle_node_click(d);
         });
     } else {
       circles.remove();
     }
-
   }
 
   if (this.node_styler) {
@@ -233,28 +203,20 @@ export function draw_node(container, node, transitions) {
   }
 
   return node;
-
 }
 
-export function update_has_hidden_nodes () {
-
+export function update_has_hidden_nodes() {
   let nodes = this.phylotree.nodes.descendants();
 
   for (let k = nodes.length - 1; k >= 0; k -= 1) {
-
     if (inspector.is_leafnode(nodes[k])) {
       nodes[k].has_hidden_nodes = nodes[k].notshown;
     } else {
-      nodes[k].has_hidden_nodes = nodes[k].children.reduce(function(
-        p,
-        c
-      ) {
+      nodes[k].has_hidden_nodes = nodes[k].children.reduce(function(p, c) {
         return c.notshown || p;
       }, false);
     }
   }
 
   return this;
-
 }
-

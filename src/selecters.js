@@ -1,27 +1,24 @@
 import * as _ from "underscore";
 
 import * as inspector from "./inspectors";
-import {def_branch_length_accessor} from './branches';
-import {def_node_label} from './nodes';
+import { def_branch_length_accessor } from "./branches";
+import { def_node_label } from "./nodes";
 
 // List of all selecters that can be used with the restricted-selectable option
 export var predefined_selecters = {
-
-  all : d => {
+  all: d => {
     return true;
   },
-  none : d => {
+  none: d => {
     return false;
   },
-  "all-leaf-nodes" : d => {
+  "all-leaf-nodes": d => {
     return inspector.is_leafnode(d.target);
   },
-  "all-internal-nodes" : d => {
+  "all-internal-nodes": d => {
     return !inspector.is_leafnode(d.target);
   }
-
-}
-
+};
 
 export function path_to_root(node) {
   let selection = [];
@@ -54,7 +51,6 @@ export function selection_callback(callback) {
  * @returns The current ``this``.
  */
 export function update_key_name(old_key, new_key) {
-
   this.nodes.each(function(n) {
     if (old_key in n) {
       if (new_key) {
@@ -66,7 +62,6 @@ export function update_key_name(old_key, new_key) {
 
   this.sync_edge_labels();
   return this;
-
 }
 
 /**
@@ -93,4 +88,3 @@ export function branch_name(attr) {
   this.node_label = attr ? attr : def_node_label;
   return this;
 }
-

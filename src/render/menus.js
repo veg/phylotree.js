@@ -1,12 +1,11 @@
 import * as _ from "underscore";
-import * as events from './events';
-import * as inspector from '../inspectors';
-import { predefined_selecters } from '../selecters';
+import * as events from "./events";
+import * as inspector from "../inspectors";
+import { predefined_selecters } from "../selecters";
 
 let d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
 
 export function node_dropdown_menu(node, container, phylotree, options) {
-
   let menu_object = d3
     .select(container)
     .select("#" + d3_layout_phylotree_context_menu_id);
@@ -25,7 +24,6 @@ export function node_dropdown_menu(node, container, phylotree, options) {
   menu_object.selectAll("div").remove();
 
   if (node) {
-
     if (
       !_.some([
         Boolean(node.menu_items),
@@ -145,13 +143,11 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
           .text(
-            "Hide this " +
-              (inspector.is_leafnode(node) ? "node" : "subtree")
+            "Hide this " + (inspector.is_leafnode(node) ? "node" : "subtree")
           )
           .on("click", d => {
             menu_object.style("display", "none");
-            this
-              .modify_selection([node], "notshown", true, true)
+            this.modify_selection([node], "notshown", true, true)
               .update_has_hidden_nodes()
               .update();
           });
@@ -193,7 +189,6 @@ export function node_dropdown_menu(node, container, phylotree, options) {
     }
 
     if (has_user_elements.length) {
-
       const show_divider_options = [
         options["hide"],
         options["selectable"],
@@ -212,7 +207,6 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .text(constant(d[0])(node))
           .on("click", _.partial(d[1], node));
       });
-
     }
 
     let tree_container = $(container);
@@ -223,15 +217,12 @@ export function node_dropdown_menu(node, container, phylotree, options) {
       .style("left", "" + coordinates[0] + "px")
       .style("top", "" + coordinates[1] + "px")
       .style("display", "block");
-
   } else {
     menu_object.style("display", "none");
   }
-
 }
 
 export function add_custom_menu(node, name, callback, condition) {
-
   if (!("menu_items" in node)) {
     node["menu_items"] = [];
   }
@@ -242,7 +233,6 @@ export function add_custom_menu(node, name, callback, condition) {
   ) {
     node["menu_items"].push([name, callback, condition]);
   }
-
 }
 
 /**
@@ -267,7 +257,6 @@ export function modify_selection(
   skip_refresh,
   mode
 ) {
-
   attr = attr || this.selection_attribute_name;
   mode = mode || "toggle";
 
@@ -286,7 +275,6 @@ export function modify_selection(
     (this.options["restricted-selectable"] || this.options["selectable"]) &&
     !this.options["binary-selectable"]
   ) {
-
     var do_refresh = false;
 
     if (typeof node_selecter === "function") {
@@ -336,11 +324,7 @@ export function modify_selection(
         counts[attr] = this.phylotree.links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
-        events.count_update(
-          this,
-          counts,
-          this.count_handler()
-        );
+        events.count_update(this, counts, this.count_handler());
       }
 
       if (place) {
@@ -397,11 +381,7 @@ export function modify_selection(
         counts[attr] = this.phylotree.links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
-        this.count_update(
-          this,
-          counts,
-          this.count_handler()
-        );
+        this.count_update(this, counts, this.count_handler());
       }
 
       if (place) {
@@ -416,20 +396,17 @@ export function modify_selection(
 
   this.refresh();
   return this;
-
 }
-j
+
 /**
  * Get nodes which are currently selected.
  *
  * @returns {Array} An array of nodes that match the current selection.
  */
 export function get_selection() {
-
   return this.phylotree.nodes.filter(d => {
     return d[this.selection_attribute_name];
   });
-
 }
 
 /**
@@ -441,8 +418,7 @@ export function get_selection() {
  * @param {Boolean} internal Whther to include internal nodes.
  * @returns {Array} An array of selected nodes.
  */
-export function select_all_descendants (node, terminal, internal) {
-
+export function select_all_descendants(node, terminal, internal) {
   let selection = [];
 
   function sel(d) {
@@ -460,7 +436,6 @@ export function select_all_descendants (node, terminal, internal) {
 
   sel(node);
   return selection;
-
 }
 
 /**
@@ -476,5 +451,3 @@ export function selection_callback(callback) {
   this.selection_callback = callback;
   return this;
 }
-
-

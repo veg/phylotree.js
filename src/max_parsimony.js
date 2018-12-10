@@ -1,8 +1,7 @@
 import * as _ from "underscore";
 //import clear_internal_nodes;
 
-export default function max_parsimony (respect_existing) {
-
+export default function max_parsimony(respect_existing) {
   clear_internal_nodes(respect_existing);
 
   function populate_mp_matrix(d) {
@@ -16,7 +15,6 @@ export default function max_parsimony (respect_existing) {
       d.mp[0][0] = d.mp[1][0] ? 1 : 0;
       d.mp[0][1] = 1 - d.mp[0][0];
     } else {
-
       d.children.forEach(populate_mp_matrix);
 
       var s0 = d.children.reduce(function(p, n) {
@@ -70,12 +68,9 @@ export default function max_parsimony (respect_existing) {
   });
 
   this.modify_selection(function(d, callback) {
-
     if (inspector.is_leafnode(d.target)) {
       return d.target[selection_attribute_name];
     }
     return d.target.mp;
   });
-
-};
-
+}

@@ -1,8 +1,7 @@
 import * as _ from "underscore";
 import * as inspector from "./inspectors";
 
-export function internal_label (callback, respect_existing) {
-
+export function internal_label(callback, respect_existing) {
   clear_internal_nodes(respect_existing);
 
   for (var i = self.nodes.length - 1; i >= 0; i--) {
@@ -23,8 +22,7 @@ export function internal_label (callback, respect_existing) {
     }
     return d.target[selection_attribute_name];
   });
-
-};
+}
 
 /**
  * Get or set the current node span. If setting, the argument should
@@ -35,7 +33,7 @@ export function internal_label (callback, respect_existing) {
  * @param {Function} attr Optional; if setting, the node_span function.
  * @returns The ``node_span`` if getting, or the current ``phylotree`` if setting.
  */
-export function node_span (attr) {
+export function node_span(attr) {
   if (!arguments.length) return node_span;
   if (typeof attr == "string" && attr == "equal") {
     node_span = function(d) {
@@ -45,14 +43,12 @@ export function node_span (attr) {
     node_span = attr;
   }
   return phylotree;
-};
+}
 
-export set_partitions = function(partitions) {
+export function set_partitions(partitions) {
   this.partitions = partitions;
-};
+}
 
-export get_partitions = function(attributes) {
+export function get_partitions(attributes) {
   return this.partitions;
-};
-
-
+}

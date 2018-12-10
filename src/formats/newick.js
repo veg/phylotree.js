@@ -14,11 +14,9 @@ import * as inspector from "../inspectors";
  * @returns {Object} An object with keys ``json`` and ``error``.
  */
 function newick_parser(nwk_str, bootstrap_values) {
-
   let clade_stack = [];
 
   function add_new_tree_level() {
-
     let new_level = {
       name: null
     };
@@ -35,11 +33,9 @@ function newick_parser(nwk_str, bootstrap_values) {
 
     clade_stack[clade_stack.length - 1]["original_child_order"] =
       the_parent["children"].length;
-
   }
 
   function finish_node_definition() {
-
     let this_node = clade_stack.pop();
 
     this_node["name"] = current_node_name;
@@ -55,7 +51,6 @@ function newick_parser(nwk_str, bootstrap_values) {
     current_node_name = "";
     current_node_attribute = "";
     current_node_annotation = "";
-
   }
 
   function generate_error(location) {
@@ -206,7 +201,6 @@ function newick_parser(nwk_str, bootstrap_values) {
     json: tree_json,
     error: null
   };
-
 }
 
 /**
@@ -219,7 +213,6 @@ function newick_parser(nwk_str, bootstrap_values) {
 
 // TODO: break this out into two seperate functions
 export function get_newick(annotator) {
-
   let self = this;
 
   if (!annotator) annotator = d => d.name;
@@ -230,7 +223,7 @@ export function get_newick(annotator) {
     return enquote ? "'" + nn.replace("'", "''") + "'" : nn;
   }
 
-  function node_display (n) {
+  function node_display(n) {
     if (!inspector.is_leafnode(n)) {
       element_array.push("(");
       n.children.forEach(function(d, i) {
@@ -257,10 +250,6 @@ export function get_newick(annotator) {
   node_display(this.nodes);
 
   return element_array.join("");
-
 }
 
-
-
 export default newick_parser;
-

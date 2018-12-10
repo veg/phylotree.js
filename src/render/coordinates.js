@@ -5,4 +5,3 @@ export function x_coord(d) {
 export function y_coord(d) {
   return d.x;
 }
-
