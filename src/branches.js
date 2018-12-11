@@ -16,7 +16,8 @@ export function get_partitions(attributes) {
  * @returns {Object} true if  every branch in the tree has a branch length
  */
 export default function has_branch_lengths() {
-  let bl = this.branch_length();
+
+  let bl = this.branch_length;
 
   if (bl) {
     return _.every(this.nodes.descendants(), function(node) {
@@ -50,7 +51,7 @@ export function def_branch_length_accessor(_node) {
  * @param {Function} attr Empty if getting, or new branch length accessor if setting.
  * @returns {Object} The branch length accessor if getting, or the current this if setting.
  */
-export function branch_length(attr) {
+export function set_branch_length(attr) {
   if (!arguments.length) return this.branch_length_accessor;
   this.branch_length_accessor = attr ? attr : def_branch_length_accessor;
   return this;

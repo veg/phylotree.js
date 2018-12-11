@@ -17,7 +17,8 @@ import { default as draw_line, line_segment_placer } from "./render/cartesian";
 
 import {
   default as has_branch_lengths,
-  def_branch_length_accessor
+  def_branch_length_accessor,
+  set_branch_length
 } from "./branches";
 
 import * as node_operations from "./nodes";
@@ -160,6 +161,7 @@ let Phylotree = class {
     this.parsed_tags = [];
     this.partitions = [];
     this.branch_length_accessor = def_branch_length_accessor;
+    this.branch_length = def_branch_length_accessor;
     this.options = options;
     this.container = "body";
     this.logger = options.logger;
@@ -380,6 +382,7 @@ Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.has_branch_lengths = has_branch_lengths;
 Phylotree.prototype.get_newick = get_newick;
 Phylotree.prototype.resort_children = resort_children;
+Phylotree.prototype.set_branch_length = set_branch_length;
 
 _.extend(Phylotree.prototype, node_operations);
 _.extend(Phylotree.prototype, rooting);

@@ -29,7 +29,7 @@ export function reroot(node, fraction) {
       n.data.__mapped_bl = this.branch_length_accessor(n);
     });
 
-    this.branch_length(function(n) {
+    this.set_branch_length(function(n) {
       return n.__mapped_bl || n.data.__mapped_bl;
     });
 

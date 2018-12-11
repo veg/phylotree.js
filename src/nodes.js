@@ -94,18 +94,16 @@ export function delete_a_node(index) {
   return this;
 }
 
-export function def_node_label(_node) {
+export function node_label(_node) {
+
   _node = _node.data;
 
   if (is_leafnode(_node)) {
     return _node.name || "";
   }
 
-  if (this.show_internal_name(_node)) {
-    return _node.name;
-  }
-
   return "";
+
 }
 
 /**

@@ -50,18 +50,8 @@ tape("phylotree inspectors", function(test) {
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
 
-  test.notOk(phylotree.item_selected(phylo.nodes, 'selected'))
-  test.ok(phylotree.node_visible(phylo.nodes))
-  test.notOk(phylotree.node_notshown(phylo.nodes))
-
-  // not sure when used
-  test.notOk(phylotree.item_tagged(phylo.nodes))
-
-  test.notOk(phylotree.is_leafnode(phylo.nodes))
-  test.ok(phylotree.is_leafnode(phylo.nodes.leaves()[0]))
-
-  //TODO
-  //test.ok(phylotree.rootpath( ))
+  test.notOk(phylo.is_leafnode(phylo.nodes))
+  test.ok(phylo.is_leafnode(phylo.nodes.leaves()[0]))
 
   test.end();
 
@@ -100,7 +90,7 @@ tape("phylotree nodes", function(test) {
   
 });
 
-tape("phylotree rooting ", function(test) {
+tape("phylotree rooting", function(test) {
 
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
