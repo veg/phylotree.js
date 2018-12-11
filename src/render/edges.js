@@ -1,6 +1,5 @@
 import * as _ from "underscore";
-import { item_tagged } from "../main";
-import { item_selected } from "./draw";
+import { item_tagged, item_selected } from "./helpers";
 import { css_classes} from './options';
 
 export function draw_edge(container, edge, transition) {

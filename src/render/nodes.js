@@ -1,6 +1,5 @@
-import { item_tagged } from "../main";
+import { item_tagged, item_selected } from "./helpers";
 import { is_leafnode } from "../nodes";
-import { item_selected } from "./draw";
 import { css_classes } from "./options";
 
 export function shift_tip(d) {
