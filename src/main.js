@@ -12,10 +12,8 @@ import {
   cartesian_to_polar,
   arc_segment_placer
 } from "./render/radial";
-import { default as draw_line, line_segment_placer } from "./render/cartesian";
 
-import * as inspector from "./inspectors";
-import * as selecter from "./selecters";
+import { default as draw_line, line_segment_placer } from "./render/cartesian";
 
 import {
   default as has_branch_lengths,
@@ -24,7 +22,7 @@ import {
 
 import * as node_operations from "./nodes";
 import * as rooting from "./rooting";
-import * as accessors from "./accessors";
+
 import { default as TreeRender } from "./render/draw";
 
 /**
@@ -141,6 +139,7 @@ function mrca() {
  * @returns {Phylotree} phylotree - itself, following the builder pattern.
  */
 let Phylotree = class {
+
   constructor(nwk, options = {}) {
     // attribute assignment
     this.size = [1, 1];
@@ -357,6 +356,11 @@ let Phylotree = class {
     return this;
   }
 
+  get_parsed_tags() {
+    return this.parsed_tags;
+  }
+
+
   update(json) {
     // update with new hiearchy layout
     this.nodes = json;
@@ -368,18 +372,20 @@ let Phylotree = class {
     this.display = new TreeRender(this, container);
     return this.display;
   }
+
 };
 
-Phylotree.prototype.is_leafnode = inspector.is_leafnode;
+Phylotree.prototype.is_leafnode = node_operations.is_leafnode;
 Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.has_branch_lengths = has_branch_lengths;
 Phylotree.prototype.get_newick = get_newick;
 Phylotree.prototype.resort_children = resort_children;
-Phylotree.prototype.node_label = node_operations.def_node_label;
 
-_.extend(Phylotree.prototype, selecter);
 _.extend(Phylotree.prototype, node_operations);
 _.extend(Phylotree.prototype, rooting);
-_.extend(Phylotree.prototype, accessors);
+
+export function item_tagged(item) {
+  return item.tag || false;
+}
 
 export default Phylotree;

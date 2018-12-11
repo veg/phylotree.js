@@ -1,11 +1,13 @@
 import * as _ from "underscore";
 import * as events from "./events";
-import * as inspector from "../inspectors";
-import { predefined_selecters } from "../selecters";
+import { is_leafnode } from "../nodes";
+import { is_node_collapsed, has_hidden_nodes } from "./nodes";
+import { predefined_selecters } from "./options";
 
 let d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
 
 export function node_dropdown_menu(node, container, phylotree, options) {
+
   let menu_object = d3
     .select(container)
     .select("#" + d3_layout_phylotree_context_menu_id);
@@ -34,14 +36,14 @@ export function node_dropdown_menu(node, container, phylotree, options) {
       !options["show-menu"]
     )
       return;
-    if (!inspector.is_leafnode(node)) {
+    if (!is_leafnode(node)) {
       if (options["collapsible"]) {
         menu_object
           .append("a")
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
           .text(
-            inspector.is_node_collapsed(node)
+            is_node_collapsed(node)
               ? "Expand Subtree"
               : "Collapse Subtree"
           )
@@ -143,7 +145,7 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
           .text(
-            "Hide this " + (inspector.is_leafnode(node) ? "node" : "subtree")
+            "Hide this " + (is_leafnode(node) ? "node" : "subtree")
           )
           .on("click", d => {
             menu_object.style("display", "none");
@@ -154,7 +156,7 @@ export function node_dropdown_menu(node, container, phylotree, options) {
       }
     }
 
-    if (inspector.has_hidden_nodes(node)) {
+    if (has_hidden_nodes(node)) {
       menu_object
         .append("a")
         .attr("class", "dropdown-item")
@@ -422,7 +424,7 @@ export function select_all_descendants(node, terminal, internal) {
   let selection = [];
 
   function sel(d) {
-    if (inspector.is_leafnode(d)) {
+    if (is_leafnode(d)) {
       if (terminal) {
         if (d != node) selection.push(d);
       }

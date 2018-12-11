@@ -109,3 +109,31 @@ export function reroot(node, fraction) {
 
   return this;
 }
+
+export function rootpath(attr_name, store_name) {
+
+  attr_name = attr_name || "attribute";
+  store_name = store_name || "y_scaled";
+
+  if ("parent" in this) {
+    let my_value = parseFloat(this[attr_name]);
+
+    this[store_name] =
+      this.parent[store_name] + (isNaN(my_value) ? 0.1 : my_value);
+  } else {
+    this[store_name] = 0.0;
+  }
+
+  return this[store_name];
+}
+
+export function path_to_root(node) {
+  let selection = [];
+  while (node) {
+    selection.push(node);
+    node = node.parent;
+  }
+  return selection;
+}
+
+

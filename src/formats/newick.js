@@ -1,5 +1,5 @@
 import * as _ from "underscore";
-import * as inspector from "../inspectors";
+import { is_leafnode } from "../nodes";
 
 /**
  * Parses a Newick string into an equivalent JSON representation that is
@@ -224,7 +224,7 @@ export function get_newick(annotator) {
   }
 
   function node_display(n) {
-    if (!inspector.is_leafnode(n)) {
+    if (!is_leafnode(n)) {
       element_array.push("(");
       n.children.forEach(function(d, i) {
         if (i) {

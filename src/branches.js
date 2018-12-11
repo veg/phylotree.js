@@ -1,5 +1,15 @@
 import * as _ from "underscore";
 
+// These methods are part of the Phylotree object
+
+export function set_partitions(partitions) {
+  this.partitions = partitions;
+}
+
+export function get_partitions(attributes) {
+  return this.partitions;
+}
+
 /**
  * Returns T/F whether every branch in the tree has a branch length
  *
@@ -32,4 +42,29 @@ export function def_branch_length_accessor(_node) {
   }
 
   return undefined;
+}
+
+/**
+ * Get or set branch length accessor.
+ *
+ * @param {Function} attr Empty if getting, or new branch length accessor if setting.
+ * @returns {Object} The branch length accessor if getting, or the current this if setting.
+ */
+export function branch_length(attr) {
+  if (!arguments.length) return this.branch_length_accessor;
+  this.branch_length_accessor = attr ? attr : def_branch_length_accessor;
+  return this;
+}
+
+/**
+ * Get or set branch name accessor.
+ *
+ * @param {Function} attr (Optional) If setting, a function that accesses a branch name
+ * from a node.
+ * @returns The ``node_label`` accessor if getting, or the current ``this`` if setting.
+ */
+export function branch_name(attr) {
+  if (!arguments.length) return this.node_label;
+  this.node_label = attr ? attr : def_node_label;
+  return this;
 }

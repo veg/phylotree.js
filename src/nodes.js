@@ -1,8 +1,9 @@
 import * as _ from "underscore";
-import * as inspector from "./inspectors";
-import * as accessors from "./accessors";
+
+// These methods are part of the Phylotree object
 
 export function graft_a_node(graft_at, new_child, new_parent, lengths) {
+
   let nodes = this.nodes.descendants();
 
   if (graft_at.parent) {
@@ -96,7 +97,7 @@ export function delete_a_node(index) {
 export function def_node_label(_node) {
   _node = _node.data;
 
-  if (inspector.is_leafnode(_node)) {
+  if (is_leafnode(_node)) {
     return _node.name || "";
   }
 
@@ -106,3 +107,92 @@ export function def_node_label(_node) {
 
   return "";
 }
+
+/**
+ * Get the tips of the tree
+ * @returns {Array} Nodes in the current ``phylotree``.
+ */
+export function get_tips() {
+  // get all nodes that have no nodes
+  return _.filter(self.nodes, n => {
+    return !_.has(n, "children");
+  });
+}
+
+/**
+ * Get the root node.
+ *
+ * @returns the current root node of the ``phylotree``.
+ */
+export function get_root_node() {
+  // TODO
+  return self.nodes[0];
+}
+
+/**
+ * Get an array of all nodes.
+ * @returns {Array} Nodes in the current ``phylotree``.
+ */
+export function get_nodes() {
+  return this.nodes;
+}
+
+/**
+ * Get a node by name.
+ *
+ * @param {String} name Name of the desired node.
+ * @returns {Node} Desired node.
+ */
+export function get_node_by_name(name) {
+  // TODO
+  return _.findWhere(this.nodes, { name: name });
+}
+
+/**
+ * Add attributes to nodes. New attributes will be placed in the
+ * ``annotations`` key of any nodes that are matched.
+ *
+ * @param {Object} attributes An object whose keys are the names of nodes
+ * to modify, and whose values are the new attributes to add.
+ */
+export function assign_attributes(attributes) {
+  //return nodes;
+  // add annotations to each matching node
+  _.each(this.nodes, function(d) {
+    if (_.indexOf(_.keys(attributes), d.name) >= 0) {
+      d["annotations"] = attributes[d.name];
+    }
+  });
+}
+
+/**
+ * Determine if a given node is a leaf node.
+ *
+ * @param {Node} A node in a tree.
+ * @returns {Bool} Whether or not the node is a leaf node.
+ */
+export function is_leafnode(node) {
+  return !(node.children && node.children.length);
+}
+
+/**
+ * Update a given key name in each node.
+ *
+ * @param {String} old_key The old key name.
+ * @param {String} new_key The new key name.
+ * @returns The current ``this``.
+ */
+export function update_key_name(old_key, new_key) {
+  this.nodes.each(function(n) {
+    if (old_key in n) {
+      if (new_key) {
+        n[new_key] = n[old_key];
+      }
+      delete n[old_key];
+    }
+  });
+
+  return this;
+}
+
+

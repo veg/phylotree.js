@@ -1,13 +1,20 @@
 import * as _ from "underscore";
-import * as inspector from "../inspectors";
+import { is_node_collapsed } from "./nodes";
+
+
+export function clade_css_selectors(css_classes) {
+  return [css_classes["clade"]].reduce(function(p, c, i, a) {
+    return (p += "path." + c + (i < a.length - 1 ? "," : ""));
+  }, "");
+}
 
 export function update_collapsed_clades(transitions) {
   let enclosure = this.svg.selectAll("." + this.css_classes["tree-container"]);
 
   let collapsed_clades = enclosure
-    .selectAll(inspector.clade_css_selectors(this.css_classes))
+    .selectAll(clade_css_selectors(this.css_classes))
     .data(
-      this.phylotree.nodes.descendants().filter(inspector.is_node_collapsed),
+      this.phylotree.nodes.descendants().filter(is_node_collapsed),
       function(d) {
         return d.id || (d.id = ++node_id);
       }
@@ -17,7 +24,7 @@ export function update_collapsed_clades(transitions) {
   let spline_f = _.noop();
 
   // Collapse radial differently
-  if (this.phylotree.radial()) {
+  if (this.radial()) {
     spline = d3
       .line()
       .curve(d3.curveBasis)

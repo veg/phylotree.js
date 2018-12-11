@@ -1,6 +1,7 @@
 import * as _ from "underscore";
-import * as inspector from "../inspectors";
-import { css_classes } from "../accessors";
+import { item_tagged } from "../main";
+import { item_selected } from "./draw";
+import { css_classes} from './options';
 
 export function draw_edge(container, edge, transition) {
   container = d3.select(container);
@@ -51,11 +52,11 @@ export function draw_edge(container, edge, transition) {
 export function reclass_edge(edge) {
   let class_var = css_classes["branch"];
 
-  if (inspector.item_tagged(edge)) {
+  if (item_tagged(edge)) {
     class_var += " " + css_classes["tagged-branch"];
   }
 
-  if (inspector.item_selected(edge, this.selection_attribute_name)) {
+  if (item_selected(edge, this.selection_attribute_name)) {
     class_var += " " + css_classes["selected-branch"];
   }
 
@@ -79,9 +80,25 @@ export function sync_edge_labels() {
     }, 0);
 
     counts["tagged"] = this.phylotree.links.reduce(function(p, c) {
-      return p + (inspector.item_tagged(c) ? 1 : 0);
+      return p + (item_tagged(c) ? 1 : 0);
     }, 0);
 
     this.count_update(this, counts, this.count_handler());
   }
 }
+
+export function edge_visible(edge) {
+  return !(edge.target.hidden || edge.target.notshown || false);
+}
+
+export function edge_css_selectors(css_classes) {
+  return [
+    css_classes["branch"],
+    css_classes["selected-branch"],
+    css_classes["tagged-branch"]
+  ].reduce(function(p, c, i, a) {
+    return (p += "path." + c + (i < a.length - 1 ? "," : ""));
+  }, "");
+}
+
+

@@ -1,5 +1,5 @@
-import * as inspector from "../inspectors";
-import { css_classes } from "../accessors";
+import { is_leafnode } from "../nodes";
+import { css_classes } from "./options";
 
 let d3_layout_phylotree_event_id = "phylotree.event";
 
@@ -16,7 +16,7 @@ export function toggle_collapse(node) {
     node.collapsed = false;
 
     let unhide = function(n) {
-      if (!inspector.is_leafnode(n)) {
+      if (!is_leafnode(n)) {
         if (!n.collapsed) {
           n.children.forEach(unhide);
         }
@@ -36,7 +36,7 @@ export function toggle_collapse(node) {
 export function resize_svg(tree, svg, tr) {
   var sizes = this.size;
 
-  if (this.phylotree.radial()) {
+  if (this.radial()) {
     let pad_radius = this.pad_width(),
       vertical_offset =
         this.options["top-bottom-spacing"] != "fit-to-size"

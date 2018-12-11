@@ -1,5 +1,5 @@
 import * as _ from "underscore";
-//import clear_internal_nodes;
+import { is_leafnode } from "./nodes";
 
 export default function max_parsimony(respect_existing) {
   clear_internal_nodes(respect_existing);
@@ -10,7 +10,7 @@ export default function max_parsimony(respect_existing) {
       [false, false]
     ]; // selected or not
 
-    if (inspector.is_leafnode(d)) {
+    if (is_leafnode(d)) {
       d.mp[1][0] = d.mp[1][1] = d[selection_attribute_name] || false;
       d.mp[0][0] = d.mp[1][0] ? 1 : 0;
       d.mp[0][1] = 1 - d.mp[0][0];
@@ -68,7 +68,7 @@ export default function max_parsimony(respect_existing) {
   });
 
   this.modify_selection(function(d, callback) {
-    if (inspector.is_leafnode(d.target)) {
+    if (is_leafnode(d.target)) {
       return d.target[selection_attribute_name];
     }
     return d.target.mp;
