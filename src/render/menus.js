@@ -1,3 +1,4 @@
+import * as d3 from "d3";
 import * as _ from "underscore";
 import * as events from "./events";
 import { is_leafnode } from "../nodes";

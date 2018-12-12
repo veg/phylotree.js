@@ -1,4 +1,6 @@
+import * as d3 from "d3";
 import * as _ from "underscore";
+
 import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./radial";
 import { default as draw_line, line_segment_placer } from "./cartesian";
 import { is_leafnode} from "../nodes";

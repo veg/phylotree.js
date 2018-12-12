@@ -1,3 +1,4 @@
+import * as d3 from "d3";
 import { is_leafnode } from "../nodes";
 import { css_classes } from "./options";
 

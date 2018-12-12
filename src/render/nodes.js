@@ -1,3 +1,6 @@
+import * as d3 from "d3";
+import * as _ from "underscore";
+
 import { item_tagged, item_selected } from "./helpers";
 import { is_leafnode } from "../nodes";
 import { css_classes } from "./options";

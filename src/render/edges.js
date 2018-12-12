@@ -1,3 +1,4 @@
+import * as d3 from "d3";
 import * as _ from "underscore";
 import { item_tagged, item_selected } from "./helpers";
 import { css_classes} from './options';
