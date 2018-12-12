@@ -1,6 +1,6 @@
 {
   "name": "phylotree",
-  "version": "1.0.0-alpha.0",
+  "version": "1.0.0-alpha.2",
   "main": "phylotree.js",
   "keywords": [
     "phylogenetics",
@@ -33,6 +33,7 @@
     "mocha": "^5.2.0",
     "prettier": "^1.14.2",
     "rollup": "^0.65.2",
+    "rollup-plugin-copy": "^0.2.3",
     "rollup-plugin-terser": "^2.0.2",
     "rollup-watch": "^4.3.1",
     "should": "^11.2.1",
@@ -46,10 +47,11 @@
     "dev": "rm -rf build && mkdir build && rollup -m -c -w -f umd -o build/phylotree.js -- src/index.js",
     "pretest": "rm -rf build && mkdir build && rollup -c -f umd -o build/phylotree.js -- src/index.js",
     "test": "tape 'test/*-test.js'",
-    "postpublish": "zip -j build/phylotree.js.zip -- LICENSE README.md build/phylotree.js build/phylotree.min.js"
+    "postpublish": "zip -j build/phylotree.js.zip -- LICENSE README.md build/phylotree.js build/phylotree.min.js build/phylotree.css"
   },
   "files": [
-    "phylotree.css",
-    "phylotree.js"
+    "build/phylotree.css",
+    "build/phylotree.js",
+    "build/phylotree.min.js"
   ]
 }

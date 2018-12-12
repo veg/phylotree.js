@@ -1,9 +1,8 @@
 import {terser} from "rollup-plugin-terser";
 import node from "rollup-plugin-node-resolve";
+import copy from 'rollup-plugin-copy';
 
 import * as meta from "./package.json";
-
-console.log(Object.assign({}, ...Object.keys(meta.dependencies || {}).filter(key => /^d3-/.test(key)).map(key => ({[key]: "d3"}))));
 
 const config = {
   input: "src/index.js",
@@ -17,7 +16,7 @@ const config = {
     extend: true,
     globals: {d3:'d3', underscore:'_'}
   },
-  plugins: [node()]
+  plugins: [node(), copy({"phylotree.css":"build/phylotree.css"})]
 };
 
 export default [

@@ -20,7 +20,7 @@ function constant(x) {
 
 class TreeRender {
 
-  constructor(phylotree, container) {
+  constructor(phylotree, container, options = {}) {
 
     this.css_classes = css_classes;
     this.phylotree = phylotree;
@@ -63,10 +63,10 @@ class TreeRender {
     };
 
 
-    this.width = width || 800;
-    this.height = height || 600;
+    this.width = options.width || 800;
+    this.height = options.height || 600;
 
-    let options = {
+    let default_options = {
       layout: "left-to-right",
       logger: console,
       branches: "step",
@@ -113,7 +113,7 @@ class TreeRender {
       return typeof value === "number" ? value + "px" : value;
     };
 
-    this.options = options;
+    this.options = _.defaults(options, default_options);
 
     this.rescale_node_span =
       this.phylotree.nodes.children
