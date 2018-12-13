@@ -6,15 +6,6 @@ import { default as nexml_parser } from "./formats/nexml";
 import { default as newick_parser, get_newick } from "./formats/newick";
 import { default as phyloxml_parser } from "./formats/phyloxml";
 
-import { x_coord, y_coord } from "./render/coordinates";
-import {
-  draw_arc,
-  cartesian_to_polar,
-  arc_segment_placer
-} from "./render/radial";
-
-import { default as draw_line, line_segment_placer } from "./render/cartesian";
-
 import {
   default as has_branch_lengths,
   def_branch_length_accessor,
@@ -26,56 +17,6 @@ import * as rooting from "./rooting";
 
 import { default as TreeRender } from "./render/draw";
 
-/**
- * Change option settings.
- *
- * @param {Object} opt Keys are the option to toggle and values are
- * the parameters for that option.
- * @param {Boolean} run_update (optional) Whether or not the tree should update.
- * @returns The current ``phylotree``.
- */
-function options(opt, run_update) {
-  if (!arguments.length) return options;
-
-  let do_update = false;
-
-  for (var key in options) {
-    if (key in opt && opt[key] != options[key]) {
-      do_update = true;
-      options[key] = opt[key];
-
-      switch (key) {
-        case "branches":
-          {
-            switch (opt[key]) {
-              case "straight": {
-                draw_branch.curve(d3.curveLinear);
-                break;
-              }
-              default: {
-                draw_branch.curve(d3.curveStepBefore);
-                break;
-              }
-            }
-          }
-          break;
-      }
-    }
-  }
-
-  if (run_update && do_update) {
-    phylotree.layout();
-  }
-
-  return phylotree;
-}
-
-// replacement for d3.functor
-function constant(x) {
-  return function() {
-    return x;
-  };
-}
 
 function resort_children(comparator, start_node, filter) {
   // ascending
@@ -142,19 +83,8 @@ function mrca() {
 let Phylotree = class {
 
   constructor(nwk, options = {}) {
-    // attribute assignment
-    this.size = [1, 1];
-    this.phylo_attr = [1, 1];
+
     this.newick_string = "";
-    this.rescale_node_span = 1;
-
-    this.node_span = function(_node) {
-      return 1;
-    };
-
-    this.relative_node_span = function(_node) {
-      return this.node_span(_node) / this.rescale_node_span;
-    };
 
     this.nodes = [];
     this.links = [];
@@ -162,9 +92,7 @@ let Phylotree = class {
     this.partitions = [];
     this.branch_length_accessor = def_branch_length_accessor;
     this.branch_length = def_branch_length_accessor;
-    this.options = options;
-    this.container = "body";
-    this.logger = options.logger;
+    this.logger = options.logger || console;
 
     // initialization
     var bootstrap_values = options.bootstrap_values || "",
