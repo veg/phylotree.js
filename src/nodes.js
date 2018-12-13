@@ -112,7 +112,7 @@ export function node_label(_node) {
  */
 export function get_tips() {
   // get all nodes that have no nodes
-  return _.filter(self.nodes, n => {
+  return _.filter(this.nodes.descendants(), n => {
     return !_.has(n, "children");
   });
 }
@@ -123,8 +123,7 @@ export function get_tips() {
  * @returns the current root node of the ``phylotree``.
  */
 export function get_root_node() {
-  // TODO
-  return self.nodes[0];
+  return this.nodes;
 }
 
 /**

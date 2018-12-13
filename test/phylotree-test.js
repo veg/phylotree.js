@@ -102,4 +102,12 @@ tape("phylotree rooting", function(test) {
 });
 
 
+tape("phylotree get tips", function(test) {
+
+  let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
+  let phylo = new phylotree.phylotree(newick_string);
+  test.equal(phylo.get_tips().length, 274);
+  test.end();
+  
+});
 

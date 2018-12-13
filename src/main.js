@@ -19,6 +19,7 @@ import { default as TreeRender } from "./render/draw";
 
 
 function resort_children(comparator, start_node, filter) {
+
   // ascending
   this.nodes
     .sum(function(d) {
@@ -33,6 +34,7 @@ function resort_children(comparator, start_node, filter) {
   }
 
   return this;
+
 }
 
 /**
@@ -179,6 +181,7 @@ let Phylotree = class {
 
   */
   json(traversal_type) {
+
     var index = 0;
 
     this.traverse_and_compute(function(n) {
@@ -210,6 +213,7 @@ let Phylotree = class {
     }, traversal_type);
 
     return JSON.stringify(node_array);
+
   }
 
   /*
@@ -223,12 +227,17 @@ let Phylotree = class {
                                    node and its children
    */
   traverse_and_compute(callback, traversal_type, root_node, backtrack) {
+
     traversal_type = traversal_type || "post-order";
+    var total_len = 0;
 
     function post_order(node) {
+
       if (_.isUndefined(node)) {
         return;
       }
+
+      total_len+=1;
 
       let descendants = node.children;
 

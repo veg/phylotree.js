@@ -29,6 +29,7 @@ export default function has_branch_lengths() {
 }
 
 export function def_branch_length_accessor(_node) {
+
   let _node_data = _node.data;
 
   if (
