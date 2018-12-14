@@ -28,7 +28,6 @@ tape("center of tree", function(test) {
 
 tape("root to tip", function(test) {
 
-  // TODO : traversal is broken
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
 

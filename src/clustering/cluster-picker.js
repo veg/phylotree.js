@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import * as _ from "underscore";
 
 /**
  * Implements a linear time / space version of the Cluster picker algorithm
@@ -35,7 +36,7 @@ function cluster_picker(
   // where each internal node will receive a floating point value 
   // that stores the longest path from the internal node to any of its descendants, 
   // the diameter of the cluster,  is then the sum of longest paths of all of its children
-  var bl = tree.branch_length();
+  var bl = tree.branch_length;
 
   // initialize member variables
   tree.traverse_and_compute(function(n) {
@@ -60,7 +61,7 @@ function cluster_picker(
   var clusters = [];
 
   tree.traverse_and_compute(_.noop, "pre-order", root_node, function(n) {
-    if (!d3.layout.phylotree.is_leafnode(n)) {
+    if (!tree.is_leafnode(n)) {
       var bs = _.isString(n.bootstrap_values)
         ? +n.bootstrap_values
         : missing_bootstrap_value;
@@ -98,7 +99,7 @@ function cluster_picker(
     cluster["members"] = [];
     tree.traverse_and_compute(
       function(n) {
-        if (d3.layout.phylotree.is_leafnode(n)) {
+        if (tree.is_leafnode(n)) {
           cluster["members"].push(n);
         }
       },
