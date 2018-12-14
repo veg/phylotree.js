@@ -229,7 +229,6 @@ let Phylotree = class {
   traverse_and_compute(callback, traversal_type, root_node, backtrack) {
 
     traversal_type = traversal_type || "post-order";
-    var total_len = 0;
 
     function post_order(node) {
 
@@ -237,18 +236,9 @@ let Phylotree = class {
         return;
       }
 
-      total_len+=1;
+      // TODO : reintroduce backtrack
+      node.eachAfter(callback);
 
-      let descendants = node.children;
-
-      if (!(backtrack && backtrack(node))) {
-        if (!_.isUndefined(descendants)) {
-          for (let k = 0; k < descendants.length; k++) {
-            post_order(descendants[k]);
-          }
-          callback(descendants[0]);
-        }
-      }
     }
 
     function pre_order(node) {

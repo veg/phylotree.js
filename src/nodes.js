@@ -141,8 +141,7 @@ export function get_nodes() {
  * @returns {Node} Desired node.
  */
 export function get_node_by_name(name) {
-  // TODO
-  return _.findWhere(this.nodes, { name: name });
+  return _.filter(this.nodes.descendants(), d => { return d.data.name == name })[0];
 }
 
 /**
@@ -169,7 +168,7 @@ export function assign_attributes(attributes) {
  * @returns {Bool} Whether or not the node is a leaf node.
  */
 export function is_leafnode(node) {
-  return !(node.children && node.children.length);
+  return !node.children;
 }
 
 /**

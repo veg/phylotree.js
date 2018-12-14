@@ -38,10 +38,13 @@ function compute_pairwise_distances(tree) {
   var leaf_count = 0;
 
   tree.traverse_and_compute(function(n) {
+
     n.cot_computed_length = bl(n);
+
     if (n.parent && _.isUndefined(n.cot_computed_length)) {
       throw "Well defined branch lengths are required for this operation";
     }
+
     if (tree.is_leafnode(n)) {
       n.cot_leaf_index = leaf_count++;
       n.cot_path_to_leaves_below = {};
@@ -55,7 +58,7 @@ function compute_pairwise_distances(tree) {
 
   // populate all cot_path_to_leaves_below
   tree.traverse_and_compute(function(n) {
-    if (n.parent.cot_path_to_leaves_below) {
+    if (n.parent) {
       _.each(n.cot_path_to_leaves_below, function(length_so_far, leaf_index) {
         n.parent.cot_path_to_leaves_below[leaf_index] =
           length_so_far + n.cot_computed_length;

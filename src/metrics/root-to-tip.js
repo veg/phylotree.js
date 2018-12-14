@@ -171,6 +171,7 @@ function linear_fit(data) {
  *
  */
 export default function root_to_tip(tree) {
+
   var bl = tree.branch_length,
     index = 0;
 
@@ -193,26 +194,23 @@ export default function root_to_tip(tree) {
     if (n.parent) {
       if (!("r2t" in n.parent)) {
         n.parent.r2t = {};
+        n.parent.hi = [];
       }
       if (tree.is_leafnode(n)) {
-        console.log(n.leaf_index);
         n.parent.r2t[n.leaf_index] = n._computed_length;
       } else {
         _.each(n.r2t, function(v, idx) {
           n.parent.r2t[idx] = v + n._computed_length;
         });
-        //delete n.r2t;
+        delete n.r2t;
       }
-      //delete n._computed_length;
+      delete n._computed_length;
     }
   });
 
   var r2t = tree.get_root_node().r2t;
 
-  //console.log(_.map(tree.get_root_node().descendants(), d=> {return _.keys(d.r2t).length }));
-  console.log(r2t);
-
-  tree.traverse_and_compute(function(n) {
+  tree.traverse_and_compute(n => {
     if (tree.is_leafnode(n)) {
       n.root_to_tip = r2t[n.leaf_index];
       delete n.leaf_index;
