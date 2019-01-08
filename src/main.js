@@ -6,6 +6,8 @@ import { default as nexml_parser } from "./formats/nexml";
 import { default as newick_parser, get_newick } from "./formats/newick";
 import { default as phyloxml_parser } from "./formats/phyloxml";
 
+import { postOrder, preOrder, default as inOrder } from "./traversal";
+
 import {
   default as has_branch_lengths,
   def_branch_length_accessor,
@@ -42,6 +44,7 @@ function resort_children(comparator, start_node, filter) {
  * @returns An array of strings, comprising each tag that was read.
  */
 function mrca() {
+
   var mrca_nodes, mrca;
 
   if (arguments.length == 1) {
@@ -70,6 +73,7 @@ function mrca() {
   });
 
   return mrca;
+
 }
 
 /**
@@ -144,6 +148,7 @@ let Phylotree = class {
     if (!_node_data["json"]) {
       self.nodes = [];
     } else {
+
       self.nodes = d3.hierarchy(_node_data.json);
 
       // Parse tags
@@ -237,37 +242,16 @@ let Phylotree = class {
       }
 
       // TODO : reintroduce backtrack
-      node.eachAfter(callback);
+			postOrder(node, callback, backtrack);
 
     }
 
     function pre_order(node) {
-      if (!(backtrack && backtrack(node))) {
-        callback(node);
-        if (node.children) {
-          for (let k = 0; k < node.children.length; k++) {
-            pre_order(node.children[k]);
-          }
-        }
-      }
+			preOrder(node, callback, backtrack);
     }
 
     function in_order(node) {
-      if (!(backtrack && backtrack(node))) {
-        if (node.children) {
-          let upto = Min(node.children.length, 1);
-          for (let k = 0; k < upto; k++) {
-            in_order(node.children[k]);
-          }
-          callback(node);
-          for (var k = upto; k < node.children; k++) {
-            // eslint-disable-line no-redeclare
-            in_order(node.children[k]);
-          }
-        } else {
-          callback(node);
-        }
-      }
+			inOrder(node, callback, backtrack);
     }
 
     if (traversal_type == "pre-order") {
