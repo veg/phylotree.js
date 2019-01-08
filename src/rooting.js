@@ -111,7 +111,6 @@ export function reroot(node, fraction) {
 }
 
 export function rootpath(attr_name, store_name) {
-
   attr_name = attr_name || "attribute";
   store_name = store_name || "y_scaled";
 
@@ -135,5 +134,3 @@ export function path_to_root(node) {
   }
   return selection;
 }
-
-

@@ -2,7 +2,6 @@ import * as d3 from "d3";
 import * as _ from "underscore";
 import { is_node_collapsed } from "./nodes";
 
-
 export function clade_css_selectors(css_classes) {
   return [css_classes["clade"]].reduce(function(p, c, i, a) {
     return (p += "path." + c + (i < a.length - 1 ? "," : ""));

@@ -5,6 +5,3 @@ export function item_tagged(item) {
 export function item_selected(item, tag) {
   return item[tag] || false;
 }
-
-
-

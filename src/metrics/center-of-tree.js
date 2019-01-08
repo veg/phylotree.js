@@ -33,24 +33,20 @@ import * as _ from "underscore";
  *t = [sum (distances leaves above) - sum (distances leaves below) + T * (#leaves above)] / (#leaves)
  */
 
-
-import {default as pairwise_distances} from "./pairwise-distances";
+import { default as pairwise_distances } from "./pairwise-distances";
 
 export function center_of_tree(tree, power) {
-
   power = power || 2;
 
   var leaf_count = pairwise_distances(tree);
 
   var current_min = Number.MAX_VALUE,
-      current_split = 0,
-      current_location = null;
+    current_split = 0,
+    current_location = null;
 
   if (power == 2) {
-
     tree.traverse_and_compute(function(n) {
       if (n.parent) {
-
         // can't consider the root
         var sum_below = 0,
           sum_below_squared = 0,
@@ -100,7 +96,6 @@ export function center_of_tree(tree, power) {
         delete n.cot_path_to_leaves_below;
         delete n.cot_path_to_leaves_above;
         delete n.cot_leaf_index;
-
       }
     });
   } else {
@@ -114,7 +109,6 @@ export function center_of_tree(tree, power) {
           current_t = 0;
 
         while (current_t < n.cot_computed_length) {
-
           var score = 0.0;
 
           _.each(n.cot_path_to_leaves_below, function(l) {
@@ -142,4 +136,3 @@ export function center_of_tree(tree, power) {
     distance: current_min
   };
 }
-

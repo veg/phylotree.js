@@ -9,3 +9,8 @@ export { default as extract_dates } from "./extract-dates";
 export { default as cluster_picker } from "./clustering/cluster-picker";
 export { default as phylopart } from "./clustering/phylopart";
 
+export {
+  default as postOrder,
+  preOrder,
+  default as inOrder
+} from "./traversal.js";

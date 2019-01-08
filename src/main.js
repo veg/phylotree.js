@@ -6,6 +6,8 @@ import { default as nexml_parser } from "./formats/nexml";
 import { default as newick_parser, get_newick } from "./formats/newick";
 import { default as phyloxml_parser } from "./formats/phyloxml";
 
+import { postOrder, preOrder, default as inOrder } from "./traversal";
+
 import {
   default as has_branch_lengths,
   def_branch_length_accessor,
@@ -17,9 +19,7 @@ import * as rooting from "./rooting";
 
 import { default as TreeRender } from "./render/draw";
 
-
 function resort_children(comparator, start_node, filter) {
-
   // ascending
   this.nodes
     .sum(function(d) {
@@ -34,7 +34,6 @@ function resort_children(comparator, start_node, filter) {
   }
 
   return this;
-
 }
 
 /**
@@ -83,9 +82,7 @@ function mrca() {
  * @returns {Phylotree} phylotree - itself, following the builder pattern.
  */
 let Phylotree = class {
-
   constructor(nwk, options = {}) {
-
     this.newick_string = "";
 
     this.nodes = [];
@@ -181,7 +178,6 @@ let Phylotree = class {
 
   */
   json(traversal_type) {
-
     var index = 0;
 
     this.traverse_and_compute(function(n) {
@@ -213,7 +209,6 @@ let Phylotree = class {
     }, traversal_type);
 
     return JSON.stringify(node_array);
-
   }
 
   /*
@@ -227,47 +222,23 @@ let Phylotree = class {
                                    node and its children
    */
   traverse_and_compute(callback, traversal_type, root_node, backtrack) {
-
     traversal_type = traversal_type || "post-order";
 
     function post_order(node) {
-
       if (_.isUndefined(node)) {
         return;
       }
 
-      // TODO : reintroduce backtrack
-      node.eachAfter(callback);
+      postOrder(node, callback, backtrack);
 
     }
 
     function pre_order(node) {
-      if (!(backtrack && backtrack(node))) {
-        callback(node);
-        if (node.children) {
-          for (let k = 0; k < node.children.length; k++) {
-            pre_order(node.children[k]);
-          }
-        }
-      }
+      preOrder(node, callback, backtrack);
     }
 
     function in_order(node) {
-      if (!(backtrack && backtrack(node))) {
-        if (node.children) {
-          let upto = Min(node.children.length, 1);
-          for (let k = 0; k < upto; k++) {
-            in_order(node.children[k]);
-          }
-          callback(node);
-          for (var k = upto; k < node.children; k++) {
-            // eslint-disable-line no-redeclare
-            in_order(node.children[k]);
-          }
-        } else {
-          callback(node);
-        }
-      }
+      inOrder(node, callback, backtrack);
     }
 
     if (traversal_type == "pre-order") {
@@ -289,7 +260,6 @@ let Phylotree = class {
     return this.parsed_tags;
   }
 
-
   update(json) {
     // update with new hiearchy layout
     this.nodes = json;
@@ -301,7 +271,6 @@ let Phylotree = class {
     this.display = new TreeRender(this, container, options);
     return this.display;
   }
-
 };
 
 Phylotree.prototype.is_leafnode = node_operations.is_leafnode;

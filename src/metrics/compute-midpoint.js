@@ -7,7 +7,6 @@
  *
  */
 export function compute_midpoint(tree) {
-
   if (!tree.has_branch_lengths()) {
     throw "Center of tree calculation cannot be performed on trees that do not have fully specified branch lengths";
   }
@@ -53,7 +52,6 @@ export function compute_midpoint(tree) {
   });
 
   if (root_node.max_path > longest_path_length) {
-
     // not already midpoint rooted
     longest_path_length = (longest_path_length + root_node.max_path) * 0.5;
 
@@ -69,7 +67,6 @@ export function compute_midpoint(tree) {
         longest_path_length -= current_bl;
         root_on = root_on.parent;
       } else {
-
         //console.log ("Rooting on ", root_on, longest_path_length[0], current_bl);
 
         return {
@@ -79,11 +76,8 @@ export function compute_midpoint(tree) {
 
         //console.log ("Longest " + root_path (tree.get_node_by_name(root_node.max_path_terminus.name)));
         //console.log ("Second longest " + root_path (tree.get_node_by_name(longest_path_length[1].name)));
-
       }
     }
   }
   return { location: root_node, breakpoint: 0 };
 }
-
-

@@ -3,14 +3,14 @@ import * as _ from "underscore";
 
 import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./radial";
 import { default as draw_line, line_segment_placer } from "./cartesian";
-import { is_leafnode} from "../nodes";
+import { is_leafnode } from "../nodes";
 import { x_coord, y_coord } from "./coordinates";
 import * as clades from "./clades";
 import * as render_nodes from "./nodes";
 import * as render_edges from "./edges";
 import * as events from "./events";
 import { css_classes } from "./options";
-import *  as opt from "./options";
+import * as opt from "./options";
 import * as menus from "./menus";
 
 // replacement for d3.functor
@@ -21,9 +21,7 @@ function constant(x) {
 }
 
 class TreeRender {
-
   constructor(phylotree, container, options = {}) {
-
     this.css_classes = css_classes;
     this.phylotree = phylotree;
     this.container = container;
@@ -63,7 +61,6 @@ class TreeRender {
     this.relative_node_span = function(_node) {
       return this.node_span(_node) / this.rescale_node_span;
     };
-
 
     this.width = options.width || 800;
     this.height = options.height || 600;
@@ -126,8 +123,6 @@ class TreeRender {
         .reduce(function(p, c) {
           return Math.min(c, p || 1e200);
         }, null) || 1;
-
-
 
     this.initialize_svg(this.container);
     this.links = this.phylotree.nodes.links();
@@ -579,7 +574,10 @@ class TreeRender {
 
     if (!is_leaf) {
       // for internal nodes
-      if (render_nodes.is_node_collapsed(a_node) && !is_under_collapsed_parent) {
+      if (
+        render_nodes.is_node_collapsed(a_node) &&
+        !is_under_collapsed_parent
+      ) {
         // collapsed node
         let save_x = this.x;
         this.save_span = this.last_span * 0.5;
@@ -1117,8 +1115,7 @@ class TreeRender {
       .descendants()
       .filter(render_nodes.node_visible)
       .forEach(node => {
-        let node_width =
-          12 + this.node_label(node).length * _font_size * 0.8;
+        let node_width = 12 + this.node_label(node).length * _font_size * 0.8;
         if (node.angle !== null) {
           node_width *= Math.max(
             Math.abs(Math.cos(node.angle)),
@@ -1328,7 +1325,5 @@ export function style_edges(attr) {
 export function item_selected(item, tag) {
   return item[tag] || false;
 }
-
-
 
 export default TreeRender;

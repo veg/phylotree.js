@@ -1,10 +1,10 @@
 import * as _ from "underscore";
 
 function annotate_copy_number(tree) {
-  tree.traverse_and_compute (function (node) {
-      if (tree.is_leafnode (node)) {
-        node.copy_number = 1;
-      }
+  tree.traverse_and_compute(function(node) {
+    if (tree.is_leafnode(node)) {
+      node.copy_number = 1;
+    }
   });
 }
 
@@ -16,7 +16,6 @@ function compute_root_to_tip_other_root(
   shared_distance,
   distance_to_new_root
 ) {
-
   var my_bl = tree.branch_length(node);
 
   var go_up = false;
@@ -59,48 +58,44 @@ function compute_root_to_tip_other_root(
       distance_to_new_root
     );
   }
-
 }
 
 // Requires stuff
 export function fit_root_to_tip(tree) {
-
   var linear_data = [],
-  		max_r2 = 0,
-  		best_node = 0;
+    max_r2 = 0,
+    best_node = 0;
 
-	annotate_copy_number(tree);
+  annotate_copy_number(tree);
   root_to_tip(tree);
-
 
   // To return if best node is the root already
   tree.traverse_and_compute(function(node) {
-
     if (tree.is_leafnode(node) && !_.isNull(node.decimal_date_value)) {
       linear_data.push([node.decimal_date_value, node.rtta, node.copy_number]);
     }
-
   });
 
   var best_fit = linear_fit(linear_data);
 
   tree.traverse_and_compute(function(node) {
-
-    if (tree.is_leafnode(node) && !_.isNull(node.decimal_date_value) ) {
-
+    if (tree.is_leafnode(node) && !_.isNull(node.decimal_date_value)) {
       compute_root_to_tip_other_root(tree, node, null, 0, 0);
 
       linear_data = [];
 
       tree.traverse_and_compute(function(node) {
         if (tree.is_leafnode(node) && !_.isNull(node.decimal_date_value)) {
-          linear_data.push([node.decimal_date_value, node.rtta, node.copy_number]);
+          linear_data.push([
+            node.decimal_date_value,
+            node.rtta,
+            node.copy_number
+          ]);
         }
-
       });
 
       var fit = linear_fit(linear_data),
-      		r2 = fit["r2"];
+        r2 = fit["r2"];
 
       if (r2 > max_r2) {
         max_r2 = r2;
@@ -108,16 +103,13 @@ export function fit_root_to_tip(tree) {
         best_fit = fit;
       }
     }
-
   });
 
   return { root: best_node, fit: best_fit };
-
 }
 
 // linear fit of root to tip distances
 function linear_fit(data) {
-
   var ss = data.reduce(function(p, c) {
       return c[2] + p;
     }, 0), // sample count
@@ -158,7 +150,6 @@ function linear_fit(data) {
     "var (intercept)": Math.sqrt((1 + sx * sx / (ss * st2)) / ss),
     "var (slope)": Math.sqrt(1 / st2)
   };
-
 }
 
 /**
@@ -171,7 +162,6 @@ function linear_fit(data) {
  *
  */
 export default function root_to_tip(tree) {
-
   var bl = tree.branch_length,
     index = 0;
 

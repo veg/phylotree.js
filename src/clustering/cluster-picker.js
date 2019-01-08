@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import * as _ from "underscore";
 
 /**
  * Implements a linear time / space version of the Cluster picker algorithm
@@ -31,11 +32,11 @@ function cluster_picker(
     ? missing_bootstrap_value
     : 1;
 
-  // perform a bottom-up pass of the tree  
-  // where each internal node will receive a floating point value 
-  // that stores the longest path from the internal node to any of its descendants, 
+  // perform a bottom-up pass of the tree
+  // where each internal node will receive a floating point value
+  // that stores the longest path from the internal node to any of its descendants,
   // the diameter of the cluster,  is then the sum of longest paths of all of its children
-  var bl = tree.branch_length();
+  let bl = tree.branch_length;
 
   // initialize member variables
   tree.traverse_and_compute(function(n) {
@@ -60,10 +61,11 @@ function cluster_picker(
   var clusters = [];
 
   tree.traverse_and_compute(_.noop, "pre-order", root_node, function(n) {
-    if (!d3.layout.phylotree.is_leafnode(n)) {
-      var bs = _.isString(n.bootstrap_values)
-        ? +n.bootstrap_values
+    if (!tree.is_leafnode(n)) {
+      var bs = _.isString(n.data.bootstrap_values)
+        ? +n.data.bootstrap_values
         : missing_bootstrap_value;
+
       if (bs >= bootstrap_threshold) {
         var my_diameter = _.reduce(
           n.children,
@@ -72,13 +74,14 @@ function cluster_picker(
           },
           0
         );
-        //console.log (my_diameter);
+
         if (my_diameter <= diameter_threshold) {
           clusters.push({ root: n, diameter: my_diameter, bootstrap: bs });
           return true;
         }
       }
     }
+
     return false;
   });
 
@@ -98,7 +101,7 @@ function cluster_picker(
     cluster["members"] = [];
     tree.traverse_and_compute(
       function(n) {
-        if (d3.layout.phylotree.is_leafnode(n)) {
+        if (tree.is_leafnode(n)) {
           cluster["members"].push(n);
         }
       },
@@ -110,6 +113,4 @@ function cluster_picker(
   return clusters;
 }
 
-
 export default cluster_picker;
-
