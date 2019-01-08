@@ -11,7 +11,8 @@ import { postOrder, preOrder, default as inOrder } from "./traversal";
 import {
   default as has_branch_lengths,
   def_branch_length_accessor,
-  set_branch_length
+  set_branch_length,
+  branch_name
 } from "./branches";
 
 import * as node_operations from "./nodes";
@@ -279,6 +280,7 @@ Phylotree.prototype.has_branch_lengths = has_branch_lengths;
 Phylotree.prototype.get_newick = get_newick;
 Phylotree.prototype.resort_children = resort_children;
 Phylotree.prototype.set_branch_length = set_branch_length;
+Phylotree.prototype.branch_name = branch_name;
 
 _.extend(Phylotree.prototype, node_operations);
 _.extend(Phylotree.prototype, rooting);

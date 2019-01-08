@@ -1275,6 +1275,50 @@ class TreeRender {
     this.count_listener_handler = attr;
     return this;
   }
+
+  /**
+   * Get or set node styler. If setting, pass a function of two arguments,
+   * ``element`` and ``data``. ``data`` exposes the underlying node so that
+   * its attributes can be referenced. These can be used to apply styles to
+   * ``element``, which will be a D3 selection corresponding to the SVG element
+   * that makes up the current node.
+   * ``transition`` is the third argument which indicates that there is an ongoing
+   * d3 transition in progress
+   *
+   * @param {Function} attr - Optional; if setting, the node styler function to be set.
+   * @returns The ``node_styler`` function if getting, or the current ``phylotree`` if setting.
+   */
+  style_nodes(attr) {
+    if (!arguments.length) return this.node_styler;
+    this.node_styler = attr;
+    return this;
+  }
+
+  /**
+   * Get or set edge styler. If setting, pass a function of two arguments,
+   * ``element`` and ``data``. ``data`` exposes the underlying edge so that
+   * its attributes can be referenced. These can be used to apply styles to
+   * ``element``, which will be a D3 selection corresponding to the SVG element
+   * that makes up the current edge.
+   *
+   * Note that, in accordance with the D3 hierarchy layout, edges will have
+   * a ``source`` and ``target`` field, corresponding to the nodes that make up
+   * up the associated branch.
+   *
+   * @param {Function} attr - Optional; if setting, the node styler function to be set.
+   * @returns The ``edge_styler`` function if getting, or the current ``phylotree`` if setting.
+   */
+  style_edges(attr) {
+    if (!arguments.length) return this.edge_styler;
+    this.edge_styler = attr.bind(this);
+    return this;
+  }
+
+  item_selected(item, tag) {
+    return item[tag] || false;
+  }
+
+
 }
 
 _.extend(TreeRender.prototype, clades);
@@ -1283,47 +1327,5 @@ _.extend(TreeRender.prototype, render_edges);
 _.extend(TreeRender.prototype, events);
 _.extend(TreeRender.prototype, menus);
 _.extend(TreeRender.prototype, opt);
-
-/**
- * Get or set node styler. If setting, pass a function of two arguments,
- * ``element`` and ``data``. ``data`` exposes the underlying node so that
- * its attributes can be referenced. These can be used to apply styles to
- * ``element``, which will be a D3 selection corresponding to the SVG element
- * that makes up the current node.
- * ``transition`` is the third argument which indicates that there is an ongoing
- * d3 transition in progress
- *
- * @param {Function} attr - Optional; if setting, the node styler function to be set.
- * @returns The ``node_styler`` function if getting, or the current ``phylotree`` if setting.
- */
-export function style_nodes(attr) {
-  if (!arguments.length) return this.node_styler;
-  this.node_styler = attr;
-  return this;
-}
-
-/**
- * Get or set edge styler. If setting, pass a function of two arguments,
- * ``element`` and ``data``. ``data`` exposes the underlying edge so that
- * its attributes can be referenced. These can be used to apply styles to
- * ``element``, which will be a D3 selection corresponding to the SVG element
- * that makes up the current edge.
- *
- * Note that, in accordance with the D3 hierarchy layout, edges will have
- * a ``source`` and ``target`` field, corresponding to the nodes that make up
- * up the associated branch.
- *
- * @param {Function} attr - Optional; if setting, the node styler function to be set.
- * @returns The ``edge_styler`` function if getting, or the current ``phylotree`` if setting.
- */
-export function style_edges(attr) {
-  if (!arguments.length) return this.edge_styler;
-  this.edge_styler = attr.bind(this);
-  return this;
-}
-
-export function item_selected(item, tag) {
-  return item[tag] || false;
-}
 
 export default TreeRender;
