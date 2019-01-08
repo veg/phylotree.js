@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import * as _ from "underscore";
 
 /*
  *Implements a linear time / space version of the Phylopart algorithm
@@ -60,7 +61,7 @@ function phylopart(
   }
 
   tree.traverse_and_compute(function(n) {
-    if (d3.layout.phylotree.is_leafnode(n)) {
+    if (tree.is_leafnode(n)) {
       if (n.cot_computed_length < min_bl) {
         if (min_bl < min_bl2) {
           min_bl2 = min_bl;
@@ -119,7 +120,7 @@ function phylopart(
   });
 
   tree.traverse_and_compute(function(n) {
-    if (!d3.layout.phylotree.is_leafnode(n)) {
+    if (!tree.is_leafnode(n)) {
       n.histogram = new Array(number_of_bins);
       for (var i = 0; i < number_of_bins; i++) {
         n.histogram[i] = 0;
@@ -144,7 +145,7 @@ function phylopart(
     */
 
   tree.traverse_and_compute(function(n) {
-    if (!d3.layout.phylotree.is_leafnode(n)) {
+    if (!tree.is_leafnode(n)) {
       for (var n1 = 0; n1 < n.paths_to_leaves.length; n1++) {
         for (var n2 = n1 + 1; n2 < n.paths_to_leaves.length; n2++) {
           var sum = n.paths_to_leaves[n1] + n.paths_to_leaves[n2];
@@ -181,9 +182,9 @@ function phylopart(
   var clusters = [];
 
   tree.traverse_and_compute(_.noop, "pre-order", null, function(n) {
-    if (!d3.layout.phylotree.is_leafnode(n)) {
-      var bs = _.isString(n.bootstrap_values)
-        ? +n.bootstrap_values
+    if (!tree.is_leafnode(n)) {
+      var bs = _.isString(n.data.bootstrap_values)
+        ? +n.data.bootstrap_values
         : missing_bootstrap_value;
       if (bs >= bootstrap_threshold) {
         var total_comparisons = n.leaf_count * (n.leaf_count - 1) * 0.25;
@@ -213,7 +214,7 @@ function phylopart(
   });
 
   tree.traverse_and_compute(function(n) {
-    if (!d3.layout.phylotree.is_leafnode(n)) {
+    if (!tree.is_leafnode(n)) {
       if ("histogram" in n) {
         delete n.histogram;
         delete n.leaf_count;
@@ -225,7 +226,7 @@ function phylopart(
     cluster["members"] = [];
     tree.traverse_and_compute(
       function(n) {
-        if (d3.layout.phylotree.is_leafnode(n)) {
+        if (tree.is_leafnode(n)) {
           cluster["members"].push(n);
         }
       },
