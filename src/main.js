@@ -229,8 +229,8 @@ let Phylotree = class {
         return;
       }
 
-      // TODO : reintroduce backtrack
       postOrder(node, callback, backtrack);
+
     }
 
     function pre_order(node) {
