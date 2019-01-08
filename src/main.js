@@ -19,9 +19,7 @@ import * as rooting from "./rooting";
 
 import { default as TreeRender } from "./render/draw";
 
-
 function resort_children(comparator, start_node, filter) {
-
   // ascending
   this.nodes
     .sum(function(d) {
@@ -36,7 +34,6 @@ function resort_children(comparator, start_node, filter) {
   }
 
   return this;
-
 }
 
 /**
@@ -44,7 +41,6 @@ function resort_children(comparator, start_node, filter) {
  * @returns An array of strings, comprising each tag that was read.
  */
 function mrca() {
-
   var mrca_nodes, mrca;
 
   if (arguments.length == 1) {
@@ -73,7 +69,6 @@ function mrca() {
   });
 
   return mrca;
-
 }
 
 /**
@@ -87,9 +82,7 @@ function mrca() {
  * @returns {Phylotree} phylotree - itself, following the builder pattern.
  */
 let Phylotree = class {
-
   constructor(nwk, options = {}) {
-
     this.newick_string = "";
 
     this.nodes = [];
@@ -148,7 +141,6 @@ let Phylotree = class {
     if (!_node_data["json"]) {
       self.nodes = [];
     } else {
-
       self.nodes = d3.hierarchy(_node_data.json);
 
       // Parse tags
@@ -186,7 +178,6 @@ let Phylotree = class {
 
   */
   json(traversal_type) {
-
     var index = 0;
 
     this.traverse_and_compute(function(n) {
@@ -218,7 +209,6 @@ let Phylotree = class {
     }, traversal_type);
 
     return JSON.stringify(node_array);
-
   }
 
   /*
@@ -232,26 +222,23 @@ let Phylotree = class {
                                    node and its children
    */
   traverse_and_compute(callback, traversal_type, root_node, backtrack) {
-
     traversal_type = traversal_type || "post-order";
 
     function post_order(node) {
-
       if (_.isUndefined(node)) {
         return;
       }
 
       // TODO : reintroduce backtrack
-			postOrder(node, callback, backtrack);
-
+      postOrder(node, callback, backtrack);
     }
 
     function pre_order(node) {
-			preOrder(node, callback, backtrack);
+      preOrder(node, callback, backtrack);
     }
 
     function in_order(node) {
-			inOrder(node, callback, backtrack);
+      inOrder(node, callback, backtrack);
     }
 
     if (traversal_type == "pre-order") {
@@ -273,7 +260,6 @@ let Phylotree = class {
     return this.parsed_tags;
   }
 
-
   update(json) {
     // update with new hiearchy layout
     this.nodes = json;
@@ -285,7 +271,6 @@ let Phylotree = class {
     this.display = new TreeRender(this, container, options);
     return this.display;
   }
-
 };
 
 Phylotree.prototype.is_leafnode = node_operations.is_leafnode;

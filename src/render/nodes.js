@@ -32,7 +32,6 @@ export function clear_internal_nodes(respect) {
 }
 
 export function draw_node(container, node, transitions) {
-
   container = d3.select(container);
   var is_leaf = is_leafnode(node);
 
@@ -43,11 +42,7 @@ export function draw_node(container, node, transitions) {
   let labels = container.selectAll("text").data([node]),
     tracers = container.selectAll("line");
 
-  if (
-    is_leaf ||
-    (this.show_internal_name(node) &&
-      !is_node_collapsed(node))
-  ) {
+  if (is_leaf || (this.show_internal_name(node) && !is_node_collapsed(node))) {
     labels = labels
       .enter()
       .append("text")
@@ -99,8 +94,7 @@ export function draw_node(container, node, transitions) {
           .merge(tracers)
           .attr("x1", d => {
             return (
-              (d.text_align == "end" ? -1 : 1) *
-              this.node_bubble_size(node)
+              (d.text_align == "end" ? -1 : 1) * this.node_bubble_size(node)
             );
           })
           .attr("x2", 0)
@@ -133,8 +127,7 @@ export function draw_node(container, node, transitions) {
           .merge(tracers)
           .attr("x1", d => {
             return (
-              (d.text_align == "end" ? -1 : 1) *
-              this.node_bubble_size(node)
+              (d.text_align == "end" ? -1 : 1) * this.node_bubble_size(node)
             );
           })
           .attr("y2", 0)
@@ -167,8 +160,7 @@ export function draw_node(container, node, transitions) {
         labels = labels.attr("dx", d => {
           return (
             (d.text_align == "end" ? -1 : 1) *
-            ((this.align_tips() ? 0 : shift) +
-              this.shown_font_size * 0.33)
+            ((this.align_tips() ? 0 : shift) + this.shown_font_size * 0.33)
           );
         });
       }
@@ -261,9 +253,7 @@ export function node_span(attr) {
 }
 
 export function reclass_node(node) {
-
-  let class_var =
-    css_classes[is_leafnode(node) ? "node" : "internal-node"];
+  let class_var = css_classes[is_leafnode(node) ? "node" : "internal-node"];
 
   if (item_tagged(node)) {
     class_var += " " + css_classes["tagged-node"];
@@ -317,12 +307,7 @@ export function internal_label(callback, respect_existing) {
 
   for (var i = self.nodes.length - 1; i >= 0; i--) {
     var d = self.nodes[i];
-    if (
-      !(
-        is_leafnode(d) ||
-        item_selected(d, selection_attribute_name)
-      )
-    ) {
+    if (!(is_leafnode(d) || item_selected(d, selection_attribute_name))) {
       d[selection_attribute_name] = callback(d.children);
     }
   }
@@ -348,5 +333,3 @@ export function def_node_label(_node) {
 
   return "";
 }
-
-

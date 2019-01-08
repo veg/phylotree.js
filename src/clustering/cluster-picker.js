@@ -32,9 +32,9 @@ function cluster_picker(
     ? missing_bootstrap_value
     : 1;
 
-  // perform a bottom-up pass of the tree  
-  // where each internal node will receive a floating point value 
-  // that stores the longest path from the internal node to any of its descendants, 
+  // perform a bottom-up pass of the tree
+  // where each internal node will receive a floating point value
+  // that stores the longest path from the internal node to any of its descendants,
   // the diameter of the cluster,  is then the sum of longest paths of all of its children
   let bl = tree.branch_length;
 
@@ -61,15 +61,12 @@ function cluster_picker(
   var clusters = [];
 
   tree.traverse_and_compute(_.noop, "pre-order", root_node, function(n) {
-
     if (!tree.is_leafnode(n)) {
-
       var bs = _.isString(n.data.bootstrap_values)
         ? +n.data.bootstrap_values
         : missing_bootstrap_value;
 
       if (bs >= bootstrap_threshold) {
-
         var my_diameter = _.reduce(
           n.children,
           function(c, n) {
@@ -83,11 +80,9 @@ function cluster_picker(
           return true;
         }
       }
-
     }
 
     return false;
-
   });
 
   // clean up member variables
@@ -118,6 +113,4 @@ function cluster_picker(
   return clusters;
 }
 
-
 export default cluster_picker;
-

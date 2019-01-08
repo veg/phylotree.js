@@ -8,7 +8,6 @@ import { predefined_selecters } from "./options";
 let d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
 
 export function node_dropdown_menu(node, container, phylotree, options) {
-
   let menu_object = d3
     .select(container)
     .select("#" + d3_layout_phylotree_context_menu_id);
@@ -43,11 +42,7 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .append("a")
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
-          .text(
-            is_node_collapsed(node)
-              ? "Expand Subtree"
-              : "Collapse Subtree"
-          )
+          .text(is_node_collapsed(node) ? "Expand Subtree" : "Collapse Subtree")
           .on("click", d => {
             menu_object.style("display", "none");
             this.toggle_collapse(node).update();
@@ -145,9 +140,7 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .append("a")
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
-          .text(
-            "Hide this " + (is_leafnode(node) ? "node" : "subtree")
-          )
+          .text("Hide this " + (is_leafnode(node) ? "node" : "subtree"))
           .on("click", d => {
             menu_object.style("display", "none");
             this.modify_selection([node], "notshown", true, true)

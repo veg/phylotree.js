@@ -3,7 +3,6 @@ import * as _ from "underscore";
 // These methods are part of the Phylotree object
 
 export function graft_a_node(graft_at, new_child, new_parent, lengths) {
-
   let nodes = this.nodes.descendants();
 
   if (graft_at.parent) {
@@ -95,7 +94,6 @@ export function delete_a_node(index) {
 }
 
 export function node_label(_node) {
-
   _node = _node.data;
 
   if (is_leafnode(_node)) {
@@ -103,7 +101,6 @@ export function node_label(_node) {
   }
 
   return "";
-
 }
 
 /**
@@ -141,7 +138,9 @@ export function get_nodes() {
  * @returns {Node} Desired node.
  */
 export function get_node_by_name(name) {
-  return _.filter(this.nodes.descendants(), d => { return d.data.name == name })[0];
+  return _.filter(this.nodes.descendants(), d => {
+    return d.data.name == name;
+  })[0];
 }
 
 /**
@@ -190,5 +189,3 @@ export function update_key_name(old_key, new_key) {
 
   return this;
 }
-
-

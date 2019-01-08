@@ -132,5 +132,3 @@ export function selection_callback(callback) {
   this.selection_callback = callback;
   return this;
 }
-
-

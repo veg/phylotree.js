@@ -25,7 +25,6 @@ export function default_node_colorizer(element, data) {
 
 // TODO: Describe what this does
 export function default_edge_colorizer(element, data) {
-
   try {
     var count_class = 0;
 
@@ -46,5 +45,4 @@ export function default_edge_colorizer(element, data) {
       element.style("stroke", null).classed("branch-multiple", false);
     }
   } catch (e) {}
-
 }

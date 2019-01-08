@@ -30,8 +30,7 @@ import * as _ from "underscore";
  *}                        
  */
 
-
-import {default as pairwise_distances} from "../metrics/pairwise-distances";
+import { default as pairwise_distances } from "../metrics/pairwise-distances";
 
 function phylopart(
   tree,
@@ -40,7 +39,6 @@ function phylopart(
   missing_bootstrap_value,
   resolution
 ) {
-
   /** TODO SLKP 20180817 : this implementation does not compute pairwise distances correctly at the moment;
    instead it computes root-to-tip distances */
   missing_bootstrap_value = _.isNumber(missing_bootstrap_value)
@@ -239,4 +237,3 @@ function phylopart(
 }
 
 export default phylopart;
-

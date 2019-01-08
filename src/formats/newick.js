@@ -14,7 +14,6 @@ import { is_leafnode } from "../nodes";
  * @returns {Object} An object with keys ``json`` and ``error``.
  */
 function newick_parser(nwk_str, bootstrap_values) {
-
   bootstrap_values = true;
 
   let clade_stack = [];
@@ -39,7 +38,6 @@ function newick_parser(nwk_str, bootstrap_values) {
   }
 
   function finish_node_definition() {
-
     let this_node = clade_stack.pop();
 
     this_node["name"] = current_node_name;
@@ -56,11 +54,9 @@ function newick_parser(nwk_str, bootstrap_values) {
     current_node_name = "";
     current_node_attribute = "";
     current_node_annotation = "";
-
   }
 
   function generate_error(location) {
-  
     return {
       json: null,
       error:
@@ -72,7 +68,6 @@ function newick_parser(nwk_str, bootstrap_values) {
         nwk_str.substring(location + 1, location + 20) +
         "'"
     };
-
   }
 
   let automaton_state = 0;

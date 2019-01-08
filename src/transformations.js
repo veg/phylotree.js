@@ -1,5 +1,4 @@
 function handle_rotate(only_self, this_node) {
-
   tree.resort_children(
     function(node1, node2) {
       return node2.ordering - node1.ordering;
@@ -15,7 +14,6 @@ function handle_rotate(only_self, this_node) {
   this_node.children.forEach(function(n, i) {
     n.ordering = i;
   });
-
 }
 
 export default handle_rotate;

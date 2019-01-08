@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import * as _ from "underscore";
 import { item_tagged, item_selected } from "./helpers";
-import { css_classes} from './options';
+import { css_classes } from "./options";
 
 export function draw_edge(container, edge, transition) {
   container = d3.select(container);
@@ -100,5 +100,3 @@ export function edge_css_selectors(css_classes) {
     return (p += "path." + c + (i < a.length - 1 ? "," : ""));
   }, "");
 }
-
-

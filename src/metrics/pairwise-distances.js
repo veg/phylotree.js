@@ -9,7 +9,6 @@ import * as _ from "underscore";
  *
  */
 function compute_pairwise_distances(tree) {
-
   /*
    *    traverse the tree and populate the following values in each node
    *        
@@ -28,7 +27,7 @@ function compute_pairwise_distances(tree) {
    *                                to each of the leaves outside the split defined by this node, EXCLUDING
    *                                the length of this branch
    */
-                                  
+
   var bl = tree.branch_length;
 
   if (!bl) {
@@ -38,7 +37,6 @@ function compute_pairwise_distances(tree) {
   var leaf_count = 0;
 
   tree.traverse_and_compute(function(n) {
-
     n.cot_computed_length = bl(n);
 
     if (n.parent && _.isUndefined(n.cot_computed_length)) {
@@ -82,7 +80,7 @@ function compute_pairwise_distances(tree) {
             length,
             index
           ) {
-            if(a_node.children[this_node].cot_path_to_leaves_above) {
+            if (a_node.children[this_node].cot_path_to_leaves_above) {
               a_node.children[this_node].cot_path_to_leaves_above[index] =
                 length + a_node.children[other_node].cot_computed_length;
             }
