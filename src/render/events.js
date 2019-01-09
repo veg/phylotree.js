@@ -35,7 +35,8 @@ export function toggle_collapse(node) {
 }
 
 export function resize_svg(tree, svg, tr) {
-  var sizes = this.size;
+
+  let sizes = this.size;
 
   if (this.radial()) {
     let pad_radius = this.pad_width(),
@@ -74,7 +75,21 @@ export function resize_svg(tree, svg, tr) {
     ];
   }
 
+
+  if (svg) {
+
+    if (tr) {
+      svg = svg.transition(100);
+    }
+
+    svg.attr("height", sizes[1]).attr("width", sizes[0]);
+
+  }
+
+  this.size = sizes;
+
   return sizes;
+
 }
 
 export function rescale(scale, attr_name) {

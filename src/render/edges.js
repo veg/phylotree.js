@@ -4,6 +4,7 @@ import { item_tagged, item_selected } from "./helpers";
 import { css_classes } from "./options";
 
 export function draw_edge(container, edge, transition) {
+
   container = d3.select(container);
 
   container = container
@@ -47,9 +48,11 @@ export function draw_edge(container, edge, transition) {
   }
 
   return this.phylotree;
+
 }
 
 export function reclass_edge(edge) {
+
   let class_var = css_classes["branch"];
 
   if (item_tagged(edge)) {
@@ -61,9 +64,11 @@ export function reclass_edge(edge) {
   }
 
   return class_var;
+
 }
 
 export function sync_edge_labels() {
+
   this.phylotree.links.forEach(d => {
     d[this.selection_attribute_name] =
       d.target[this.selection_attribute_name] || false;
@@ -71,6 +76,7 @@ export function sync_edge_labels() {
   });
 
   if (this.count_handler()) {
+
     let counts = {};
 
     counts[
@@ -84,7 +90,9 @@ export function sync_edge_labels() {
     }, 0);
 
     this.count_update(this, counts, this.count_handler());
+
   }
+
 }
 
 export function edge_visible(edge) {
