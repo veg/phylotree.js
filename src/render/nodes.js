@@ -6,6 +6,7 @@ import { is_leafnode } from "../nodes";
 import { css_classes } from "./options";
 
 export function shift_tip(d) {
+
   if (this.radial()) {
     return [
       (d.text_align == "end" ? -1 : 1) *
@@ -19,6 +20,7 @@ export function shift_tip(d) {
   }
 
   return [this.right_most_leaf - d.screen_x, 0];
+
 }
 
 export function clear_internal_nodes(respect) {
@@ -32,6 +34,7 @@ export function clear_internal_nodes(respect) {
 }
 
 export function draw_node(container, node, transitions) {
+
   container = d3.select(container);
   var is_leaf = is_leafnode(node);
 
@@ -43,6 +46,7 @@ export function draw_node(container, node, transitions) {
     tracers = container.selectAll("line");
 
   if (is_leaf || (this.show_internal_name(node) && !is_node_collapsed(node))) {
+
     labels = labels
       .enter()
       .append("text")

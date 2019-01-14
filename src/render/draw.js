@@ -126,7 +126,6 @@ class TreeRender {
 
     this.initialize_svg(this.container);
     this.links = this.phylotree.nodes.links();
-    this.placenodes();
     this.update();
   }
 
@@ -139,6 +138,9 @@ class TreeRender {
   }
 
   pad_width() {
+    // reset label_width
+    this.label_width = this._label_width(this.shown_font_size);
+
     const _label_width = this.options["show-labels"] ? this.label_width : 0;
     return this.offsets[1] + this.options["left-offset"] + _label_width;
   }
@@ -162,6 +164,7 @@ class TreeRender {
    * if setting.
    */
   set_size(attr) {
+
     if (!arguments.length) {
       return this.size;
     }
@@ -176,6 +179,7 @@ class TreeRender {
     }
 
     return this;
+
   }
 
   /**
@@ -224,7 +228,7 @@ class TreeRender {
       });
     }
 
-    this.placenodes();
+    this.update();
     this.sync_edge_labels();
 
   }
@@ -265,6 +269,7 @@ class TreeRender {
       });
 
     if (this.draw_scale_bar) {
+
       let scale_bar = this.svg
         .selectAll("." + css_classes["tree-scale-bar"])
         .data([0]);
@@ -524,7 +529,6 @@ class TreeRender {
     */
 
     let undef_BL = false;
-    this._extents = [[0, 0], [0, 0]];
 
     /** _extents computes a bounding box for the tree (initially NOT in screen 
             coordinates)
@@ -764,10 +768,12 @@ class TreeRender {
     });
 
     if (this.do_scaling && undef_BL) {
+
       // requested scaling, but some branches had no branch lengths
       // redo layout without branch lengths
       this.do_scaling = false;
       this.phylotree.nodes.x = this.tree_layout(this.phylotree.nodes);
+
     }
 
     let at_least_one_dimension_fixed = false;
@@ -975,8 +981,9 @@ class TreeRender {
       this.right_most_leaf = 0;
 
       this.phylotree.nodes.each(d => {
+
         d.x *= this.scales[0];
-        d.y *= this.scales[1];
+        d.y *= this.scales[1]*.8;
 
         if (this.options["layout"] == "right-to-left") {
           d.y = this._extents[1][1] * this.scales[1] - d.y;
@@ -1129,6 +1136,7 @@ class TreeRender {
   }
 
   _label_width(_font_size) {
+
     _font_size = _font_size || this.shown_font_size;
     let width = 0;
 
@@ -1149,6 +1157,7 @@ class TreeRender {
       });
 
     return width;
+
   }
 
   /**

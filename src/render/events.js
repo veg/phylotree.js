@@ -63,16 +63,18 @@ export function resize_svg(tree, svg, tr) {
         );
     }
   } else {
+
     sizes = [
-      sizes[1] +
-        (this.options["left-right-spacing"] != "fit-to-size"
-          ? this.pad_width()
-          : 0),
       sizes[0] +
         (this.options["top-bottom-spacing"] != "fit-to-size"
           ? this.pad_height()
+          : 0),
+      sizes[1] +
+        (this.options["left-right-spacing"] != "fit-to-size"
+          ? this.pad_width()
           : 0)
     ];
+
   }
 
 
@@ -82,7 +84,7 @@ export function resize_svg(tree, svg, tr) {
       svg = svg.transition(100);
     }
 
-    svg.attr("height", sizes[1]).attr("width", sizes[0]);
+    svg.attr("height", sizes[0]).attr("width", sizes[1]);
 
   }
 
@@ -100,10 +102,13 @@ export function rescale(scale, attr_name) {
 }
 
 export function trigger_refresh(tree) {
+
   var event = new CustomEvent(d3_layout_phylotree_event_id, {
     detail: ["refresh", tree]
   });
+
   document.dispatchEvent(event);
+
 }
 
 export function count_update(tree, counts) {

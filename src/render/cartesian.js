@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-import * as _ from "underscore";
 import { x_coord, y_coord } from "./coordinates";
 
 export var draw_line = d3
