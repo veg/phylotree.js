@@ -1,6 +1,6 @@
 {
   "name": "phylotree",
-  "version": "1.0.0-alpha.7",
+  "version": "1.0.0-alpha.9",
   "main": "phylotree.js",
   "keywords": [
     "phylogenetics",
@@ -17,6 +17,7 @@
     "d3": "^5.7.0",
     "d3-hierarchy": "^1.1.8",
     "d3-line": "^0.0.1",
+    "d3-time-format": "^2.1.3",
     "font-awesome": "4.x",
     "jquery": "3",
     "lodash": "^4.17.11",

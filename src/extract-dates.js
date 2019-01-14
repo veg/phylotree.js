@@ -1,6 +1,7 @@
 import * as d3 from "d3";
+import {timeParse} from 'd3-time-format';
 
-const default_date_converter = d3.timeFormat("%Y%m%d").parse;
+const default_date_converter = timeParse("%Y%m%d");
 
 const default_regexp = /([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/g;
 
@@ -37,10 +38,10 @@ const default_date_getter = function(node) {
  *      n.decimal_date_value (decimal object, e.g. 2018.72)
  *  
  */
-const extract_dates = function(tree, date_getter, date_converter) {
-  date_getter = date_getter || default_date_getter;
-  date_converter = date_converter || default_date_converter;
+const extract_dates = function(tree, date_getter, date_converter=default_date_converter) {
 
+  date_getter = date_getter || default_date_getter;
+  
   tree.traverse_and_compute(function(n) {
     var d_string = date_getter(n);
     if (d_string) {
