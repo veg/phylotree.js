@@ -108,3 +108,7 @@ export function edge_css_selectors(css_classes) {
     return (p += "path." + c + (i < a.length - 1 ? "," : ""));
   }, "");
 }
+
+export function place_along_an_edge (e, where) {
+    return this.edge_placer (e, where);
+}
