@@ -973,7 +973,9 @@ class TreeRender {
 
       this.size[0] = this.radial_center + this.radius / scaler;
       this.size[1] = this.radial_center + this.radius / scaler;
+
     } else {
+
       this.do_lr();
 
       this.draw_branch = draw_line;
@@ -997,6 +999,7 @@ class TreeRender {
         }
 
         if (d.collapsed) {
+
           d.collapsed.map(p => {
             return [(p[0] *= this.scales[0]), (p[1] *= this.scales[1])];
           });
@@ -1017,6 +1020,7 @@ class TreeRender {
     }
 
     if (this.draw_scale_bar) {
+
       let domain_limit, range_limit;
 
       if (this.radial()) {
@@ -1049,11 +1053,13 @@ class TreeRender {
         scaleTickFormatter = d3.format(".2g");
 
       this.draw_scale_bar = d3.axisTop().scale(scale).tickFormat(function(d) {
+
         if (d === 0) {
           return "";
         }
 
         return scaleTickFormatter(d);
+
       });
 
       if (this.radial()) {

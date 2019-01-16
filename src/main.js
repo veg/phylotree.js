@@ -6,6 +6,8 @@ import { default as nexml_parser } from "./formats/nexml";
 import { default as newick_parser, get_newick } from "./formats/newick";
 import { default as phyloxml_parser } from "./formats/phyloxml";
 
+import { default as max_parsimony } from "./max-parsimony";
+
 import { postOrder, preOrder, default as inOrder } from "./traversal";
 
 import {
@@ -83,6 +85,7 @@ function mrca() {
  * @returns {Phylotree} phylotree - itself, following the builder pattern.
  */
 let Phylotree = class {
+
   constructor(nwk, options = {}) {
     this.newick_string = "";
 
@@ -93,6 +96,7 @@ let Phylotree = class {
     this.branch_length_accessor = def_branch_length_accessor;
     this.branch_length = def_branch_length_accessor;
     this.logger = options.logger || console;
+    this.selection_attribute_name = "selected";
 
     // initialization
     var bootstrap_values = options.bootstrap_values || "",
@@ -264,7 +268,6 @@ let Phylotree = class {
   update(json) {
     // update with new hiearchy layout
     this.nodes = json;
-    //this.links = this.nodes.links();
   }
 
   // Warning : Requires DOM!
@@ -281,6 +284,7 @@ Phylotree.prototype.get_newick = get_newick;
 Phylotree.prototype.resort_children = resort_children;
 Phylotree.prototype.set_branch_length = set_branch_length;
 Phylotree.prototype.branch_name = branch_name;
+Phylotree.prototype.max_parsimony = max_parsimony;
 
 _.extend(Phylotree.prototype, node_operations);
 _.extend(Phylotree.prototype, rooting);

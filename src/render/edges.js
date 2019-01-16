@@ -15,15 +15,17 @@ export function draw_edge(container, edge, transition) {
     });
 
   let new_branch_path = this.draw_branch([edge.source, edge.target]);
-  //console.log(new_branch_path);
 
   if (transition) {
+
     if (container.datum().existing_path) {
       container = container.attr("d", function(d) {
         return d.existing_path;
       });
     }
+
     container = container.attr("d", new_branch_path);
+
   } else {
     container = container.attr("d", new_branch_path);
   }

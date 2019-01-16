@@ -23,16 +23,6 @@ export function shift_tip(d) {
 
 }
 
-export function clear_internal_nodes(respect) {
-  if (!respect) {
-    self.nodes.each(function(d) {
-      if (!is_leafnode(d)) {
-        d[selection_attribute_name] = false;
-      }
-    });
-  }
-}
-
 export function draw_node(container, node, transitions) {
 
   container = d3.select(container);
@@ -307,7 +297,8 @@ export function node_css_selectors(css_classes) {
 }
 
 export function internal_label(callback, respect_existing) {
-  clear_internal_nodes(respect_existing);
+
+  this.phylotree.clear_internal_nodes(respect_existing);
 
   for (var i = self.nodes.length - 1; i >= 0; i--) {
     var d = self.nodes[i];

@@ -189,3 +189,15 @@ export function update_key_name(old_key, new_key) {
 
   return this;
 }
+
+export function clear_internal_nodes(respect) {
+  if (!respect) {
+    this.nodes.each(d => {
+      if (!is_leafnode(d)) {
+        d[this.selection_attribute_name] = false;
+      }
+    });
+  }
+}
+
+
