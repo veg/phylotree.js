@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import {timeParse} from 'd3-time-format';
 
-const default_date_converter = timeParse("%Y%m%d");
+const default_date_converter = d3.timeParse("%Y%m%d");
 
 const default_regexp = /([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/g;
 
