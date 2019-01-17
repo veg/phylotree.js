@@ -51,5 +51,13 @@ tape("should compute midpoint", function(test) {
 
 });
 
+tape.only("should sackin's index", function(test) {
 
+  let newick_string = "(a : 0.1, (b : 0.11, (c : 0.12, (d: 0.12, (e : 0.12, f : 0.13) : 0.14) : 0.15) : 0.16) : 0.16)";
+  let phylo = new phylotree.phylotree(newick_string);
+
+  test.equal(phylotree.sackin(phylo), 20);
+  test.end();
+
+});
 

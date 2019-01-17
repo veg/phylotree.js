@@ -247,6 +247,7 @@ export function node_span(attr) {
 }
 
 export function reclass_node(node) {
+
   let class_var = css_classes[is_leafnode(node) ? "node" : "internal-node"];
 
   if (item_tagged(node)) {
