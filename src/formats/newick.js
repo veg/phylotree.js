@@ -217,6 +217,7 @@ function newick_parser(nwk_str, bootstrap_values) {
 
 // TODO: break this out into two seperate functions
 export function get_newick(annotator) {
+
   let self = this;
 
   if (!annotator) annotator = d => d.name;
@@ -254,6 +255,7 @@ export function get_newick(annotator) {
   node_display(this.nodes);
 
   return element_array.join("");
+
 }
 
 export default newick_parser;
