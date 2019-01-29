@@ -220,7 +220,7 @@ export function get_newick(annotator) {
 
   let self = this;
 
-  if (!annotator) annotator = d => d.name;
+  if (!annotator) annotator = d => d.data.name;
 
   function escape_string(nn) {
     let need_escape = /[\s\[\]\,\)\(\:\'\"]/;
@@ -254,7 +254,7 @@ export function get_newick(annotator) {
   annotator = annotator || "";
   node_display(this.nodes);
 
-  return element_array.join("");
+  return element_array.join("")+";";
 
 }
 

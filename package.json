@@ -1,6 +1,6 @@
 {
   "name": "phylotree",
-  "version": "1.0.0-alpha.10",
+  "version": "1.0.0-alpha.11",
   "main": "phylotree.js",
   "keywords": [
     "phylogenetics",
@@ -12,8 +12,12 @@
   "ignore": [
     "index.html"
   ],
+  "bin": {
+    "slatkin-maddison": "./src/cli/slatkin-maddison.js"
+  },
   "dependencies": {
     "bootstrap": "4",
+    "commander": "^2.19.0",
     "d3": "^5.7.0",
     "d3-hierarchy": "^1.1.8",
     "d3-line": "^0.0.1",
@@ -21,7 +25,9 @@
     "font-awesome": "4.x",
     "jquery": "3",
     "lodash": "^4.17.11",
+    "pretty-data": "^0.40.0",
     "rollup-plugin-node-resolve": "^3.4.0",
+    "seedrandom": "^2.4.4",
     "underscore": "1.x",
     "xml2js": "^0.4.19"
   },
@@ -55,6 +61,7 @@
   "files": [
     "build/phylotree.css",
     "build/phylotree.js",
-    "build/phylotree.min.js"
+    "build/phylotree.min.js",
+    "src/cli"
   ]
 }

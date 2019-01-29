@@ -1,9 +1,7 @@
 import * as _ from "underscore";
 import { is_leafnode } from "./nodes";
 
-export default function max_parsimony(respect_existing) {
-
-  this.clear_internal_nodes(respect_existing);
+export default function max_parsimony(respect_existing, attr_name) {
 
   function populate_mp_matrix(d, attr_name) {
 
@@ -14,7 +12,7 @@ export default function max_parsimony(respect_existing) {
 
     if (is_leafnode(d)) {
 
-      d.mp[1][0] = d.mp[1][1] = d[attr_name] || false;
+      d.mp[1][0] = d.mp[1][1] = d.data.trait == attr_name || false;
       d.mp[0][0] = d.mp[1][0] ? 1 : 0;
       d.mp[0][1] = 1 - d.mp[0][0];
 
@@ -34,7 +32,7 @@ export default function max_parsimony(respect_existing) {
       // cumulative children score if this node is 1
       // parent = 0
 
-      if (d[attr_name]) {
+      if (d.data.trait == attr_name) {
         // respect selected
         d.mp[0][0] = s1 + 1;
         d.mp[1][0] = true;
@@ -62,7 +60,7 @@ export default function max_parsimony(respect_existing) {
     }
   }
 
-  const pop_mp_mat = _.partial(populate_mp_matrix, _, this.selection_attribute_name);
+  const pop_mp_mat = _.partial(populate_mp_matrix, _, attr_name);
   pop_mp_mat(this.nodes);
 
   this.nodes.each(d => {
@@ -71,6 +69,7 @@ export default function max_parsimony(respect_existing) {
     } else {
       d.mp = d.mp[1][d.mp[0][0] < d.mp[0][1] ? 0 : 1];
     }
+    if(d.mp) d.data.trait = attr_name;
   });
 
   //this.display.modify_selection((d, callback) => {
