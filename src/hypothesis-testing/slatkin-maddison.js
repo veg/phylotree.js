@@ -1,5 +1,5 @@
 import { range, sum } from "d3";
-const seedrandom = require('seedrandom');
+import seedrandom from 'seedrandom';
 
 
 function cumsum(vector) {
@@ -8,19 +8,10 @@ function cumsum(vector) {
   return result;
 }
 
-export default function slatkin_maddison(tree, regexes, number_of_iterations, seed) {
-  regexes = regexes.map(regex_str => {
-    const split = regex_str.split(',');
-    return {
-      name: split[0],
-      regex: new RegExp(split[1]),
-      count: 0
-    };
-  });
-
+export default function slatkin_maddison(tree, compartments, number_of_iterations, seed) {
   function get_migration_events() {
-    regexes.forEach(regex => {
-      tree.max_parsimony(false, regex.name);
+    compartments.forEach(c => {
+      tree.max_parsimony(false, c.name);
     });
     const migration_events = [];
     var event, transition_occurred;
@@ -42,32 +33,19 @@ export default function slatkin_maddison(tree, regexes, number_of_iterations, se
 
   // Initial phase
   const total_number_of_leaves = tree.get_tips().length;
-  var node_name_number = 1;
-  tree.traverse_and_compute(function(node) {
-    regexes.forEach(regex => {
-      if(node.data.name.match(regex.regex)) {
-        node.data.trait = regex.name;
-        regex.count++;
-      }
-    });
-    if(!node.data.name) {
-      node.data.name = "Node"+node_name_number;
-      node_name_number++;
-    }
-  })
   const true_migration_events = get_migration_events(tree),
     true_number_of_migrations = true_migration_events.length;
 
   // Bootstrap
   const bootstrap_counts = range(total_number_of_leaves).map(d=>0),
-    trait_probabilities = regexes.map(regex=>regex.count/total_number_of_leaves),
+    trait_probabilities = compartments.map(c => c.count/total_number_of_leaves),
     cdf = cumsum(trait_probabilities);
   var trait_index;
   const rng = seedrandom(seed);
   for(let i=0; i < number_of_iterations; i++) {
     tree.get_tips().forEach(function(node) {
       trait_index = cdf.map(p => rng() < p).indexOf(true);
-      node.data.trait = regexes[trait_index].name;
+      node.data.trait = compartments[trait_index].name;
     });
     var number_of_transitions = get_migration_events(tree).length;
     bootstrap_counts[number_of_transitions]++;
