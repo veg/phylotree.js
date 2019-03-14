@@ -4,11 +4,13 @@ import * as _ from "underscore";
 import { default as parser_registry } from "./formats/registry";
 import { default as nexml_parser } from "./formats/nexml";
 import { default as newick_parser, get_newick } from "./formats/newick";
+
 import * as nexus from "./formats/nexus";
+import * as master from "./formats/master";
 
 import { default as phyloxml_parser } from "./formats/phyloxml";
 import { default as max_parsimony } from "./max-parsimony";
-import { postOrder, preOrder, default as inOrder } from "./traversal";
+import { leftSiblingRightChild, postOrder, preOrder, default as inOrder } from "./traversal";
 
 import {
   default as has_branch_lengths,
@@ -19,7 +21,6 @@ import {
 
 import * as node_operations from "./nodes";
 import * as rooting from "./rooting";
-
 import { default as TreeRender } from "./render/draw";
 
 function resort_children(comparator, start_node, filter) {
@@ -44,6 +45,7 @@ function resort_children(comparator, start_node, filter) {
  * @returns An array of strings, comprising each tag that was read.
  */
 function mrca() {
+
   var mrca_nodes, mrca;
 
   if (arguments.length == 1) {
@@ -72,6 +74,7 @@ function mrca() {
   });
 
   return mrca;
+
 }
 
 /**
@@ -87,6 +90,7 @@ function mrca() {
 let Phylotree = class {
 
   constructor(nwk, options = {}) {
+
     this.newick_string = "";
 
     this.nodes = [];
@@ -126,6 +130,7 @@ let Phylotree = class {
         self.logger.error("Could not parse custom format!");
       }
     } else {
+
       // this builds children and links;
       if (nwk.name == "root") {
         // already parsed by phylotree.js
@@ -141,11 +146,15 @@ let Phylotree = class {
         this.newick_string = nwk;
         _node_data = newick_parser(nwk, bootstrap_values);
       }
+
     }
 
     if (!_node_data["json"]) {
+
       self.nodes = [];
+
     } else {
+
       self.nodes = d3.hierarchy(_node_data.json);
 
       // Parse tags
@@ -168,11 +177,15 @@ let Phylotree = class {
       });
 
       self.parsed_tags = Object.keys(_parsed_tags);
+
     }
 
     self.links = self.nodes.links();
 
+    master.annotateInternalNames(self.nodes);
+
     return self;
+
   }
 
   /*
@@ -183,6 +196,7 @@ let Phylotree = class {
 
   */
   json(traversal_type) {
+
     var index = 0;
 
     this.traverse_and_compute(function(n) {
@@ -259,6 +273,7 @@ let Phylotree = class {
     traversal_type(root_node ? root_node : this.nodes);
 
     return this;
+
   }
 
   get_parsed_tags() {
@@ -287,9 +302,12 @@ Phylotree.prototype.set_branch_length = set_branch_length;
 Phylotree.prototype.branch_name = branch_name;
 Phylotree.prototype.max_parsimony = max_parsimony;
 
+Phylotree.prototype.leftSiblingRightChild = leftSiblingRightChild;
+
 _.extend(Phylotree.prototype, node_operations);
 _.extend(Phylotree.prototype, rooting);
 _.extend(Phylotree.prototype, nexus);
+_.extend(Phylotree.prototype, master);
 
 export function item_tagged(item) {
   return item.tag || false;

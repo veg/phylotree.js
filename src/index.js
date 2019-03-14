@@ -15,7 +15,10 @@ export { default as phylopart } from "./clustering/phylopart";
 export { parse_annotations, load_annotations } from "./formats/nexus";
 
 export {
+  leftSiblingRightChild,
   postOrder,
   preOrder,
   default as inOrder
 } from "./traversal.js";
+
+

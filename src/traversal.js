@@ -1,4 +1,7 @@
+import * as _ from "lodash";
+
 export function postOrder(node, callback, backtrack) {
+
   let nodes = [node],
     next = [],
     children,
@@ -20,6 +23,7 @@ export function postOrder(node, callback, backtrack) {
   }
 
   return node;
+
 }
 
 export function preOrder(node, callback, backtrack) {
@@ -62,3 +66,35 @@ export default function inOrder(node, callback, backtrack) {
 
   return node;
 }
+
+/**
+ * Traverses a tree that represents left-child right-sibling
+ * @param {Object} tree -- the phylotree.js tree object 
+ * @return {Object} An edge list that represents the original multi-way tree
+ *
+ */
+export function leftSiblingRightChild(root) {
+
+  let declareTrueParent = function(n) {
+
+    if(n.children) {
+      // left child is the sibling
+      n.children[0].data.multiway_parent = n.parent;
+
+      // right child is an actual child
+      n.children[1].data.multiway_parent = n;
+    }
+
+  }
+
+  // First decorate each node with its true parent node
+  postOrder(root, declareTrueParent);
+
+  // return edge list
+  let edge_list = _.map(root.nodes, n => {});
+
+  // Construct edge list by new parent-child listing
+  return root;
+
+}
+

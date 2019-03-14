@@ -3,6 +3,7 @@ import * as _ from "underscore";
 // These methods are part of the Phylotree object
 
 export function graft_a_node(graft_at, new_child, new_parent, lengths) {
+
   let nodes = this.nodes.descendants();
 
   if (graft_at.parent) {
@@ -33,6 +34,7 @@ export function graft_a_node(graft_at, new_child, new_parent, lengths) {
   }
 
   return this;
+
 }
 
 /**

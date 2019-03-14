@@ -4,12 +4,10 @@ import {default as newick_parser} from "./newick";
 export function parse_annotations (buf) {
 
   let str = buf;
-
   let index = str.toUpperCase().indexOf('BEGIN DATA;');
   let data = str.slice(index);
 
   if(data.length < 2) {
-    console.log('No DATA section found');
     return '';
   }
 
@@ -62,15 +60,14 @@ export function parse_annotations (buf) {
 export function load_annotations(tree, label, annotations) {
 
   // if filename, then load from filesystem
-  _.each(tree.get_tips(), d => { d.data[label] = annotations.matrix[d.data.name] });
-
-  console.log(tree.get_tips());
+  _.each(tree.get_tips(), d => { d.data["test"] = annotations.matrix[d.data.name] });
 
   // decorate nodes with annotations
 
 }
 
 export default function loadTree(buf) {
+
   // if filename, then load from filesystem
   // Parse first tree from NEXUS file and send to newick_parser
 
@@ -82,7 +79,6 @@ export default function loadTree(buf) {
   let split = str.slice(index);
 
   if(split.length < 2) {
-    console.log('No TREE section found');
     return '';
   }
 

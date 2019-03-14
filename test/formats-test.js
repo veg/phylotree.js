@@ -4,7 +4,7 @@ var _ = require("underscore");
 var tape = require("tape"),
     phylotree = require("../build/phylotree");
 
-tape.only("NEXUS parse", function(test) {
+tape("NEXUS parse", function(test) {
 
   let nwk = String(fs.readFileSync(__dirname + "/data/apternodus.tre"));
   let phylo = new phylotree.phylotree(nwk, { type: "nexus" });
