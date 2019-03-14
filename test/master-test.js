@@ -7,10 +7,10 @@ tape.only("master parse", function(test) {
 
   let nwk = String(fs.readFileSync(__dirname + "/data/fastTrans.nexus"));
   let phylo = new phylotree.phylotree(nwk, { type: "master" });
-  phylo.leftSiblingRightChild(phylo.nodes);
+  let edge_list = phylo.leftSiblingRightChild(phylo.nodes);
 
   // traverse child-sibling
-  console.log(phylo.nodes.children[0].data);
+  console.log(edge_list);
 
 
   //test.equal(max, 235);

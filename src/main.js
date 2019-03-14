@@ -161,6 +161,7 @@ let Phylotree = class {
       let _parsed_tags = {};
 
       self.nodes.each(node => {
+
         if (node.name) {
           let left_bracket_index = node.name.indexOf("{");
           if (left_bracket_index > -1) {
@@ -174,6 +175,7 @@ let Phylotree = class {
             node.name = node.name.slice(0, left_bracket_index);
           }
         }
+
       });
 
       self.parsed_tags = Object.keys(_parsed_tags);
@@ -182,7 +184,9 @@ let Phylotree = class {
 
     self.links = self.nodes.links();
 
-    master.annotateInternalNames(self.nodes);
+    if(type == "master") {
+      master.annotateInternalNames(self.nodes);
+    }
 
     return self;
 

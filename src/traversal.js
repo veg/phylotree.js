@@ -91,10 +91,19 @@ export function leftSiblingRightChild(root) {
   postOrder(root, declareTrueParent);
 
   // return edge list
-  let edge_list = _.map(root.nodes, n => {});
+  let edge_list = _.map(root.descendants(), n => { 
+
+    let source = n.data.multiway_parent; 
+    let name = "unknown";
+
+    if(source) {
+      name = source.data.name;
+    }
+
+    return {"source" : name, "target" : n.data.name } });
 
   // Construct edge list by new parent-child listing
-  return root;
+  return edge_list;
 
 }
 
