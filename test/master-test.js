@@ -1,18 +1,38 @@
 var fs = require("fs");
+var _ = require("lodash");
 
 var tape = require("tape"),
     phylotree = require("../build/phylotree");
 
-tape.only("master parse", function(test) {
+tape( "handles small chain transmission" ,function(test) {
+
+  let nwk = "(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)"
+  let phylo = new phylotree.phylotree(nwk);
+  phylotree.annotateInfection(phylo.nodes);
+
+  let edge_list = phylotree.getMasterEdgeList(phylo);
+
+  // traverse child-sibling
+  test.equal(edge_list.length, 3);
+
+  //test.equal(max, 235);
+  test.end();
+
+});
+
+tape("master parse", function(test) {
 
   let nwk = String(fs.readFileSync(__dirname + "/data/fastTrans.nexus"));
   let phylo = new phylotree.phylotree(nwk, { type: "master" });
-  let edge_list = phylo.leftSiblingRightChild(phylo.nodes);
+
+  phylotree.annotateBeastNames(phylo.nodes);
+  phylotree.annotateInfection(phylo.nodes);
+
+  let edge_list = phylotree.getMasterEdgeList(phylo);
 
   // traverse child-sibling
-  console.log(edge_list);
-
-
+  test.equal(edge_list.length, 986);
+  
   //test.equal(max, 235);
   test.end();
 

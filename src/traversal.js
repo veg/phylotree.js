@@ -73,16 +73,16 @@ export default function inOrder(node, callback, backtrack) {
  * @return {Object} An edge list that represents the original multi-way tree
  *
  */
-export function leftSiblingRightChild(root) {
+export function leftChildRightSibling(root) {
 
   let declareTrueParent = function(n) {
 
     if(n.children) {
-      // left child is the sibling
-      n.children[0].data.multiway_parent = n.parent;
+      // left child is the child
+      n.children[0].data.multiway_parent = n;
 
-      // right child is an actual child
-      n.children[1].data.multiway_parent = n;
+      // right child is the sibling
+      n.children[1].data.multiway_parent = n.parent;
     }
 
   }
@@ -100,10 +100,15 @@ export function leftSiblingRightChild(root) {
       name = source.data.name;
     }
 
-    return {"source" : name, "target" : n.data.name } });
+    // In order to get the true name of the infector/infectee, we must traverse
+    // the tree from the multiway_parents node.
+
+    return {"source" : n.data.multiway_parent, "target" : n } });
 
   // Construct edge list by new parent-child listing
   return edge_list;
 
 }
+
+
 

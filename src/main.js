@@ -10,7 +10,7 @@ import * as master from "./formats/master";
 
 import { default as phyloxml_parser } from "./formats/phyloxml";
 import { default as max_parsimony } from "./max-parsimony";
-import { leftSiblingRightChild, postOrder, preOrder, default as inOrder } from "./traversal";
+import { leftChildRightSibling, postOrder, preOrder, default as inOrder } from "./traversal";
 
 import {
   default as has_branch_lengths,
@@ -184,10 +184,6 @@ let Phylotree = class {
 
     self.links = self.nodes.links();
 
-    if(type == "master") {
-      master.annotateInternalNames(self.nodes);
-    }
-
     return self;
 
   }
@@ -306,7 +302,7 @@ Phylotree.prototype.set_branch_length = set_branch_length;
 Phylotree.prototype.branch_name = branch_name;
 Phylotree.prototype.max_parsimony = max_parsimony;
 
-Phylotree.prototype.leftSiblingRightChild = leftSiblingRightChild;
+Phylotree.prototype.leftChildRightSibling = leftChildRightSibling;
 
 _.extend(Phylotree.prototype, node_operations);
 _.extend(Phylotree.prototype, rooting);

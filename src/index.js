@@ -13,9 +13,10 @@ export { default as cluster_picker } from "./clustering/cluster-picker";
 export { default as phylopart } from "./clustering/phylopart";
 
 export { parse_annotations, load_annotations } from "./formats/nexus";
+export { annotateBeastNames, annotateInfection, getMasterEdgeList } from "./formats/master";
 
 export {
-  leftSiblingRightChild,
+  leftChildRightSibling,
   postOrder,
   preOrder,
   default as inOrder

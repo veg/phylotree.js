@@ -117,6 +117,18 @@ export function get_tips() {
 }
 
 /**
+ * Get the internal nodes of the tree
+ * @returns {Array} Nodes in the current ``phylotree``.
+ */
+export function get_internals() {
+  // get all nodes that have no nodes
+  return _.filter(this.nodes.descendants(), n => {
+    return _.has(n, "children");
+  });
+}
+
+
+/**
  * Get the root node.
  *
  * @returns the current root node of the ``phylotree``.
