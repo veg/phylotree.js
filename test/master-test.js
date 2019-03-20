@@ -1,5 +1,6 @@
 var fs = require("fs");
 var _ = require("lodash");
+var d3 = require("d3");
 
 var tape = require("tape"),
     phylotree = require("../build/phylotree");
@@ -20,7 +21,7 @@ tape( "handles small chain transmission" ,function(test) {
 
 });
 
-tape("master parse", function(test) {
+tape.only("master parse", function(test) {
 
   let nwk = String(fs.readFileSync(__dirname + "/data/fastTrans.nexus"));
   let phylo = new phylotree.phylotree(nwk, { type: "master" });

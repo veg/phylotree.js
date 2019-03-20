@@ -49,8 +49,9 @@ export function annotateInfection(root) {
 
       // Make first infector the parent and the second a new infectee
       let infector = n.data.infector;
-      let infectee = patient_counter;
-      n.data.infection = [infector, infectee];
+      let infectee = "Patient_" +  patient_counter;
+
+      n.data.infection = {"source": infector, "target": infectee};
 
       n.children[0].data.infector = infector;
       n.children[1].data.infector = infectee;
@@ -60,7 +61,7 @@ export function annotateInfection(root) {
   }
 
   var patient_counter = 0;
-  root.data.infector = patient_counter;
+  root.data.infector = "Patient_" + patient_counter;
   preOrder(root, declareInfectionPair);
 
 
