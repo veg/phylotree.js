@@ -17,12 +17,19 @@ export function reroot(node, fraction) {
 
   fraction = fraction !== undefined ? fraction : 0.5;
 
+
   if (node.parent) {
     var new_json = d3.hierarchy({
       name: "new_root",
-      __mapped_bl: undefined,
-      children: [node]
+      //__mapped_bl: undefined,
+      "children": [{
+      	name : node.data.name
+      }]
     });
+    
+    _.extendOwn (new_json.children[0], node);
+    new_json.children[0].parent = new_json;
+    
 
     nodes.forEach(n => {
       n.__mapped_bl = this.branch_length_accessor(n);
@@ -32,6 +39,7 @@ export function reroot(node, fraction) {
     this.set_branch_length(function(n) {
       return n.__mapped_bl || n.data.__mapped_bl;
     });
+
 
     let remove_me = node,
       current_node = node.parent,
@@ -88,25 +96,25 @@ export function reroot(node, fraction) {
       }
       remove_me.children = remove_me.children.concat(current_node.children);
     } else {
-      let name = "__reroot_top_clade";
-
-      let new_node = {
-        name: name
-      };
-
-      new_node = new d3.hierarchy({ name: name, _mapped_bl: stashed_bl });
-
+      let new_node = new d3.hierarchy({ name: "__reroot_top_clade", __mapped_bl: stashed_bl });
+      _.extendOwn (new_json.children[0], node);
       new_node.__mapped_bl = stashed_bl;
       new_node.children = current_node.children.map(function(n) {
+        n.parent = new_node;
         return n;
       });
-
+      new_node.parent = remove_me;
       remove_me.children.push(new_node);
-    }
+     }
   }
+  
+  // need to traverse the nodes and update parents
+  
 
   this.update(new_json);
-
+  this.traverse_and_compute(n => {
+    _.each (n.children, (c) => {c.parent = n;})
+  }, "pre-order")
   return this;
 }
 

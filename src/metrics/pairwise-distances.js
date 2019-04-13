@@ -28,10 +28,10 @@ function compute_pairwise_distances(tree) {
    *                                the length of this branch
    */
 
-  var bl = tree.branch_length;
+  var bl = tree.branch_length_accessor;
 
   if (!bl) {
-    throw "Well defined branch lengths are required for this operation";
+    throw "A non-null branch lengths accessor function is required for this operation";
   }
 
   var leaf_count = 0;
@@ -39,8 +39,9 @@ function compute_pairwise_distances(tree) {
   tree.traverse_and_compute(function(n) {
     n.cot_computed_length = bl(n);
 
+ 
     if (n.parent && _.isUndefined(n.cot_computed_length)) {
-      throw "Well defined branch lengths are required for this operation";
+      throw "Non-null branch lengths are required for this operation: missing branch length at node " + n.data.name;
     }
 
     if (tree.is_leafnode(n)) {
