@@ -14,8 +14,10 @@ import { leftChildRightSibling, postOrder, preOrder, default as inOrder } from "
 
 import {
   default as has_branch_lengths,
+  get_branch_lengths,
   def_branch_length_accessor,
   set_branch_length,
+  normalize,
   branch_name
 } from "./branches";
 
@@ -296,6 +298,8 @@ let Phylotree = class {
 Phylotree.prototype.is_leafnode = node_operations.is_leafnode;
 Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.has_branch_lengths = has_branch_lengths;
+Phylotree.prototype.get_branch_lengths = get_branch_lengths;
+Phylotree.prototype.normalize = normalize;
 Phylotree.prototype.get_newick = get_newick;
 Phylotree.prototype.resort_children = resort_children;
 Phylotree.prototype.set_branch_length = set_branch_length;

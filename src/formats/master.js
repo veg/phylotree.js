@@ -71,6 +71,6 @@ export function getMasterEdgeList(phylo) {
   let nodes = phylo.get_internals();
   return _.map(nodes, n => { return n.data.infection });
 
-
 }
+
 

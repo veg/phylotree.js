@@ -16,6 +16,7 @@ export function get_partitions(attributes) {
  * @returns {Object} true if  every branch in the tree has a branch length
  */
 export default function has_branch_lengths() {
+
   let bl = this.branch_length;
 
   if (bl) {
@@ -27,7 +28,21 @@ export default function has_branch_lengths() {
   return false;
 }
 
-export function def_branch_length_accessor(_node) {
+/**
+ * Returns T/F whether every branch in the tree has a branch length
+ *
+ * @returns {Object} true if  every branch in the tree has a branch length
+ */
+export function get_branch_lengths() {
+
+  let bl = this.branch_length;
+  return _.map(this.nodes.descendants(), node => { return bl(node)});
+
+}
+
+
+export function def_branch_length_accessor(_node, new_length) {
+
   let _node_data = _node.data;
 
   if (
@@ -35,13 +50,20 @@ export function def_branch_length_accessor(_node) {
     _node_data["attribute"] &&
     _node_data["attribute"].length
   ) {
+
+    if(new_length > 0) {
+      _node_data["attribute"] = String(new_length);
+    }
+
     let bl = parseFloat(_node_data["attribute"]);
     if (!isNaN(bl)) {
       return Math.max(0, bl);
     }
+
   }
 
   return undefined;
+
 }
 
 /**
@@ -67,4 +89,41 @@ export function branch_name(attr) {
   if (!arguments.length) return this.node_label;
   this.node_label = attr ? attr : def_node_label;
   return this;
+}
+
+/**
+ * Normalizes branch lengths
+ *
+ * @param {Function} attr (Optional) If setting, a function that accesses a branch name
+ * from a node.
+ * @returns The ``node_label`` accessor if getting, or the current ``this`` if setting.
+ */
+export function normalize(attr) {
+
+  let bl = this.branch_length;
+
+  let branch_lengths = _.map(this.nodes.descendants(), function(node) {
+    if(bl(node)) {
+    return bl(node);
+    } else {
+      return null;
+    }
+  });
+
+  const max_bl = _.max(branch_lengths);
+  const min_bl = _.min(branch_lengths);
+
+  let scaler = function (x) {
+    return (x - min_bl)/(max_bl - min_bl);
+  }
+
+  _.each(this.nodes.descendants(), (node) => {
+      let len = bl(node);
+      if(len) {
+        bl(node, scaler(len));
+      }     
+  });
+
+  return this;
+
 }
