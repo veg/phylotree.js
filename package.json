@@ -1,6 +1,6 @@
 {
   "name": "phylotree",
-  "version": "1.0.0-alpha.11",
+  "version": "1.0.0-alpha.12",
   "main": "build/phylotree.js",
   "keywords": [
     "phylogenetics",
@@ -13,7 +13,8 @@
     "index.html"
   ],
   "bin": {
-    "slatkin-maddison": "./src/cli/slatkin-maddison.js"
+    "slatkin-maddison": "./src/cli/slatkin-maddison.js",
+    "transform-master": "./src/cli/transform-master.js"
   },
   "dependencies": {
     "bootstrap": "4",
@@ -53,6 +54,7 @@
     "docs": "sphinx-build -b html docs documentation",
     "lint": "eslint --ext .js --ignore-pattern data,docs,images,node_modules ./",
     "dev": "rm -rf build && mkdir build && rollup -m -c -w -f umd -o build/phylotree.js -- src/index.js",
+    "build": "rm -rf build && mkdir build && rollup -m -c -f umd -o build/phylotree.js -- src/index.js",
     "watch": "tape-watch -r source-map-support/register test/*-test.js",
     "pretest": "rm -rf build && mkdir build && rollup -c -f umd -o build/phylotree.js -- src/index.js",
     "test": "tape -r source-map-support/register 'test/*-test.js'",
