@@ -10,7 +10,7 @@ tape("normalize", function(test) {
   let phylo = new phylotree.phylotree(newick_string);
 
   // normalize
-  phylo.normalize();
+  phylo.normalize_branch_lengths();
 
   test.ok(_.map(phylo.get_branch_lengths(), d => { return d <= 1}));
   
