@@ -72,7 +72,7 @@ export function fit_root_to_tip(tree) {
   // To return if best node is the root already
   tree.traverse_and_compute(function(node) {
     if (tree.is_leafnode(node) && !_.isNull(node.decimal_date_value)) {
-      linear_data.push([node.decimal_date_value, node.rtta, node.copy_number]);
+      linear_data.push([node.rtta, node.decimal_date_value, node.copy_number]);
     }
   });
 
@@ -87,8 +87,8 @@ export function fit_root_to_tip(tree) {
       tree.traverse_and_compute(function(node) {
         if (tree.is_leafnode(node) && !_.isNull(node.decimal_date_value)) {
           linear_data.push([
-            node.decimal_date_value,
             node.rtta,
+            node.decimal_date_value,
             node.copy_number
           ]);
         }
@@ -162,7 +162,7 @@ function linear_fit(data) {
  *
  */
 export default function root_to_tip(tree) {
-  var bl = tree.branch_length,
+  var bl = tree.branch_length_accessor,
     index = 0;
 
   tree.traverse_and_compute(n => {

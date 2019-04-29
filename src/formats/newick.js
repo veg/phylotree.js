@@ -240,7 +240,7 @@ export function get_newick(annotator) {
       element_array.push(")");
     }
 
-    element_array.push(escape_string(self.node_label(n)));
+    //element_array.push(escape_string(self.node_label(n)));
     element_array.push(annotator(n));
 
     let bl = self.branch_length_accessor(n);
