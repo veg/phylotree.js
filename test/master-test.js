@@ -21,7 +21,7 @@ tape( "handles small chain transmission" ,function(test) {
 
 });
 
-tape.only("master parse", function(test) {
+tape("master parse", function(test) {
 
   let nwk = String(fs.readFileSync(__dirname + "/data/fastTrans.nexus"));
   let phylo = new phylotree.phylotree(nwk, { type: "master" });

@@ -19,23 +19,24 @@ tape("normalize", function(test) {
 });
 
 
-//tape("scaler", function(test) {
+tape("scaler", function(test) {
 
-//  let newick_string = String(fs.readFileSync(__dirname + "/data/seed.seq.bis.sim.nwk"));
-//  let phylo = new phylotree.phylotree(newick_string);
+  let newick_string = String(fs.readFileSync(__dirname + "/data/seed.seq.bis.sim.nwk"));
+  let phylo = new phylotree.phylotree(newick_string);
 
-//  console.log(phylo.links[10].target.data.attribute);
+  // array([-0.00076478, -0.01971795,  0.03945753,  0.00099495])
 
-//  // normalize
-//  phylo.normalize();
-//  console.log(phylo.get_branch_lengths())
+  // normalize
+  phylo.normalize_branch_lengths();
   
-//  // scale to alpha distribution
+  let scaler = function(bl) {
+    return bl * 0.02;
+  }
 
-//  //phylotree.scale(phylo, scaler)
-//  //let distances = phylotree.get_tips();
-//  //test.equal(clusters.length, 235);
-//  test.end();
+  phylo.scale_branch_lengths(scaler)
+  let max_branch_length = _.max(phylo.get_branch_lengths());
+  test.equal(max_branch_length, 0.02);
+  test.end();
 
-//});
+});
 

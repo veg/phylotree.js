@@ -93,10 +93,6 @@ export function branch_name(attr) {
 
 /**
  * Normalizes branch lengths
- *
- * @param {Function} attr (Optional) If setting, a function that accesses a branch name
- * from a node.
- * @returns The ``node_label`` accessor if getting, or the current ``this`` if setting.
  */
 export function normalize(attr) {
 
@@ -121,6 +117,27 @@ export function normalize(attr) {
       let len = bl(node);
       if(len) {
         bl(node, scaler(len));
+      }     
+  });
+
+  return this;
+
+}
+
+
+/**
+ * Scales branch lengths
+ *
+ * @param {Function} function that scales the branches
+ */
+export function scale(scale_by) {
+
+  let bl = this.branch_length;
+
+  _.each(this.nodes.descendants(), (node) => {
+      let len = bl(node);
+      if(len) {
+        bl(node, scale_by(len));
       }     
   });
 
