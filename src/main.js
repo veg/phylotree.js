@@ -6,7 +6,6 @@ import { default as nexml_parser } from "./formats/nexml";
 import { default as newick_parser, get_newick } from "./formats/newick";
 
 import * as nexus from "./formats/nexus";
-import * as master from "./formats/master";
 
 import { default as phyloxml_parser } from "./formats/phyloxml";
 import { default as max_parsimony } from "./max-parsimony";
@@ -311,7 +310,6 @@ Phylotree.prototype.leftChildRightSibling = leftChildRightSibling;
 _.extend(Phylotree.prototype, node_operations);
 _.extend(Phylotree.prototype, rooting);
 _.extend(Phylotree.prototype, nexus);
-_.extend(Phylotree.prototype, master);
 
 export function item_tagged(item) {
   return item.tag || false;
