@@ -138,7 +138,8 @@ export function draw_node(container, node, transitions) {
     }
 
     if (this.options["draw-size-bubbles"]) {
-      var shift = this.phylotree.node_bubble_size(node);
+
+      var shift = this.node_bubble_size(node);
 
       let circles = container
         .selectAll("circle")

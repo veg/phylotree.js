@@ -43,8 +43,9 @@ export function align_tips(attr) {
  * @returns {Float} The size of the bubble associated to this node.
  */
 export function node_bubble_size(node) {
+
   return this.options["draw-size-bubbles"]
-    ? this.relative_node_span(node) * this.scales[0] * 0.5
+    ? this.relative_node_span(node) * this.scales[0] * 0.25
     : 0;
 }
 
