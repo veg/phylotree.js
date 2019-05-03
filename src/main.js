@@ -18,8 +18,7 @@ import {
   def_branch_length_accessor,
   set_branch_length,
   normalize,
-  scale,
-  branch_name
+  scale
 } from "./branches";
 
 import * as node_operations from "./nodes";
@@ -305,7 +304,6 @@ Phylotree.prototype.scale_branch_lengths = scale;
 Phylotree.prototype.get_newick = get_newick;
 Phylotree.prototype.resort_children = resort_children;
 Phylotree.prototype.set_branch_length = set_branch_length;
-Phylotree.prototype.branch_name = branch_name;
 Phylotree.prototype.max_parsimony = max_parsimony;
 
 Phylotree.prototype.leftChildRightSibling = leftChildRightSibling;

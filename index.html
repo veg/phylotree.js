@@ -956,12 +956,16 @@ function selection_handler_delete (e) {
 
 
 $( document ).ready( function () {
+
+		console.log('hi');
     //default_tree_settings();
     tree = new phylotree.phylotree(test_string);
+
     rendered_tree = tree.render("#tree_container", {      
       //"left-right-spacing": "fit-to-size",
       //"top-bottom-spacing": "fit-to-size"
     });
+
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
     $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
     $("#selection_delete").get(0).addEventListener(selection_menu_element_action,selection_handler_delete,false);

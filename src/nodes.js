@@ -95,16 +95,6 @@ export function delete_a_node(index) {
   return this;
 }
 
-export function node_label(_node) {
-  _node = _node.data;
-
-  if (is_leafnode(_node)) {
-    return _node.name || "";
-  }
-
-  return "";
-}
-
 /**
  * Get the tips of the tree
  * @returns {Array} Nodes in the current ``phylotree``.
@@ -181,7 +171,7 @@ export function assign_attributes(attributes) {
  * @returns {Bool} Whether or not the node is a leaf node.
  */
 export function is_leafnode(node) {
-  return !node.children;
+  return !_.has(node, "children")
 }
 
 /**
