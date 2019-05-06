@@ -1,31 +1,77 @@
 import * as _ from "underscore";
-//import { parseString } from "xml2js";
 
-var phyloxml_parser = function(xml_string, options) {
+// Changes XML to JSON
+// Modified version from here: http://davidwalsh.name/convert-xml-json
+function xmlToJson(xml) {
+
+	// Create the return object
+	var obj = {};
+
+	if (xml.nodeType == 1) { // element
+		// do attributes
+		if (xml.attributes.length > 0) {
+		obj["@attributes"] = {};
+			for (var j = 0; j < xml.attributes.length; j++) {
+				var attribute = xml.attributes.item(j);
+				obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+			}
+		}
+	} else if (xml.nodeType == 3) { // text
+		obj = xml.nodeValue;
+	}
+
+	// do children
+	// If just one text node inside
+	if (xml.hasChildNodes() && xml.childNodes.length === 1 && xml.childNodes[0].nodeType === 3) {
+		obj = xml.childNodes[0].nodeValue;
+	}
+	else if (xml.hasChildNodes()) {
+		for(var i = 0; i < xml.childNodes.length; i++) {
+			var item = xml.childNodes.item(i);
+			var nodeName = item.nodeName;
+			if (typeof(obj[nodeName]) == "undefined") {
+				obj[nodeName] = xmlToJson(item);
+			} else {
+				if (typeof(obj[nodeName].push) == "undefined") {
+					var old = obj[nodeName];
+					obj[nodeName] = [];
+					obj[nodeName].push(old);
+				}
+				obj[nodeName].push(xmlToJson(item));
+			}
+		}
+	}
+	return obj;
+}
+
+var phyloxml_parser = function(xml, options) {
+
   function parse_phyloxml(node, index) {
     if (node.clade) {
       node.clade.forEach(parse_phyloxml);
       node.children = node.clade;
       delete node.clade;
     }
-    node.original_child_order = index + 1;
 
+		node.annotation = 1;
+		node.attribute = "0.01";
     if (node.branch_length) {
-      node.attribute = node.branch_length[0];
+			node.attribute = node.branch_length;
     }
     if (node.taxonomy) {
-      node.name = node.taxonomy[0].scientific_name[0];
+      node.name = node.taxonomy.scientific_name;
     }
+
     node.annotation = "";
+
   }
 
   var tree_json;
 
-  parseString(xml_string, function(error, xml) {
-    tree_json = xml.phyloxml.phylogeny[0].clade[0];
-    tree_json.name = "root";
-    parse_phyloxml(tree_json);
-  });
+  xml = xmlToJson(xml);
+  tree_json = xml.phyloxml.phylogeny.clade;
+  tree_json.name = "root";
+  parse_phyloxml(tree_json, 0);
 
   return {
     json: tree_json,

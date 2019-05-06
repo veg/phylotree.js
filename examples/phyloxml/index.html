@@ -13,9 +13,10 @@
   <script src="//code.jquery.com/jquery.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-  <script src="http://d3js.org/d3.v3.min.js"></script>
-  <script src="/phylotree.js"></script>
+  <script src="http://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/d3-fetch.v1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
+  <script src="/build/phylotree.js"></script>
   <style>
 #code {
   width: 500px;
@@ -24,28 +25,69 @@
 </head>
 
 <body>
-  <svg id="tree_display" />
+  <svg id="tree_display" height=900 width=900 />
     <div id="code"><pre><code class="javascript">
-      d3.text('adh.xml', function(error, data) {
-        var tree = d3.layout.phylotree()
-          .svg(d3.select("#tree_display"));
+  $( document ).ready( function () {
 
-        tree(data)
-          .layout();
-      });
+    d3.xml('adh.xml').then( (data) => {
+
+      var tree = new phylotree.phylotree(data, {type:'phyloxml'});
+
+      let height = 900;
+      let width = 900;
+
+      tree.render("#tree_display", {
+                   height:height, 
+                   width:width,
+                   'left-right-spacing': 'fit-to-size', 
+                   'top-bottom-spacing': 'fit-to-size'
+                 })
+
+			rendered_tree.style_edges (function (element, data) {
+					if (data.target.data.name == "Octopus vulgaris") {
+						element.style ("stroke", "red");
+					}
+
+    	});
+
+			rendered_tree.update();
+
+    })
+
+    hljs.initHighlightingOnLoad();
+  });
+
     </code></pre></div>
   <script>
 
-    d3.text('adh.xml', function(error, data) {
-      var tree = d3.layout.phylotree()
-        .svg(d3.select("#tree_display"));
+  $( document ).ready( function () {
 
-      tree(data)
-        .layout();
-    });
+    d3.xml('adh.xml').then( (data) => {
 
-    // for syntax highlighting
+      var tree = new phylotree.phylotree(data, {type:'phyloxml'});
+
+      let height = 900;
+      let width = 900;
+
+      let rendered_tree = tree.render("#tree_display", {
+                   height:height, 
+                   width:width,
+                   'left-right-spacing': 'fit-to-size', 
+                   'top-bottom-spacing': 'fit-to-size'
+                 })
+
+			rendered_tree.style_edges (function (element, data) {
+					if (data.target.data.name == "Octopus vulgaris") {
+						element.style ("stroke", "red");
+					}
+
+    	});
+
+			rendered_tree.update();
+
+		});
     hljs.initHighlightingOnLoad();
+  });
   </script>
 
 </body>

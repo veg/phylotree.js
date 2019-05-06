@@ -139,7 +139,7 @@ let Phylotree = class {
       } else if (typeof nwk != "string") {
         // old default
         _node_data = nwk;
-      } else if (nwk[0] == "<") {
+      } else if (nwk.contentType == "application/xml") {
         // xml
         _node_data = phyloxml_parser(nwk);
       } else {
