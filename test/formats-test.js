@@ -23,4 +23,27 @@ tape("NEXUS parse", function(test) {
 
 });
 
+tape("Annotated Newick parse", function(test) {
+  let nwk = fs.readFileSync(__dirname + "/data/CD2-relax.new").toString();
+  let phylo = new phylotree.phylotree(nwk);
 
+  let test_leaves = ["Pig", "Cow", "Horse", "Cat"];
+  test_leaves.forEach(function(leaf) {
+    let node = phylo.get_node_by_name(leaf);
+    test.equal(node.data.name, leaf);
+    test.equal(node.data.annotation, "Test");
+  });
+
+  let reference_leaves = ["RhMonkey", "Baboon", "Human", "Chimp"];
+  reference_leaves.forEach(function(leaf) {
+    let node = phylo.get_node_by_name(leaf);
+    test.equal(node.data.name, leaf);
+    test.equal(node.data.annotation, "Reference");
+  });
+
+  test.assert(phylo.parsed_tags.length == 2);
+  test.assert(phylo.parsed_tags.includes("Test"));
+  test.assert(phylo.parsed_tags.includes("Reference"));
+
+  test.end();
+});

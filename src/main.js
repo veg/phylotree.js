@@ -163,17 +163,17 @@ let Phylotree = class {
 
       self.nodes.each(node => {
 
-        if (node.name) {
-          let left_bracket_index = node.name.indexOf("{");
+        if (node.data.name) {
+          let left_bracket_index = node.data.name.indexOf("{");
           if (left_bracket_index > -1) {
-            let tag = node.name.slice(
+            let tag = node.data.name.slice(
               left_bracket_index + 1,
-              node.name.length - 1
+              node.data.name.length - 1
             );
 
-            node[tag] = true;
+            node.data.annotation = tag;
             _parsed_tags[tag] = true;
-            node.name = node.name.slice(0, left_bracket_index);
+            node.data.name = node.data.name.slice(0, left_bracket_index);
           }
         }
 
