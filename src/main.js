@@ -131,7 +131,6 @@ let Phylotree = class {
         self.logger.error("Could not parse custom format!");
       }
     } else {
-
       // this builds children and links;
       if (nwk.name == "root") {
         // already parsed by phylotree.js
@@ -162,21 +161,9 @@ let Phylotree = class {
       let _parsed_tags = {};
 
       self.nodes.each(node => {
-
-        if (node.data.name) {
-          let left_bracket_index = node.data.name.indexOf("{");
-          if (left_bracket_index > -1) {
-            let tag = node.data.name.slice(
-              left_bracket_index + 1,
-              node.data.name.length - 1
-            );
-
-            node.data.annotation = tag;
-            _parsed_tags[tag] = true;
-            node.data.name = node.data.name.slice(0, left_bracket_index);
-          }
+        if (node.data.annotation) {
+          _parsed_tags[node.data.annotation] = true;
         }
-
       });
 
       self.parsed_tags = Object.keys(_parsed_tags);
