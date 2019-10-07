@@ -16,7 +16,7 @@ const config = {
     extend: true,
     globals: {d3:'d3', underscore:'_'}
   },
-  plugins: [node(), copy({"phylotree.css":"build/phylotree.css"})]
+  plugins: [node(), copy({"phylotree.css":"build/phylotree.css", "index.html":"build/index.html"})]
 };
 
 export default [
