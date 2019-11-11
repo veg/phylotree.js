@@ -197,6 +197,13 @@ function newick_parser(nwk_str, bootstrap_values) {
     }
   }
 
+  if (automaton_state == 2 || automaton_state == 4) {
+    return {
+        json: null,
+        error: "Unterminated " + (automaton_state==4 ? "comment " : "quoted node name") 
+    }
+  }
+
   if (clade_stack.length != 1) {
     return generate_error(nwk_str.length - 1);
   }
