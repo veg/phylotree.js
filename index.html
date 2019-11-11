@@ -544,7 +544,7 @@ $("#internal_labels").on ("click", function (e) {
     var res = phylotree.newick_parser( labeled_tree );
     default_tree_settings ();
     tree.internal_names (function (n) {return n.name && n.name.length > 0;});
-    tree.options ({'draw-size-bubbles' : true}, false);
+    tree.options ({'draw-size-bubbles' : false}, false);
     tree.node_span (function (node) { 
         if (phylotree.is_leafnode (node)) {
             return 1;
@@ -956,12 +956,14 @@ function selection_handler_delete (e) {
 
 
 $( document ).ready( function () {
+
     //default_tree_settings();
     tree = new phylotree.phylotree(test_string);
+
     rendered_tree = tree.render("#tree_container", {      
-      //"left-right-spacing": "fit-to-size",
-      //"top-bottom-spacing": "fit-to-size"
+    	'draw-size-bubbles' : false
     });
+
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
     $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
     $("#selection_delete").get(0).addEventListener(selection_menu_element_action,selection_handler_delete,false);

@@ -48,6 +48,5 @@ bower_components
 # OS specific files
 .DS_Store
 
-phylotree.js
 documentation
 build

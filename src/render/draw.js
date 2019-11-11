@@ -21,6 +21,7 @@ function constant(x) {
 }
 
 class TreeRender {
+
   constructor(phylotree, container, options = {}) {
     this.css_classes = css_classes;
     this.phylotree = phylotree;
@@ -29,7 +30,7 @@ class TreeRender {
       return 0;
     };
 
-    this.node_label = this.def_node_label;
+    this._node_label = this.def_node_label;
     this.svg = null;
     this.selection_callback = null;
     this.scales = [1, 1];
@@ -1151,7 +1152,7 @@ class TreeRender {
       .filter(render_nodes.node_visible)
       .forEach(node => {
 
-        let node_width = 12 + this.node_label(node).length * _font_size * 0.8;
+        let node_width = 12 + this._node_label(node).length * _font_size * 0.8;
 
         if (node.angle !== null) {
           node_width *= Math.max(

@@ -232,7 +232,7 @@ export function get_newick(annotator) {
   function escape_string(nn) {
     let need_escape = /[\s\[\]\,\)\(\:\'\"]/;
     let enquote = need_escape.test(nn);
-    return enquote ? "'" + nn.replace("'", "''") + "'" : nn;
+		return enquote ? "'" + nn.replace(/\'/g, "''") + "'" : nn;
   }
 
   function node_display(n) {

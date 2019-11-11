@@ -47,7 +47,7 @@ export function draw_node(container, node, transitions) {
         return this.shown_font_size * 0.33;
       })
       .text(d => {
-        return this.options["show-labels"] ? this.node_label(d) : "";
+        return this.options["show-labels"] ? this._node_label(d) : "";
       })
       .style("font-size", d => {
         return this.ensure_size_is_in_px(this.shown_font_size);
@@ -138,7 +138,8 @@ export function draw_node(container, node, transitions) {
     }
 
     if (this.options["draw-size-bubbles"]) {
-      var shift = this.phylotree.node_bubble_size(node);
+
+      var shift = this.node_bubble_size(node);
 
       let circles = container
         .selectAll("circle")
@@ -213,6 +214,7 @@ export function update_has_hidden_nodes() {
 }
 
 export function show_internal_name(node) {
+
   const i_names = this.internal_names();
 
   if (i_names) {
@@ -317,6 +319,7 @@ export function internal_label(callback, respect_existing) {
 }
 
 export function def_node_label(_node) {
+
   _node = _node.data;
 
   if (is_leafnode(_node)) {
@@ -328,4 +331,21 @@ export function def_node_label(_node) {
   }
 
   return "";
+
 }
+
+/**
+ * Get or set node_label accessor.
+ *
+ * @param {Function} attr (Optional) If setting, a function that accesses a branch name
+ * from a node.
+ * @returns The ``node_label`` accessor if getting, or the current ``this`` if setting.
+ */
+export function node_label(attr) {
+  if (!arguments.length) return this._node_label;
+  this._node_label = attr ? attr : def_node_label;
+	this.update();
+  return this;
+}
+
+

@@ -6,7 +6,6 @@ import { default as nexml_parser } from "./formats/nexml";
 import { default as newick_parser, get_newick } from "./formats/newick";
 
 import * as nexus from "./formats/nexus";
-import * as master from "./formats/master";
 
 import { default as phyloxml_parser } from "./formats/phyloxml";
 import { default as max_parsimony } from "./max-parsimony";
@@ -14,9 +13,11 @@ import { leftChildRightSibling, postOrder, preOrder, default as inOrder } from "
 
 import {
   default as has_branch_lengths,
+  get_branch_lengths,
   def_branch_length_accessor,
   set_branch_length,
-  branch_name
+  normalize,
+  scale
 } from "./branches";
 
 import * as node_operations from "./nodes";
@@ -138,7 +139,7 @@ let Phylotree = class {
       } else if (typeof nwk != "string") {
         // old default
         _node_data = nwk;
-      } else if (nwk[0] == "<") {
+      } else if (nwk.contentType == "application/xml") {
         // xml
         _node_data = phyloxml_parser(nwk);
       } else {
@@ -296,10 +297,12 @@ let Phylotree = class {
 Phylotree.prototype.is_leafnode = node_operations.is_leafnode;
 Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.has_branch_lengths = has_branch_lengths;
+Phylotree.prototype.get_branch_lengths = get_branch_lengths;
+Phylotree.prototype.normalize_branch_lengths = normalize;
+Phylotree.prototype.scale_branch_lengths = scale;
 Phylotree.prototype.get_newick = get_newick;
 Phylotree.prototype.resort_children = resort_children;
 Phylotree.prototype.set_branch_length = set_branch_length;
-Phylotree.prototype.branch_name = branch_name;
 Phylotree.prototype.max_parsimony = max_parsimony;
 
 Phylotree.prototype.leftChildRightSibling = leftChildRightSibling;
@@ -307,7 +310,6 @@ Phylotree.prototype.leftChildRightSibling = leftChildRightSibling;
 _.extend(Phylotree.prototype, node_operations);
 _.extend(Phylotree.prototype, rooting);
 _.extend(Phylotree.prototype, nexus);
-_.extend(Phylotree.prototype, master);
 
 export function item_tagged(item) {
   return item.tag || false;

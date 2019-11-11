@@ -5,9 +5,7 @@ sudo: false
 notifications:
   email:
     recipients:
-    - spond@temple.edu
     - steven@stevenweaver.org
-    - sshank@temple.edu
     on_success: always
     on_failure: always
 
@@ -15,19 +13,13 @@ branches:
   only:
   - master
   - develop
-  - ati-sprint
+  - 1.0.0-alpha
 
 cache:
   yarn: true
   directories:
   - ".eslintcache"
   - node_modules
-
-install:
-  - yarn add global jsdoc
-  - pip install -r requirements.txt --user
   
 script:
-  - webpack
-  - yarn lint
-  - yarn docs
+  - yarn test

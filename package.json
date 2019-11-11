@@ -1,6 +1,6 @@
 {
   "name": "phylotree",
-  "version": "1.0.0-alpha.12",
+  "version": "1.0.0-alpha.14",
   "main": "build/phylotree.js",
   "keywords": [
     "phylogenetics",
@@ -13,8 +13,7 @@
     "index.html"
   ],
   "bin": {
-    "slatkin-maddison": "./src/cli/slatkin-maddison.js",
-    "transform-master": "./src/cli/transform-master.js"
+    "slatkin-maddison": "./src/cli/slatkin-maddison.js"
   },
   "dependencies": {
     "bootstrap": "4",
