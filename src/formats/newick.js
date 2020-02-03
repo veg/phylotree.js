@@ -13,9 +13,11 @@ import { is_leafnode } from "../nodes";
  * @param {Object} bootstrap_values.
  * @returns {Object} An object with keys ``json`` and ``error``.
  */
-function newick_parser(nwk_str, bootstrap_values) {
-  bootstrap_values = true;
 
+function newick_parser(nwk_str, bootstrap_values, delimiter) {
+  bootstrap_values = true;
+  let left_delimiter = delimiter || '{',
+    right_delimiter = left_delimiter == '{' ? '}' : ']';
   let clade_stack = [];
 
   function add_new_tree_level() {
@@ -136,7 +138,7 @@ function newick_parser(nwk_str, bootstrap_values) {
             }
             return generate_error(char_index);
           } else {
-            if (current_char == "[") {
+            if (current_char == left_delimiter) {
               if (current_node_annotation.length) {
                 return generate_error(char_index);
               } else {
@@ -181,10 +183,10 @@ function newick_parser(nwk_str, bootstrap_values) {
         }
         case 4: {
           // inside a comment / attribute
-          if (current_char == "]") {
+          if (current_char == right_delimiter) {
             automaton_state = 3;
           } else {
-            if (current_char == "[") {
+            if (current_char == left_delimiter) {
               return generate_error(char_index);
             }
             current_node_annotation += current_char;
