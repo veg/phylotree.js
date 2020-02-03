@@ -1,6 +1,6 @@
 {
   "name": "phylotree",
-  "version": "1.0.0-alpha.17",
+  "version": "1.0.0-alpha.18",
   "main": "build/phylotree.js",
   "keywords": [
     "phylogenetics",
