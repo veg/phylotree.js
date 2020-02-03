@@ -16,6 +16,7 @@ import {
   get_branch_lengths,
   def_branch_length_accessor,
   set_branch_length,
+  branch_name,
   normalize,
   scale
 } from "./branches";
@@ -285,6 +286,7 @@ Phylotree.prototype.is_leafnode = node_operations.is_leafnode;
 Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.has_branch_lengths = has_branch_lengths;
 Phylotree.prototype.get_branch_lengths = get_branch_lengths;
+Phylotree.prototype.branch_name = branch_name;
 Phylotree.prototype.normalize_branch_lengths = normalize;
 Phylotree.prototype.scale_branch_lengths = scale;
 Phylotree.prototype.get_newick = get_newick;

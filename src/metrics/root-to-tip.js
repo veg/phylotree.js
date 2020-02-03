@@ -3,7 +3,7 @@ import * as _ from "underscore";
 function annotate_copy_number(tree) {
   tree.traverse_and_compute(function(node) {
     if (tree.is_leafnode(node)) {
-      node.copy_number = 1;
+      node.data.copy_number = 1;
     }
   });
 }
@@ -16,12 +16,13 @@ function compute_root_to_tip_other_root(
   shared_distance,
   distance_to_new_root
 ) {
+
   var my_bl = tree.branch_length(node);
 
   var go_up = false;
 
   if (!coming_from) {
-    shared_distance = node.root_to_tip;
+    shared_distance = node.data.root_to_tip;
     distance_to_new_root = 0;
     go_up = true;
   }
@@ -42,7 +43,7 @@ function compute_root_to_tip_other_root(
     }
   }
 
-  node.rtta = node.root_to_tip - shared_distance + distance_to_new_root;
+  node.data.rtta = node.data.root_to_tip - shared_distance + distance_to_new_root;
 
   if (go_up) {
     shared_distance -= my_bl;
@@ -60,8 +61,8 @@ function compute_root_to_tip_other_root(
   }
 }
 
-// Requires stuff
 export function fit_root_to_tip(tree) {
+
   var linear_data = [],
     max_r2 = 0,
     best_node = 0;
@@ -71,25 +72,27 @@ export function fit_root_to_tip(tree) {
 
   // To return if best node is the root already
   tree.traverse_and_compute(function(node) {
-    if (tree.is_leafnode(node) && !_.isNull(node.decimal_date_value)) {
-      linear_data.push([node.rtta, node.decimal_date_value, node.copy_number]);
+    if (tree.is_leafnode(node) && !_.isNull(node.data.decimal_date_value)) {
+      linear_data.push([node.data.decimal_date_value, node.data.rtta, node.data.copy_number]);
     }
   });
 
-  var best_fit = linear_fit(linear_data);
+  let best_fit = linear_fit(linear_data);
 
   tree.traverse_and_compute(function(node) {
-    if (tree.is_leafnode(node) && !_.isNull(node.decimal_date_value)) {
+
+    if (tree.is_leafnode(node) && !_.isNull(node.data.decimal_date_value)) {
+
       compute_root_to_tip_other_root(tree, node, null, 0, 0);
 
       linear_data = [];
 
       tree.traverse_and_compute(function(node) {
-        if (tree.is_leafnode(node) && !_.isNull(node.decimal_date_value)) {
+        if (tree.is_leafnode(node) && !_.isNull(node.data.decimal_date_value)) {
           linear_data.push([
-            node.rtta,
-            node.decimal_date_value,
-            node.copy_number
+            node.data.decimal_date_value,
+            node.data.rtta,
+            node.data.copy_number
           ]);
         }
       });
@@ -102,14 +105,17 @@ export function fit_root_to_tip(tree) {
         best_node = node;
         best_fit = fit;
       }
+
     }
   });
 
   return { root: best_node, fit: best_fit };
+
 }
 
 // linear fit of root to tip distances
 function linear_fit(data) {
+
   var ss = data.reduce(function(p, c) {
       return c[2] + p;
     }, 0), // sample count
@@ -134,6 +140,7 @@ function linear_fit(data) {
   });
 
   fitB /= st2;
+
   var a = (sy - sx * fitB) / ss;
 
   var varres = 0;
@@ -162,52 +169,52 @@ function linear_fit(data) {
  *
  */
 export default function root_to_tip(tree) {
+
   var bl = tree.branch_length_accessor,
     index = 0;
 
   tree.traverse_and_compute(n => {
     if (n.parent) {
-      n._computed_length = bl(n);
-      if (!_.isNumber(n._computed_length)) {
+      n.data._computed_length = bl(n);
+      if (!_.isNumber(n.data._computed_length)) {
         throw "root_to_tip cannot be run on trees with missing branch lengths";
       }
     }
     if (tree.is_leafnode(n)) {
-      n.leaf_index = index++;
+      n.data.leaf_index = index++;
     }
-    if ("r2t" in n) {
-      delete n.r2t;
+    if ("r2t" in n.data) {
+      delete n.data.r2t;
     }
   });
 
   tree.traverse_and_compute(n => {
     if (n.parent) {
-      if (!("r2t" in n.parent)) {
-        n.parent.r2t = {};
-        n.parent.hi = [];
+      if (!("r2t" in n.parent.data)) {
+        n.parent.data.r2t = {};
       }
       if (tree.is_leafnode(n)) {
-        n.parent.r2t[n.leaf_index] = n._computed_length;
+        n.parent.data.r2t[n.data.leaf_index] = n.data._computed_length;
       } else {
-        _.each(n.r2t, function(v, idx) {
-          n.parent.r2t[idx] = v + n._computed_length;
+        _.each(n.data.r2t, function(v, idx) {
+          n.parent.data.r2t[idx] = v + n.data._computed_length;
         });
-        delete n.r2t;
+        delete n.data.r2t;
       }
-      delete n._computed_length;
+      delete n.data._computed_length;
     }
   });
 
-  var r2t = tree.get_root_node().r2t;
+  var r2t = tree.get_root_node().data.r2t;
 
   tree.traverse_and_compute(n => {
     if (tree.is_leafnode(n)) {
-      n.root_to_tip = r2t[n.leaf_index];
-      delete n.leaf_index;
+      n.data.root_to_tip = r2t[n.data.leaf_index] || 0;
+      delete n.data.leaf_index;
     }
   });
 
-  delete tree.get_root_node().r2t;
+  delete tree.get_root_node().data.r2t;
 
   return tree;
 }

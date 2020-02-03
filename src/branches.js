@@ -131,3 +131,16 @@ export function scale(scale_by) {
   return this;
 
 }
+
+/**
+ * Get or set branch name accessor.
+ *
+ * @param {Function} attr (Optional) If setting, a function that accesses a branch name
+ * from a node.
+ * @returns The ``node_label`` accessor if getting, or the current ``this`` if setting.
+ */
+export function branch_name(attr) {
+  if (!arguments.length) return this.node_label;
+  this.node_label = attr ? attr : def_node_label;
+  return this;
+}

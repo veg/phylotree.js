@@ -46,21 +46,21 @@ const extract_dates = function(tree, date_getter, date_converter=default_date_co
     var d_string = date_getter(n);
     if (d_string) {
       try {
-        n.date_value = date_converter(d_string);
-        var full_year = n.date_value.getFullYear();
+        n.data.date_value = date_converter(d_string);
+        var full_year = n.data.date_value.getFullYear();
         var year_start = new Date(full_year, 0, 1),
           year_start_p1 = new Date(full_year + 1, 0, 1);
 
-        n.decimal_date_value =
+        n.data.decimal_date_value =
           full_year +
-          (n.date_value - year_start) / (year_start_p1 - year_start);
+          (n.data.date_value - year_start) / (year_start_p1 - year_start);
         return;
       } catch (e) {
         // for conversion failures
       }
     }
-    n.date_value = null;
-    n.decimal_date_value = null;
+    n.data.date_value = null;
+    n.data.decimal_date_value = null;
   });
 
   return tree;

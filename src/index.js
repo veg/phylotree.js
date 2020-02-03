@@ -3,7 +3,6 @@ export { default as phylotree } from "./main.js";
 export { default as pairwise_distances } from "./metrics/pairwise-distances";
 export { default as sackin } from "./metrics/sackins";
 export { default as fitch } from "./parsimony/fitch";
-export { default as slatkin_maddison } from "./hypothesis-testing/slatkin-maddison";
 export { center_of_tree } from "./metrics/center-of-tree";
 export { compute_midpoint } from "./metrics/compute-midpoint";
 export { default as root_to_tip, fit_root_to_tip } from "./metrics/root-to-tip";
