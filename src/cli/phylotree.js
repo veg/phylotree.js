@@ -10,8 +10,6 @@ const _ = require('underscore');
 const phylo_path = require.resolve('phylotree');
 const path = require('path');
 
-console.log(phylo_path);
-
 const http = require('http')
 const port = 3000
 
