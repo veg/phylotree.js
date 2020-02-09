@@ -54,13 +54,12 @@ fs.readFile(commander.newick, (err, newick_data) => {
   let tree_with_dates = phylotree.extract_dates(computed_tree, _.partial(date_parser, computed_tree));
 
   // Filter just in case the date extractor did not always find a date from the header
-  const mapped = _.map(tree_with_dates.get_tips(), d => {return _.pick(d.data, ["root_to_tip", "decimal_date_value", "date_value"])});
+  const mapped = _.map(tree_with_dates.get_tips(), d => {return _.pick(d, ["root_to_tip", "decimal_date_value", "date_value"])});
   let date_and_distances = _.filter(mapped, d => { return !_.isNull(d.decimal_date_value) })
   let fitted_slope = phylotree.fit_root_to_tip(tree_with_dates)
   fitted_slope.root_to_tip = fitted_slope.root.root_to_tip;
   console.log(fitted_slope);
 
 });
-
 
 
