@@ -191,7 +191,6 @@ fs.readFile(commander.newick, (err, newick_data) => {
   let date_and_distances = _.filter(mapped, d => {
     return !_.isNull(d.decimal_date_value);
   });
-  delete logger;
 
   stringify(date_and_distances, function(err, output) {
     // Pretty print table
