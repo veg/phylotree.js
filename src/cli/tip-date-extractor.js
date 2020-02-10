@@ -185,7 +185,7 @@ fs.readFile(commander.newick, (err, newick_data) => {
   // Filter just in case the date extractor did not always find a date from the header
   const mapped = _.map(tree_with_dates.get_tips(), d => [
     d.data.name,
-    d.decimal_date_value
+    d.data.decimal_date_value
   ]);
 
   let date_and_distances = _.filter(mapped, d => {
