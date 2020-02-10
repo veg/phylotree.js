@@ -197,4 +197,5 @@ fs.readFile(commander.newick, (err, newick_data) => {
     console.log("name, date");
     console.log(output);
   });
+
 });
