@@ -32,12 +32,15 @@ const default_date_format = "YYYY-MM-DD";
 const default_pos = "last";
 const default_log = "warn";
 
-var regexp = default_regexp;
+var regexp = [default_regexp];
 
-// TODO : Allow multiple regular expressions
+function collect(value, previous) {
+  return previous.concat([value]);
+}
+
 commander
   .requiredOption("-n --newick <newick>", "Input newick file")
-  .option("-r --regex <regex>", "Regular expression to search date for")
+  .option("-r --regex <regex>", "Regular expression to search date for", collect, [])
   .option(
     "-s --split-on-char <delimiter>",
     "Splits tip name based on delimiter"
@@ -67,13 +70,13 @@ commander
   })
   .parse(process.argv);
 
-if (commander.regex && commander.splitOnChar) {
+if (commander.regex.length && commander.splitOnChar) {
   logger.warn("-r and -s options are mutually exclusive");
   process.exit(1);
 }
 
-if (commander.regex) {
-  regexp = new RegExp(commander.regex);
+if (commander.regex.length) {
+  regexp = _.map(commander.regex, r => new RegExp(r));
 }
 
 if (commander.logLevel) {
@@ -113,11 +116,13 @@ let regex_date_parser = function(tree, regex, format, node) {
   var location = "";
 
   if (tree.is_leafnode(node) && "name" in node.data) {
-    location = regex.exec(node.data.name);
+
+    // map to each regex, filter, and return first result
+    location = _.filter(_.map(regex, r => r.exec(node.data.name)));
 
     if (location) {
       // cast to date and format.
-      let parsed_date = moment(location[0], format);
+      let parsed_date = moment(location[0][0], format);
       // log if debugger is turned on
       let t = parsed_date.format("YYYYMMDD");
       return t;
@@ -171,7 +176,7 @@ fs.readFile(commander.newick, (err, newick_data) => {
       "last",
       date_format
     );
-  } else if (commander.regex) {
+  } else if (commander.regex.length) {
     date_parser = _.partial(
       regex_date_parser,
       computed_tree,
