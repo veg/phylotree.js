@@ -29,7 +29,7 @@ class TreeRender {
     this.separation = function(_node, _previous) {
       return 0;
     };
-
+    this.handle_node_click = this.handle_node_click.bind(this);
     this._node_label = this.def_node_label;
     this.svg = null;
     this.selection_callback = null;
