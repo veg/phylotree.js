@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  //devtool: "source-map",
   mode: 'production',
   entry: path.resolve(__dirname, 'src', 'main.js'),
   output: {
