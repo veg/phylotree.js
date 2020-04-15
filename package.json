@@ -1,10 +1,13 @@
 {
   "name": "phylotree",
-  "version": "1.0.0-alpha.21",
+  "version": "1.0.0-alpha.22",
   "main": "build/phylotree.js",
+  "unpkg": "build/phylotree.js",
+  "jsdelivr": "build/phylotree.js",
+  "module": "src/index.js",
   "bin": {
-    "root-to-tip": "./src/cli/root-to-tip.js",
-    "tip-date-extractor": "./src/cli/tip-date-extractor.js"
+    "root-to-tip": "./bin/root-to-tip.js",
+    "tip-date-extractor": "./bin/tip-date-extractor.js"
   },
   "keywords": [
     "phylogenetics",
@@ -56,10 +59,9 @@
   "scripts": {
     "docs": "sphinx-build -b html docs documentation",
     "lint": "eslint --ext .js --ignore-pattern data,docs,images,node_modules ./",
-    "dev": "rm -rf build && mkdir build && rollup -m -c -w -f umd -o build/phylotree.js -- src/index.js",
-    "build": "rm -rf build && mkdir build && rollup -m -c -f umd -o build/phylotree.js -- src/index.js",
+    "dev": "rollup -w -c rollup.config.js",
+    "build": "rollup -c rollup.config.js",
     "watch": "tape-watch -r source-map-support/register test/*-test.js",
-    "pretest": "rm -rf build && mkdir build && rollup -c -f umd -o build/phylotree.js -- src/index.js",
     "test": "tape -r source-map-support/register 'test/*-test.js'",
     "postpublish": "zip -j build/phylotree.js.zip -- LICENSE README.md build/phylotree.js build/phylotree.min.js build/phylotree.css"
   },
@@ -67,6 +69,6 @@
     "build/phylotree.css",
     "build/phylotree.js",
     "build/phylotree.min.js",
-    "src/cli"
+    "bin"
   ]
 }
