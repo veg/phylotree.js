@@ -21,7 +21,7 @@
     "xml2js": "^0.4.19"
   },
   "devDependencies": {
-    "concurrently": "^3.6.1",
+    "concurrently": "^5.1.0",
     "http-server": "^0.11.1",
     "jsdom": "9.12.x",
     "should": "^11.2.1",
