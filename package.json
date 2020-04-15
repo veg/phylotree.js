@@ -18,7 +18,7 @@
     "font-awesome": "4.x",
     "jquery": "1.x",
     "underscore": "1.x",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "concurrently": "^3.6.1",
