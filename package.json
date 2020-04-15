@@ -1,6 +1,6 @@
 {
   "name": "phylotree",
-  "version": "1.0.0-alpha.22",
+  "version": "1.0.0-alpha.23",
   "main": "build/phylotree.js",
   "unpkg": "build/phylotree.js",
   "jsdelivr": "build/phylotree.js",
@@ -57,18 +57,20 @@
     "yarn": "^1.9.4"
   },
   "scripts": {
+    "alpha": "yarn publish --tag alpha",
+    "beta": "yarn publish --tag beta",
     "docs": "sphinx-build -b html docs documentation",
     "lint": "eslint --ext .js --ignore-pattern data,docs,images,node_modules ./",
     "dev": "rollup -w -c rollup.config.js",
     "build": "rollup -c rollup.config.js",
     "watch": "tape-watch -r source-map-support/register test/*-test.js",
     "test": "tape -r source-map-support/register 'test/*-test.js'",
-    "postpublish": "zip -j build/phylotree.js.zip -- LICENSE README.md build/phylotree.js build/phylotree.min.js build/phylotree.css"
+    "postpublish": "zip -j dist/phylotree.js.zip -- LICENSE README.md dist/phylotree.js dist/phylotree.min.js dist/phylotree.css"
   },
   "files": [
-    "build/phylotree.css",
-    "build/phylotree.js",
-    "build/phylotree.min.js",
+    "dist/phylotree.css",
+    "dist/phylotree.js",
+    "dist/phylotree.min.js",
     "bin"
   ]
 }
