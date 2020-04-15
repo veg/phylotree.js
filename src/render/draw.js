@@ -22,10 +22,10 @@ function constant(x) {
 
 class TreeRender {
 
-  constructor(phylotree, container, options = {}) {
+  constructor(phylotree, options = {}) {
     this.css_classes = css_classes;
     this.phylotree = phylotree;
-    this.container = container;
+    this.container = options.container;
     this.separation = function(_node, _previous) {
       return 0;
     };
@@ -190,14 +190,15 @@ class TreeRender {
    * @returns The selected SVG element if getting, or the current ``phylotree`` if setting.`
    */
   initialize_svg(svg_element) {
-    if (!arguments.length) return this.svg;
+
+    //if (!arguments.length) return this.svg;
 
     if (this.svg !== svg_element) {
+
       d3.select(svg_element).select("svg").remove();
 
       this.svg = d3
-        .select(svg_element)
-        .append("svg")
+        .create("svg")
         .attr("width", this.width)
         .attr("height", this.height);
 
@@ -207,6 +208,10 @@ class TreeRender {
         this.svg.selectAll("*").remove();
         this.svg.append("defs");
       }
+
+      d3
+        .select(svg_element)
+        .append(this.svg);
 
       d3.select(this.container).on(
         "click",
