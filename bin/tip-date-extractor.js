@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const fs = require("fs"),
-  phylotree = require("../../build/phylotree.js"),
+  phylotree = require("../dist/phylotree.js"),
   commander = require("commander"),
   _ = require("underscore"),
   moment = require("moment"),

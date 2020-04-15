@@ -218,6 +218,7 @@ class TreeRender {
     }
 
     return this;
+
   }
 
   update_layout(new_json, do_hierarchy) {
