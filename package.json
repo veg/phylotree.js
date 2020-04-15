@@ -14,7 +14,7 @@
   ],
   "dependencies": {
     "bootstrap": "3.x",
-    "d3": "3.x",
+    "d3": "5.x",
     "font-awesome": "4.x",
     "jquery": "1.x",
     "underscore": "1.x",
