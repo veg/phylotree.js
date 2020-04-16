@@ -277,7 +277,7 @@ let Phylotree = class {
   // Warning : Requires DOM!
   render(options) {
     this.display = new TreeRender(this, options);
-    return this.display.svg.node();;
+    return this.display;
   }
 
 };
