@@ -424,17 +424,19 @@ class TreeRender {
 
     if (this.options["zoom"]) {
 
-      let zoom = d3.behavior.zoom().scaleExtent([0.1, 10]).on("zoom", () => {
+      let zoom = d3.zoom().scaleExtent([0.1, 10]).on("zoom", () => {
 
-        let translate = d3.event.translate;
-        translate[0] += this.offsets[1] + this.options["left-offset"];
-        translate[1] += this.pad_height();
+        var translate = [];
+        translate[0] = 
+          d3.event.transform.x +
+          this.offsets[1] + this.options["left-offset"] - this.options["right-offset"];
+        translate[1] = d3.event.transform.y + this.pad_height();
 
         d3
           .select("." + css_classes["tree-container"])
           .attr(
             "transform",
-            "translate(" + translate + ")scale(" + d3.event.scale + ")"
+            "translate(" + translate + ")scale(" + d3.event.transform.k + ")"
           );
       });
 
