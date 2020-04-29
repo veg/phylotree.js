@@ -81,6 +81,7 @@ class TreeRender {
       "left-right-spacing": "fixed-step", //'fit-to-size',
       "top-bottom-spacing": "fixed-step",
       "left-offset": 0,
+      "right-offset": 0,
       "show-scale": "top",
       // currently not implemented to support any other positioning
       "draw-size-bubbles": false,
@@ -143,7 +144,9 @@ class TreeRender {
     this.label_width = this._label_width(this.shown_font_size);
 
     const _label_width = this.options["show-labels"] ? this.label_width : 0;
-    return this.offsets[1] + this.options["left-offset"] + _label_width;
+    return this.offsets[1] + this.options["left-offset"]
+      + this.options["right-offset"] // TODO TEST THIS
+      + _label_width;
   }
 
   /**
@@ -264,7 +267,8 @@ class TreeRender {
       .merge(enclosure)
       .attr("transform", d => {
         return this.d3_phylotree_svg_translate([
-          this.offsets[1] + this.options["left-offset"],
+          this.offsets[1] + this.options["left-offset"]
+,
           this.pad_height()
         ]);
       });
@@ -705,7 +709,7 @@ class TreeRender {
       this.size[1] = this.max_depth * this.fixed_width[1];
 
       this.scales[1] =
-        (this.size[1] - this.offsets[1] - this.options["left-offset"]) /
+        (this.size[1] - this.offsets[1] - this.options["left-offset"] + this.options["right-offset"]) /  //  TEST right offset here
         this._extents[1][1];
 
       this.label_width = this._label_width(this.shown_font_size);
@@ -720,7 +724,7 @@ class TreeRender {
       at_least_one_dimension_fixed = true;
 
       let available_width =
-        this.size[1] - this.offsets[1] - this.options["left-offset"];
+        this.size[1] - this.offsets[1] - this.options["left-offset"] - this.options["right-offset"]; // TEST this
 
       if (available_width * 0.5 < this.label_width) {
         this.shown_font_size *= available_width * 0.5 / this.label_width;
@@ -730,7 +734,7 @@ class TreeRender {
       this.scales[1] =
         (this.size[1] -
           this.offsets[1] -
-          this.options["left-offset"] -
+          (this.options["left-offset"] + this.options['right-offset']) - // TEST this
           this.label_width) /
         this._extents[1][1];
 
@@ -1044,7 +1048,7 @@ class TreeRender {
       } else {
         domain_limit = this._extents[1][1];
         range_limit =
-          this.size[1] - this.offsets[1] - this.options["left-offset"];
+          this.size[1] - this.offsets[1] - this.options["left-offset"] - this.options["right-offset"];
       }
 
       let scale = d3
