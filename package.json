@@ -60,6 +60,7 @@
     "docs": "sphinx-build -b html docs documentation",
     "lint": "eslint --ext .js --ignore-pattern data,docs,images,node_modules ./",
     "dev": "rollup -w -c rollup.config.js",
+    "prepare": "rollup -c rollup.config.js",
     "build": "rollup -c rollup.config.js",
     "watch": "tape-watch -r source-map-support/register test/*-test.js",
     "test": "tape -r source-map-support/register 'test/*-test.js'",
