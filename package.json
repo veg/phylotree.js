@@ -16,7 +16,7 @@
     "bootstrap": "3.x",
     "d3": "3.x",
     "font-awesome": "4.x",
-    "jquery": "1.x",
+    "jquery": "3.x",
     "underscore": "1.x",
     "xml2js": "^0.4.19"
   },
