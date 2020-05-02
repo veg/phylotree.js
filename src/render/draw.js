@@ -711,7 +711,7 @@ class TreeRender {
       this.size[1] = this.max_depth * this.fixed_width[1];
 
       this.scales[1] =
-        (this.size[1] - this.offsets[1] - this.options["left-offset"] + this.options["right-offset"]) /  //  TEST right offset here
+        (this.size[1] - this.offsets[1] - this.options["left-offset"] - this.options["right-offset"]) /  //  TEST right offset here
         this._extents[1][1];
 
       this.label_width = this._label_width(this.shown_font_size);
