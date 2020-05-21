@@ -21,11 +21,10 @@ function constant(x) {
 }
 
 class TreeRender {
-
-  constructor(phylotree, container, options = {}) {
+  constructor(phylotree, options = {}) {
     this.css_classes = css_classes;
     this.phylotree = phylotree;
-    this.container = container;
+    this.container = options.container;
     this.separation = function(_node, _previous) {
       return 0;
     };
@@ -165,7 +164,6 @@ class TreeRender {
    * if setting.
    */
   set_size(attr) {
-
     if (!arguments.length) {
       return this.size;
     }
@@ -180,7 +178,6 @@ class TreeRender {
     }
 
     return this;
-
   }
 
   /**
@@ -190,14 +187,15 @@ class TreeRender {
    * @returns The selected SVG element if getting, or the current ``phylotree`` if setting.`
    */
   initialize_svg(svg_element) {
-    if (!arguments.length) return this.svg;
+    //if (!arguments.length) return this.svg;
 
     if (this.svg !== svg_element) {
-      d3.select(svg_element).select("svg").remove();
+      d3.select(svg_element)
+        .select("svg")
+        .remove();
 
       this.svg = d3
-        .select(svg_element)
-        .append("svg")
+        .create("svg")
         .attr("width", this.width)
         .attr("height", this.height);
 
@@ -207,6 +205,8 @@ class TreeRender {
         this.svg.selectAll("*").remove();
         this.svg.append("defs");
       }
+
+      d3.select(svg_element).append(this.svg);
 
       d3.select(this.container).on(
         "click",
@@ -221,7 +221,6 @@ class TreeRender {
   }
 
   update_layout(new_json, do_hierarchy) {
-
     if (do_hierarchy) {
       this.nodes = d3.hierarchy(new_json);
       this.nodes.each(function(d) {
@@ -231,7 +230,6 @@ class TreeRender {
 
     this.update();
     this.sync_edge_labels();
-
   }
 
   /**
@@ -242,7 +240,6 @@ class TreeRender {
    * @returns The current ``phylotree``.
    */
   update(transitions) {
-
     var self = this;
 
     if (!this.svg) return this;
@@ -270,7 +267,6 @@ class TreeRender {
       });
 
     if (this.draw_scale_bar) {
-
       let scale_bar = this.svg
         .selectAll("." + css_classes["tree-scale-bar"])
         .data([0]);
@@ -366,7 +362,6 @@ class TreeRender {
     this.resize_svg(this.phylotree, this.svg, transitions);
 
     if (this.options["brush"]) {
-
       var brush = enclosure
         .selectAll("." + css_classes["tree-selection-brush"])
         .data([0])
@@ -413,39 +408,34 @@ class TreeRender {
         });
 
       brush.call(brush_object);
-
     }
 
     this.sync_edge_labels();
 
     if (this.options["zoom"]) {
+      let zoom = d3.behavior
+        .zoom()
+        .scaleExtent([0.1, 10])
+        .on("zoom", () => {
+          let translate = d3.event.translate;
+          translate[0] += this.offsets[1] + this.options["left-offset"];
+          translate[1] += this.pad_height();
 
-      let zoom = d3.behavior.zoom().scaleExtent([0.1, 10]).on("zoom", () => {
-
-        let translate = d3.event.translate;
-        translate[0] += this.offsets[1] + this.options["left-offset"];
-        translate[1] += this.pad_height();
-
-        d3
-          .select("." + css_classes["tree-container"])
-          .attr(
+          d3.select("." + css_classes["tree-container"]).attr(
             "transform",
             "translate(" + translate + ")scale(" + d3.event.scale + ")"
           );
-      });
+        });
 
       this.svg.call(zoom);
-
     }
 
     return this;
-
   }
 
   _handle_single_node_layout(
     a_node
   ) {
-  
     let _node_span = this.node_span(a_node) / this.rescale_node_span;
     // compute the relative size of nodes (0,1)
     // sum over all nodes is 1
@@ -686,14 +676,11 @@ class TreeRender {
   }
 
   do_lr(at_least_one_dimension_fixed) {
-
     if (this.radial() && at_least_one_dimension_fixed) {
       this.offsets[1] = 0;
     }
 
-
     if (this.options["left-right-spacing"] == "fixed-step") {
-
       this.size[1] = this.max_depth * this.fixed_width[1];
 
       this.scales[1] =
@@ -706,7 +693,6 @@ class TreeRender {
         this.label_width *= 2;
       }
     } else {
-
       this.label_width = this._label_width(this.shown_font_size);
 
       at_least_one_dimension_fixed = true;
@@ -715,7 +701,7 @@ class TreeRender {
         this.size[1] - this.offsets[1] - this.options["left-offset"];
 
       if (available_width * 0.5 < this.label_width) {
-        this.shown_font_size *= available_width * 0.5 / this.label_width;
+        this.shown_font_size *= (available_width * 0.5) / this.label_width;
         this.label_width = available_width * 0.5;
       }
 
@@ -725,7 +711,6 @@ class TreeRender {
           this.options["left-offset"] -
           this.label_width) /
         this._extents[1][1];
-
     }
   }
 
@@ -736,8 +721,10 @@ class TreeRender {
    * @returns The current ``phylotree``.
    */
   placenodes() {
-  
-    this._extents = [[0, 0], [0, 0]];
+    this._extents = [
+      [0, 0],
+      [0, 0]
+    ];
 
     this.x = 0.0;
     this.last_span = 0.0;
@@ -768,12 +755,10 @@ class TreeRender {
     });
 
     if (this.do_scaling && undef_BL) {
-
       // requested scaling, but some branches had no branch lengths
       // redo layout without branch lengths
       this.do_scaling = false;
       this.phylotree.nodes.x = this.tree_layout(this.phylotree.nodes);
-
     }
 
     let at_least_one_dimension_fixed = false;
@@ -782,10 +767,9 @@ class TreeRender {
 
     // this is a hack so that phylotree.pad_height would return ruler spacing
     this.offsets[1] = Math.max(
-        this.font_size,
-        -this._extents[1][0] * this.fixed_width[0]
-      );
-
+      this.font_size,
+      -this._extents[1][0] * this.fixed_width[0]
+    );
 
     if (this.options["top-bottom-spacing"] == "fixed-step") {
       this.size[0] = this._extents[0][1] * this.fixed_width[0];
@@ -822,20 +806,18 @@ class TreeRender {
       let max_r = 0;
 
       this.phylotree.nodes.each(d => {
-
         let my_circ_position = d.x * this.scales[0];
-        d.angle = 2 * Math.PI * my_circ_position / effective_span;
+        d.angle = (2 * Math.PI * my_circ_position) / effective_span;
         d.text_angle = d.angle - Math.PI / 2;
         d.text_angle = d.text_angle > 0 && d.text_angle < Math.PI;
         d.text_align = d.text_angle ? "end" : "start";
-        d.text_angle = (d.text_angle ? 180 : 0) + d.angle * 180 / Math.PI;
-
+        d.text_angle = (d.text_angle ? 180 : 0) + (d.angle * 180) / Math.PI;
       });
 
       this.do_lr(at_least_one_dimension_fixed);
 
       this.phylotree.nodes.each(d => {
-        d.radius = d.y * this.scales[1] / this.size[1];
+        d.radius = (d.y * this.scales[1]) / this.size[1];
         max_r = Math.max(d.radius, max_r);
       });
 
@@ -973,21 +955,16 @@ class TreeRender {
 
       this.size[0] = this.radial_center + this.radius / scaler;
       this.size[1] = this.radial_center + this.radius / scaler;
-
     } else {
-    
-    
-      this.do_lr();
+this.do_lr();
 
       this.draw_branch = draw_line;
       this.edge_placer = line_segment_placer;
       this.right_most_leaf = 0;
 
       this.phylotree.nodes.each(d => {
-      
         d.x *= this.scales[0];
         d.y *= this.scales[1]*.8;
-        
 
         if (this.options["layout"] == "right-to-left") {   
           d.y = this._extents[1][1] * this.scales[1] - d.y;
@@ -1017,14 +994,11 @@ class TreeRender {
             }
             return false;
           });
-          
-
-         }
+        }
       });
     }
 
     if (this.draw_scale_bar) {
-
       let domain_limit, range_limit;
 
       if (this.radial()) {
@@ -1032,7 +1006,7 @@ class TreeRender {
         domain_limit = Math.pow(
           10,
           Math.ceil(
-            Math.log(this._extents[1][1] * range_limit / this.radius) /
+            Math.log((this._extents[1][1] * range_limit) / this.radius) /
               Math.log(10)
           )
         );
@@ -1059,13 +1033,15 @@ class TreeRender {
          
           scaleTickFormatter = d3.format(".2f");
 
-      this.draw_scale_bar = d3.axisTop().scale(scale).tickFormat(function(d) {
-        if (d === 0) {
-          return "";
-        }
-        return scaleTickFormatter(d);
-
-      });
+      this.draw_scale_bar = d3
+        .axisTop()
+        .scale(scale)
+        .tickFormat(function(d) {
+          if (d === 0) {
+            return "";
+          }
+          return scaleTickFormatter(d);
+        });
 
       if (this.radial()) {
         this.draw_scale_bar.tickValues([domain_limit]);
@@ -1090,7 +1066,6 @@ class TreeRender {
           )
         );
       }
-
     } else {
       this.draw_scale_bar = null;
     }
@@ -1130,7 +1105,6 @@ class TreeRender {
    * @returns The current ``spacing_y`` value if getting, or the current ``phylotree`` if setting.
    */
   spacing_y(attr, skip_render) {
-
     if (!arguments.length) return this.fixed_width[1];
 
     if (
@@ -1147,7 +1121,6 @@ class TreeRender {
   }
 
   _label_width(_font_size) {
-
     _font_size = _font_size || this.shown_font_size;
     let width = 0;
 
@@ -1155,7 +1128,6 @@ class TreeRender {
       .descendants()
       .filter(render_nodes.node_visible)
       .forEach(node => {
-
         let node_width = 12 + this._node_label(node).length * _font_size * 0.8;
 
         if (node.angle !== null) {
@@ -1168,7 +1140,6 @@ class TreeRender {
       });
 
     return width;
-
   }
 
   /**
@@ -1361,6 +1332,9 @@ class TreeRender {
     return item[tag] || false;
   }
 
+  show() {
+    return this.svg.node()
+  }
 
 }
 

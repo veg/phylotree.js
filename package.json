@@ -1,10 +1,13 @@
 {
   "name": "phylotree",
-  "version": "1.0.0-alpha.21",
-  "main": "build/phylotree.js",
+  "version": "1.0.0-alpha.25",
+  "main": "dist/phylotree.js",
+  "unpkg": "dist/phylotree.js",
+  "jsdelivr": "dist/phylotree.js",
+  "module": "src/index.js",
   "bin": {
-    "root-to-tip": "./src/cli/root-to-tip.js",
-    "tip-date-extractor": "./src/cli/tip-date-extractor.js"
+    "root-to-tip": "./bin/root-to-tip.js",
+    "tip-date-extractor": "./bin/tip-date-extractor.js"
   },
   "keywords": [
     "phylogenetics",
@@ -18,13 +21,13 @@
   ],
   "dependencies": {
     "bootstrap": "4",
-    "commander": "^4.1.1",
+    "commander": "^5.0.0",
     "csv-stringify": "^5.3.6",
     "d3": "^5.7.0",
     "d3-hierarchy": "^1.1.8",
     "d3-line": "^0.0.1",
     "d3-time-format": "^2.1.3",
-    "fast-csv": "4.0.2",
+    "fast-csv": "4.1.3",
     "font-awesome": "4.x",
     "jquery": "3",
     "lodash": "^4.17.11",
@@ -40,33 +43,34 @@
     "eslint": "^6.8.0",
     "http-server": "^0.12.1",
     "jsdoc": "^3.5.5",
-    "jsdom": "16.1.0",
+    "jsdom": "16.2.2",
     "mocha": "^7.0.1",
-    "prettier": "^1.14.2",
-    "rollup": "^1.31.0",
+    "prettier": "^2.0.4",
+    "rollup": "^2.6.1",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-terser": "^5.2.0",
     "rollup-watch": "^4.3.1",
     "should": "^13.2.3",
     "source-map-support": "^0.5.9",
     "tape": "4",
-    "uglify-js": "3.7.7",
+    "uglify-js": "3.9.1",
     "yarn": "^1.9.4"
   },
   "scripts": {
+    "alpha": "yarn publish --tag alpha",
+    "beta": "yarn publish --tag beta",
     "docs": "sphinx-build -b html docs documentation",
     "lint": "eslint --ext .js --ignore-pattern data,docs,images,node_modules ./",
-    "dev": "rm -rf build && mkdir build && rollup -m -c -w -f umd -o build/phylotree.js -- src/index.js",
-    "build": "rm -rf build && mkdir build && rollup -m -c -f umd -o build/phylotree.js -- src/index.js",
+    "dev": "rollup -w -c rollup.config.js",
+    "build": "rollup -c rollup.config.js",
     "watch": "tape-watch -r source-map-support/register test/*-test.js",
-    "pretest": "rm -rf build && mkdir build && rollup -c -f umd -o build/phylotree.js -- src/index.js",
     "test": "tape -r source-map-support/register 'test/*-test.js'",
-    "postpublish": "zip -j build/phylotree.js.zip -- LICENSE README.md build/phylotree.js build/phylotree.min.js build/phylotree.css"
+    "postpublish": "zip -j dist/phylotree.js.zip -- LICENSE README.md dist/phylotree.js dist/phylotree.min.js dist/phylotree.css"
   },
   "files": [
-    "build/phylotree.css",
-    "build/phylotree.js",
-    "build/phylotree.min.js",
-    "src/cli"
+    "dist/phylotree.css",
+    "dist/phylotree.js",
+    "dist/phylotree.min.js",
+    "bin"
   ]
 }
