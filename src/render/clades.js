@@ -48,19 +48,18 @@ export function update_collapsed_clades(transitions) {
   } else {
     spline = d3
       .line()
-      .curve(d3.curveBasis)
       .y(function(d) {
         return d[0];
       })
       .x(function(d) {
         return d[1];
-      });
+      }).curve(d3.curveBasis);
 
     spline_f = function(coord, i, d, init_0, init_1) {
       if (i) {
-        return [
-          d.screen_y + (coord[0] - init_0) / 50,
-          d.screen_x + (coord[1] - init_1) / 50
+         return [
+          d.screen_y + (coord[0] - init_0) / 50 ,
+          d.screen_x + (coord[1] - init_1) / 50,
         ];
       } else {
         return [d.screen_y, d.screen_x];
@@ -86,9 +85,12 @@ export function update_collapsed_clades(transitions) {
           return d.collapsed_clade;
         }
 
+        //console.log (d.collapsed);
         let init_0 = d.collapsed[0][0];
         let init_1 = d.collapsed[0][1];
+        
 
+  
         // #1 return spline(d.collapsed.map(spline_f, d, init_0, init_1));
         return spline(
           d.collapsed.map(function(coord, i) {
@@ -96,7 +98,7 @@ export function update_collapsed_clades(transitions) {
           })
         );
       })
-      .attr("d", function(d) {
+      .attr("d", function(d) {        
         return (d.collapsed_clade = spline(d.collapsed));
       });
   } else {
@@ -106,7 +108,7 @@ export function update_collapsed_clades(transitions) {
       .attr("class", this.css_classes["clade"])
       .merge(collapsed_clades)
       .attr("d", function(d) {
-        return (d.collapsed_clade = spline(d.collapsed));
+        return (d.collapsed_clade ? d.collapsed_clade : d.collapsed_clade = spline(d.collapsed));
       });
   }
 }

@@ -35,7 +35,7 @@ class TreeRender {
     this.selection_callback = null;
     this.scales = [1, 1];
     this.size = [1, 1];
-    this.fixed_width = [30, 20];
+    this.fixed_width = [14, 30];
     this.font_size = 12;
     this.scale_bar_font_size = 12;
     this.offsets = [0, this.font_size / 2];
@@ -443,52 +443,47 @@ class TreeRender {
   }
 
   _handle_single_node_layout(
-    a_node,
-    last_node,
-    last_span,
-    is_under_collapsed_parent,
-    save_x
+    a_node
   ) {
-
+  
     let _node_span = this.node_span(a_node) / this.rescale_node_span;
     // compute the relative size of nodes (0,1)
     // sum over all nodes is 1
-
+    
     this.x = a_node.x =
       this.x +
-      this.separation(last_node, a_node) +
-      (last_span + _node_span) * 0.5;
-
+      this.separation(this.last_node, a_node) +
+      (this.last_span + _node_span) * 0.5;
+      
+ 
     // separation is a user-settable callback to add additional spacing on nodes
     this._extents[1][1] = Math.max(this._extents[1][1], a_node.y);
     this._extents[1][0] = Math.min(
       this._extents[1][0],
       a_node.y - _node_span * 0.5
     );
+    
 
-    if (is_under_collapsed_parent) {
-      this._extents[0][1] = Math.max(
+    if (this.is_under_collapsed_parent) {
+       this._extents[0][1] = Math.max(
         this._extents[0][1],
-        save_x +
-          (a_node.x - save_x) * this.options["compression"] +
+        this.save_x +
+          (a_node.x - this.save_x) * this.options["compression"] +
           this.save_span +
-          (_node_span * 0.5 + this.separation(last_node, a_node)) *
+          (_node_span * 0.5 + this.separation(this.last_node, a_node)) *
             this.options["compression"]
-      );
+      );      
     } else {
       this._extents[0][1] = Math.max(
         this._extents[0][1],
-        this.x + _node_span * 0.5 + this.separation(last_node, a_node)
+        this.x + _node_span * 0.5 + this.separation(this.last_node, a_node)
       );
     }
 
-    last_node = a_node;
-    last_span = _node_span;
 
-    this.last_node = last_node;
-    this.last_span = last_span;
-
-    return [last_node, last_span];
+    this.last_node = a_node;
+    this.last_span = _node_span;
+    
   }
 
   tree_layout(a_node) {
@@ -503,6 +498,7 @@ class TreeRender {
          @return the x-coordinate of a_node or undefined in the node is not displayed
                  (hidden or under a collapsed node)
         */
+
 
     // do not layout hidden nodes
     if (render_nodes.node_notshown(a_node)) {
@@ -543,11 +539,8 @@ class TreeRender {
 
     */
 
-    let last_node = null;
 
     // last node laid out in the top bottom hierarchy
-    let last_span = 0;
-    let is_under_collapsed_parent = false;
 
     if (a_node["parent"]) {
       if (this.do_scaling) {
@@ -561,7 +554,6 @@ class TreeRender {
           undef_BL = true;
           return 0;
         }
-
         a_node.y += a_node.parent.y;
       } else {
         a_node.y = is_leaf ? this.max_depth : a_node.depth;
@@ -570,6 +562,9 @@ class TreeRender {
       this.x = 0.0;
       // the span of the last node laid out in the top to bottom hierarchy
       a_node.y = 0.0;
+      this.last_node = null;
+      this.last_span = 0.0;
+      this._extents = [[0, 0], [0, 0]];
     }
 
     /** the next block has to do with top-to-bottom spacing of nodes **/
@@ -577,11 +572,7 @@ class TreeRender {
     if (is_leaf) {
       // displayed internal nodes are handled in `process_internal_node`
       this._handle_single_node_layout(
-        a_node,
-        last_node,
-        last_span,
-        is_under_collapsed_parent,
-        0.0
+        a_node
       );
     }
 
@@ -589,19 +580,19 @@ class TreeRender {
       // for internal nodes
       if (
         render_nodes.is_node_collapsed(a_node) &&
-        !is_under_collapsed_parent
+        !this.is_under_collapsed_parent
       ) {
         // collapsed node
-        let save_x = this.x;
+        this.save_x = this.x;
         this.save_span = this.last_span * 0.5;
-        is_under_collapsed_parent = true;
+        this.is_under_collapsed_parent = true;
         this.process_internal_node(a_node);
-        is_under_collapsed_parent = false;
-
+        this.is_under_collapsed_parent = false;
+ 
         if (typeof a_node.x === "number") {
           a_node.x =
-            save_x +
-            (a_node.x - save_x) * this.options["compression"] +
+            this.save_x +
+            (a_node.x -this.save_x) * this.options["compression"] +
             this.save_span;
 
           a_node.collapsed = [[a_node.x, a_node.y]];
@@ -609,22 +600,23 @@ class TreeRender {
           var map_me = n => {
             n.hidden = true;
 
-            if (is_leafnode(n)) {
+            if (is_leafnode(n)) {            
               this.x = n.x =
-                save_x +
-                (n.x - save_x) * this.options["compression"] +
+                this.save_x +
+                (n.x - this.save_x) * this.options["compression"] +
                 this.save_span;
 
-              a_node.collapsed.push([n.x, n.y]);
+              a_node.collapsed.push([n.x, n.y]);             
             } else {
               n.children.map(map_me);
             }
           };
 
-          this.x = save_x;
+          this.x = this.save_x;
           map_me(a_node);
+         
 
-          a_node.collapsed.splice(1, 0, [save_x, a_node.y]);
+          a_node.collapsed.splice(1, 0, [this.save_x, a_node.y]);
           a_node.collapsed.push([this.x, a_node.y]);
           a_node.collapsed.push([a_node.x, a_node.y]);
           a_node.hidden = false;
@@ -744,19 +736,26 @@ class TreeRender {
    * @returns The current ``phylotree``.
    */
   placenodes() {
-
+  
     this._extents = [[0, 0], [0, 0]];
 
-    let x = 0.0,
-      last_span = 0;
+    this.x = 0.0;
+    this.last_span = 0.0;
+    //let x = 0.0,
+    //  last_span = 0;
+    
+    this.last_node = null;
+    this.last_span = 0.0;
 
-    (this.save_x = x), (this.save_span = last_span * 0.5);
+    (this.save_x = this.x), (this.save_span = this.last_span * 0.5);
 
     this.do_scaling = this.options["scaling"];
     let undef_BL = false;
 
     this.is_under_collapsed_parent = false;
     this.max_depth = 1;
+    
+
 
     // Set initial x
     this.phylotree.nodes.x = this.tree_layout(
@@ -976,7 +975,8 @@ class TreeRender {
       this.size[1] = this.radial_center + this.radius / scaler;
 
     } else {
-
+    
+    
       this.do_lr();
 
       this.draw_branch = draw_line;
@@ -984,13 +984,15 @@ class TreeRender {
       this.right_most_leaf = 0;
 
       this.phylotree.nodes.each(d => {
-
+      
         d.x *= this.scales[0];
         d.y *= this.scales[1]*.8;
+        
 
-        if (this.options["layout"] == "right-to-left") {
+        if (this.options["layout"] == "right-to-left") {   
           d.y = this._extents[1][1] * this.scales[1] - d.y;
         }
+
 
         if (is_leafnode(d)) {
           this.right_most_leaf = Math.max(
@@ -1000,9 +1002,9 @@ class TreeRender {
         }
 
         if (d.collapsed) {
-
-          d.collapsed.map(p => {
-            return [(p[0] *= this.scales[0]), (p[1] *= this.scales[1])];
+          d.collapsed.forEach(p => {
+            p[0] *= this.scales[0];
+            p[1] *= this.scales[1]*.8;
           });
 
           let last_x = d.collapsed[1][0];
@@ -1015,8 +1017,9 @@ class TreeRender {
             }
             return false;
           });
+          
 
-        }
+         }
       });
     }
 
@@ -1033,6 +1036,7 @@ class TreeRender {
               Math.log(10)
           )
         );
+        
 
         range_limit = domain_limit * (this.radius / this._extents[1][1]);
 
@@ -1043,22 +1047,22 @@ class TreeRender {
         }
       } else {
         domain_limit = this._extents[1][1];
+
         range_limit =
-          this.size[1] - this.offsets[1] - this.options["left-offset"];
-      }
+          this.size[1] - this.offsets[1] - this.options["left-offset"] - this.shown_font_size;
+     }
 
       let scale = d3
           .scaleLinear()
           .domain([0, domain_limit])
-          .range([this.shown_font_size, this.shown_font_size + range_limit]),
-        scaleTickFormatter = d3.format(".2g");
+          .range([0, range_limit]),
+         
+          scaleTickFormatter = d3.format(".2f");
 
       this.draw_scale_bar = d3.axisTop().scale(scale).tickFormat(function(d) {
-
         if (d === 0) {
           return "";
         }
-
         return scaleTickFormatter(d);
 
       });
@@ -1080,7 +1084,7 @@ class TreeRender {
               range_limit /
                 (this.shown_font_size *
                   scaleTickFormatter(my_ticks).length *
-                  0.8),
+                  2),
               0
             )
           )
