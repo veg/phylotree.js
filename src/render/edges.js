@@ -12,6 +12,11 @@ export function draw_edge(container, edge, transition) {
     })
     .on("click", d => {
       this.modify_selection([d.target], this.selection_attribute_name);
+
+      //console.log("click called, this", this, d);
+      if (this.selection_callback) {
+        this.selection_callback(this, d.target);
+      }
     });
 
   let new_branch_path = this.draw_branch([edge.source, edge.target]);

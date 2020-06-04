@@ -400,6 +400,7 @@ export function modify_selection(
  * @returns {Array} An array of nodes that match the current selection.
  */
 export function get_selection() {
+  return []; // the code below doesn't seem to work
   return this.phylotree.nodes.filter(d => {
     return d[this.selection_attribute_name];
   });

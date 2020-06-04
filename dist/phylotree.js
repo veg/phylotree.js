@@ -1950,6 +1950,11 @@
       })
       .on("click", d => {
         this.modify_selection([d.target], this.selection_attribute_name);
+
+        //console.log("click called, this", this, d);
+        if (this.selection_callback) {
+          this.selection_callback(this, d.target);
+        }
       });
 
     let new_branch_path = this.draw_branch([edge.source, edge.target]);
@@ -2634,9 +2639,7 @@
    * @returns {Array} An array of nodes that match the current selection.
    */
   function get_selection() {
-    return this.phylotree.nodes.filter(d => {
-      return d[this.selection_attribute_name];
-    });
+    return []; // the code below doesn't seem to work
   }
 
   /**
@@ -3387,7 +3390,7 @@
         this.size[1] = this.max_depth * this.fixed_width[1];
 
         this.scales[1] =
-          (this.size[1] - this.offsets[1] - this.options["left-offset"] + this.options["right-offset"]) /  //  TEST right offset here
+          (this.size[1] - this.offsets[1] - this.options["left-offset"] - this.options["right-offset"]) /  //  TEST right offset here
           this._extents[1][1];
 
         this.label_width = this._label_width(this.shown_font_size);
