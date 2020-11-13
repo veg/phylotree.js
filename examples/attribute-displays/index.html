@@ -28,7 +28,7 @@
      d3.text('tree.nhx', function(error, data) {
       var the_tree = d3.layout.newick_parser (data);
       var tree = d3.layout.phylotree().svg(d3.select("#tree_display"));
-      let branchColoring = d3.interpolateRgb("#0000FF","#FF0000");
+      let branchColoring = d3.interpolateRgb("#0000FF","#FF0000"); // a color scheme for p-values
 
       tree(the_tree).traverse_and_compute ((node,datum)=>{
              if (node.annotation) { 
@@ -42,13 +42,20 @@
                 node['nhx_attributes'] = attribute_dict;
              }
          }).style_edges((element, edge)=>{
-            let endNode = edge.target;
-            if (endNode['nhx_attributes']) {
-                let pv =endNode['nhx_attributes']['PVAL'];
-                if (pv.length && pv != "NA") {
-                    element.style('stroke', branchColoring (parseFloat (pv)));
-                }
-            };
+         
+            if (edge.target['nhx_attributes']) { 
+                let tags = [];    
+                for (k in edge.target['nhx_attributes']) {
+                    tags.push ("<b>" + k + "</b> : " + edge.target['nhx_attributes'][k]);
+                }       
+                $(d3.select(element).node()[0]).popover ({
+                    'container': 'body',
+                    'html' : true,
+                    'placement' : "left",
+                    'content' : tags.join ("<br>"),
+                    'trigger' : 'hover'
+                });
+            }
          })
         .layout();
     });
@@ -63,8 +70,6 @@
 
       tree(the_tree).traverse_and_compute ((node,datum)=>{
              if (node.annotation) { 
-                // this will store NHX annotation, e.g. 
-                // &&NHX:PR=ENSSFOP00015014958:S=Scleropages_formosus:ND=282:SEL=N:G=ENSSFOG00015009665:D=N:GN=ACE2_SCLFO:T=113540:PVAL=na
                 let attribute_dict = {};
                 node.annotation.split (":").forEach ((d)=>{
                     let tag_value = d.split ("=");
@@ -75,15 +80,24 @@
                 node['nhx_attributes'] = attribute_dict;
              }
          }).style_edges((element, edge)=>{
-            let endNode = edge.target;
-            if (endNode['nhx_attributes']) {
-                let pv =endNode['nhx_attributes']['PVAL'];
-                if (pv.length && pv != "NA") {
-                    element.style('stroke', branchColoring (parseFloat (pv)));
-                }
-            };
+         
+            if (edge.target['nhx_attributes']) { 
+                let tags = [];    
+                for (k in edge.target['nhx_attributes']) {
+                    tags.push ("<b>" + k + "</b> : " + edge.target['nhx_attributes'][k]);
+                }       
+                $(d3.select(element).node()[0]).popover ({
+                    'container': 'body',
+                    'html' : true,
+                    'placement' : "left",
+                    'content' : tags.join ("<br>"),
+                    'trigger' : 'hover'
+                });
+            }
          })
         .layout();
+        
+        
     });
     
     
