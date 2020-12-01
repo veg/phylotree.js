@@ -145,7 +145,7 @@ let Phylotree = class {
       } else {
         // newick string
         this.newick_string = nwk;
-        _node_data = newick_parser(nwk, bootstrap_values);
+        _node_data = newick_parser(nwk, options);
       }
 
     }
