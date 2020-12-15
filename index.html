@@ -20,7 +20,7 @@
 
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
     <script src="//d3js.org/d3.v5.js"></script>
-    <script src="/build/phylotree.js"></script>
+    <script src="/dist/phylotree.js"></script>
     <link href="phylotree.css" rel="stylesheet">
 
     <style>
@@ -960,7 +960,8 @@ $( document ).ready( function () {
     //default_tree_settings();
     tree = new phylotree.phylotree(test_string);
 
-    rendered_tree = tree.render("#tree_container", {      
+    rendered_tree = tree.render({
+      container: "#tree_container",
     	'draw-size-bubbles' : false
     });
 
