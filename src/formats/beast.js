@@ -1,7 +1,9 @@
 import newick_parser from "./newick";
 
-export default function(newick) {
-  const parsed_newick = newick_parser(newick, null, '[');
+export default function(newick, options) {
+  options.left_delimiter = '[';
+  options.right_delimiter = ']';
+  const parsed_newick = newick_parser(newick, options);
   function parse_beast_node(node) {
     if(node.annotation) {
       node.beast = {};

@@ -2,7 +2,7 @@ var fs = require("fs");
 var _ = require("underscore");
 
 var tape = require("tape"),
-    phylotree = require("../build/phylotree");
+    phylotree = require("../dist/phylotree");
 
 function almost_equal(a, b) {
   return Math.abs(a-b) < 1e-12;

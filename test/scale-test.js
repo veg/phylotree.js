@@ -2,7 +2,7 @@ var fs = require("fs");
 const _ = require("underscore");
 
 var tape = require("tape"),
-    phylotree = require("../build/phylotree");
+    phylotree = require("../dist/phylotree");
 
 tape("normalize", function(test) {
 

@@ -41,11 +41,13 @@
   "devDependencies": {
     "concurrently": "^5.1.0",
     "eslint": "^6.8.0",
+    "express": "^4.17.1",
     "http-server": "^0.12.1",
     "jsdoc": "^3.5.5",
     "jsdom": "16.2.2",
     "mocha": "^7.0.1",
     "prettier": "^2.0.4",
+    "puppeteer": "^5.5.0",
     "rollup": "^2.6.1",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-terser": "^5.2.0",
