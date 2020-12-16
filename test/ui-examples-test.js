@@ -50,7 +50,7 @@ tape("Hello world loads", async function(test) {
   test.end();
 });
 
-tape("Selctome loads", async function(test) {
+tape("Selectome loads", async function(test) {
   await page.setViewport({
     width: 1200,
     height: 800
