@@ -20,7 +20,8 @@ tape("setup", async function(test) {
     headless: HEADLESS,
     slowMo: 50,
     devtools: false,
-    timeout: 10000
+    timeout: 10000,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   page = (await browser.pages())[0];
   await page.setViewport({
