@@ -46,7 +46,7 @@
     "jsdoc": "^3.5.5",
     "jsdom": "16.2.2",
     "mocha": "^7.0.1",
-    "prettier": "^2.0.4",
+    "prettier": "^2.2.1",
     "puppeteer": "^5.5.0",
     "rollup": "^2.6.1",
     "rollup-plugin-copy": "^3.3.0",
