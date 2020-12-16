@@ -1,7 +1,7 @@
 var fs = require("fs");
 
 var tape = require("tape"),
-    phylotree = require("../build/phylotree");
+    phylotree = require("../dist/phylotree");
 
 
 tape("cluster picker", function(test) {

@@ -13,6 +13,7 @@ var format_registry = {
   phyloxml: phyloxml_parser,
   nexus : nexus_parser,
   nwk: newick_parser,
+  nhx: newick_parser,
   beast: beast_parser
 };
 

@@ -14,10 +14,11 @@ import { is_leafnode } from "../nodes";
  * @returns {Object} An object with keys ``json`` and ``error``.
  */
 
-function newick_parser(nwk_str, bootstrap_values, delimiter) {
-  bootstrap_values = true;
-  let left_delimiter = delimiter || '{',
-    right_delimiter = left_delimiter == '{' ? '}' : ']';
+function newick_parser(nwk_str, options={}) {
+  const bootstrap_values = true,
+    int_or_float = /^-?\d+(\.\d+)?$/;
+  let left_delimiter = options.left_delimiter ||  '{',
+    right_delimiter = options.right_delimiter ||  '}';
   let clade_stack = [];
 
   function add_new_tree_level() {
@@ -51,7 +52,17 @@ function newick_parser(nwk_str, bootstrap_values, delimiter) {
     }
 
     this_node["attribute"] = current_node_attribute;
-    this_node["annotation"] = current_node_annotation;
+    if(left_delimiter == "[" && current_node_annotation.includes("&&NHX")) {
+      current_node_annotation
+        .split(':')
+        .slice(1)
+        .forEach(annotation => {
+          const [key, value] = annotation.split('=');
+          this_node[key] = int_or_float.test(value) ? +value : value;
+        });
+    } else {
+      this_node["annotation"] = current_node_annotation;
+    }
 
     current_node_name = "";
     current_node_attribute = "";

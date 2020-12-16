@@ -194,8 +194,8 @@ class TreeRender {
         .select("svg")
         .remove();
 
-      this.svg = d3
-        .create("svg")
+      this.svg = d3.select(svg_element)
+        .append("svg")
         .attr("width", this.width)
         .attr("height", this.height);
 
@@ -205,8 +205,6 @@ class TreeRender {
         this.svg.selectAll("*").remove();
         this.svg.append("defs");
       }
-
-      d3.select(svg_element).append(this.svg);
 
       d3.select(this.container).on(
         "click",
