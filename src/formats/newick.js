@@ -14,11 +14,11 @@ import { is_leafnode } from "../nodes";
  * @returns {Object} An object with keys ``json`` and ``error``.
  */
 
-function newick_parser(nwk_str, options) {
+function newick_parser(nwk_str, options={}) {
   const bootstrap_values = true,
     int_or_float = /^-?\d+(\.\d+)?$/;
-  let left_delimiter = options.type == 'nhx' ? '[' : '{',
-    right_delimiter = options.type == 'nhx' ? ']' : '}';
+  let left_delimiter = options.left_delimiter ||  '{',
+    right_delimiter = options.right_delimiter ||  '}';
   let clade_stack = [];
 
   function add_new_tree_level() {
