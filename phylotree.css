@@ -50,8 +50,8 @@ stroke-width: 2px;
 }
 
 .clade {
-fill: #1f77b4;
-stroke: #444;
+fill: lightgrey;
+stroke: #222;
 stroke-width: 2px;
 opacity: 0.5;
 }
