@@ -29,9 +29,9 @@ export default function has_branch_lengths() {
 }
 
 /**
- * Returns T/F whether every branch in the tree has a branch length
+ * Returns branch lengths
  *
- * @returns {Object} true if  every branch in the tree has a branch length
+ * @returns {Array} array of branch lengths
  */
 export function get_branch_lengths() {
 
