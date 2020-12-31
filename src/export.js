@@ -4,9 +4,11 @@ import * as _ from "underscore";
 /**
  * Return CSV of nodes sorted by longest branches.
  *
- * @param {Function} annotator - Function to apply to each node, determining
- * what label is written (optional).
- * @returns {Array} newick - Phylogenetic tree serialized as a Newick string.
+ * @returns {Array} An array of all tips and associated lengths of the form :
+ * [{
+ *    name : <tip_name>,
+ *    length: <tip_length>
+ * }, ...]
  */
 
 export default function getTipLengths() {
