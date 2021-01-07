@@ -48,7 +48,7 @@
     "mocha": "^8.2.1",
     "prettier": "^2.0.4",
     "puppeteer": "^5.5.0",
-    "rollup": "^2.6.1",
+    "rollup": "^2.36.1",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-terser": "^5.2.0",
     "rollup-watch": "^4.3.1",
