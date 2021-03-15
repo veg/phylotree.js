@@ -44,7 +44,7 @@
     "express": "^4.17.1",
     "http-server": "^0.12.1",
     "jsdoc": "^3.5.5",
-    "jsdom": "16.2.2",
+    "jsdom": "16.5.1",
     "mocha": "^8.2.1",
     "prettier": "^2.0.4",
     "puppeteer": "^5.5.0",
