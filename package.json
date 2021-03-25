@@ -23,7 +23,7 @@
     "bootstrap": "4",
     "commander": "^6.2.1",
     "csv-stringify": "^5.3.6",
-    "d3": "^5.7.0",
+    "d3": "^6.6.1",
     "d3-hierarchy": "^1.1.8",
     "d3-line": "^0.0.1",
     "d3-time-format": "^2.1.3",
