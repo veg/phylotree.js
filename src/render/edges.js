@@ -14,6 +14,7 @@ export function draw_edge(container, edge, transition) {
       this.modify_selection([d.target], this.selection_attribute_name);
     });
 
+  console.log(this.draw_branch);
   let new_branch_path = this.draw_branch([edge.source, edge.target]);
 
   if (transition) {

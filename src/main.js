@@ -4,6 +4,7 @@ import * as _ from "underscore";
 import { default as parser_registry } from "./formats/registry";
 import { default as nexml_parser } from "./formats/nexml";
 import { default as newick_parser, get_newick } from "./formats/newick";
+import { default as getTipLengths } from "./export";
 
 import * as nexus from "./formats/nexus";
 
@@ -294,6 +295,7 @@ Phylotree.prototype.resort_children = resort_children;
 Phylotree.prototype.set_branch_length = set_branch_length;
 Phylotree.prototype.max_parsimony = max_parsimony;
 
+Phylotree.prototype.getTipLengths = getTipLengths;
 Phylotree.prototype.leftChildRightSibling = leftChildRightSibling;
 
 _.extend(Phylotree.prototype, node_operations);

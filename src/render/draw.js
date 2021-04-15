@@ -781,7 +781,7 @@ class TreeRender {
 
     if (this.radial()) {
       // map the nodes to polar coordinates
-      this.draw_branch = _.partial(draw_arc, _, this.radial_center);
+      this.draw_branch = _.partial(draw_arc, this.radial_center);
       this.edge_placer = arc_segment_placer;
 
       let last_child_angle = null,
@@ -884,7 +884,7 @@ class TreeRender {
       }
 
       this.radial_center = this.radius_pad_for_bubbles = this.radius;
-      this.draw_branch = _.partial(draw_arc, _, this.radial_center);
+      this.draw_branch = _.partial(draw_arc, this.radial_center);
 
       let scaler = 1;
 

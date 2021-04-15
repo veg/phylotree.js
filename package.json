@@ -23,7 +23,7 @@
     "bootstrap": "4",
     "commander": "^6.2.1",
     "csv-stringify": "^5.3.6",
-    "d3": "^5.7.0",
+    "d3": "6",
     "d3-hierarchy": "^1.1.8",
     "d3-line": "^0.0.1",
     "d3-time-format": "^2.1.3",
@@ -34,6 +34,7 @@
     "moment": "^2.24.0",
     "pretty-data": "^0.40.0",
     "rollup-plugin-node-resolve": "^5.2.0",
+    "seedrandom": "^3.0.5",
     "underscore": "1.x",
     "winston": "^3.2.1",
     "xml2js": "^0.4.19"
