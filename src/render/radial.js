@@ -26,6 +26,7 @@ export function cartesian_to_polar(
   scales,
   size
 ) {
+
   node.radius = radius * (node.radius + radial_root_offset);
 
   //if (!node.angle) {
@@ -38,9 +39,12 @@ export function cartesian_to_polar(
   node.y = radial.y;
 
   return node;
+
 }
 
-export function draw_arc(points, radial_center) {
+export function draw_arc(radial_center, points) {
+
+
   var start = radial_mapper(points[0].radius, points[0].angle, radial_center),
     end = radial_mapper(points[0].radius, points[1].angle, radial_center);
 
