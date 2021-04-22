@@ -30,7 +30,7 @@
     "fast-csv": "4.3.6",
     "font-awesome": "4.x",
     "jquery": "3",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "pretty-data": "^0.40.0",
     "rollup-plugin-node-resolve": "^5.2.0",
