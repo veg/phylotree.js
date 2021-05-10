@@ -1050,8 +1050,8 @@ const parseString = require('xml2js').parseString;
         var coordinates = d3.mouse(tree_container[0]);
         menu_object
           .style("position", "absolute")
-          .style("left", "" + coordinates[0] + "px")
-          .style("top", "" + coordinates[1] + "px")
+          .style("left", "" + (coordinates[0] + tree_container.position().left) + "px")
+          .style("top", "" + (coordinates[1] + tree_container.position().top) + "px")
           .style("display", "block");
       } else {
         menu_object.style("display", "none");
