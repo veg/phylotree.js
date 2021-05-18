@@ -53,11 +53,7 @@ class TreeRender {
     this.radial_center = 0;
     this.radius = 1;
     this.radius_pad_for_bubbles = 0;
-
     this.rescale_node_span = 1;
-    this.node_span = function(_node) {
-      return 1;
-    };
     this.relative_node_span = function(_node) {
       return this.node_span(_node) / this.rescale_node_span;
     };
@@ -102,7 +98,10 @@ class TreeRender {
       "label-nodes-with-name": false,
       zoom: false,
       "show-menu": true,
-      "show-labels": true
+      "show-labels": true,
+      "node-styler": null,
+      "edge-styler": null,
+      "node-span": null
     };
 
     this.ensure_size_is_in_px = function(value) {
@@ -113,6 +112,17 @@ class TreeRender {
 
     this.width = this.options.width || 800;
     this.height = this.options.height || 600;
+
+    this.node_styler = this.options['node-styler'];
+    this.edge_styler = this.options['edge-styler'];
+
+    this.node_span = this.options['node-span'];
+
+    if(!this.node_span) {
+      this.node_span = function(_node) {
+        return 1;
+      };
+    }
 
     this.rescale_node_span =
       this.phylotree.nodes.children
@@ -194,8 +204,8 @@ class TreeRender {
         .select("svg")
         .remove();
 
-      this.svg = d3.select(svg_element)
-        .append("svg")
+      this.svg = d3
+        .create("svg")
         .attr("width", this.width)
         .attr("height", this.height);
 
