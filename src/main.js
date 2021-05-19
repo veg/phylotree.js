@@ -5,9 +5,7 @@ import { default as parser_registry } from "./formats/registry";
 import { default as nexml_parser } from "./formats/nexml";
 import { default as newick_parser, get_newick } from "./formats/newick";
 import { default as getTipLengths } from "./export";
-
 import * as nexus from "./formats/nexus";
-
 import { default as phyloxml_parser } from "./formats/phyloxml";
 import { default as max_parsimony } from "./max-parsimony";
 import { leftChildRightSibling, postOrder, preOrder, default as inOrder } from "./traversal";

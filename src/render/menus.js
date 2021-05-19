@@ -253,6 +253,7 @@ export function modify_selection(
   skip_refresh,
   mode
 ) {
+
   attr = attr || this.selection_attribute_name;
   mode = mode || "toggle";
 
@@ -274,8 +275,8 @@ export function modify_selection(
     var do_refresh = false;
 
     if (typeof node_selecter === "function") {
-      this.phylotree.links.forEach(function(d) {
-        var select_me = node_selecter(d);
+      this.links.forEach(function(d) {
+        let select_me = node_selecter(d);
         d[attr] = d[attr] || false;
         if (d[attr] != select_me) {
           d[attr] = select_me;
@@ -313,11 +314,12 @@ export function modify_selection(
 
     if (do_refresh) {
       if (!skip_refresh) {
+        console.log('refreshing');
         events.trigger_refresh(this);
       }
       if (this.count_handler()) {
         counts = {};
-        counts[attr] = this.phylotree.links.reduce(function(p, c) {
+        counts[attr] = this.links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
         events.count_update(this, counts, this.count_handler());
@@ -329,7 +331,7 @@ export function modify_selection(
     }
   } else if (this.options["binary-selectable"]) {
     if (typeof node_selecter === "function") {
-      this.phylotree.links.forEach(function(d) {
+      this.links.forEach(function(d) {
         var select_me = node_selecter(d);
         d[attr] = d[attr] || false;
 
@@ -357,9 +359,9 @@ export function modify_selection(
         }
       });
 
-      this.phylotree.links.forEach(function(d) {
+      this.links.forEach(function(d) {
         d[attr] = d.target[attr];
-        this.phylotree.options["attribute-list"].forEach(function(type) {
+        this.options["attribute-list"].forEach(function(type) {
           if (type != attr && d[attr] !== true) {
             d[type] = false;
             d.target[type] = false;
@@ -374,7 +376,7 @@ export function modify_selection(
       }
       if (this.count_handler()) {
         counts = {};
-        counts[attr] = this.phylotree.links.reduce(function(p, c) {
+        counts[attr] = this.links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
         this.count_update(this, counts, this.count_handler());
@@ -400,7 +402,7 @@ export function modify_selection(
  * @returns {Array} An array of nodes that match the current selection.
  */
 export function get_selection() {
-  return this.phylotree.nodes.filter(d => {
+  return this.nodes.filter(d => {
     return d[this.selection_attribute_name];
   });
 }

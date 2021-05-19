@@ -14,7 +14,6 @@ export function draw_edge(container, edge, transition) {
       this.modify_selection([d.target], this.selection_attribute_name);
     });
 
-  console.log(this.draw_branch);
   let new_branch_path = this.draw_branch([edge.source, edge.target]);
 
   if (transition) {
@@ -55,13 +54,14 @@ export function draw_edge(container, edge, transition) {
 }
 
 export function reclass_edge(edge) {
-
+  //console.log('reclassing');
   let class_var = css_classes["branch"];
 
   if (item_tagged(edge)) {
     class_var += " " + css_classes["tagged-branch"];
   }
 
+  //console.log(edge['selected']);
   if (item_selected(edge, this.selection_attribute_name)) {
     class_var += " " + css_classes["selected-branch"];
   }
@@ -71,7 +71,6 @@ export function reclass_edge(edge) {
 }
 
 export function sync_edge_labels() {
-
   this.phylotree.links.forEach(d => {
     d[this.selection_attribute_name] =
       d.target[this.selection_attribute_name] || false;

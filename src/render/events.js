@@ -77,7 +77,6 @@ export function resize_svg(tree, svg, tr) {
 
   }
 
-
   if (svg) {
 
     if (tr) {

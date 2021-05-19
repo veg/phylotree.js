@@ -137,6 +137,7 @@ class TreeRender {
     this.initialize_svg(this.container);
     this.links = this.phylotree.nodes.links();
     this.update();
+    events.d3_phylotree_add_event_listener();
   }
 
   pad_height() {

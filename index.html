@@ -427,62 +427,59 @@ $("#sort_descending").on ("click", function (e) {
 });
 
 $("#and_label").on ("click", function (e) {
-    tree.internal_label (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] && prev; }, true)}, true);
+    rendered_tree.internal_label (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] && prev; }, true)}, true);
 });
 
 $("#or_label").on ("click", function (e) {
-    tree.internal_label (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] || prev; }, false)}, true);
+    rendered_tree.internal_label (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] || prev; }, false)}, true);
 });
 
 
 $("#filter_add").on ("click", function (e) {
-    tree.modify_selection (function (d) { return d.tag || d[current_selection_name];}, current_selection_name, false, true)
+    rendered_tree.modify_selection (function (d) { return d.tag || d[current_selection_name];}, current_selection_name, false, true)
         .modify_selection (function (d) { return false; }, "tag", false, false);
 });
 
 $("#filter_remove").on ("click", function (e) {
-    tree.modify_selection (function (d) { return !d.tag;});
+    rendered_tree.modify_selection (function (d) { return !d.tag;});
 });
 
 $("#select_all").on ("click", function (e) {
-    tree.modify_selection (function (d) { return true;});
+    rendered_tree.modify_selection (function (d) { return true;});
 });
 
 $("#select_all_internal").on ("click", function (e) {
-    tree.modify_selection (function (d) { return !phylotree.is_leafnode (d.target);});
+    rendered_tree.modify_selection (function (d) { return !tree.is_leafnode (d.target);});
 });
 
 $("#select_all_leaves").on ("click", function (e) {
-    tree.modify_selection (function (d) { return phylotree.is_leafnode (d.target);});
+    rendered_tree.modify_selection (function (d) { return tree.is_leafnode (d.target);});
 });
 
 
 $("#select_none").on ("click", function (e) {
-    tree.modify_selection (function (d) { return false;});
+    rendered_tree.modify_selection (function (d) { return false;});
 });
 
 $("#clear_internal").on ("click", function (e) {
-    tree.modify_selection (function (d) { return phylotree.is_leafnode (d.target) ? d.target[current_selection_name] : false;});
+    rendered_tree.modify_selection (function (d) { return tree.is_leafnode (d.target) ? d.target[current_selection_name] : false;});
 });
 
 $("#clear_leaves").on ("click", function (e) {
-    tree.modify_selection (function (d) { return !phylotree.is_leafnode (d.target) ? d.target[current_selection_name] : false;});
+    rendered_tree.modify_selection (function (d) { return !tree.is_leafnode (d.target) ? d.target[current_selection_name] : false;});
 });
 
 
 $("#display_dengrogram").on ("click", function (e) {
-    tree.options ({'branches' : 'step'}, true);
+    rendered_tree.options ({'branches' : 'step'}, true);
 });
-
-//    phylotree.modify_selection = function (callback, attr, place, skip_refresh, mode) {
-
 
 $("#branch_filter").on ("input propertychange", function (e) {
    var filter_value = $(this).val();
 
    var rx = new RegExp (filter_value,"i");
 
-  tree.modify_selection (function (n) {
+  rendered_tree.modify_selection (function (n) {
     return filter_value.length && (tree.branch_name () (n.target).search (rx)) != -1;
    },"tag");
 
@@ -501,22 +498,22 @@ $("#validate_newick").on ("click", function (e) {
     } else {
         rendered_tree = tree.render("#tree_container");
         $('#newick_modal').modal('hide');
+        rendered_tree.show();
     }
 
 });
 
 function default_tree_settings () {
-    //Plotly.purge ("tree_charts");
     tree = phylotree();
     tree.branch_length (null);
     tree.branch_name (null);
-    tree.node_span ('equal');
-    tree.options ({'draw-size-bubbles' : false}, false);
+    rendered_tree.node_span ('equal');
+    rendered_tree.options ({'draw-size-bubbles' : false}, false);
     //rendered_tree.radial (true);
-    tree.style_nodes (node_colorizer);
-    tree.style_edges (edge_colorizer);
-    tree.selection_label (current_selection_name);
-    tree.node_circle_size (undefined);
+    rendered_tree.style_nodes (node_colorizer);
+    rendered_tree.style_edges (edge_colorizer);
+    rendered_tree.selection_label (current_selection_name);
+    rendered_tree.node_circle_size (undefined);
     rendered_tree.radial (false).separation (function (a,b) {return 0;})
     .count_handler (function (count) {
             $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
@@ -546,7 +543,7 @@ $("#internal_labels").on ("click", function (e) {
     tree.internal_names (function (n) {return n.name && n.name.length > 0;});
     tree.options ({'draw-size-bubbles' : false}, false);
     tree.node_span (function (node) { 
-        if (phylotree.is_leafnode (node)) {
+        if (tree.is_leafnode (node)) {
             return 1;
         }
         return tree.show_internal_name(node) ? 10 : 1;
@@ -849,7 +846,8 @@ function update_selection_names (id, skip_rebuild) {
       .style ("color",  color_scheme(id))
       .property ("value", current_selection_name);
 
-    tree.selection_label (selection_set[id]);
+    rendered_tree.selection_label(selection_set[id]);
+    rendered_tree.update();
 }
 
 var width  = 800, //$(container_id).width(),
@@ -957,13 +955,16 @@ function selection_handler_delete (e) {
 
 $( document ).ready( function () {
 
-    //default_tree_settings();
     tree = new phylotree.phylotree(test_string);
+    global_tree = tree;
 
     rendered_tree = tree.render({
       container: "#tree_container",
     	'draw-size-bubbles' : false
     });
+
+    // Until a cleaner solution to supporting both Observable and regular HTML
+    $(rendered_tree.container).append(rendered_tree.show())
 
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
     $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
