@@ -457,8 +457,13 @@ $("#branch_filter").on ("input propertychange", function (e) {
 
    var rx = new RegExp (filter_value,"i");
 
-  rendered_tree.modify_selection (function (n) {
-    return filter_value.length && (tree.branch_name () (n.target).search (rx)) != -1;
+   rendered_tree.modify_selection (n => {
+     console.log(n.target.data.name)
+     if(!n.target.data.name) {
+       return false;
+     }
+      m = n.target.data.name.search (rx)
+      return filter_value.length && m != -1;
    },"tag");
 
 });
