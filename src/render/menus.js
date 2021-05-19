@@ -316,12 +316,12 @@ export function modify_selection(
       if (!skip_refresh) {
         events.trigger_refresh(this);
       }
-      if (this.count_handler()) {
+      if (this.count_handler) {
         counts = {};
         counts[attr] = this.links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
-        events.count_update(this, counts, this.count_handler());
+        events.count_update(this, counts, this.count_handler);
       }
 
       if (place) {
@@ -392,6 +392,7 @@ export function modify_selection(
   }
 
   this.refresh();
+  this.update();
   return this;
 }
 

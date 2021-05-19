@@ -78,8 +78,6 @@ export function layout_handler(attr) {
  */
 export function selection_label(attr) {
   if (!arguments.length) return this.selection_attribute_name;
-  console.log('calling selection label');
-  console.log(attr);
   this.selection_attribute_name = attr;
   this.sync_edge_labels();
   return this;

@@ -70,10 +70,14 @@ export function reclass_edge(edge) {
 }
 
 export function sync_edge_labels() {
+
   this.links.forEach(d => {
+
+    // TODO: Move away from storing attribute data as root (BREAKS occasionally with d3>3)
     d[this.selection_attribute_name] =
       d.target[this.selection_attribute_name] || false;
     d.tag = d.target.tag || false;
+
   });
 
   if (this.count_handler()) {

@@ -198,7 +198,15 @@ export function clear_internal_nodes(respect) {
   if (!respect) {
     this.nodes.each(d => {
       if (!is_leafnode(d)) {
+
+        // TODO: Move away from storing attribute data as root (BREAKS occasionally with d3>3)
         d[this.selection_attribute_name] = false;
+
+        if(!d.data.traits) {
+          d.data.traits = {};
+        }
+        d.data.traits[this.selection_attribute_name] = d[this.selection_attribute_name];
+
       }
     });
   }

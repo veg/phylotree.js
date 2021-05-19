@@ -130,6 +130,7 @@ export function d3_phylotree_event_listener(event) {
       event.detail[1].refresh();
       break;
     case "count_update":
+      event.detail[2](event.detail[1]);
     case "layout":
       event.detail[2](event.detail[1]);
       break;

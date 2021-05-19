@@ -2,21 +2,22 @@
 <html lang = 'en'>
 
 <head>
+
     <meta charset="utf-8">
     <!-- Latest compiled and minified CSS -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.1.1/spacelab/bootstrap.min.css">
+    <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootswatch/4.1.1/spacelab/bootstrap.min.css">
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
     <script src="//d3js.org/d3.v5.js"></script>
@@ -75,6 +76,7 @@
 -->
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
+
   <a class="navbar-brand" href="#">phylotree.js</a>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -88,18 +90,6 @@
           <a class="dropdown-item" href="#"><input type="file" id="newick_file"/></a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newick_export_modal">Export</a>
-        </div>
-      </li>
-
-      <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">Examples <b class="caret"></b></a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="#" id = "example_hiv_scaled" >HIV-1 RT</a>
-          <a class="dropdown-item" href="#" id = "example_influenza_color">Unscaled IAV HA colored by host</a>
-          <a class="dropdown-item" href="#" id = "example_NGS" >NGS copy diversity</a>
-          <a class="dropdown-item" href="#" id = "example_GVZ" >Compare NGS consensus</a>
-          <a class="dropdown-item" href="#" id = "example_hiv_compartments" >HIV-1 env multiple timepoints and compartments</a>
-          <a class="dropdown-item" href="#" id = "internal_labels" >A tree with internal nodes selectively labeled</a>
         </div>
       </li>
 
@@ -134,9 +124,6 @@
           Selection
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a id="filter_add" class="dropdown-item" href="#">Add filtered nodes to selection</a>
-          <a id="filter_remove" class="dropdown-item" href="#">Remove filtered nodes from selection</a>
-          <div class="dropdown-divider"></div>
           <a id="select_all" class="dropdown-item" href="#">Select all</a>
           <a id="select_all_internal" class="dropdown-item" href="#">Select all internal nodes</a>
           <a id="select_all_leaves" class="dropdown-item" href="#">Select all leaf nodes</a>
@@ -270,7 +257,7 @@
     </div>
 
     <div class = 'col-md-4'>
-      <label class = "pull-right"><b>Selected</b> <span class="badge badge-secondary" id = "selected_branch_counter">0</span> <b>and filtered</b> <span class="badge badge-secondary" id = "selected_filtered_counter">0</span> <b>branches</b></label>
+      <label class = "pull-right"><b>Selected</b> <span class="badge badge-secondary" id="selected_branch_counter">0</span> <b>branches with current label</b></label>
     </div>
   </div>
 
@@ -359,7 +346,7 @@ $("#display_tree").on ("click", function (e) {
 });
 
 $("#mp_label").on ("click", function (e) {
-    tree.max_parsimony (true);
+    tree.max_parsimony (true, 'Foreground');
 });
 
 $ ("[data-direction]").on ("click", function (e) {
@@ -435,15 +422,6 @@ $("#or_label").on ("click", function (e) {
 });
 
 
-$("#filter_add").on ("click", function (e) {
-    rendered_tree.modify_selection (function (d) { return d.tag || d[current_selection_name];}, current_selection_name, false, true)
-        .modify_selection (function (d) { return false; }, "tag", false, false);
-});
-
-$("#filter_remove").on ("click", function (e) {
-    rendered_tree.modify_selection (function (d) { return !d.tag;});
-});
-
 $("#select_all").on ("click", function (e) {
     rendered_tree.modify_selection (function (d) { return true;});
 });
@@ -508,11 +486,6 @@ function default_tree_settings () {
     tree.branch_length (null);
     tree.branch_name (null);
     rendered_tree.radial (false).separation (function (a,b) {return 0;})
-    .count_handler (function (count) {
-            $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
-            $("#selected_filtered_counter").text (count.tag);
-        }
-    );
 }
 
 function node_colorizer (element, data) {
@@ -533,14 +506,11 @@ try{
 
 }
 catch (e) {
-  console.log(e);
 }
 
 }
 
 function edge_colorizer (element, data) {
-   console.log('edge colorizer');
-   console.log (data[current_selection_name]);
 try {
     var count_class = 0;
 
@@ -805,6 +775,12 @@ $( document ).ready( function () {
     });
 
     rendered_tree.selection_label (current_selection_name);
+
+    rendered_tree.count_handler (count => {
+            $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
+        }
+    );
+
 
     // Until a cleaner solution to supporting both Observable and regular HTML
     $(rendered_tree.container).append(rendered_tree.show())
