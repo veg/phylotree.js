@@ -314,7 +314,6 @@ export function modify_selection(
 
     if (do_refresh) {
       if (!skip_refresh) {
-        console.log('refreshing');
         events.trigger_refresh(this);
       }
       if (this.count_handler()) {

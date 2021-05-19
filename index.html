@@ -764,7 +764,7 @@ $("#selection_rename").on ("click", function (e) {
 
 $("#selection_delete").on ("click", function (e) {
 
-    tree.update_key_name (selection_set[current_selection_id], null)
+    rendered_tree.update_key_name (selection_set[current_selection_id], null)
     selection_set.splice (current_selection_id, 1);
 
     if (current_selection_id > 0) {
