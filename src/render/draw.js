@@ -1274,7 +1274,7 @@ this.do_lr();
         .attr("class", this.reclass_edge.bind(this));
 
       if (this.edge_styler) {
-        edges.each(function(d) {
+        edges.each(d => {
           this.edge_styler(d3.select(this), d);
         });
       }
