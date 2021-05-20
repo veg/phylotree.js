@@ -131,7 +131,7 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .on("click", d => {
             menu_object.style("display", "none");
             this.phylotree.reroot(node);
-            this.refresh().update();
+            this.update();
           });
       }
 
