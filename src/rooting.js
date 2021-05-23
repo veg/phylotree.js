@@ -20,133 +20,99 @@ export function reroot(node, fraction) {
 
   if (node.parent) {
 
-    //var new_json = d3.hierarchy({
-    //  name: "new_root",
-    //  //__mapped_bl: undefined,
-    //  "children": [{
-    //      name : node.data.name
-    //  }]
-    //});
-    var test = {
-  "name": "Eve",
-  "children": [
-    {
-      "name": "Cain"
-    },
-    {
-      "name": "Seth",
-      "children": [
-        {
-          "name": "Enos"
-        },
-        {
-          "name": "Noam"
-        }
-      ]
-    },
-    {
-      "name": "Abel"
-    },
-    {
-      "name": "Awan",
-      "children": [
-        {
-          "name": "Enoch"
-        }
-      ]
-    },
-    {
-      "name": "Azura"
-    }
-  ]
-}
+    var new_json = d3.hierarchy({
+      name: "new_root"
+    });
     
-    //var new_json = node.copy();
-    var new_json = d3.hierarchy(test);
+    new_json.children = [node.copy()];
+    new_json.data.__mapped_bl = undefined
 
-  //  new_json.each(n => {
-  //    n.__mapped_bl = this.branch_length_accessor(n);
-  //  });
+    nodes.each(n => {
+      n.data.__mapped_bl = this.branch_length_accessor(n);
+    });
 
-  //  this.set_branch_length(n => {
-  //    return n.__mapped_bl;
-  //  });
+    this.set_branch_length(n => {
+      return n.data.__mapped_bl;
+    });
 
-  //  let remove_me = node,
-  //    current_node = node.parent,
-  //    stashed_bl = _.noop();
 
-  //  let apportioned_bl =
-  //    node.__mapped_bl === undefined ? undefined : node.__mapped_bl * fraction;
+    let remove_me = node,
+      current_node = node.parent,
+      stashed_bl = _.noop();
 
-  //  stashed_bl = current_node.data.__mapped_bl;
+    let apportioned_bl =
+      node.data.__mapped_bl === undefined ? undefined : node.data.__mapped_bl * fraction;
 
-  //  current_node.__mapped_bl =
-  //    node.__mapped_bl === undefined
-  //      ? undefined
-  //      : node.__mapped_bl - apportioned_bl;
+    stashed_bl = current_node.data.__mapped_bl;
 
-  //  node.__mapped_bl = apportioned_bl;
+    current_node.data.__mapped_bl =
+      node.data.__mapped_bl === undefined
+        ? undefined
+        : node.data.__mapped_bl - apportioned_bl;
 
-  //  var remove_idx;
+    node.data.__mapped_bl = apportioned_bl;
 
-  //  if (current_node.parent) {
+    var remove_idx;
 
-  //    //new_json.children.push(current_node);
+    if (current_node.parent) {
 
-  //    while (current_node.parent) {
-  //      remove_idx = current_node.children.indexOf(remove_me);
-  //      if (current_node.parent.parent) {
-  //        current_node.children.splice(remove_idx, 1, current_node.parent);
-  //      } else {
-  //        current_node.children.splice(remove_idx, 1);
-  //      }
+      new_json.children.push(current_node);
 
-  //      let t = current_node.parent.__mapped_bl;
+      while (current_node.parent) {
+        remove_idx = current_node.children.indexOf(remove_me);
+        if (current_node.parent.parent) {
+          current_node.children.splice(remove_idx, 1, current_node.parent);
+        } else {
+          current_node.children.splice(remove_idx, 1);
+        }
 
-  //      if (t !== undefined) {
-  //        current_node.parent.__mapped_bl = stashed_bl;
-  //        stashed_bl = t;
-  //      }
-  //      remove_me = current_node;
-  //      current_node = current_node.parent;
-  //    }
-  //    remove_idx = current_node.children.indexOf(remove_me);
-  //    current_node.children.splice(remove_idx, 1);
-  //  } else {
-  //    remove_idx = current_node.children.indexOf(remove_me);
-  //    current_node.children.splice(remove_idx, 1);
-  //    stashed_bl = current_node.__mapped_bl;
-  //    remove_me = new_json;
-  //  }
+        let t = current_node.parent.data.__mapped_bl;
 
-  //  // current_node is now old root, and remove_me is the root child we came up
-  //  // the tree through
-  //  if (current_node.children.length == 1) {
-  //    if (stashed_bl) {
-  //      current_node.children[0].__mapped_bl += stashed_bl;
-  //    }
-  //    remove_me.children = remove_me.children.concat(current_node.children);
-  //  } else {
-  //    let new_node = new d3.hierarchy({ name: "__reroot_top_clade", __mapped_bl: stashed_bl });
-  //    _.extendOwn (new_json.children[0], node);
-  //    new_node.__mapped_bl = stashed_bl;
-  //    new_node.children = current_node.children.map(function(n) {
-  //      n.parent = new_node;
-  //      return n;
-  //    });
-  //    new_node.parent = remove_me;
-  //    remove_me.children.push(new_node);
-  //   }
+        if (t !== undefined) {
+          current_node.parent.data.__mapped_bl = stashed_bl;
+          stashed_bl = t;
+        }
+        remove_me = current_node;
+        current_node = current_node.parent;
+      }
+      remove_idx = current_node.children.indexOf(remove_me);
+      current_node.children.splice(remove_idx, 1);
+    } else {
+      remove_idx = current_node.children.indexOf(remove_me);
+      current_node.children.splice(remove_idx, 1);
+      stashed_bl = current_node.data.__mapped_bl;
+      remove_me = new_json;
+    }
+
+    // current_node is now old root, and remove_me is the root child we came up
+    // the tree through
+    if (current_node.children.length == 1) {
+      if (stashed_bl) {
+        current_node.children[0].data.__mapped_bl += stashed_bl;
+      }
+      remove_me.children = remove_me.children.concat(current_node.children);
+    } else {
+      let new_node = new d3.hierarchy({ name: "__reroot_top_clade", __mapped_bl: stashed_bl });
+      _.extendOwn (new_json.children[0], node);
+      new_node.data.__mapped_bl = stashed_bl;
+      new_node.children = current_node.children.map(function(n) {
+        n.parent = new_node;
+        return n;
+      });
+
+      new_node.parent = remove_me;
+      remove_me.children.push(new_node);
+     }
 
   }
-  
+
   // need to traverse the nodes and update parents
   this.update(new_json);
 
   this.traverse_and_compute(n => {
     _.each (n.children, (c) => {c.parent = n;})
   }, "pre-order");
+
 
 	if(!_.isUndefined(this.display)) {
 		// get container
@@ -155,8 +121,8 @@ export function reroot(node, fraction) {
     d3.select(this.display.container).select('svg').remove()
 		// get options
 		delete this.display;
-  	let rendered_tree = this.render(container, options);
-    rendered_tree.update();
+  	let rendered_tree = this.render(options);
+    d3.select(rendered_tree.container).node().appendChild(rendered_tree.show());
 	}
 
   return this;
@@ -164,6 +130,7 @@ export function reroot(node, fraction) {
 }
 
 export function rootpath(attr_name, store_name) {
+
   attr_name = attr_name || "attribute";
   store_name = store_name || "y_scaled";
 
@@ -172,11 +139,15 @@ export function rootpath(attr_name, store_name) {
 
     this[store_name] =
       this.parent[store_name] + (isNaN(my_value) ? 0.1 : my_value);
+
   } else {
+
     this[store_name] = 0.0;
+
   }
 
   return this[store_name];
+
 }
 
 export function path_to_root(node) {

@@ -249,9 +249,10 @@ class TreeRender {
    * @returns The current ``phylotree``.
    */
   update(transitions) {
+
     var self = this;
 
-    if (!this.svg) return this;
+    //if (!this.svg) return this;
 
     this.placenodes();
 
@@ -448,7 +449,6 @@ class TreeRender {
     let _node_span = this.node_span(a_node) / this.rescale_node_span;
     // compute the relative size of nodes (0,1)
     // sum over all nodes is 1
-    
     this.x = a_node.x =
       this.x +
       this.separation(this.last_node, a_node) +
@@ -692,9 +692,9 @@ class TreeRender {
     if (this.options["left-right-spacing"] == "fixed-step") {
       this.size[1] = this.max_depth * this.fixed_width[1];
 
-      this.scales[1] =
-        (this.size[1] - this.offsets[1] - this.options["left-offset"]) /
-        this._extents[1][1];
+      this.scales[1] = 175.53476512216602
+        //(this.size[1] - this.offsets[1] - this.options["left-offset"]) /
+        //this._extents[1][1];
 
       this.label_width = this._label_width(this.shown_font_size);
 
@@ -972,6 +972,7 @@ this.do_lr();
       this.right_most_leaf = 0;
 
       this.phylotree.nodes.each(d => {
+
         d.x *= this.scales[0];
         d.y *= this.scales[1]*.8;
 
