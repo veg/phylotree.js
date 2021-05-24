@@ -21,7 +21,7 @@
   ],
   "dependencies": {
     "bootstrap": "4",
-    "commander": "^6.2.1",
+    "commander": "^7.2.0",
     "csv-stringify": "^5.3.6",
     "d3": "6",
     "d3-hierarchy": "^2.0.0",
