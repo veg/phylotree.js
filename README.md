@@ -64,6 +64,15 @@ curly braces directly after identifiers, e.g.:
 ```
 
 ## Examples
+* [Simple Example](https://observablehq.com/@stevenweaver/phylotree-1-0-0?collection=@stevenweaver/phylotree-utilities)
+* [Unscaled IAV HA colored by host](https://observablehq.com/@stevenweaver/phylotree-1-0-0-unscaled-iav-ha-colored-by-host?collection=@stevenweaver/phylotree-utilities)
+* [HIV RT](https://observablehq.com/@stevenweaver/phylotree-1-0-0-hiv-rt?collection=@stevenweaver/phylotree-utilities)
+* [NGS Copy Diversity](https://observablehq.com/@stevenweaver/ngs-copy-diversity-with-phylotree-1-0-0?collection=@stevenweaver/phylotree-utilities)
+* [HIV-1 env multiple timepoints and compartments](https://observablehq.com/@stevenweaver/hiv-1-env-multiple-timepoints-and-compartments-with-phylot?collection=@stevenweaver/phylotree-utilities)
+* [Computing Root-to-Tip Distances with Phylotree.js](https://observablehq.com/@stevenweaver/computing-root-to-tip-distances-with-phylotree-js?collection=@stevenweaver/phylotree-utilities)
+* [Computing the Center of the Tree with Phylotree.js](https://observablehq.com/@stevenweaver/computing-the-center-of-the-tree-with-phylotree-js?collection=@stevenweaver/phylotree-utilities)
+* [Identifying Clusters in a Phylogenetic Tree with Phylotree.js](https://observablehq.com/@stevenweaver/identifying-clusters-in-a-phylogenetic-tree-with-phylotre?collection=@stevenweaver/phylotree-utilities)
+* [Identifying Clusters in a Phylogenetic Tree with Phylotree.js Part II](https://observablehq.com/@stevenweaver/identifying-clusters-in-a-phylogenetic-tree-with-phylotre/2?collection=@stevenweaver/phylotree-utilities)
 
 ## Options
 
