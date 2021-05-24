@@ -7,7 +7,7 @@ A JavaScript library for developing applications and interactive visualizations 
 
 ### Standalone web application
 
-A [full-featured web application](http://veg.github.io/phylotree.js/index.html) based on phylotree.js, implemented in [index.html](index.html).
+A [full-featured web application](http://phylotree.hyphy.org) based on phylotree.js, implemented in [index.html](index.html).
 
 ## Features
 
@@ -142,5 +142,5 @@ The following are a list of possible options, along with their types, meanings, 
   `(Number)` Determines minimum node spacing allocated when laying out top to bottom. Defaults to 10.
 
 ## API Reference
-A complete list of available functions can be found at [API.md]
+A complete list of available functions can be found at [API.md](API.md)
 
