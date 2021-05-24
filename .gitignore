@@ -26,6 +26,7 @@ coverage
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
+dist
 
 # Dependency directories
 node_modules
@@ -48,4 +49,6 @@ bower_components
 # OS specific files
 .DS_Store
 
-phylotree.js
+documentation
+build
+tags*

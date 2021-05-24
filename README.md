@@ -2,35 +2,12 @@
 
 A JavaScript library for developing applications and interactive visualizations involving [phylogenetic trees](https://en.wikipedia.org/wiki/Phylogenetic_tree), written as an extension of the [D3](http://d3js.org) [hierarchy layout](https://github.com/d3/d3-3.x-api-reference/blob/master/Hierarchy-Layout.md). It generates high quality SVG vector graphics, allows a great degree of customizability (CSS or JavaScript callbacks), and comes with a lot of *built-in* convenience features. 
 
-If you publish results that utilize phylotree.js, please cite the [associated publication](https://doi.org/10.1186/s12859-018-2283-2): 
+## Example Notebooks
 
-Stephen D. Shank, Steven Weaver, Sergei L. Kosakovsky Pond. phylotree.js - a JavaScript library for application development and interactive data visualization in phylogenetics. BMC Bioinformatics, 2018, Volume 19, Number 1, Page 1
-
-## Documentation
-
-Documentation for phylotree.js can be [found here](http://phylotree.hyphy.org/documentation).
-
-## Examples
-
-With `phylotree.js`, it is possible to interface phylogenetic trees with a variety of other software to produce custom, interactive visualizations of phylogenetic data. A simple example entails a [small tree that interacts with a D3.js bar chart](http://phylotree.hyphy.org/examples/phylo-bar/):
-
-![Alt Text](images/bar.gif)
-
-while a complex example involves a [large tree that interacts with a structural viewer](http://phylotree.hyphy.org/examples/large-ancestral-structural-viewer/):
-
-![Alt Text](images/structure.gif)
-
-### Gallery
-
-A [gallery of examples](http://phylotree.hyphy.org/documentation/examples.html) is a good place to learn different ways that phylotree.js can be used to display and annotate trees. 
 
 ### Standalone web application
 
-A [full-featured web application](http://veg.github.io/phylotree.js/index.html) based on phylotree.js, implemented in [index.html](index.html).
-
-### Molecular evolution platforms
-
-phylotree.js is also used by the 2017 revision of the [datamonkey.org server](http://datamonkey.org) for molecular sequence analysis. 
+A [full-featured web application](http://phylotree.hyphy.org) based on phylotree.js, implemented in [index.html](index.html).
 
 ## Features
 
@@ -54,36 +31,116 @@ phylotree.js is also used by the 2017 revision of the [datamonkey.org server](ht
    * Redefine the way a tree is displayed by writing custom CSS
 * Available on [npm](https://www.npmjs.com/package/phylotree) to facilitate modern JavaScript development.
 
-## Dependencies 
+## Installation
 
-See [package.json](package.json) for dependencies. 
-
-## Development
-
-### Local development
-
-Assuming that `./node_modules/.bin` is on your `$PATH`, run
+If you use NPM, `npm install phylotree`. Otherwise, the latest release can be
+installed locally using the following commands.
 
 ```
-yarn run develop
+git clone https://github.com/veg/phylotree.js.git
+yarn
+yarn serve
 ```
 
-This will run `webpack` in watch mode and start a local server (default port is 8080). Refresh upon editing to view changes.
+This will run `rollup` in watch mode and start a local server (default port is 8080). Refresh upon editing to view changes.
 
-### Documentation
+## Fundamentals
 
-Documentation was created using [sphinx-js](https://github.com/erikrose/sphinx-js). Install with
+This section describes basic commands for displaying trees, such as those found
+in the Introduction section.
+
+Note that many methods follow the getter/setter pattern, commonly used in D3.
+That is, they can either be used to retrieve an underlying parameter by being
+invoked without arguments (get), or can be used to change an underlying
+parameter by being invoked with the proper arguments (set).
+
+### Supported Formats
+Phylotree supports the Newick format, as well the extension of this format that
+is used by HyPhy. This allows assigning a category to each branch by the use of
+curly braces directly after identifiers, e.g.:
 
 ```
-pip install -r requirements.txt
+((((Pig:0.147969,Cow:0.21343):0.085099,Horse:0.165787,Cat:0.264806):0.058611, ((RhMonkey{Foreground}:0.002015,Baboon{Foreground}:0.003108){Foreground}:0.022733 ,(Human{Foreground}:0.004349,Chimp{Foreground}:0.000799){Foreground}:0.011873):0.101856) :0.340802,Rat:0.050958,Mouse:0.09795)
 ```
 
-and build with
+## Examples
 
-```
-npm run docs
-```
+## Options
 
-### Tests
+phylotree.js supports a variety of options for common features, which can be set using
+the following function.
 
-Run tests using `mocha`.
+The following are a list of possible options, along with their types, meanings, and possible values.
+
+### left-right-spacing
+  `(String)` Determines layout size from left to right. Defaults to ``"fixed-step"``.
+
+  * ``"fixed-step"`` - Determine width from padding and spacing.
+  * ``"fit-to-size"`` - Determine width from size array.
+
+### top-bottom-spacing
+  `(String)` Determines layout size from top to bottom. Defaults to ``"fixed-step"``.
+
+  * ``"fixed-step"`` - Determine width from padding and spacing.
+  * ``"fit-to-size"`` - Determine width from size array.
+
+### brush
+  `(Boolean)` Whether or not the brush should be activated. Defaults to ``true``.
+
+### hide
+  `(Boolean)` Whether or not hiding a given node or subtree is enabled. Defaults to ``true``.
+
+### reroot
+  `(Boolean)` Whether or not rerooting on a given node is enabled. Defaults to ``true``.
+
+### compression
+  `(Number)` The percentage of original size for a collapsed node. Defaults to ``.2``.
+
+### show-scale
+  `(Boolean)` Determines whether or not scale bar for branch lengths is shown.
+
+### left-offset
+  `(Number)` Amount of space on left side of phylotree. Defaults to ``0``.
+
+### draw-size-bubbles
+  `(Boolean)` Determines whether nodes are drawn with a given size. Defaults to ``false``.
+
+### max-radius
+  `(Number)` Set an upper bound on the radius in a radial layout. Defaults to 768.
+
+### collapsible
+  `(Boolean)` Determines whether or not nodes are collapsible. Defaults to ``true``.
+
+### selectable
+  `(Boolean)` Determines whether or not individual branches are selectable. Defaults to ``true``.
+
+### zoom
+  `(Boolean)` Determines whether or not zooming is enabled. Defaults to ``false``.
+
+### restricted-selectable
+  `(Array)` Determines what types of global selection actions are possible. Defaults to ``false``.
+
+  * ``false`` - No restrictions placed on global selection.
+  * ``"all"`` - Allow users to select all branches.
+  * ``"none"`` - Allow users to unselect all branches.
+  * ``"all-leaf-nodes"`` - Allow users to select all leaf nodes.
+  * ``"all-internal-branches"`` - Allow users to select all internal branches.
+
+### align-tips
+  `(Boolean)` Determines whether tip names are aligned or not. Defaults to false.
+
+### maximum-per-node-spacing
+  `(Number)` Determines maximum node spacing allocated when laying out left to right. Defaults to 100.
+
+### minimum-per-node-spacing
+  `(Number)` Determines minimum node spacing allocated when laying out left to right. Defaults to 2.
+
+### maximum-per-level-spacing
+  `(Number)` Determines maximum node spacing allocated when laying out top to bottom. Defaults to 100.
+
+### minimum-per-level-spacing
+  `(Number)` Determines minimum node spacing allocated when laying out top to bottom. Defaults to 10.
+
+## API Reference
+A complete list of available functions can be found at [API.md](API.md)
+
