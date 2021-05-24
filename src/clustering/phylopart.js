@@ -48,7 +48,7 @@ function phylopart(
 
   /** first, decide on the domain of branch lengths **/
 
-  var core_node = tree.get_root_node().children[0];
+  var core_node = tree.getRootNode().children[0];
 
   var min_bl = Number.MAX_VALUE,
     min_bl2 = Number.MAX_VALUE;
@@ -58,7 +58,7 @@ function phylopart(
   }
 
   tree.traverse_and_compute(function(n) {
-    if (tree.is_leafnode(n)) {
+    if (tree.isLeafNode(n)) {
       if (n.cot_computed_length < min_bl) {
         if (min_bl < min_bl2) {
           min_bl2 = min_bl;
@@ -106,7 +106,7 @@ function phylopart(
     resolution = domain / number_of_bins;
   }
 
-  var root_node = tree.get_root_node();
+  var root_node = tree.getRootNode();
 
   root_node.paths_to_leaves = new Array(leaf_count);
 
@@ -117,7 +117,7 @@ function phylopart(
   });
 
   tree.traverse_and_compute(function(n) {
-    if (!tree.is_leafnode(n)) {
+    if (!tree.isLeafNode(n)) {
       n.histogram = new Array(number_of_bins);
       for (var i = 0; i < number_of_bins; i++) {
         n.histogram[i] = 0;
@@ -142,7 +142,7 @@ function phylopart(
     */
 
   tree.traverse_and_compute(function(n) {
-    if (!tree.is_leafnode(n)) {
+    if (!tree.isLeafNode(n)) {
       for (var n1 = 0; n1 < n.paths_to_leaves.length; n1++) {
         for (var n2 = n1 + 1; n2 < n.paths_to_leaves.length; n2++) {
           var sum = n.paths_to_leaves[n1] + n.paths_to_leaves[n2];
@@ -179,7 +179,7 @@ function phylopart(
   var clusters = [];
 
   tree.traverse_and_compute(_.noop, "pre-order", null, function(n) {
-    if (!tree.is_leafnode(n)) {
+    if (!tree.isLeafNode(n)) {
       var bs = _.isString(n.data.bootstrap_values)
         ? +n.data.bootstrap_values
         : missing_bootstrap_value;
@@ -211,7 +211,7 @@ function phylopart(
   });
 
   tree.traverse_and_compute(function(n) {
-    if (!tree.is_leafnode(n)) {
+    if (!tree.isLeafNode(n)) {
       if ("histogram" in n) {
         delete n.histogram;
         delete n.leaf_count;
@@ -223,7 +223,7 @@ function phylopart(
     cluster["members"] = [];
     tree.traverse_and_compute(
       function(n) {
-        if (tree.is_leafnode(n)) {
+        if (tree.isLeafNode(n)) {
           cluster["members"].push(n);
         }
       },

@@ -10,9 +10,9 @@ tape("normalize", function(test) {
   let phylo = new phylotree.phylotree(newick_string);
 
   // normalize
-  phylo.normalize_branch_lengths();
+  phylo.normalizeBranchLengths();
 
-  test.ok(_.map(phylo.get_branch_lengths(), d => { return d <= 1}));
+  test.ok(_.map(phylo.getBranchLengths(), d => { return d <= 1}));
   
   test.end();
 
@@ -27,14 +27,14 @@ tape("scaler", function(test) {
   // array([-0.00076478, -0.01971795,  0.03945753,  0.00099495])
 
   // normalize
-  phylo.normalize_branch_lengths();
+  phylo.normalizeBranchLengths();
   
   let scaler = function(bl) {
     return bl * 0.02;
   }
 
-  phylo.scale_branch_lengths(scaler)
-  let max_branch_length = _.max(phylo.get_branch_lengths());
+  phylo.scaleBranchLengths(scaler)
+  let max_branch_length = _.max(phylo.getBranchLengths());
   test.equal(max_branch_length, 0.02);
   test.end();
 

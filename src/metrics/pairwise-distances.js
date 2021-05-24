@@ -44,7 +44,7 @@ function compute_pairwise_distances(tree) {
       throw "Non-null branch lengths are required for this operation: missing branch length at node " + n.data.name;
     }
 
-    if (tree.is_leafnode(n)) {
+    if (tree.isLeafNode(n)) {
       n.cot_leaf_index = leaf_count++;
       n.cot_path_to_leaves_below = {};
       n.cot_path_to_leaves_below[n.cot_leaf_index] = 0;
@@ -67,7 +67,7 @@ function compute_pairwise_distances(tree) {
 
   // populate all cot_path_to_leaves_above; this is done via a 'pre-order' traversal
   // handle root node first
-  var root_node = tree.get_root_node();
+  var root_node = tree.getRootNode();
 
   function _copy_from_siblings(a_node) {
     for (var this_node = 0; this_node < a_node.children.length; this_node++) {
@@ -106,7 +106,7 @@ function compute_pairwise_distances(tree) {
           length_so_far + n.parent.cot_computed_length;
       });
 
-      if (!tree.is_leafnode(n)) {
+      if (!tree.isLeafNode(n)) {
         _copy_from_siblings(n);
       }
       // copy sibling's 'below' nodes

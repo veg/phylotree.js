@@ -39,10 +39,13 @@ installed locally using the following commands.
 ```
 git clone https://github.com/veg/phylotree.js.git
 yarn
-yarn dev
+yarn serve
 ```
 
-This will run `webpack` in watch mode and start a local server (default port is 8080). Refresh upon editing to view changes.
+This will run `rollup` in watch mode and start a local server (default port is 8080). Refresh upon editing to view changes.
+
+## Examples
 
 ## API Reference
+
 

@@ -95,7 +95,7 @@ let default_date_parser = function(tree, node) {
 
   var location = "";
 
-  if (tree.is_leafnode(node)) {
+  if (tree.isLeafNode(node)) {
     if ("name" in node.data) {
       location = default_regexp.exec(node.data.name);
       if (location) {
@@ -117,7 +117,7 @@ let default_date_parser = function(tree, node) {
 let regex_date_parser = function(tree, regex, format, node) {
   var location = "";
 
-  if (tree.is_leafnode(node) && "name" in node.data) {
+  if (tree.isLeafNode(node) && "name" in node.data) {
 
     // map to each regex, filter, and return first result
     location = _.filter(_.map(regex, r => r.exec(node.data.name)));
@@ -138,7 +138,7 @@ let regex_date_parser = function(tree, regex, format, node) {
 
 let split_date_parser = function(tree, delimiter, pos, format, node) {
   // pos can be first, last, or index
-  if (tree.is_leafnode(node) && "name" in node.data) {
+  if (tree.isLeafNode(node) && "name" in node.data) {
     try {
       let nsp = node.data.name.split(delimiter);
       let itm = "";
@@ -190,7 +190,7 @@ fs.readFile(commander.newick, (err, newick_data) => {
   let tree_with_dates = phylotree.extract_dates(computed_tree, date_parser);
 
   // Filter just in case the date extractor did not always find a date from the header
-  const mapped = _.map(tree_with_dates.get_tips(), d => [
+  const mapped = _.map(tree_with_dates.getTips(), d => [
     d.data.name,
     d.data.decimal_date_value
   ]);

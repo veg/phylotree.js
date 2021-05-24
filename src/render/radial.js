@@ -1,4 +1,4 @@
-import { x_coord, y_coord } from "./coordinates";
+import { xCoord, yCoord } from "./coordinates";
 
 function radial_mapper(r, a, radial_center) {
   return {
@@ -17,7 +17,7 @@ function polar_to_cartesian(x, y) {
   return [r, a];
 }
 
-export function cartesian_to_polar(
+export function cartesianToPolar(
   node,
   radius,
   radial_root_offset,
@@ -41,7 +41,7 @@ export function cartesian_to_polar(
 
 }
 
-export function draw_arc(radial_center, points) {
+export function drawArc(radial_center, points) {
 
 
   var start = radial_mapper(points[0].radius, points[0].angle, radial_center),
@@ -49,9 +49,9 @@ export function draw_arc(radial_center, points) {
 
   return (
     "M " +
-    x_coord(start) +
+    xCoord(start) +
     "," +
-    y_coord(start) +
+    yCoord(start) +
     " A " +
     points[0].radius +
     "," +
@@ -59,21 +59,21 @@ export function draw_arc(radial_center, points) {
     " 0,0, " +
     (points[1].angle > points[0].angle ? 1 : 0) +
     " " +
-    x_coord(end) +
+    xCoord(end) +
     "," +
-    y_coord(end) +
+    yCoord(end) +
     " L " +
-    x_coord(points[1]) +
+    xCoord(points[1]) +
     "," +
-    y_coord(points[1])
+    yCoord(points[1])
   );
 }
 
-export function arc_segment_placer(edge, where, radial_center) {
+export function arcSegmentPlacer(edge, where, radial_center) {
   var r = radial_mapper(
     edge.target.radius + (edge.source.radius - edge.target.radius) * where,
     edge.target.angle,
     radial_center
   );
-  return { x: x_coord(r), y: y_coord(r) };
+  return { x: xCoord(r), y: yCoord(r) };
 }

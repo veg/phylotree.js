@@ -1,7 +1,7 @@
-export function item_tagged(item) {
+export function itemTagged(item) {
   return item.tag || false;
 }
 
-export function item_selected(item, tag) {
+export function itemSelected(item, tag) {
   return item[tag] || false;
 }

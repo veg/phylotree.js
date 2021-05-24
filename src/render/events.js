@@ -1,4 +1,4 @@
-import { is_leafnode } from "../nodes";
+import { isLeafNode } from "../nodes";
 import { css_classes } from "./options";
 
 let d3_layout_phylotree_event_id = "phylotree.event";
@@ -11,12 +11,12 @@ let d3_layout_phylotree_event_id = "phylotree.event";
  * @param {Node} node The node to toggle.
  * @returns {Phylotree} The current ``phylotree``.
  */
-export function toggle_collapse(node) {
+export function toggleCollapse(node) {
   if (node.collapsed) {
     node.collapsed = false;
 
     let unhide = function(n) {
-      if (!is_leafnode(n)) {
+      if (!isLeafNode(n)) {
         if (!n.collapsed) {
           n.children.forEach(unhide);
         }
@@ -33,7 +33,7 @@ export function toggle_collapse(node) {
   return this;
 }
 
-export function resize_svg(tree, svg, tr) {
+export function resizeSvg(tree, svg, tr) {
 
   let sizes = this.size;
 
@@ -99,7 +99,7 @@ export function rescale(scale, attr_name) {
   }
 }
 
-export function trigger_refresh(tree) {
+export function triggerRefresh(tree) {
 
   var event = new CustomEvent(d3_layout_phylotree_event_id, {
     detail: ["refresh", tree]
@@ -109,26 +109,26 @@ export function trigger_refresh(tree) {
 
 }
 
-export function count_update(tree, counts) {
+export function countUpdate(tree, counts) {
   var event = new CustomEvent(d3_layout_phylotree_event_id, {
-    detail: ["count_update", counts, tree.count_handler()]
+    detail: ["countUpdate", counts, tree.count_handler()]
   });
   document.dispatchEvent(event);
 }
 
-export function d3_phylotree_trigger_layout(tree) {
+export function d3PhylotreeTriggerLayout(tree) {
   var event = new CustomEvent(d3_layout_phylotree_event_id, {
-    detail: ["layout", tree, tree.layout_handler()]
+    detail: ["layout", tree, tree.layoutHandler()]
   });
   document.dispatchEvent(event);
 }
 
-export function d3_phylotree_event_listener(event) {
+export function d3PhylotreeEventListener(event) {
   switch (event.detail[0]) {
     case "refresh":
       event.detail[1].refresh();
       break;
-    case "count_update":
+    case "countUpdate":
       event.detail[2](event.detail[1]);
       break;
     case "layout":
@@ -137,15 +137,15 @@ export function d3_phylotree_event_listener(event) {
   return true;
 }
 
-export function d3_phylotree_add_event_listener() {
+export function d3PhylotreeAddEventListener() {
   document.addEventListener(
     d3_layout_phylotree_event_id,
-    d3_phylotree_event_listener,
+    d3PhylotreeEventListener,
     false
   );
 }
 
-export function d3_phylotree_svg_translate(x) {
+export function d3PhylotreeSvgTranslate(x) {
   if (x && (x[0] !== null || x[1] !== null))
     return (
       "translate (" +
@@ -158,7 +158,7 @@ export function d3_phylotree_svg_translate(x) {
   return "";
 }
 
-export function d3_phylotree_svg_rotate(a) {
+export function d3PhylotreeSvgRotate(a) {
   if (a !== null) {
     return "rotate (" + a + ") ";
   }

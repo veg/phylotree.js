@@ -1,4 +1,4 @@
-import { is_leafnode } from "../nodes";
+import { isLeafNode } from "../nodes";
 
 /**
  * Parses a Newick string into an equivalent JSON representation that is
@@ -228,14 +228,14 @@ function newick_parser(nwk_str, options={}) {
  */
 
 // TODO: break this out into two seperate functions
-export function get_newick(annotator) {
+export function getNewick(annotator) {
 
   let self = this;
 
   if (!annotator) annotator = d => d.data.name;
 
   function node_display(n) {
-    if (!is_leafnode(n)) {
+    if (!isLeafNode(n)) {
       element_array.push("(");
       n.children.forEach(function(d, i) {
         if (i) {

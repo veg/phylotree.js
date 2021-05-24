@@ -1,22 +1,22 @@
 import * as d3 from "d3";
 import * as _ from "underscore";
-import { is_node_collapsed } from "./nodes";
+import { isNodeCollapsed } from "./nodes";
 
-export function clade_css_selectors(css_classes) {
+export function cladeCssSelectors(css_classes) {
   return [css_classes["clade"]].reduce(function(p, c, i, a) {
     return (p += "path." + c + (i < a.length - 1 ? "," : ""));
   }, "");
 }
 
-export function update_collapsed_clades(transitions) {
+export function updateCollapsedClades(transitions) {
 
   let enclosure = this.svg.selectAll("." + this.css_classes["tree-container"]);
   var node_id = 0;
 
   let collapsed_clades = enclosure
-    .selectAll(clade_css_selectors(this.css_classes))
+    .selectAll(cladeCssSelectors(this.css_classes))
     .data(
-      this.phylotree.nodes.descendants().filter(is_node_collapsed),
+      this.phylotree.nodes.descendants().filter(isNodeCollapsed),
       function(d) {
         return d.id || (d.id = ++node_id);
       }

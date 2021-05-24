@@ -1,4 +1,4 @@
-import { is_leafnode } from "../nodes";
+import { isLeafNode } from "../nodes";
 
 export const css_classes = {
   "tree-container": "phylotree-container",
@@ -18,7 +18,7 @@ export const css_classes = {
   node_text: "phylotree-node-text"
 };
 
-export function internal_names(attr) {
+export function internalNames(attr) {
   if (!arguments.length) return this.options["internal-names"];
   this.options["internal-names"] = attr;
   return this;
@@ -30,7 +30,7 @@ export function radial(attr) {
   return this;
 }
 
-export function align_tips(attr) {
+export function alignTips(attr) {
   if (!arguments.length) return this.options["align-tips"];
   this.options["align-tips"] = attr;
   return this;
@@ -42,14 +42,14 @@ export function align_tips(attr) {
  * @param {Node} A node in the phylotree.
  * @returns {Float} The size of the bubble associated to this node.
  */
-export function node_bubble_size(node) {
+export function nodeBubbleSize(node) {
 
   return this.options["draw-size-bubbles"]
-    ? this.relative_node_span(node) * this.scales[0] * 0.25
+    ? this.relative_nodeSpan(node) * this.scales[0] * 0.25
     : 0;
 }
 
-export function shift_tip(d) {
+export function shiftTip(d) {
   if (this.options["is-radial"]) {
     return [
       (d.text_align == "end" ? -1 : 1) *
@@ -63,7 +63,7 @@ export function shift_tip(d) {
   return [this.right_most_leaf - d.screen_x, 0];
 }
 
-export function layout_handler(attr) {
+export function layoutHandler(attr) {
   if (!arguments.length) return this.layout_listener_handler;
   this.layout_listener_handler = attr;
   return this;
@@ -76,10 +76,10 @@ export function layout_handler(attr) {
  * @param {String} attr (Optional) If setting, the new selection label.
  * @returns The current selection label if getting, or the current ``phylotree`` if setting.
  */
-export function selection_label(attr) {
+export function selectionLabel(attr) {
   if (!arguments.length) return this.selection_attribute_name;
   this.selection_attribute_name = attr;
-  this.sync_edge_labels();
+  this.syncEdgeLabels();
   return this;
 }
 
@@ -89,17 +89,17 @@ export function selection_label(attr) {
  * can be determined dynamically. Alternatively, the argument can be the
  * string ``"equal"``, to give all nodes an equal span.
  *
- * @param {Function} attr Optional; if setting, the node_span function.
- * @returns The ``node_span`` if getting, or the current ``phylotree`` if setting.
+ * @param {Function} attr Optional; if setting, the nodeSpan function.
+ * @returns The ``nodeSpan`` if getting, or the current ``phylotree`` if setting.
  */
-export function node_span(attr) {
-  if (!arguments.length) return node_span;
+export function nodeSpan(attr) {
+  if (!arguments.length) return nodeSpan;
   if (typeof attr == "string" && attr == "equal") {
-    node_span = function(d) { // eslint-disable-line
+    nodeSpan = function(d) { // eslint-disable-line
       return 1;
     };
   } else {
-    node_span = attr; // eslint-disable-line
+    nodeSpan = attr; // eslint-disable-line
   }
   return this;
 }
@@ -113,10 +113,10 @@ export var predefined_selecters = {
     return false;
   },
   "all-leaf-nodes": d => {
-    return is_leafnode(d.target);
+    return isLeafNode(d.target);
   },
   "all-internal-nodes": d => {
-    return !is_leafnode(d.target);
+    return !isLeafNode(d.target);
   }
 };
 
@@ -126,10 +126,10 @@ export var predefined_selecters = {
  * an array of nodes that make up the current selection.
  *
  * @param {Function} callback (Optional) The selection callback function.
- * @returns The current ``selection_callback`` if getting, or the current ``this`` if setting.
+ * @returns The current ``selectionCallback`` if getting, or the current ``this`` if setting.
  */
-export function selection_callback(callback) {
-  if (!callback) return this.selection_callback;
-  this.selection_callback = callback;
+export function selectionCallback(callback) {
+  if (!callback) return this.selectionCallback;
+  this.selectionCallback = callback;
   return this;
 }

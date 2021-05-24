@@ -2,7 +2,7 @@ import * as _ from "underscore";
 
 // These methods are part of the Phylotree object
 
-export function graft_a_node(graft_at, new_child, new_parent, lengths) {
+export function graftANode(graft_at, new_child, new_parent, lengths) {
 
   let nodes = this.nodes.descendants();
 
@@ -43,11 +43,11 @@ export function graft_a_node(graft_at, new_child, new_parent, lengths) {
  * @param {Node} The node to be deleted, or the index of such a node.
  * @returns The current ``phylotree``.
  */
-export function delete_a_node(index) {
+export function deleteANode(index) {
   let nodes = this.nodes.descendants();
 
   if (typeof index != "number") {
-    return this.delete_a_node(nodes.indexOf(index));
+    return this.deleteANode(nodes.indexOf(index));
   }
 
   if (index > 0 && index < nodes.length) {
@@ -99,7 +99,7 @@ export function delete_a_node(index) {
  * Get the tips of the tree
  * @returns {Array} Nodes in the current ``phylotree``.
  */
-export function get_tips() {
+export function getTips() {
   // get all nodes that have no nodes
   return _.filter(this.nodes.descendants(), n => {
     return !_.has(n, "children");
@@ -110,7 +110,7 @@ export function get_tips() {
  * Get the internal nodes of the tree
  * @returns {Array} Nodes in the current ``phylotree``.
  */
-export function get_internals() {
+export function getInternals() {
   // get all nodes that have no nodes
   return _.filter(this.nodes.descendants(), n => {
     return _.has(n, "children");
@@ -123,7 +123,7 @@ export function get_internals() {
  *
  * @returns the current root node of the ``phylotree``.
  */
-export function get_root_node() {
+export function getRootNode() {
   return this.nodes;
 }
 
@@ -131,7 +131,7 @@ export function get_root_node() {
  * Get an array of all nodes.
  * @returns {Array} Nodes in the current ``phylotree``.
  */
-export function get_nodes() {
+export function getNodes() {
   return this.nodes;
 }
 
@@ -141,7 +141,7 @@ export function get_nodes() {
  * @param {String} name Name of the desired node.
  * @returns {Node} Desired node.
  */
-export function get_node_by_name(name) {
+export function getNodeByName(name) {
   return _.filter(this.nodes.descendants(), d => {
     return d.data.name == name;
   })[0];
@@ -154,7 +154,7 @@ export function get_node_by_name(name) {
  * @param {Object} attributes An object whose keys are the names of nodes
  * to modify, and whose values are the new attributes to add.
  */
-export function assign_attributes(attributes) {
+export function assignAttributes(attributes) {
   //return nodes;
   // add annotations to each matching node
   _.each(this.nodes, function(d) {
@@ -170,7 +170,7 @@ export function assign_attributes(attributes) {
  * @param {Node} A node in a tree.
  * @returns {Bool} Whether or not the node is a leaf node.
  */
-export function is_leafnode(node) {
+export function isLeafNode(node) {
   return !_.has(node, "children")
 }
 
@@ -181,7 +181,7 @@ export function is_leafnode(node) {
  * @param {String} new_key The new key name.
  * @returns The current ``this``.
  */
-export function update_key_name(old_key, new_key) {
+export function updateKeyName(old_key, new_key) {
   this.nodes.each(function(n) {
     if (old_key in n) {
       if (new_key) {
@@ -194,10 +194,10 @@ export function update_key_name(old_key, new_key) {
   return this;
 }
 
-export function clear_internal_nodes(respect) {
+export function clearInternalNodes(respect) {
   if (!respect) {
     this.nodes.each(d => {
-      if (!is_leafnode(d)) {
+      if (!isLeafNode(d)) {
 
         // TODO: Move away from storing attribute data as root (BREAKS occasionally with d3>3)
         d[this.selection_attribute_name] = false;

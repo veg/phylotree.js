@@ -1,22 +1,22 @@
 import * as d3 from "d3";
-import { x_coord, y_coord } from "./coordinates";
+import { xCoord, yCoord } from "./coordinates";
 
 export var draw_line = d3
   .line()
   .x(function(d) {
-    return x_coord(d);
+    return xCoord(d);
   })
   .y(function(d) {
-    return y_coord(d);
+    return yCoord(d);
   })
   .curve(d3.curveStepBefore);
 
-export function line_segment_placer(edge, where) {
+export function lineSegmentPlacer(edge, where) {
   return {
     x:
-      x_coord(edge.target) +
-      (x_coord(edge.source) - x_coord(edge.target)) * where,
-    y: y_coord(edge.target)
+      xCoord(edge.target) +
+      (xCoord(edge.source) - xCoord(edge.target)) * where,
+    y: yCoord(edge.target)
   };
 }
 

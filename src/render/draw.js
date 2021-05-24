@@ -1,10 +1,10 @@
 import * as d3 from "d3";
 import * as _ from "underscore";
 
-import { draw_arc, cartesian_to_polar, arc_segment_placer } from "./radial";
-import { default as draw_line, line_segment_placer } from "./cartesian";
-import { is_leafnode } from "../nodes";
-import { x_coord, y_coord } from "./coordinates";
+import { drawArc, cartesianToPolar, arcSegmentPlacer } from "./radial";
+import { default as draw_line, lineSegmentPlacer } from "./cartesian";
+import { isLeafNode } from "../nodes";
+import { xCoord, yCoord } from "./coordinates";
 import * as clades from "./clades";
 import * as render_nodes from "./nodes";
 import * as render_edges from "./edges";
@@ -29,9 +29,9 @@ class TreeRender {
       return 0;
     };
 
-    this._node_label = this.def_node_label;
+    this._nodeLabel = this.defNodeLabel;
     this.svg = null;
-    this.selection_callback = null;
+    this.selectionCallback = null;
     this.scales = [1, 1];
     this.size = [1, 1];
     this.fixed_width = [14, 30];
@@ -41,7 +41,7 @@ class TreeRender {
 
     this.draw_branch = draw_line;
     this.draw_scale_bar = null;
-    this.edge_placer = line_segment_placer;
+    this.edge_placer = lineSegmentPlacer;
     this.count_listener_handler = function() {};
     this.layout_listener_handler = function() {};
     this.node_styler = undefined;
@@ -53,9 +53,9 @@ class TreeRender {
     this.radial_center = 0;
     this.radius = 1;
     this.radius_pad_for_bubbles = 0;
-    this.rescale_node_span = 1;
-    this.relative_node_span = function(_node) {
-      return this.node_span(_node) / this.rescale_node_span;
+    this.rescale_nodeSpan = 1;
+    this.relative_nodeSpan = function(_node) {
+      return this.nodeSpan(_node) / this.rescale_nodeSpan;
     };
 
     let default_options = {
@@ -116,19 +116,19 @@ class TreeRender {
     this.node_styler = this.options['node-styler'];
     this.edge_styler = this.options['edge-styler'];
 
-    this.node_span = this.options['node-span'];
+    this.nodeSpan = this.options['node-span'];
 
-    if(!this.node_span) {
-      this.node_span = function(_node) {
+    if(!this.nodeSpan) {
+      this.nodeSpan = function(_node) {
         return 1;
       };
     }
 
-    this.rescale_node_span =
+    this.rescale_nodeSpan =
       this.phylotree.nodes.children
         .map(d => {
-          if (is_leafnode(d) || this.show_internal_name(d))
-            return this.node_span(d);
+          if (isLeafNode(d) || this.showInternalName(d))
+            return this.nodeSpan(d);
         })
         .reduce(function(p, c) {
           return Math.min(c, p || 1e200);
@@ -137,7 +137,7 @@ class TreeRender {
     this.initialize_svg(this.container);
     this.links = this.phylotree.nodes.links();
     this.update();
-    events.d3_phylotree_add_event_listener();
+    events.d3PhylotreeAddEventListener();
   }
 
   pad_height() {
@@ -162,7 +162,7 @@ class TreeRender {
    * @param {Node} node A node to be collapsed.
    */
   collapse_node(n) {
-    if (!render_nodes.is_node_collapsed(n)) {
+    if (!render_nodes.isNodeCollapsed(n)) {
       n.collapsed = true;
     }
   }
@@ -238,7 +238,7 @@ class TreeRender {
     }
 
     this.update();
-    this.sync_edge_labels();
+    this.syncEdgeLabels();
   }
 
   /**
@@ -270,7 +270,7 @@ class TreeRender {
       .attr("class", css_classes["tree-container"])
       .merge(enclosure)
       .attr("transform", d => {
-        return this.d3_phylotree_svg_translate([
+        return this.d3PhylotreeSvgTranslate([
           this.offsets[1] + this.options["left-offset"],
           this.pad_height()
         ]);
@@ -288,7 +288,7 @@ class TreeRender {
         .style("font-size", this.ensure_size_is_in_px(this.scale_bar_font_size))
         .merge(scale_bar)
         .attr("transform", d => {
-          return this.d3_phylotree_svg_translate([
+          return this.d3PhylotreeSvgTranslate([
             this.offsets[1] + this.options["left-offset"],
             this.pad_height() - 10
           ]);
@@ -304,11 +304,11 @@ class TreeRender {
       .selectAll("." + css_classes["tree-container"])
       .data([0]);
 
-    this.update_collapsed_clades(transitions);
+    this.updateCollapsedClades(transitions);
 
     let drawn_links = enclosure
-      .selectAll(render_edges.edge_css_selectors(css_classes))
-      .data(this.links.filter(render_edges.edge_visible), d => {
+      .selectAll(render_edges.edgeCssSelectors(css_classes))
+      .data(this.links.filter(render_edges.edgeVisible), d => {
         return d.target.id || (d.target.id = ++node_id);
       });
 
@@ -323,13 +323,13 @@ class TreeRender {
       .insert("path", ":first-child")
       .merge(drawn_links)
       .each(function(d) {
-        self.draw_edge(this, d, transitions);
+        self.drawEdge(this, d, transitions);
       });
 
     let drawn_nodes = enclosure
-      .selectAll(render_nodes.node_css_selectors(css_classes))
+      .selectAll(render_nodes.nodeCssSelectors(css_classes))
       .data(
-        this.phylotree.nodes.descendants().filter(render_nodes.node_visible),
+        this.phylotree.nodes.descendants().filter(render_nodes.nodeVisible),
         d => {
           return d.id || (d.id = ++node_id);
         }
@@ -340,22 +340,22 @@ class TreeRender {
     drawn_nodes = drawn_nodes
       .enter()
       .append("g")
-      .attr("class", this.reclass_node)
+      .attr("class", this.reclassNode)
       .merge(drawn_nodes)
       .attr("transform", d => {
         const should_shift =
-          this.options["layout"] == "right-to-left" && is_leafnode(d);
+          this.options["layout"] == "right-to-left" && isLeafNode(d);
 
-        d.screen_x = x_coord(d);
-        d.screen_y = y_coord(d);
+        d.screen_x = xCoord(d);
+        d.screen_y = yCoord(d);
 
-        return this.d3_phylotree_svg_translate([
+        return this.d3PhylotreeSvgTranslate([
           should_shift ? 0 : d.screen_x,
           d.screen_y
         ]);
       })
       .each(function(d) {
-        self.draw_node(this, d, transitions);
+        self.drawNode(this, d, transitions);
       })
       .attr("transform", d => {
         if (!_.isUndefined(d.screen_x) && !_.isUndefined(d.screen_y)) {
@@ -369,7 +369,7 @@ class TreeRender {
       });
     }
 
-    this.resize_svg(this.phylotree, this.svg, transitions);
+    this.resizeSvg(this.phylotree, this.svg, transitions);
 
     if (this.options["brush"]) {
       var brush = enclosure
@@ -383,7 +383,7 @@ class TreeRender {
         .brush()
         .on("brush", () => {
           var extent = d3.event.target.extent(),
-            shown_links = this.links.filter(render_edges.edge_visible),
+            shown_links = this.links.filter(render_edges.edgeVisible),
             selected_links = shown_links
               .filter((d, i) => {
                 return (
@@ -401,7 +401,7 @@ class TreeRender {
                 return d.target;
               });
 
-          this.modify_selection(
+          this.modifySelection(
             this.phylotree.links.map(d => {
               return d.target;
             }),
@@ -411,7 +411,7 @@ class TreeRender {
             "false"
           );
 
-          this.modify_selection(selected_links, "tag", false, false, "true");
+          this.modifySelection(selected_links, "tag", false, false, "true");
         })
         .on("end", () => {
           //brush.call(d3.event.target.clear());
@@ -420,7 +420,7 @@ class TreeRender {
       brush.call(brush_object);
     }
 
-    this.sync_edge_labels();
+    this.syncEdgeLabels();
 
     if (this.options["zoom"]) {
       let zoom = d3.behavior
@@ -446,20 +446,20 @@ class TreeRender {
   _handle_single_node_layout(
     a_node
   ) {
-    let _node_span = this.node_span(a_node) / this.rescale_node_span;
+    let _nodeSpan = this.nodeSpan(a_node) / this.rescale_nodeSpan;
     // compute the relative size of nodes (0,1)
     // sum over all nodes is 1
     this.x = a_node.x =
       this.x +
       this.separation(this.last_node, a_node) +
-      (this.last_span + _node_span) * 0.5;
+      (this.last_span + _nodeSpan) * 0.5;
       
  
     // separation is a user-settable callback to add additional spacing on nodes
     this._extents[1][1] = Math.max(this._extents[1][1], a_node.y);
     this._extents[1][0] = Math.min(
       this._extents[1][0],
-      a_node.y - _node_span * 0.5
+      a_node.y - _nodeSpan * 0.5
     );
     
 
@@ -469,19 +469,19 @@ class TreeRender {
         this.save_x +
           (a_node.x - this.save_x) * this.options["compression"] +
           this.save_span +
-          (_node_span * 0.5 + this.separation(this.last_node, a_node)) *
+          (_nodeSpan * 0.5 + this.separation(this.last_node, a_node)) *
             this.options["compression"]
       );      
     } else {
       this._extents[0][1] = Math.max(
         this._extents[0][1],
-        this.x + _node_span * 0.5 + this.separation(this.last_node, a_node)
+        this.x + _nodeSpan * 0.5 + this.separation(this.last_node, a_node)
       );
     }
 
 
     this.last_node = a_node;
-    this.last_span = _node_span;
+    this.last_span = _nodeSpan;
     
   }
 
@@ -500,11 +500,11 @@ class TreeRender {
 
 
     // do not layout hidden nodes
-    if (render_nodes.node_notshown(a_node)) {
+    if (render_nodes.nodeNotshown(a_node)) {
       return undefined;
     }
 
-    let is_leaf = is_leafnode(a_node);
+    let is_leaf = isLeafNode(a_node);
 
     // the next four members are radial layout options
     a_node.text_angle = null; // the angle at which text is being laid out
@@ -578,7 +578,7 @@ class TreeRender {
     if (!is_leaf) {
       // for internal nodes
       if (
-        render_nodes.is_node_collapsed(a_node) &&
+        render_nodes.isNodeCollapsed(a_node) &&
         !this.is_under_collapsed_parent
       ) {
         // collapsed node
@@ -599,7 +599,7 @@ class TreeRender {
           var map_me = n => {
             n.hidden = true;
 
-            if (is_leafnode(n)) {            
+            if (isLeafNode(n)) {            
               this.x = n.x =
                 this.save_x +
                 (n.x - this.save_x) * this.options["compression"] +
@@ -637,7 +637,7 @@ class TreeRender {
 
     let count_undefined = 0;
 
-    if (this.show_internal_name(a_node)) {
+    if (this.showInternalName(a_node)) {
       // do in-order traversal to allow for proper internal node spacing
       // (x/2) >> 0 is integer division
       let half_way = (a_node.children.length / 2) >> 0;
@@ -792,8 +792,8 @@ class TreeRender {
 
     if (this.radial()) {
       // map the nodes to polar coordinates
-      this.draw_branch = _.partial(draw_arc, this.radial_center);
-      this.edge_placer = arc_segment_placer;
+      this.draw_branch = _.partial(drawArc, this.radial_center);
+      this.edge_placer = arcSegmentPlacer;
 
       let last_child_angle = null,
         last_circ_position = null,
@@ -895,7 +895,7 @@ class TreeRender {
       }
 
       this.radial_center = this.radius_pad_for_bubbles = this.radius;
-      this.draw_branch = _.partial(draw_arc, this.radial_center);
+      this.draw_branch = _.partial(drawArc, this.radial_center);
 
       let scaler = 1;
 
@@ -905,7 +905,7 @@ class TreeRender {
       }
 
       this.phylotree.nodes.each(d => {
-        cartesian_to_polar(
+        cartesianToPolar(
           d,
           this.radius,
           annular_shift,
@@ -919,7 +919,7 @@ class TreeRender {
         if (this.options["draw-size-bubbles"]) {
           this.radius_pad_for_bubbles = Math.max(
             this.radius_pad_for_bubbles,
-            d.radius + this.node_bubble_size(d)
+            d.radius + this.nodeBubbleSize(d)
           );
         } else {
           this.radius_pad_for_bubbles = Math.max(
@@ -933,7 +933,7 @@ class TreeRender {
             let z = {};
             z.x = p[0];
             z.y = p[1];
-            z = cartesian_to_polar(
+            z = cartesianToPolar(
               z,
               this.radius,
               annular_shift,
@@ -968,7 +968,7 @@ class TreeRender {
 this.do_lr();
 
       this.draw_branch = draw_line;
-      this.edge_placer = line_segment_placer;
+      this.edge_placer = lineSegmentPlacer;
       this.right_most_leaf = 0;
 
       this.phylotree.nodes.each(d => {
@@ -981,10 +981,10 @@ this.do_lr();
         }
 
 
-        if (is_leafnode(d)) {
+        if (isLeafNode(d)) {
           this.right_most_leaf = Math.max(
             this.right_most_leaf,
-            d.y + this.node_bubble_size(d)
+            d.y + this.nodeBubbleSize(d)
           );
         }
 
@@ -1136,9 +1136,9 @@ this.do_lr();
 
     this.phylotree.nodes
       .descendants()
-      .filter(render_nodes.node_visible)
+      .filter(render_nodes.nodeVisible)
       .forEach(node => {
-        let node_width = 12 + this._node_label(node).length * _font_size * 0.8;
+        let node_width = 12 + this._nodeLabel(node).length * _font_size * 0.8;
 
         if (node.angle !== null) {
           node_width *= Math.max(
@@ -1251,16 +1251,16 @@ this.do_lr();
       );
 
       //.remove();
-      this.d3_phylotree_trigger_layout(this);
+      this.d3PhylotreeTriggerLayout(this);
       return this.update();
     }
 
-    this.d3_phylotree_trigger_layout(this);
+    this.d3PhylotreeTriggerLayout(this);
     return this;
   }
 
   handle_node_click(node) {
-    this.node_dropdown_menu(node, this.container, this, this.options);
+    this.nodeDropdownMenu(node, this.container, this, this.options);
   }
 
   refresh() {
@@ -1271,8 +1271,8 @@ this.do_lr();
       );
 
       let edges = enclosure
-        .selectAll(render_edges.edge_css_selectors(this.css_classes))
-        .attr("class", this.reclass_edge.bind(this));
+        .selectAll(render_edges.edgeCssSelectors(this.css_classes))
+        .attr("class", this.reclassEdge.bind(this));
 
       if (this.edge_styler) {
         edges.each(d => {
@@ -1281,8 +1281,8 @@ this.do_lr();
       }
 
       //let nodes = this.enclosure
-      //  .selectAll(inspector.node_css_selectors(this.css_classes))
-      //  .attr("class", this.phylotree.reclass_node);
+      //  .selectAll(inspector.nodeCssSelectors(this.css_classes))
+      //  .attr("class", this.phylotree.reclassNode);
 
       //if (this.node_styler) {
       //  nodes.each(function(d) {
@@ -1338,7 +1338,7 @@ this.do_lr();
     return this;
   }
 
-  item_selected(item, tag) {
+  itemSelected(item, tag) {
     return item[tag] || false;
   }
 

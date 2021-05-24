@@ -2,7 +2,7 @@ import * as _ from "underscore";
 
 function annotate_copy_number(tree) {
   tree.traverse_and_compute(function(node) {
-    if (tree.is_leafnode(node)) {
+    if (tree.isLeafNode(node)) {
       node.data.copy_number = 1;
     }
   });
@@ -61,7 +61,7 @@ function compute_root_to_tip_other_root(
   }
 }
 
-export function fit_root_to_tip(tree) {
+export function fitRootToTip(tree) {
 
   var linear_data = [],
     max_r2 = 0,
@@ -72,7 +72,7 @@ export function fit_root_to_tip(tree) {
 
   // To return if best node is the root already
   tree.traverse_and_compute(function(node) {
-    if (tree.is_leafnode(node) && !_.isNull(node.data.decimal_date_value)) {
+    if (tree.isLeafNode(node) && !_.isNull(node.data.decimal_date_value)) {
       linear_data.push([node.data.decimal_date_value, node.data.rtta, node.data.copy_number]);
     }
   });
@@ -81,14 +81,14 @@ export function fit_root_to_tip(tree) {
 
   tree.traverse_and_compute(function(node) {
 
-    if (tree.is_leafnode(node) && !_.isNull(node.data.decimal_date_value)) {
+    if (tree.isLeafNode(node) && !_.isNull(node.data.decimal_date_value)) {
 
       compute_root_to_tip_other_root(tree, node, null, 0, 0);
 
       linear_data = [];
 
       tree.traverse_and_compute(function(node) {
-        if (tree.is_leafnode(node) && !_.isNull(node.data.decimal_date_value)) {
+        if (tree.isLeafNode(node) && !_.isNull(node.data.decimal_date_value)) {
           linear_data.push([
             node.data.decimal_date_value,
             node.data.rtta,
@@ -180,7 +180,7 @@ export default function root_to_tip(tree) {
         throw "root_to_tip cannot be run on trees with missing branch lengths";
       }
     }
-    if (tree.is_leafnode(n)) {
+    if (tree.isLeafNode(n)) {
       n.data.leaf_index = index++;
     }
     if ("r2t" in n.data) {
@@ -193,7 +193,7 @@ export default function root_to_tip(tree) {
       if (!("r2t" in n.parent.data)) {
         n.parent.data.r2t = {};
       }
-      if (tree.is_leafnode(n)) {
+      if (tree.isLeafNode(n)) {
         n.parent.data.r2t[n.data.leaf_index] = n.data._computed_length;
       } else {
         _.each(n.data.r2t, function(v, idx) {
@@ -205,16 +205,16 @@ export default function root_to_tip(tree) {
     }
   });
 
-  var r2t = tree.get_root_node().data.r2t;
+  var r2t = tree.getRootNode().data.r2t;
 
   tree.traverse_and_compute(n => {
-    if (tree.is_leafnode(n)) {
+    if (tree.isLeafNode(n)) {
       n.data.root_to_tip = r2t[n.data.leaf_index] || 0;
       delete n.data.leaf_index;
     }
   });
 
-  delete tree.get_root_node().data.r2t;
+  delete tree.getRootNode().data.r2t;
 
   return tree;
 }

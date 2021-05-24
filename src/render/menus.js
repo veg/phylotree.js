@@ -1,13 +1,13 @@
 import * as d3 from "d3";
 import * as _ from "underscore";
 import * as events from "./events";
-import { is_leafnode } from "../nodes";
-import { is_node_collapsed, has_hidden_nodes } from "./nodes";
+import { isLeafNode } from "../nodes";
+import { isNodeCollapsed, hasHiddenNodes } from "./nodes";
 import { predefined_selecters } from "./options";
 
 let d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
 
-export function node_dropdown_menu(node, container, phylotree, options) {
+export function nodeDropdownMenu(node, container, phylotree, options) {
   let menu_object = d3
     .select(container)
     .select("#" + d3_layout_phylotree_context_menu_id);
@@ -36,16 +36,16 @@ export function node_dropdown_menu(node, container, phylotree, options) {
       !options["show-menu"]
     )
       return;
-    if (!is_leafnode(node)) {
+    if (!isLeafNode(node)) {
       if (options["collapsible"]) {
         menu_object
           .append("a")
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
-          .text(is_node_collapsed(node) ? "Expand Subtree" : "Collapse Subtree")
+          .text(isNodeCollapsed(node) ? "Expand Subtree" : "Collapse Subtree")
           .on("click", d => {
             menu_object.style("display", "none");
-            this.toggle_collapse(node).update();
+            this.toggleCollapse(node).update();
           });
         if (options["selectable"]) {
           menu_object.append("div").attr("class", "dropdown-divider");
@@ -64,8 +64,8 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .text("All descendant branches")
           .on("click", function(d) {
             menu_object.style("display", "none");
-            phylotree.modify_selection(
-              phylotree.select_all_descendants(node, true, true)
+            phylotree.modifySelection(
+              phylotree.selectAllDescendants(node, true, true)
             );
           });
 
@@ -76,8 +76,8 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .text("All terminal branches")
           .on("click", function(d) {
             menu_object.style("display", "none");
-            phylotree.modify_selection(
-              phylotree.select_all_descendants(node, true, false)
+            phylotree.modifySelection(
+              phylotree.selectAllDescendants(node, true, false)
             );
           });
 
@@ -88,8 +88,8 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .text("All internal branches")
           .on("click", function(d) {
             menu_object.style("display", "none");
-            phylotree.modify_selection(
-              phylotree.select_all_descendants(node, false, true)
+            phylotree.modifySelection(
+              phylotree.selectAllDescendants(node, false, true)
             );
           });
       }
@@ -104,7 +104,7 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .text("Incident branch")
           .on("click", function(d) {
             menu_object.style("display", "none");
-            phylotree.modify_selection([node]);
+            phylotree.modifySelection([node]);
           });
 
         menu_object
@@ -114,7 +114,7 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .text("Path to root")
           .on("click", d => {
             menu_object.style("display", "none");
-            this.modify_selection(this.phylotree.path_to_root(node));
+            this.modifySelection(this.phylotree.pathToRoot(node));
           });
 
         if (options["reroot"] || options["hide"]) {
@@ -140,17 +140,17 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .append("a")
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
-          .text("Hide this " + (is_leafnode(node) ? "node" : "subtree"))
+          .text("Hide this " + (isLeafNode(node) ? "node" : "subtree"))
           .on("click", d => {
             menu_object.style("display", "none");
-            this.modify_selection([node], "notshown", true, true)
-              .update_has_hidden_nodes()
+            this.modifySelection([node], "notshown", true, true)
+              .updateHasHiddenNodes()
               .update();
           });
       }
     }
 
-    if (has_hidden_nodes(node)) {
+    if (hasHiddenNodes(node)) {
       menu_object
         .append("a")
         .attr("class", "dropdown-item")
@@ -159,14 +159,14 @@ export function node_dropdown_menu(node, container, phylotree, options) {
         .on("click", function(d) {
           menu_object.style("display", "none");
           phylotree
-            .modify_selection(
-              phylotree.select_all_descendants(node, true, true),
+            .modifySelection(
+              phylotree.selectAllDescendants(node, true, true),
               "notshown",
               true,
               true,
               "false"
             )
-            .update_has_hidden_nodes()
+            .updateHasHiddenNodes()
             .update();
         });
     }
@@ -218,7 +218,7 @@ export function node_dropdown_menu(node, container, phylotree, options) {
   }
 }
 
-export function add_custom_menu(node, name, callback, condition) {
+export function addCustomMenu(node, name, callback, condition) {
   if (!("menu_items" in node)) {
     node["menu_items"] = [];
   }
@@ -246,7 +246,7 @@ export function add_custom_menu(node, name, callback, condition) {
  * @returns The current ``this``.
  *
  */
-export function modify_selection(
+export function modifySelection(
   node_selecter,
   attr,
   place,
@@ -314,14 +314,14 @@ export function modify_selection(
 
     if (do_refresh) {
       if (!skip_refresh) {
-        events.trigger_refresh(this);
+        events.triggerRefresh(this);
       }
       if (this.count_handler) {
         counts = {};
         counts[attr] = this.links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
-        events.count_update(this, counts, this.count_handler);
+        events.countUpdate(this, counts, this.count_handler);
       }
 
       if (place) {
@@ -371,14 +371,14 @@ export function modify_selection(
 
     if (do_refresh) {
       if (!skip_refresh) {
-        events.trigger_refresh(this);
+        events.triggerRefresh(this);
       }
       if (this.count_handler()) {
         counts = {};
         counts[attr] = this.links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
-        this.count_update(this, counts, this.count_handler());
+        this.countUpdate(this, counts, this.count_handler());
       }
 
       if (place) {
@@ -387,8 +387,8 @@ export function modify_selection(
     }
   }
 
-  if (this.selection_callback && attr != "tag") {
-    this.selection_callback(this.get_selection());
+  if (this.selectionCallback && attr != "tag") {
+    this.selectionCallback(this.getSelection());
   }
 
   this.refresh();
@@ -401,7 +401,7 @@ export function modify_selection(
  *
  * @returns {Array} An array of nodes that match the current selection.
  */
-export function get_selection() {
+export function getSelection() {
   return this.nodes.filter(d => {
     return d[this.selection_attribute_name];
   });
@@ -416,11 +416,11 @@ export function get_selection() {
  * @param {Boolean} internal Whther to include internal nodes.
  * @returns {Array} An array of selected nodes.
  */
-export function select_all_descendants(node, terminal, internal) {
+export function selectAllDescendants(node, terminal, internal) {
   let selection = [];
 
   function sel(d) {
-    if (is_leafnode(d)) {
+    if (isLeafNode(d)) {
       if (terminal) {
         if (d != node) selection.push(d);
       }
@@ -442,10 +442,10 @@ export function select_all_descendants(node, terminal, internal) {
  * an array of nodes that make up the current selection.
  *
  * @param {Function} callback (Optional) The selection callback function.
- * @returns The current ``selection_callback`` if getting, or the current ``this`` if setting.
+ * @returns The current ``selectionCallback`` if getting, or the current ``this`` if setting.
  */
-export function selection_callback(callback) {
-  if (!callback) return this.selection_callback;
-  this.selection_callback = callback;
+export function selectionCallback(callback) {
+  if (!callback) return this.selectionCallback;
+  this.selectionCallback = callback;
   return this;
 }

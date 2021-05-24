@@ -1,7 +1,7 @@
-export function x_coord(d) {
+export function xCoord(d) {
   return d.y;
 }
 
-export function y_coord(d) {
+export function yCoord(d) {
   return d.x;
 }

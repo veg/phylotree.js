@@ -28,7 +28,7 @@ tape("phylotree has branch lengths", function(test) {
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
 
-  test.ok(phylo.has_branch_lengths());
+  test.ok(phylo.hasBranchLengths());
   test.end();
 
 });
@@ -38,7 +38,7 @@ tape("phylotree path root", function(test) {
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
 
-  test.equal(phylo.path_to_root(phylo.nodes.descendants()[12]).length, 6);
+  test.equal(phylo.pathToRoot(phylo.nodes.descendants()[12]).length, 6);
   test.end();
   
 });
@@ -49,8 +49,8 @@ tape("phylotree inspectors", function(test) {
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
 
-  test.notOk(phylo.is_leafnode(phylo.nodes))
-  test.ok(phylo.is_leafnode(phylo.nodes.leaves()[0]))
+  test.notOk(phylo.isLeafNode(phylo.nodes))
+  test.ok(phylo.isLeafNode(phylo.nodes.leaves()[0]))
 
   test.end();
 
@@ -70,7 +70,7 @@ tape("phylotree newick export", function(test) {
 
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
-  test.equal(phylo.get_newick().length, 18352);
+  test.equal(phylo.getNewick().length, 18352);
   test.end();
   
 });
@@ -82,7 +82,7 @@ tape("phylotree nodes", function(test) {
 
   // delete a node
   let before = phylo.nodes.descendants().length;
-  phylo.delete_a_node(4);
+  phylo.deleteANode(4);
   let after = phylo.nodes.descendants().length;
   test.equal(before - after, 1);
   test.end();
@@ -105,7 +105,7 @@ tape("phylotree get tips", function(test) {
 
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
-  test.equal(phylo.get_tips().length, 274);
+  test.equal(phylo.getTips().length, 274);
   test.end();
   
 });

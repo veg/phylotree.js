@@ -26,7 +26,7 @@ function cluster_picker(
   root_node,
   missing_bootstrap_value
 ) {
-  root_node = root_node || tree.get_root_node();
+  root_node = root_node || tree.getRootNode();
   missing_bootstrap_value = _.isNumber(missing_bootstrap_value)
     ? missing_bootstrap_value
     : 1;
@@ -60,7 +60,7 @@ function cluster_picker(
   var clusters = [];
 
   tree.traverse_and_compute(_.noop, "pre-order", root_node, function(n) {
-    if (!tree.is_leafnode(n)) {
+    if (!tree.isLeafNode(n)) {
       var bs = _.isString(n.data.bootstrap_values)
         ? +n.data.bootstrap_values
         : missing_bootstrap_value;
@@ -100,7 +100,7 @@ function cluster_picker(
     cluster["members"] = [];
     tree.traverse_and_compute(
       function(n) {
-        if (tree.is_leafnode(n)) {
+        if (tree.isLeafNode(n)) {
           cluster["members"].push(n);
         }
       },

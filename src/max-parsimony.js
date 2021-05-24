@@ -1,7 +1,7 @@
 import * as _ from "underscore";
-import { is_leafnode } from "./nodes";
+import { isLeafNode } from "./nodes";
 
-export default function max_parsimony(respect_existing, attr_name) {
+export default function maxParsimony(respect_existing, attr_name) {
 
   function populate_mp_matrix(attr_name, d) {
 
@@ -10,7 +10,7 @@ export default function max_parsimony(respect_existing, attr_name) {
       [false, false]
     ]; // selected or not
 
-    if (is_leafnode(d)) {
+    if (isLeafNode(d)) {
 
       d.mp[1][0] = d.mp[1][1] = d[attr_name] || false;
       d.mp[0][0] = d.mp[1][0] ? 1 : 0;
@@ -71,8 +71,8 @@ export default function max_parsimony(respect_existing, attr_name) {
     }
   });
 
-  this.display.modify_selection((d, callback) => {
-    if (is_leafnode(d.target)) {
+  this.display.modifySelection((d, callback) => {
+    if (isLeafNode(d.target)) {
       return d.target[attr_name];
     }
     return d.target.mp;

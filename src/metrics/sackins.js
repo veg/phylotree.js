@@ -11,7 +11,7 @@ import * as _ from "underscore";
 export default function sackin(tree) {
 
   // Get tips of tree
-  let tips = tree.get_tips();
+  let tips = tree.getTips();
 
   // Count number of ancestors to root for each tree
   let depths = _.map(tips, d => { return d.depth });

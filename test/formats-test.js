@@ -16,11 +16,11 @@ tape("NEXUS parse", function(test) {
   let annotation_file = __dirname + "/data/apternodus.chars.small.nexus";
   let annotations = String(fs.readFileSync(annotation_file));
 
-  let anno = phylotree.parse_annotations(annotations);
+  let anno = phylotree.parseAnnotations(annotations);
   test.equal(_.keys(anno.matrix).length, 30);
 
   // load annotations
-  phylotree.load_annotations(phylo, 'char', anno);
+  phylotree.loadAnnotations(phylo, 'char', anno);
 
   //test.equal(max, 235);
   test.end();
@@ -33,14 +33,14 @@ tape("Annotated Newick parse", function(test) {
 
   let test_leaves = ["Pig", "Cow", "Horse", "Cat"];
   test_leaves.forEach(function(leaf) {
-    let node = phylo.get_node_by_name(leaf);
+    let node = phylo.getNodeByName(leaf);
     test.equal(node.data.name, leaf);
     test.equal(node.data.annotation, "Test");
   });
 
   let reference_leaves = ["RhMonkey", "Baboon", "Human", "Chimp"];
   reference_leaves.forEach(function(leaf) {
-    let node = phylo.get_node_by_name(leaf);
+    let node = phylo.getNodeByName(leaf);
     test.equal(node.data.name, leaf);
     test.equal(node.data.annotation, "Reference");
   });
@@ -55,7 +55,7 @@ tape("Annotated Newick parse", function(test) {
 tape("BEAST newick parse", function(test) {
   let nwk = fs.readFileSync(__dirname + "/data/beast.new").toString();
   let phylo = new phylotree.phylotree(nwk, {type: "beast"});
-  const beast_data = phylo.get_node_by_name('3').data.beast;
+  const beast_data = phylo.getNodeByName('3').data.beast;
 
   // A few numeric values
   test.assert(almost_equal(beast_data.b_u_N_median, 0.0));

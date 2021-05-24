@@ -6,8 +6,8 @@
  *  { location: root_node, breakpoint: 0 }
  *
  */
-export function compute_midpoint(tree) {
-  if (!tree.has_branch_lengths()) {
+export function computeMidpoint(tree) {
+  if (!tree.hasBranchLengths()) {
     throw "Center of tree calculation cannot be performed on trees that do not have fully specified branch lengths";
   }
 
@@ -18,7 +18,7 @@ export function compute_midpoint(tree) {
       var my_longest_path_length = bl(node);
       var my_longest_path_terminus;
 
-      if (tree.is_leafnode(node)) {
+      if (tree.isLeafNode(node)) {
         my_longest_path_terminus = node;
         node.max_path = 0;
         node.max_path_terminus = node;
@@ -37,7 +37,7 @@ export function compute_midpoint(tree) {
     }
   });
 
-  var root_node = tree.get_root_node();
+  var root_node = tree.getRootNode();
   var longest_path_length = 0;
 
   root_node.children.forEach(function(root_child) {
@@ -72,8 +72,8 @@ export function compute_midpoint(tree) {
           breakpoint: longest_path_length / current_bl
         };
 
-        //console.log ("Longest " + root_path (tree.get_node_by_name(root_node.max_path_terminus.name)));
-        //console.log ("Second longest " + root_path (tree.get_node_by_name(longest_path_length[1].name)));
+        //console.log ("Longest " + root_path (tree.getNodeByName(root_node.max_path_terminus.name)));
+        //console.log ("Second longest " + root_path (tree.getNodeByName(longest_path_length[1].name)));
       }
     }
   }

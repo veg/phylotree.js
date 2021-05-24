@@ -2,11 +2,11 @@ import * as _ from "underscore";
 
 // These methods are part of the Phylotree object
 
-export function set_partitions(partitions) {
+export function setPartitions(partitions) {
   this.partitions = partitions;
 }
 
-export function get_partitions(attributes) {
+export function getPartitions(attributes) {
   return this.partitions;
 }
 
@@ -15,7 +15,7 @@ export function get_partitions(attributes) {
  *
  * @returns {Object} true if  every branch in the tree has a branch length
  */
-export default function has_branch_lengths() {
+export default function hasBranchLengths() {
 
   let bl = this.branch_length;
 
@@ -33,7 +33,7 @@ export default function has_branch_lengths() {
  *
  * @returns {Array} array of branch lengths
  */
-export function get_branch_lengths() {
+export function getBranchLengths() {
 
   let bl = this.branch_length;
   return _.map(this.nodes.descendants(), node => { return bl(node)});
@@ -41,7 +41,7 @@ export function get_branch_lengths() {
 }
 
 
-export function def_branch_length_accessor(_node, new_length) {
+export function defBranchLengthAccessor(_node, new_length) {
 
   let _node_data = _node.data;
 
@@ -73,9 +73,9 @@ export function def_branch_length_accessor(_node, new_length) {
  * @param {Function} attr Empty if getting, or new branch length accessor if setting.
  * @returns {Object} The branch length accessor if getting, or the current this if setting.
  */
-export function set_branch_length(attr) {
+export function setBranchLength(attr) {
   if (!arguments.length) return this.branch_length_accessor;
-  this.branch_length_accessor = attr ? attr : def_branch_length_accessor;
+  this.branch_length_accessor = attr ? attr : defBranchLengthAccessor;
   return this;
 }
 
@@ -138,10 +138,10 @@ export function scale(scale_by) {
  *
  * @param {Function} attr (Optional) If setting, a function that accesses a branch name
  * from a node.
- * @returns The ``node_label`` accessor if getting, or the current ``this`` if setting.
+ * @returns The ``nodeLabel`` accessor if getting, or the current ``this`` if setting.
  */
-export function branch_name(attr) {
-  if (!arguments.length) return this.node_label;
-  this.node_label = attr;
+export function branchName(attr) {
+  if (!arguments.length) return this.nodeLabel;
+  this.nodeLabel = attr;
   return this;
 }

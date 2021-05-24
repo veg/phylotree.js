@@ -14,7 +14,7 @@ export default function getTipLengths() {
 
   // Get nodes and branch lengths
   let self = this;
-  let tips = self.get_tips();
+  let tips = self.getTips();
 
   // Transform to name, attribute key-pair and sort by attribute length, descending
   let toExport = _.map(tips, d => { return {'name' : d.data.name, 'length' : parseFloat(d.data.attribute) } });

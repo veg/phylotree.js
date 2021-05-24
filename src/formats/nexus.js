@@ -1,7 +1,7 @@
 import * as _ from "underscore";
 import {default as newick_parser} from "./newick";
 
-export function parse_annotations (buf) {
+export function parseAnnotations (buf) {
 
   let str = buf;
   let index = str.toUpperCase().indexOf('BEGIN DATA;');
@@ -57,10 +57,10 @@ export function parse_annotations (buf) {
  * @param {String} NEXUS string
  * @returns {Object} Annotations
  */
-export function load_annotations(tree, label, annotations) {
+export function loadAnnotations(tree, label, annotations) {
 
   // if filename, then load from filesystem
-  _.each(tree.get_tips(), d => { d.data["test"] = annotations.matrix[d.data.name] });
+  _.each(tree.getTips(), d => { d.data["test"] = annotations.matrix[d.data.name] });
 
   // decorate nodes with annotations
 

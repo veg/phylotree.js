@@ -1,10 +1,10 @@
 import * as d3 from "d3";
 
-import { item_tagged, item_selected } from "./helpers";
-import { is_leafnode } from "../nodes";
+import { itemTagged, itemSelected } from "./helpers";
+import { isLeafNode } from "../nodes";
 import { css_classes } from "./options";
 
-export function shift_tip(d) {
+export function shiftTip(d) {
 
   if (this.radial()) {
     return [
@@ -22,10 +22,10 @@ export function shift_tip(d) {
 
 }
 
-export function draw_node(container, node, transitions) {
+export function drawNode(container, node, transitions) {
 
   container = d3.select(container);
-  var is_leaf = is_leafnode(node);
+  var is_leaf = isLeafNode(node);
 
   if (is_leaf) {
     container = container.attr("data-node-name", node.data.name);
@@ -34,7 +34,7 @@ export function draw_node(container, node, transitions) {
   var labels = container.selectAll("text").data([node]),
     tracers = container.selectAll("line");
 
-  if (is_leaf || (this.show_internal_name(node) && !is_node_collapsed(node))) {
+  if (is_leaf || (this.showInternalName(node) && !isNodeCollapsed(node))) {
 
     labels = labels
       .enter()
@@ -46,7 +46,7 @@ export function draw_node(container, node, transitions) {
         return this.shown_font_size * 0.33;
       })
       .text(d => {
-        return this.options["show-labels"] ? this._node_label(d) : "";
+        return this.options["show-labels"] ? this._nodeLabel(d) : "";
       })
       .style("font-size", d => {
         return this.ensure_size_is_in_px(this.shown_font_size);
@@ -56,9 +56,9 @@ export function draw_node(container, node, transitions) {
       labels = labels
         .attr("transform", d => {
           return (
-            this.d3_phylotree_svg_rotate(d.text_angle) +
-            this.d3_phylotree_svg_translate(
-              this.align_tips() ? this.shift_tip(d) : null
+            this.d3PhylotreeSvgRotate(d.text_angle) +
+            this.d3PhylotreeSvgTranslate(
+              this.alignTips() ? this.shiftTip(d) : null
             )
           );
         })
@@ -68,15 +68,15 @@ export function draw_node(container, node, transitions) {
     } else {
       labels = labels.attr("text-anchor", "start").attr("transform", d => {
         if (this.options["layout"] == "right-to-left") {
-          return this.d3_phylotree_svg_translate([-20, 0]);
+          return this.d3PhylotreeSvgTranslate([-20, 0]);
         }
-        return this.d3_phylotree_svg_translate(
-          this.align_tips() ? this.shift_tip(d) : null
+        return this.d3PhylotreeSvgTranslate(
+          this.alignTips() ? this.shiftTip(d) : null
         );
       });
     }
 
-    if (this.align_tips()) {
+    if (this.alignTips()) {
       tracers = tracers.data([node]);
 
       if (transitions) {
@@ -87,7 +87,7 @@ export function draw_node(container, node, transitions) {
           .merge(tracers)
           .attr("x1", d => {
             return (
-              (d.text_align == "end" ? -1 : 1) * this.node_bubble_size(node)
+              (d.text_align == "end" ? -1 : 1) * this.nodeBubbleSize(node)
             );
           })
           .attr("x2", 0)
@@ -98,19 +98,19 @@ export function draw_node(container, node, transitions) {
               return d.screen_x;
             }
 
-            return this.shift_tip(d)[0];
+            return this.shiftTip(d)[0];
           })
           .attr("transform", d => {
-            return this.d3_phylotree_svg_rotate(d.text_angle);
+            return this.d3PhylotreeSvgRotate(d.text_angle);
           })
           .attr("x2", d => {
             if (this.options["layout"] == "right-to-left") {
               return d.screen_x;
             }
-            return this.shift_tip(d)[0];
+            return this.shiftTip(d)[0];
           })
           .attr("transform", d => {
-            return this.d3_phylotree_svg_rotate(d.text_angle);
+            return this.d3PhylotreeSvgRotate(d.text_angle);
           });
       } else {
         tracers = tracers
@@ -120,16 +120,16 @@ export function draw_node(container, node, transitions) {
           .merge(tracers)
           .attr("x1", d => {
             return (
-              (d.text_align == "end" ? -1 : 1) * this.node_bubble_size(node)
+              (d.text_align == "end" ? -1 : 1) * this.nodeBubbleSize(node)
             );
           })
           .attr("y2", 0)
           .attr("y1", 0)
           .attr("x2", d => {
-            return this.shift_tip(d)[0];
+            return this.shiftTip(d)[0];
           });
         tracers.attr("transform", d => {
-          return this.d3_phylotree_svg_rotate(d.text_angle);
+          return this.d3PhylotreeSvgRotate(d.text_angle);
         });
       }
     } else {
@@ -138,7 +138,7 @@ export function draw_node(container, node, transitions) {
 
     if (this.options["draw-size-bubbles"]) {
 
-      var shift = this.node_bubble_size(node);
+      var shift = this.nodeBubbleSize(node);
 
       let circles = container
         .selectAll("circle")
@@ -154,7 +154,7 @@ export function draw_node(container, node, transitions) {
         labels = labels.attr("dx", d => {
           return (
             (d.text_align == "end" ? -1 : 1) *
-            ((this.align_tips() ? 0 : shift) + this.shown_font_size * 0.33)
+            ((this.alignTips() ? 0 : shift) + this.shown_font_size * 0.33)
           );
         });
       }
@@ -196,14 +196,14 @@ export function draw_node(container, node, transitions) {
   return node;
 }
 
-export function update_has_hidden_nodes() {
+export function updateHasHiddenNodes() {
   let nodes = this.phylotree.nodes.descendants();
 
   for (let k = nodes.length - 1; k >= 0; k -= 1) {
-    if (is_leafnode(nodes[k])) {
-      nodes[k].has_hidden_nodes = nodes[k].notshown;
+    if (isLeafNode(nodes[k])) {
+      nodes[k].hasHiddenNodes = nodes[k].notshown;
     } else {
-      nodes[k].has_hidden_nodes = nodes[k].children.reduce(function(p, c) {
+      nodes[k].hasHiddenNodes = nodes[k].children.reduce(function(p, c) {
         return c.notshown || p;
       }, false);
     }
@@ -212,9 +212,9 @@ export function update_has_hidden_nodes() {
   return this;
 }
 
-export function show_internal_name(node) {
+export function showInternalName(node) {
 
-  const i_names = this.internal_names();
+  const i_names = this.internalNames();
 
   if (i_names) {
     if (typeof i_names === "function") {
@@ -232,30 +232,30 @@ export function show_internal_name(node) {
  * can be determined dynamically. Alternatively, the argument can be the
  * string ``"equal"``, to give all nodes an equal span.
  *
- * @param {Function} attr Optional; if setting, the node_span function.
- * @returns The ``node_span`` if getting, or the current ``phylotree`` if setting.
+ * @param {Function} attr Optional; if setting, the nodeSpan function.
+ * @returns The ``nodeSpan`` if getting, or the current ``phylotree`` if setting.
  */
-export function node_span(attr) {
-  if (!arguments.length) return this.node_span;
+export function nodeSpan(attr) {
+  if (!arguments.length) return this.nodeSpan;
   if (typeof attr == "string" && attr == "equal") {
-    this.node_span = function(d) {
+    this.nodeSpan = function(d) {
       return 1;
     };
   } else {
-    this.node_span = attr;
+    this.nodeSpan = attr;
   }
   return this;
 }
 
-export function reclass_node(node) {
+export function reclassNode(node) {
 
-  let class_var = css_classes[is_leafnode(node) ? "node" : "internal-node"];
+  let class_var = css_classes[isLeafNode(node) ? "node" : "internal-node"];
 
-  if (item_tagged(node)) {
+  if (itemTagged(node)) {
     class_var += " " + css_classes["tagged-node"];
   }
 
-  if (item_selected(node, this.selection_attribute_name)) {
+  if (itemSelected(node, this.selection_attribute_name)) {
     class_var += " " + css_classes["selected-node"];
   }
 
@@ -263,30 +263,30 @@ export function reclass_node(node) {
     class_var += " " + css_classes["root-node"];
   }
 
-  if (is_node_collapsed(node) || has_hidden_nodes(node)) {
+  if (isNodeCollapsed(node) || hasHiddenNodes(node)) {
     class_var += " " + css_classes["collapsed-node"];
   }
 
   return class_var;
 }
 
-export function node_visible(node) {
+export function nodeVisible(node) {
   return !(node.hidden || node.notshown || false);
 }
 
-export function node_notshown(node) {
+export function nodeNotshown(node) {
   return node.notshown;
 }
 
-export function has_hidden_nodes(node) {
-  return node.has_hidden_nodes || false;
+export function hasHiddenNodes(node) {
+  return node.hasHiddenNodes || false;
 }
 
-export function is_node_collapsed(node) {
+export function isNodeCollapsed(node) {
   return node.collapsed || false;
 }
 
-export function node_css_selectors(css_classes) {
+export function nodeCssSelectors(css_classes) {
   return [
     css_classes["node"],
     css_classes["internal-node"],
@@ -298,37 +298,37 @@ export function node_css_selectors(css_classes) {
   }, "");
 }
 
-export function internal_label(callback, respect_existing) {
+export function internalLabel(callback, respect_existing) {
 
-  this.phylotree.clear_internal_nodes(respect_existing);
+  this.phylotree.clearInternalNodes(respect_existing);
 
   for (var i = this.phylotree.nodes.descendants().length - 1; i >= 0; i--) {
 
     var d = this.phylotree.nodes.descendants()[i];
 
-    if (!(is_leafnode(d) || item_selected(d, this.selection_attribute_name))) {
+    if (!(isLeafNode(d) || itemSelected(d, this.selection_attribute_name))) {
       d[this.selection_attribute_name] = callback(d.children);
     }
 
   }
 
-  this.modify_selection((d, callback) => {
-    if (is_leafnode(d.target)) {
+  this.modifySelection((d, callback) => {
+    if (isLeafNode(d.target)) {
       return d.target[this.selection_attribute_name];
     }
     return d.target[this.selection_attribute_name];
   });
 }
 
-export function def_node_label(_node) {
+export function defNodeLabel(_node) {
 
   _node = _node.data;
 
-  if (is_leafnode(_node)) {
+  if (isLeafNode(_node)) {
     return _node.name || "";
   }
 
-  if (this.show_internal_name(_node)) {
+  if (this.showInternalName(_node)) {
     return _node.name;
   }
 
@@ -337,15 +337,15 @@ export function def_node_label(_node) {
 }
 
 /**
- * Get or set node_label accessor.
+ * Get or set nodeLabel accessor.
  *
  * @param {Function} attr (Optional) If setting, a function that accesses a branch name
  * from a node.
- * @returns The ``node_label`` accessor if getting, or the current ``this`` if setting.
+ * @returns The ``nodeLabel`` accessor if getting, or the current ``this`` if setting.
  */
-export function node_label(attr) {
-  if (!arguments.length) return this._node_label;
-  this._node_label = attr ? attr : def_node_label;
+export function nodeLabel(attr) {
+  if (!arguments.length) return this._nodeLabel;
+  this._nodeLabel = attr ? attr : defNodeLabel;
 	this.update();
   return this;
 }

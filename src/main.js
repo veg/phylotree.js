@@ -2,19 +2,19 @@ import * as d3 from "d3";
 import * as _ from "underscore";
 
 import { default as parser_registry } from "./formats/registry";
-import { default as newick_parser, get_newick } from "./formats/newick";
+import { default as newick_parser, getNewick } from "./formats/newick";
 import { default as getTipLengths } from "./export";
 import * as nexus from "./formats/nexus";
 import { default as phyloxml_parser } from "./formats/phyloxml";
-import { default as max_parsimony } from "./max-parsimony";
+import { default as maxParsimony } from "./max-parsimony";
 import { leftChildRightSibling, postOrder, preOrder, default as inOrder } from "./traversal";
 
 import {
-  default as has_branch_lengths,
-  get_branch_lengths,
-  def_branch_length_accessor,
-  set_branch_length,
-  branch_name,
+  default as hasBranchLengths,
+  getBranchLengths,
+  defBranchLengthAccessor,
+  setBranchLength,
+  branchName,
   normalize,
   scale
 } from "./branches";
@@ -23,7 +23,7 @@ import * as node_operations from "./nodes";
 import * as rooting from "./rooting";
 import { default as TreeRender } from "./render/draw";
 
-function resort_children(comparator, start_node, filter) {
+function resortChildren(comparator, start_node, filter) {
   // ascending
   this.nodes
     .sum(function(d) {
@@ -97,8 +97,8 @@ let Phylotree = class {
     this.links = [];
     this.parsed_tags = [];
     this.partitions = [];
-    this.branch_length_accessor = def_branch_length_accessor;
-    this.branch_length = def_branch_length_accessor;
+    this.branch_length_accessor = defBranchLengthAccessor;
+    this.branch_length = defBranchLengthAccessor;
     this.logger = options.logger || console;
     this.selection_attribute_name = "selected";
 
@@ -279,17 +279,17 @@ let Phylotree = class {
 
 };
 
-Phylotree.prototype.is_leafnode = node_operations.is_leafnode;
+Phylotree.prototype.isLeafNode = node_operations.isLeafNode;
 Phylotree.prototype.mrca = mrca;
-Phylotree.prototype.has_branch_lengths = has_branch_lengths;
-Phylotree.prototype.get_branch_lengths = get_branch_lengths;
-Phylotree.prototype.branch_name = branch_name;
-Phylotree.prototype.normalize_branch_lengths = normalize;
-Phylotree.prototype.scale_branch_lengths = scale;
-Phylotree.prototype.get_newick = get_newick;
-Phylotree.prototype.resort_children = resort_children;
-Phylotree.prototype.set_branch_length = set_branch_length;
-Phylotree.prototype.max_parsimony = max_parsimony;
+Phylotree.prototype.hasBranchLengths = hasBranchLengths;
+Phylotree.prototype.getBranchLengths = getBranchLengths;
+Phylotree.prototype.branchName = branchName;
+Phylotree.prototype.normalizeBranchLengths = normalize;
+Phylotree.prototype.scaleBranchLengths = scale;
+Phylotree.prototype.getNewick = getNewick;
+Phylotree.prototype.resortChildren = resortChildren;
+Phylotree.prototype.setBranchLength = setBranchLength;
+Phylotree.prototype.maxParsimony = maxParsimony;
 
 Phylotree.prototype.getTipLengths = getTipLengths;
 Phylotree.prototype.leftChildRightSibling = leftChildRightSibling;
@@ -298,7 +298,7 @@ _.extend(Phylotree.prototype, node_operations);
 _.extend(Phylotree.prototype, rooting);
 _.extend(Phylotree.prototype, nexus);
 
-export function item_tagged(item) {
+export function itemTagged(item) {
   return item.tag || false;
 }
 

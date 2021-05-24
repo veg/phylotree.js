@@ -31,7 +31,7 @@ export function reroot(node, fraction) {
       n.data.__mapped_bl = this.branch_length_accessor(n);
     });
 
-    this.set_branch_length(n => {
+    this.setBranchLength(n => {
       return n.data.__mapped_bl;
     });
 
@@ -149,7 +149,7 @@ export function rootpath(attr_name, store_name) {
 
 }
 
-export function path_to_root(node) {
+export function pathToRoot(node) {
   let selection = [];
   while (node) {
     selection.push(node);

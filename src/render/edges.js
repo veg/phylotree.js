@@ -1,17 +1,17 @@
 import * as d3 from "d3";
-import { item_tagged, item_selected } from "./helpers";
+import { itemTagged, itemSelected } from "./helpers";
 import { css_classes } from "./options";
 
-export function draw_edge(container, edge, transition) {
+export function drawEdge(container, edge, transition) {
 
   container = d3.select(container);
 
   container = container
     .attr("class", d => {
-      return this.reclass_edge(d);
+      return this.reclassEdge(d);
     })
     .on("click", d => {
-      this.modify_selection([d.target], this.selection_attribute_name);
+      this.modifySelection([d.target], this.selection_attribute_name);
       this.update();
     });
 
@@ -54,14 +54,14 @@ export function draw_edge(container, edge, transition) {
 
 }
 
-export function reclass_edge(edge) {
+export function reclassEdge(edge) {
   let class_var = css_classes["branch"];
 
-  if (item_tagged(edge)) {
+  if (itemTagged(edge)) {
     class_var += " " + css_classes["tagged-branch"];
   }
 
-  if (item_selected(edge, this.selection_attribute_name)) {
+  if (itemSelected(edge, this.selection_attribute_name)) {
     class_var += " " + css_classes["selected-branch"];
   }
 
@@ -69,7 +69,7 @@ export function reclass_edge(edge) {
 
 }
 
-export function sync_edge_labels() {
+export function syncEdgeLabels() {
 
   this.links.forEach(d => {
 
@@ -91,20 +91,20 @@ export function sync_edge_labels() {
     }, 0);
 
     counts["tagged"] = this.links.reduce(function(p, c) {
-      return p + (item_tagged(c) ? 1 : 0);
+      return p + (itemTagged(c) ? 1 : 0);
     }, 0);
 
-    this.count_update(this, counts, this.count_handler());
+    this.countUpdate(this, counts, this.count_handler());
 
   }
 
 }
 
-export function edge_visible(edge) {
+export function edgeVisible(edge) {
   return !(edge.target.hidden || edge.target.notshown || false);
 }
 
-export function edge_css_selectors(css_classes) {
+export function edgeCssSelectors(css_classes) {
   return [
     css_classes["branch"],
     css_classes["selected-branch"],
@@ -114,6 +114,6 @@ export function edge_css_selectors(css_classes) {
   }, "");
 }
 
-export function place_along_an_edge (e, where) {
+export function placeAlongAnEdge (e, where) {
     return this.edge_placer (e, where);
 }

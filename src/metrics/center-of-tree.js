@@ -35,7 +35,7 @@ import * as _ from "underscore";
 
 import { default as pairwise_distances } from "./pairwise-distances";
 
-export function center_of_tree(tree, power) {
+export function centerOfTree(tree, power) {
   power = power || 2;
 
   var leaf_count = pairwise_distances(tree);
