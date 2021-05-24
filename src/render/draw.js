@@ -1294,7 +1294,7 @@ this.do_lr();
     return this;
   }
 
-  count_handler(attr) {
+  countHandler(attr) {
     if (!arguments.length) return this.count_listener_handler;
     this.count_listener_handler = attr;
     return this;

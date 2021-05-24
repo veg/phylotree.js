@@ -316,12 +316,12 @@ export function modifySelection(
       if (!skip_refresh) {
         events.triggerRefresh(this);
       }
-      if (this.count_handler) {
+      if (this.countHandler) {
         counts = {};
         counts[attr] = this.links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
-        events.countUpdate(this, counts, this.count_handler);
+        events.countUpdate(this, counts, this.countHandler);
       }
 
       if (place) {
@@ -373,12 +373,12 @@ export function modifySelection(
       if (!skip_refresh) {
         events.triggerRefresh(this);
       }
-      if (this.count_handler()) {
+      if (this.countHandler()) {
         counts = {};
         counts[attr] = this.links.reduce(function(p, c) {
           return p + (c[attr] ? 1 : 0);
         }, 0);
-        this.countUpdate(this, counts, this.count_handler());
+        this.countUpdate(this, counts, this.countHandler());
       }
 
       if (place) {

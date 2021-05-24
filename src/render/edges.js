@@ -80,7 +80,7 @@ export function syncEdgeLabels() {
 
   });
 
-  if (this.count_handler()) {
+  if (this.countHandler()) {
 
     let counts = {};
 
@@ -94,7 +94,7 @@ export function syncEdgeLabels() {
       return p + (itemTagged(c) ? 1 : 0);
     }, 0);
 
-    this.countUpdate(this, counts, this.count_handler());
+    this.countUpdate(this, counts, this.countHandler());
 
   }
 
