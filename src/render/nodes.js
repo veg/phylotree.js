@@ -306,13 +306,9 @@ export function internal_label(callback, respect_existing) {
   for (var i = this.phylotree.nodes.descendants().length - 1; i >= 0; i--) {
 
     var d = this.phylotree.nodes.descendants()[i];
-    console.log('hi');
-    console.log(d);
 
     if (!(is_leafnode(d) || item_selected(d, this.selection_attribute_name))) {
-      console.log('hi2');
       d[this.selection_attribute_name] = callback(d.children);
-      console.log(d[this.selection_attribute_name]);
     }
 
   }

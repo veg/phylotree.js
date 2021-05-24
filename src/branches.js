@@ -52,7 +52,6 @@ export function def_branch_length_accessor(_node, new_length) {
   ) {
 
     if(new_length > 0) {
-      console.log('setting attribute');
       _node_data["attribute"] = String(new_length);
     }
 

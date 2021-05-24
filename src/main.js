@@ -269,7 +269,6 @@ let Phylotree = class {
   }
 
   update(json) {
-    console.log('hi Im updating');
     // update with new hiearchy layout
     this.nodes = json;
   }
