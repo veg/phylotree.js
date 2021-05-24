@@ -50,12 +50,12 @@ let date_parser = function(tree, node) {
 
 fs.readFile(commander.newick, (err, newick_data) => {
   const tree = new phylotree.phylotree(newick_data.toString());
-  let computed_tree = phylotree.root_to_tip(tree);
+  let computed_tree = phylotree.rootToTip(tree);
   let tree_with_dates = phylotree.extract_dates(computed_tree, _.partial(date_parser, computed_tree));
 
   // Filter just in case the date extractor did not always find a date from the header
   let fitted_slope = phylotree.fitRootToTip(tree_with_dates)
-  fitted_slope.root_to_tip = fitted_slope.root.root_to_tip;
+  fitted_slope.rootToTip = fitted_slope.root.rootToTip;
   console.log(fitted_slope);
 
 });

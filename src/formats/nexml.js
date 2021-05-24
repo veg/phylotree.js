@@ -20,19 +20,19 @@ var nexml_parser = function(xml_string, options) {
         node_hash[edge.source].edges.push(edge);
       });
 
-      function parse_nexml(node, index) {
+      function parseNexml(node, index) {
         if (node.edges) {
           var targets = _.pluck(node.edges, "target");
           node.children = _.values(_.pick(node_hash, targets));
           node.children.forEach(function(child, i) {
             child.attribute = node.edges[i].length || "";
           });
-          node.children.forEach(parse_nexml);
+          node.children.forEach(parseNexml);
           node.annotation = "";
         }
       }
 
-      parse_nexml(node_hash[root_id]);
+      parseNexml(node_hash[root_id]);
       return node_hash[root_id];
     });
   });

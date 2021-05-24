@@ -3,7 +3,7 @@ import { isLeafNode } from "./nodes";
 
 export default function maxParsimony(respect_existing, attr_name) {
 
-  function populate_mp_matrix(attr_name, d) {
+  function populateMpMatrix(attr_name, d) {
 
     d.mp = [
       [0, 0], // score for parent selected / not selected
@@ -60,7 +60,7 @@ export default function maxParsimony(respect_existing, attr_name) {
     }
   }
 
-  const pop_mp_mat = _.partial(populate_mp_matrix, attr_name);
+  const pop_mp_mat = _.partial(populateMpMatrix, attr_name);
   pop_mp_mat(this.nodes);
 
   this.nodes.each(d => {

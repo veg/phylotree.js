@@ -1,6 +1,6 @@
 import * as _ from "underscore";
 
-function annotate_copy_number(tree) {
+function annotateCopyNumber(tree) {
   tree.traverse_and_compute(function(node) {
     if (tree.isLeafNode(node)) {
       node.data.copy_number = 1;
@@ -9,7 +9,7 @@ function annotate_copy_number(tree) {
 }
 
 // internal function used by best root fitting
-function compute_root_to_tip_other_root(
+function computeRootToTipOtherRoot(
   tree,
   node,
   coming_from,
@@ -22,7 +22,7 @@ function compute_root_to_tip_other_root(
   var go_up = false;
 
   if (!coming_from) {
-    shared_distance = node.data.root_to_tip;
+    shared_distance = node.data.rootToTip;
     distance_to_new_root = 0;
     go_up = true;
   }
@@ -30,7 +30,7 @@ function compute_root_to_tip_other_root(
   if (node.children) {
     for (var c = 0; c < node.children.length; c++) {
       if (node.children[c] != coming_from) {
-        compute_root_to_tip_other_root(
+        computeRootToTipOtherRoot(
           tree,
           node.children[c],
           node,
@@ -43,7 +43,7 @@ function compute_root_to_tip_other_root(
     }
   }
 
-  node.data.rtta = node.data.root_to_tip - shared_distance + distance_to_new_root;
+  node.data.rtta = node.data.rootToTip - shared_distance + distance_to_new_root;
 
   if (go_up) {
     shared_distance -= my_bl;
@@ -51,7 +51,7 @@ function compute_root_to_tip_other_root(
   }
 
   if (node.parent && go_up) {
-    compute_root_to_tip_other_root(
+    computeRootToTipOtherRoot(
       tree,
       node.parent,
       node,
@@ -67,8 +67,8 @@ export function fitRootToTip(tree) {
     max_r2 = 0,
     best_node = 0;
 
-  annotate_copy_number(tree);
-  root_to_tip(tree);
+  annotateCopyNumber(tree);
+  rootToTip(tree);
 
   // To return if best node is the root already
   tree.traverse_and_compute(function(node) {
@@ -77,13 +77,13 @@ export function fitRootToTip(tree) {
     }
   });
 
-  let best_fit = linear_fit(linear_data);
+  let best_fit = linearFit(linear_data);
 
   tree.traverse_and_compute(function(node) {
 
     if (tree.isLeafNode(node) && !_.isNull(node.data.decimal_date_value)) {
 
-      compute_root_to_tip_other_root(tree, node, null, 0, 0);
+      computeRootToTipOtherRoot(tree, node, null, 0, 0);
 
       linear_data = [];
 
@@ -97,7 +97,7 @@ export function fitRootToTip(tree) {
         }
       });
 
-      var fit = linear_fit(linear_data),
+      var fit = linearFit(linear_data),
         r2 = fit["r2"];
 
       if (r2 > max_r2) {
@@ -114,7 +114,7 @@ export function fitRootToTip(tree) {
 }
 
 // linear fit of root to tip distances
-function linear_fit(data) {
+function linearFit(data) {
 
   var ss = data.reduce(function(p, c) {
       return c[2] + p;
@@ -162,13 +162,13 @@ function linear_fit(data) {
 /**
  *   fast and memory efficient root to tip distance calculator
  *   for each leaf node stores the current root to tip distance in 
- *   the node.root_to_tip field
+ *   the node.rootToTip field
  *   
  *   @param tree
- *   @return tree with root_to_tip computed
+ *   @return tree with rootToTip computed
  *
  */
-export default function root_to_tip(tree) {
+export default function rootToTip(tree) {
 
   var bl = tree.branch_length_accessor,
     index = 0;
@@ -177,7 +177,7 @@ export default function root_to_tip(tree) {
     if (n.parent) {
       n.data._computed_length = bl(n);
       if (!_.isNumber(n.data._computed_length)) {
-        throw "root_to_tip cannot be run on trees with missing branch lengths";
+        throw "rootToTip cannot be run on trees with missing branch lengths";
       }
     }
     if (tree.isLeafNode(n)) {
@@ -209,7 +209,7 @@ export default function root_to_tip(tree) {
 
   tree.traverse_and_compute(n => {
     if (tree.isLeafNode(n)) {
-      n.data.root_to_tip = r2t[n.data.leaf_index] || 0;
+      n.data.rootToTip = r2t[n.data.leaf_index] || 0;
       delete n.data.leaf_index;
     }
   });

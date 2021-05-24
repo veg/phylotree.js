@@ -1,10 +1,10 @@
-import newick_parser from "./newick";
+import newickParser from "./newick";
 
 export default function(newick, options) {
   options.left_delimiter = '[';
   options.right_delimiter = ']';
-  const parsed_newick = newick_parser(newick, options);
-  function parse_beast_node(node) {
+  const parsed_newick = newickParser(newick, options);
+  function parseBeastNode(node) {
     if(node.annotation) {
       node.beast = {};
       const tokens = node.annotation.split(/=|,|{|}/)
@@ -21,9 +21,9 @@ export default function(newick, options) {
     }
     node.annotation = undefined;
     if(node.children) {
-      node.children.forEach(parse_beast_node);
+      node.children.forEach(parseBeastNode);
     }
   }
-  parse_beast_node(parsed_newick.json);
+  parseBeastNode(parsed_newick.json);
   return parsed_newick;
 }

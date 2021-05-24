@@ -8,7 +8,7 @@ import * as _ from "underscore";
  *  @returns leaf count
  *
  */
-function compute_pairwise_distances(tree) {
+function computePairwiseDistances(tree) {
   /*
    *    traverse the tree and populate the following values in each node
    *        
@@ -69,7 +69,7 @@ function compute_pairwise_distances(tree) {
   // handle root node first
   var root_node = tree.getRootNode();
 
-  function _copy_from_siblings(a_node) {
+  function CopyFromSiblings(a_node) {
     for (var this_node = 0; this_node < a_node.children.length; this_node++) {
       for (
         var other_node = 0;
@@ -91,7 +91,7 @@ function compute_pairwise_distances(tree) {
     }
   }
 
-  _copy_from_siblings(root_node);
+  CopyFromSiblings(root_node);
 
   // takes two passes
 
@@ -107,7 +107,7 @@ function compute_pairwise_distances(tree) {
       });
 
       if (!tree.isLeafNode(n)) {
-        _copy_from_siblings(n);
+        CopyFromSiblings(n);
       }
       // copy sibling's 'below' nodes
     }
@@ -116,4 +116,4 @@ function compute_pairwise_distances(tree) {
   return leaf_count;
 }
 
-export default compute_pairwise_distances;
+export default computePairwiseDistances;

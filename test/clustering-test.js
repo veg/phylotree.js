@@ -12,7 +12,7 @@ tape("cluster picker", function(test) {
   let bootstrap_threshold = 0.9;
   let diameter_threshold = 0.045;
 
-  let clusters = phylotree.cluster_picker(phylo, bootstrap_threshold, diameter_threshold)
+  let clusters = phylotree.clusterPicker(phylo, bootstrap_threshold, diameter_threshold)
   test.equal(clusters.length, 235);
   test.end();
 

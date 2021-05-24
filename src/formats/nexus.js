@@ -1,5 +1,5 @@
 import * as _ from "underscore";
-import {default as newick_parser} from "./newick";
+import {default as newickParser} from "./newick";
 
 export function parseAnnotations (buf) {
 
@@ -69,7 +69,7 @@ export function loadAnnotations(tree, label, annotations) {
 export default function loadTree(buf) {
 
   // if filename, then load from filesystem
-  // Parse first tree from NEXUS file and send to newick_parser
+  // Parse first tree from NEXUS file and send to newickParser
 
   // Make all upper case
   let str = buf;
@@ -90,7 +90,7 @@ export default function loadTree(buf) {
   trees = _.filter(trees, d => { return d.trim().toUpperCase().startsWith('TREE') });
 
   // Identify start of newick string
-  return newick_parser(trees[0]);
+  return newickParser(trees[0]);
 
 }
 

@@ -13,14 +13,14 @@ import { isLeafNode } from "../nodes";
  * @returns {Object} An object with keys ``json`` and ``error``.
  */
 
-function newick_parser(nwk_str, options={}) {
+function newickParser(nwk_str, options={}) {
   const bootstrap_values = true,
     int_or_float = /^-?\d+(\.\d+)?$/;
   let left_delimiter = options.left_delimiter ||  '{',
     right_delimiter = options.right_delimiter ||  '}';
   let clade_stack = [];
 
-  function add_new_tree_level() {
+  function addNewTreeLevel() {
     let new_level = {
       name: null
     };
@@ -39,7 +39,7 @@ function newick_parser(nwk_str, options={}) {
       the_parent["children"].length;
   }
 
-  function finish_node_definition() {
+  function finishNodeDefinition() {
     let this_node = clade_stack.pop();
 
     this_node["name"] = current_node_name;
@@ -68,7 +68,7 @@ function newick_parser(nwk_str, options={}) {
     current_node_annotation = "";
   }
 
-  function generate_error(location) {
+  function generateError(location) {
     return {
       json: null,
       error:
@@ -108,7 +108,7 @@ function newick_parser(nwk_str, options={}) {
         case 0: {
           // look for the first opening parenthesis
           if (current_char == "(") {
-            add_new_tree_level();
+            addNewTreeLevel();
             automaton_state = 1; // expecting node name
           }
           break;
@@ -121,19 +121,19 @@ function newick_parser(nwk_str, options={}) {
             automaton_state = 3;
           } else if (current_char == "," || current_char == ")") {
             try {
-              finish_node_definition();
+              finishNodeDefinition();
               automaton_state = 1;
               if (current_char == ",") {
-                add_new_tree_level();
+                addNewTreeLevel();
               }
             } catch (e) {
-              return generate_error(char_index);
+              return generateError(char_index);
             }
           } else if (current_char == "(") {
             if (current_node_name.length > 0) {
-              return generate_error(char_index);
+              return generateError(char_index);
             } else {
-              add_new_tree_level();
+              addNewTreeLevel();
             }
           } else if (current_char in name_quotes) {
             if (
@@ -146,11 +146,11 @@ function newick_parser(nwk_str, options={}) {
               quote_delimiter = current_char;
               continue;
             }
-            return generate_error(char_index);
+            return generateError(char_index);
           } else {
             if (current_char == left_delimiter) {
               if (current_node_annotation.length) {
-                return generate_error(char_index);
+                return generateError(char_index);
               } else {
                 automaton_state = 4;
               }
@@ -197,7 +197,7 @@ function newick_parser(nwk_str, options={}) {
             automaton_state = 3;
           } else {
             if (current_char == left_delimiter) {
-              return generate_error(char_index);
+              return generateError(char_index);
             }
             current_node_annotation += current_char;
           }
@@ -205,12 +205,12 @@ function newick_parser(nwk_str, options={}) {
         }
       }
     } catch (e) {
-      return generate_error(char_index);
+      return generateError(char_index);
     }
   }
 
   if (clade_stack.length != 1) {
-    return generate_error(nwk_str.length - 1);
+    return generateError(nwk_str.length - 1);
   }
 
   return {
@@ -234,14 +234,14 @@ export function getNewick(annotator) {
 
   if (!annotator) annotator = d => d.data.name;
 
-  function node_display(n) {
+  function nodeDisplay(n) {
     if (!isLeafNode(n)) {
       element_array.push("(");
       n.children.forEach(function(d, i) {
         if (i) {
           element_array.push(",");
         }
-        node_display(d);
+        nodeDisplay(d);
       });
       element_array.push(")");
     }
@@ -257,10 +257,10 @@ export function getNewick(annotator) {
 
   let element_array = [];
   annotator = annotator || "";
-  node_display(this.nodes);
+  nodeDisplay(this.nodes);
 
   return element_array.join("")+";";
 
 }
 
-export default newick_parser;
+export default newickParser;

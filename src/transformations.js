@@ -1,4 +1,4 @@
-function handle_rotate(only_self, this_node) {
+function handleRotate(only_self, this_node) {
   // TODO: This might need tested
   tree.resortChildren( // eslint-disable-line
     function(node1, node2) {
@@ -17,4 +17,4 @@ function handle_rotate(only_self, this_node) {
   });
 }
 
-export default handle_rotate;
+export default handleRotate;

@@ -19,7 +19,7 @@ import * as _ from "underscore";
  *    'bootstrap' : bootstrap support at the root node
  * }                        
  */
-function cluster_picker(
+function clusterPicker(
   tree,
   bootstrap_threshold,
   diameter_threshold,
@@ -42,7 +42,7 @@ function cluster_picker(
     if (n.parent) {
       n._computed_length = bl(n);
       if (!_.isNumber(n._computed_length)) {
-        throw "cluster_picker cannot be run on trees with missing branch lengths";
+        throw "clusterPicker cannot be run on trees with missing branch lengths";
       }
       n.max_path_length = 0;
     }
@@ -112,4 +112,4 @@ function cluster_picker(
   return clusters;
 }
 
-export default cluster_picker;
+export default clusterPicker;

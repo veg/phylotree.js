@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import * as _ from "underscore";
 
 import { default as parser_registry } from "./formats/registry";
-import { default as newick_parser, getNewick } from "./formats/newick";
+import { default as newickParser, getNewick } from "./formats/newick";
 import { default as getTipLengths } from "./export";
 import * as nexus from "./formats/nexus";
 import { default as phyloxml_parser } from "./formats/phyloxml";
@@ -142,7 +142,7 @@ let Phylotree = class {
       } else {
         // newick string
         this.newick_string = nwk;
-        _node_data = newick_parser(nwk, options);
+        _node_data = newickParser(nwk, options);
       }
 
     }

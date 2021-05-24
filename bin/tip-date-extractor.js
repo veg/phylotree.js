@@ -165,7 +165,7 @@ let split_date_parser = function(tree, delimiter, pos, format, node) {
 
 fs.readFile(commander.newick, (err, newick_data) => {
   const tree = new phylotree.phylotree(newick_data.toString());
-  let computed_tree = phylotree.root_to_tip(tree);
+  let computed_tree = phylotree.rootToTip(tree);
 
   let date_parser = _.partial(default_date_parser, computed_tree);
 

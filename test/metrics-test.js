@@ -30,11 +30,11 @@ tape("root to tip", function(test) {
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
 
-  phylotree.root_to_tip(phylo);
+  phylotree.rootToTip(phylo);
 
   let tip = phylo.getNodeByName("Riyadh_2_2012_KF600652_human_2012-10-30");
 
-  test.ok(Math.abs(tip.data.root_to_tip - 0.0019604097) <= .0001)
+  test.ok(Math.abs(tip.data.rootToTip - 0.0019604097) <= .0001)
   test.end();
 
 });

@@ -44,9 +44,9 @@ function xmlToJson(xml) {
 
 var phyloxml_parser = function(xml, options) {
 
-  function parse_phyloxml(node, index) {
+  function parsePhyloxml(node, index) {
     if (node.clade) {
-      node.clade.forEach(parse_phyloxml);
+      node.clade.forEach(parsePhyloxml);
       node.children = node.clade;
       delete node.clade;
     }
@@ -69,7 +69,7 @@ var phyloxml_parser = function(xml, options) {
   xml = xmlToJson(xml);
   tree_json = xml.phyloxml.phylogeny.clade;
   tree_json.name = "root";
-  parse_phyloxml(tree_json, 0);
+  parsePhyloxml(tree_json, 0);
 
   return {
     json: tree_json,

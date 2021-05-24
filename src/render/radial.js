@@ -1,17 +1,17 @@
 import { xCoord, yCoord } from "./coordinates";
 
-function radial_mapper(r, a, radial_center) {
+function radialMapper(r, a, radial_center) {
   return {
     x: radial_center + r * Math.sin(a),
     y: radial_center + r * Math.cos(a)
   };
 }
 
-function cartesian_mapper(x, y, radial_center) { // eslint-disable-line
-  return polar_to_cartesian(x - radial_center, y - radial_center);
+function cartesianMapper(x, y, radial_center) { // eslint-disable-line
+  return polarToCartesian(x - radial_center, y - radial_center);
 }
 
-function polar_to_cartesian(x, y) {
+function polarToCartesian(x, y) {
   let r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
   let a = Math.atan2(y, x);
   return [r, a];
@@ -32,7 +32,7 @@ export function cartesianToPolar(
   node.angle = 2 * Math.PI * node.x * scales[0] / size[0];
   //}
 
-  let radial = radial_mapper(node.radius, node.angle, radial_center);
+  let radial = radialMapper(node.radius, node.angle, radial_center);
 
   node.x = radial.x;
   node.y = radial.y;
@@ -44,8 +44,8 @@ export function cartesianToPolar(
 export function drawArc(radial_center, points) {
 
 
-  var start = radial_mapper(points[0].radius, points[0].angle, radial_center),
-    end = radial_mapper(points[0].radius, points[1].angle, radial_center);
+  var start = radialMapper(points[0].radius, points[0].angle, radial_center),
+    end = radialMapper(points[0].radius, points[1].angle, radial_center);
 
   return (
     "M " +
@@ -70,7 +70,7 @@ export function drawArc(radial_center, points) {
 }
 
 export function arcSegmentPlacer(edge, where, radial_center) {
-  var r = radial_mapper(
+  var r = radialMapper(
     edge.target.radius + (edge.source.radius - edge.target.radius) * where,
     edge.target.angle,
     radial_center
