@@ -1,4 +1,3 @@
-import * as _ from "underscore";
 import { is_leafnode } from "../nodes";
 
 /**
@@ -235,12 +234,6 @@ export function get_newick(annotator) {
 
   if (!annotator) annotator = d => d.data.name;
 
-  function escape_string(nn) {
-    let need_escape = /[\s\[\]\,\)\(\:\'\"]/;
-    let enquote = need_escape.test(nn);
-		return enquote ? "'" + nn.replace(/\'/g, "''") + "'" : nn;
-  }
-
   function node_display(n) {
     if (!is_leafnode(n)) {
       element_array.push("(");
@@ -253,7 +246,6 @@ export function get_newick(annotator) {
       element_array.push(")");
     }
 
-    //element_array.push(escape_string(self.node_label(n)));
     element_array.push(annotator(n));
 
     let bl = self.branch_length_accessor(n);

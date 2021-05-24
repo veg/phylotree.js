@@ -114,16 +114,15 @@ export function reroot(node, fraction) {
   }, "pre-order");
 
 
-	if(!_.isUndefined(this.display)) {
-		// get container
-		let container = this.display.container;
-		let options = this.display.options;
+  if(!_.isUndefined(this.display)) {
+    // get container
+    let options = this.display.options;
     d3.select(this.display.container).select('svg').remove()
-		// get options
-		delete this.display;
-  	let rendered_tree = this.render(options);
+    // get options
+    delete this.display;
+    let rendered_tree = this.render(options);
     d3.select(rendered_tree.container).node().appendChild(rendered_tree.show());
-	}
+  }
 
   return this;
 

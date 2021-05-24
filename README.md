@@ -33,10 +33,13 @@ A [full-featured web application](http://veg.github.io/phylotree.js/index.html) 
 
 ### Installation
 
-Assuming that `./node_modules/.bin` is on your `$PATH`, run
+If you use NPM, `npm install phylotree`. Otherwise, the latest release can be
+installed locally using the following commands.
 
 ```
-yarn run develop
+git clone https://github.com/veg/phylotree.js.git
+yarn
+yarn dev
 ```
 
 This will run `webpack` in watch mode and start a local server (default port is 8080). Refresh upon editing to view changes.

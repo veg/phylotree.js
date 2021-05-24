@@ -1,5 +1,5 @@
 import * as _ from "underscore";
-//import { parseString } from "xml2js";
+import { parseString } from "xml2js";
 
 var nexml_parser = function(xml_string, options) {
   var trees;

@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-import {timeParse} from 'd3-time-format';
 
 const default_date_converter = d3.timeParse("%Y%m%d");
 

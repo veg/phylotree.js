@@ -200,12 +200,12 @@ export function node_dropdown_menu(node, container, phylotree, options) {
           .append("a")
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
-          .text(constant(d[0])(node))
+          .text(constant(d[0])(node)) // eslint-disable-line
           .on("click", _.partial(d[1], node));
       });
     }
 
-    let tree_container = $(container);
+    let tree_container = $(container); // eslint-disable-line
     let coordinates = d3.mouse(tree_container[0]);
 
     menu_object

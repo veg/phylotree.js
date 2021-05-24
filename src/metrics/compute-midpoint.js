@@ -39,14 +39,12 @@ export function compute_midpoint(tree) {
 
   var root_node = tree.get_root_node();
   var longest_path_length = 0;
-  var second_longest;
 
   root_node.children.forEach(function(root_child) {
     if (root_child.max_path_terminus !== root_node.max_path_terminus) {
       var pl = root_child.max_path + bl(root_child);
       if (pl >= longest_path_length) {
         longest_path_length = pl;
-        second_longest = root_child.max_path_terminus;
       }
     }
   });

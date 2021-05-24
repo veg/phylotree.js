@@ -95,13 +95,13 @@ export function selection_label(attr) {
 export function node_span(attr) {
   if (!arguments.length) return node_span;
   if (typeof attr == "string" && attr == "equal") {
-    node_span = function(d) {
+    node_span = function(d) { // eslint-disable-line
       return 1;
     };
   } else {
-    node_span = attr;
+    node_span = attr; // eslint-disable-line
   }
-  return phylotree;
+  return this;
 }
 
 // List of all selecters that can be used with the restricted-selectable option

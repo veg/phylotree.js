@@ -83,6 +83,8 @@ if (commander.logLevel) {
   logger.level = commander.logLevel;
 }
 
+var date_format = undefined;
+
 if (commander.dateFormat) {
   date_format = commander.dateFormat;
 }

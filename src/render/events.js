@@ -1,4 +1,3 @@
-import * as d3 from "d3";
 import { is_leafnode } from "../nodes";
 import { css_classes } from "./options";
 
@@ -131,9 +130,9 @@ export function d3_phylotree_event_listener(event) {
       break;
     case "count_update":
       event.detail[2](event.detail[1]);
+      break;
     case "layout":
       event.detail[2](event.detail[1]);
-      break;
   }
   return true;
 }

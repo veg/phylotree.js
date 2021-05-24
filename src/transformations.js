@@ -1,5 +1,6 @@
 function handle_rotate(only_self, this_node) {
-  tree.resort_children(
+  // TODO: This might need tested
+  tree.resort_children( // eslint-disable-line
     function(node1, node2) {
       return node2.ordering - node1.ordering;
     },

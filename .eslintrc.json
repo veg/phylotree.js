@@ -2,6 +2,7 @@
   "root": true,
   "extends": "eslint:recommended",
   "parserOptions": {
+    "ecmaVersion": 2015,
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true,
@@ -16,9 +17,10 @@
     "strict": [1, "never"],
     "no-unused-vars": [1, {"vars":"all", "args":"none"}],
     "no-self-assign": 1,
+    "no-constant-condition": 0,
     "no-unreachable": 1,
     "no-debugger": 2,
-    "no-console": 1,
+    "no-console": 0,
     "no-undef": 1,
     "no-useless-escape": 1
   },

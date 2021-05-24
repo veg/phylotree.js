@@ -103,7 +103,7 @@ export function leftChildRightSibling(root) {
     // In order to get the true name of the infector/infectee, we must traverse
     // the tree from the multiway_parents node.
 
-    return {"source" : n.data.multiway_parent, "target" : n } });
+    return {"source" : n.data.multiway_parent, "target" : n, "name": name } });
 
   // Construct edge list by new parent-child listing
   return edge_list;

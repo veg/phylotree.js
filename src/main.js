@@ -2,7 +2,6 @@ import * as d3 from "d3";
 import * as _ from "underscore";
 
 import { default as parser_registry } from "./formats/registry";
-import { default as nexml_parser } from "./formats/nexml";
 import { default as newick_parser, get_newick } from "./formats/newick";
 import { default as getTipLengths } from "./export";
 import * as nexus from "./formats/nexus";
@@ -104,8 +103,7 @@ let Phylotree = class {
     this.selection_attribute_name = "selected";
 
     // initialization
-    var bootstrap_values = options.bootstrap_values || "",
-      type = options.type || undefined,
+    var type = options.type || undefined,
       _node_data = [],
       self = this;
 

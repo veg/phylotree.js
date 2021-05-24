@@ -142,6 +142,6 @@ export function scale(scale_by) {
  */
 export function branch_name(attr) {
   if (!arguments.length) return this.node_label;
-  this.node_label = attr ? attr : def_node_label;
+  this.node_label = attr;
   return this;
 }

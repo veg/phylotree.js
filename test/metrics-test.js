@@ -1,5 +1,4 @@
-var fs = require("fs"),
-    _  = require("underscore");
+var fs = require("fs");
 
 var tape = require("tape"),
     phylotree = require("../dist/phylotree");

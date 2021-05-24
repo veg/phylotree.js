@@ -9,7 +9,9 @@ export function clade_css_selectors(css_classes) {
 }
 
 export function update_collapsed_clades(transitions) {
+
   let enclosure = this.svg.selectAll("." + this.css_classes["tree-container"]);
+  var node_id = 0;
 
   let collapsed_clades = enclosure
     .selectAll(clade_css_selectors(this.css_classes))

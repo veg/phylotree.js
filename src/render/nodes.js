@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-import * as _ from "underscore";
 
 import { item_tagged, item_selected } from "./helpers";
 import { is_leafnode } from "../nodes";
@@ -32,7 +31,7 @@ export function draw_node(container, node, transitions) {
     container = container.attr("data-node-name", node.data.name);
   }
 
-  let labels = container.selectAll("text").data([node]),
+  var labels = container.selectAll("text").data([node]),
     tracers = container.selectAll("line");
 
   if (is_leaf || (this.show_internal_name(node) && !is_node_collapsed(node))) {
@@ -161,7 +160,7 @@ export function draw_node(container, node, transitions) {
       }
     } else {
       if (this.shown_font_size >= 5) {
-        labels = labels.attr("dx", d => {
+        labels = labels.attr("dx", d => { // eslint-disable-line
           return (d.text_align == "end" ? -1 : 1) * this.shown_font_size * 0.33;
         });
       }

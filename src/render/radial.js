@@ -1,4 +1,3 @@
-import * as _ from "underscore";
 import { x_coord, y_coord } from "./coordinates";
 
 function radial_mapper(r, a, radial_center) {
@@ -8,7 +7,7 @@ function radial_mapper(r, a, radial_center) {
   };
 }
 
-function cartesian_mapper(x, y, radial_center) {
+function cartesian_mapper(x, y, radial_center) { // eslint-disable-line
   return polar_to_cartesian(x - radial_center, y - radial_center);
 }
 
