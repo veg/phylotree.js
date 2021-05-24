@@ -53,11 +53,7 @@ class TreeRender {
     this.radial_center = 0;
     this.radius = 1;
     this.radius_pad_for_bubbles = 0;
-
     this.rescale_node_span = 1;
-    this.node_span = function(_node) {
-      return 1;
-    };
     this.relative_node_span = function(_node) {
       return this.node_span(_node) / this.rescale_node_span;
     };
@@ -102,7 +98,10 @@ class TreeRender {
       "label-nodes-with-name": false,
       zoom: false,
       "show-menu": true,
-      "show-labels": true
+      "show-labels": true,
+      "node-styler": null,
+      "edge-styler": null,
+      "node-span": null
     };
 
     this.ensure_size_is_in_px = function(value) {
@@ -113,6 +112,17 @@ class TreeRender {
 
     this.width = this.options.width || 800;
     this.height = this.options.height || 600;
+
+    this.node_styler = this.options['node-styler'];
+    this.edge_styler = this.options['edge-styler'];
+
+    this.node_span = this.options['node-span'];
+
+    if(!this.node_span) {
+      this.node_span = function(_node) {
+        return 1;
+      };
+    }
 
     this.rescale_node_span =
       this.phylotree.nodes.children
@@ -127,6 +137,7 @@ class TreeRender {
     this.initialize_svg(this.container);
     this.links = this.phylotree.nodes.links();
     this.update();
+    events.d3_phylotree_add_event_listener();
   }
 
   pad_height() {
@@ -194,8 +205,8 @@ class TreeRender {
         .select("svg")
         .remove();
 
-      this.svg = d3.select(svg_element)
-        .append("svg")
+      this.svg = d3
+        .create("svg")
         .attr("width", this.width)
         .attr("height", this.height);
 
@@ -238,9 +249,10 @@ class TreeRender {
    * @returns The current ``phylotree``.
    */
   update(transitions) {
+
     var self = this;
 
-    if (!this.svg) return this;
+    //if (!this.svg) return this;
 
     this.placenodes();
 
@@ -437,7 +449,6 @@ class TreeRender {
     let _node_span = this.node_span(a_node) / this.rescale_node_span;
     // compute the relative size of nodes (0,1)
     // sum over all nodes is 1
-    
     this.x = a_node.x =
       this.x +
       this.separation(this.last_node, a_node) +
@@ -681,9 +692,9 @@ class TreeRender {
     if (this.options["left-right-spacing"] == "fixed-step") {
       this.size[1] = this.max_depth * this.fixed_width[1];
 
-      this.scales[1] =
-        (this.size[1] - this.offsets[1] - this.options["left-offset"]) /
-        this._extents[1][1];
+      this.scales[1] = 175.53476512216602
+        //(this.size[1] - this.offsets[1] - this.options["left-offset"]) /
+        //this._extents[1][1];
 
       this.label_width = this._label_width(this.shown_font_size);
 
@@ -961,6 +972,7 @@ this.do_lr();
       this.right_most_leaf = 0;
 
       this.phylotree.nodes.each(d => {
+
         d.x *= this.scales[0];
         d.y *= this.scales[1]*.8;
 
@@ -1263,7 +1275,7 @@ this.do_lr();
         .attr("class", this.reclass_edge.bind(this));
 
       if (this.edge_styler) {
-        edges.each(function(d) {
+        edges.each(d => {
           this.edge_styler(d3.select(this), d);
         });
       }

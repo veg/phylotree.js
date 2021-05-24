@@ -14,30 +14,25 @@ export function reroot(node, fraction) {
 
   /** TODO add the option to root in the middle of a branch */
 
-  let nodes = this.nodes.descendants();
+  let nodes = this.nodes.copy();
 
   fraction = fraction !== undefined ? fraction : 0.5;
 
   if (node.parent) {
 
     var new_json = d3.hierarchy({
-      name: "new_root",
-      //__mapped_bl: undefined,
-      "children": [{
-          name : node.data.name
-      }]
+      name: "new_root"
     });
     
-    _.extendOwn (new_json.children[0], node);
-    new_json.children[0].parent = new_json;
+    new_json.children = [node.copy()];
+    new_json.data.__mapped_bl = undefined
 
-    nodes.forEach(n => {
-      n.__mapped_bl = this.branch_length_accessor(n);
+    nodes.each(n => {
       n.data.__mapped_bl = this.branch_length_accessor(n);
     });
 
-    this.set_branch_length(function(n) {
-      return n.__mapped_bl || n.data.__mapped_bl;
+    this.set_branch_length(n => {
+      return n.data.__mapped_bl;
     });
 
 
@@ -53,9 +48,9 @@ export function reroot(node, fraction) {
     current_node.data.__mapped_bl =
       node.data.__mapped_bl === undefined
         ? undefined
-        : node.__mapped_bl - apportioned_bl;
+        : node.data.__mapped_bl - apportioned_bl;
 
-    node.data._mapped_bl = apportioned_bl;
+    node.data.__mapped_bl = apportioned_bl;
 
     var remove_idx;
 
@@ -104,12 +99,13 @@ export function reroot(node, fraction) {
         n.parent = new_node;
         return n;
       });
+
       new_node.parent = remove_me;
       remove_me.children.push(new_node);
      }
 
   }
-  
+
   // need to traverse the nodes and update parents
   this.update(new_json);
 
@@ -117,13 +113,16 @@ export function reroot(node, fraction) {
     _.each (n.children, (c) => {c.parent = n;})
   }, "pre-order");
 
+
 	if(!_.isUndefined(this.display)) {
 		// get container
 		let container = this.display.container;
 		let options = this.display.options;
+    d3.select(this.display.container).select('svg').remove()
 		// get options
 		delete this.display;
-  	this.render(container, options);
+  	let rendered_tree = this.render(options);
+    d3.select(rendered_tree.container).node().appendChild(rendered_tree.show());
 	}
 
   return this;
@@ -131,6 +130,7 @@ export function reroot(node, fraction) {
 }
 
 export function rootpath(attr_name, store_name) {
+
   attr_name = attr_name || "attribute";
   store_name = store_name || "y_scaled";
 
@@ -139,11 +139,15 @@ export function rootpath(attr_name, store_name) {
 
     this[store_name] =
       this.parent[store_name] + (isNaN(my_value) ? 0.1 : my_value);
+
   } else {
+
     this[store_name] = 0.0;
+
   }
 
   return this[store_name];
+
 }
 
 export function path_to_root(node) {

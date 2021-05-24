@@ -12,9 +12,9 @@ export function draw_edge(container, edge, transition) {
     })
     .on("click", d => {
       this.modify_selection([d.target], this.selection_attribute_name);
+      this.update();
     });
 
-  console.log(this.draw_branch);
   let new_branch_path = this.draw_branch([edge.source, edge.target]);
 
   if (transition) {
@@ -55,7 +55,6 @@ export function draw_edge(container, edge, transition) {
 }
 
 export function reclass_edge(edge) {
-
   let class_var = css_classes["branch"];
 
   if (item_tagged(edge)) {
@@ -72,10 +71,13 @@ export function reclass_edge(edge) {
 
 export function sync_edge_labels() {
 
-  this.phylotree.links.forEach(d => {
+  this.links.forEach(d => {
+
+    // TODO: Move away from storing attribute data as root (BREAKS occasionally with d3>3)
     d[this.selection_attribute_name] =
       d.target[this.selection_attribute_name] || false;
     d.tag = d.target.tag || false;
+
   });
 
   if (this.count_handler()) {
@@ -84,11 +86,11 @@ export function sync_edge_labels() {
 
     counts[
       this.selection_attribute_name
-    ] = this.phylotree.links.reduce((p, c) => {
+    ] = this.links.reduce((p, c) => {
       return p + (c[this.selection_attribute_name] ? 1 : 0);
     }, 0);
 
-    counts["tagged"] = this.phylotree.links.reduce(function(p, c) {
+    counts["tagged"] = this.links.reduce(function(p, c) {
       return p + (item_tagged(c) ? 1 : 0);
     }, 0);
 

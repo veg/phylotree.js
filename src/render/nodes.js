@@ -303,18 +303,21 @@ export function internal_label(callback, respect_existing) {
 
   this.phylotree.clear_internal_nodes(respect_existing);
 
-  for (var i = self.nodes.length - 1; i >= 0; i--) {
-    var d = self.nodes[i];
-    if (!(is_leafnode(d) || item_selected(d, selection_attribute_name))) {
-      d[selection_attribute_name] = callback(d.children);
+  for (var i = this.phylotree.nodes.descendants().length - 1; i >= 0; i--) {
+
+    var d = this.phylotree.nodes.descendants()[i];
+
+    if (!(is_leafnode(d) || item_selected(d, this.selection_attribute_name))) {
+      d[this.selection_attribute_name] = callback(d.children);
     }
+
   }
 
-  this.modify_selection(function(d, callback) {
+  this.modify_selection((d, callback) => {
     if (is_leafnode(d.target)) {
-      return d.target[selection_attribute_name];
+      return d.target[this.selection_attribute_name];
     }
-    return d.target[selection_attribute_name];
+    return d.target[this.selection_attribute_name];
   });
 }
 

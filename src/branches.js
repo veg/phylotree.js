@@ -56,6 +56,7 @@ export function def_branch_length_accessor(_node, new_length) {
     }
 
     let bl = parseFloat(_node_data["attribute"]);
+
     if (!isNaN(bl)) {
       return Math.max(0, bl);
     }
