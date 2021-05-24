@@ -12,12 +12,12 @@ import * as _ from "underscore";
  *                   (1.0 by default)
  *                                 
  * @return an array of clusters, where cluster = 
- * {
+ * \{
  *    'root'   : [root node of cluster],
  *    'members' : [list of leaf. nodes],
  *    'diameter' : max distance in the cluster,
  *    'bootstrap' : bootstrap support at the root node
- * }                        
+ * \}                        
  */
 function clusterPicker(
   tree,
