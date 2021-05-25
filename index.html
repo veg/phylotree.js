@@ -290,36 +290,28 @@ $("#newick_file").on ("change", function (e) {
 
       reader.onload = function(e) {
 
-            var res = phylotree.newickParser (e.target.result);
-
-            if (res["json"]) {
-                if (!("children" in res["json"])) {
-                    res["error"] = "Empty tree";
-                }
-            }
-
+            var res = e.target.result;
             var warning_div = d3.select ("#main_display").insert ("div", ":first-child");
-            if (res["error"]) {
+            console.log(res);
+
+            tree = new phylotree.phylotree(res);
+            global_tree = tree;
+
+            if (!tree["json"]) {
                 warning_div.attr ("class", "alert alert-danger alert-dismissable")
                             .html ("<strong>Newick parser error for file " + f.name +": </strong> In file " + res["error"]);
 
             } else {
-                default_tree_settings ();
-                tree (res);
-                selection_set = tree.getParsedTags().length > 0 ? tree.getParsedTags() : ["Foreground"];
-                selection_set.forEach((d,i) => update_selection_names(i))
-                current_selection_name = selection_set[0];
-                update_selection_names(0);
-                //tree.svg (svg).layout();
-                warning_div.attr ("class", "alert alert-success alert-dismissable")
-                            .html ("Loaded a tree from  file <strong>" + f.name +": </strong>");
+                rendered_tree = tree.render({
+                  container: "#tree_container",
+                  'draw-size-bubbles' : false,
+                  'node-styler': node_colorizer,
+                  'edge-styler': edge_colorizer
+                });
+
+                $('#newick_modal').modal('hide');
+                $(rendered_tree.container).html(rendered_tree.show())
             }
-            warning_div.append ("button")
-                       .attr ("type", "button")
-                       .attr ("class", "close")
-                       .attr ("data-dismiss", "alert")
-                       .attr ("aria-hidden", "true")
-                       .html ("&times;");
         };
 
       $('#newick-dropdown').dropdown('toggle');
@@ -459,7 +451,9 @@ $("#branch_filter").on ("input propertychange", function (e) {
 $("#validate_newick").on ("click", function (e) {
 
     let test_string = $('textarea[id$="nwk_spec"]').val()
+
     tree = new phylotree.phylotree(test_string);
+    global_tree = tree;
 
     if (!tree["json"]) {
         var warning_div = d3.select ("#newick_body").selectAll ("div  .alert-danger").data ([res["error"]])
@@ -467,9 +461,24 @@ $("#validate_newick").on ("click", function (e) {
         warning_div.html (function (d) {return d;}).attr ("class", "alert-danger");
 
     } else {
-        rendered_tree = tree.render("#tree_container");
+
+        rendered_tree = tree.render({
+          container: "#tree_container",
+          'draw-size-bubbles' : false,
+          'node-styler': node_colorizer,
+          'edge-styler': edge_colorizer
+        });
+
+        rendered_tree.selectionLabel (current_selection_name);
+
+        rendered_tree.countHandler (count => {
+                $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
+            }
+        );
+
+
         $('#newick_modal').modal('hide');
-        rendered_tree.show();
+        $(rendered_tree.container).html(rendered_tree.show())
     }
 
 });
