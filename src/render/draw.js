@@ -692,9 +692,9 @@ class TreeRender {
     if (this.options["left-right-spacing"] == "fixed-step") {
       this.size[1] = this.max_depth * this.fixed_width[1];
 
-      this.scales[1] = 175.53476512216602
-        //(this.size[1] - this.offsets[1] - this.options["left-offset"]) /
-        //this._extents[1][1];
+      this.scales[1] = 
+        (this.size[1] - this.offsets[1] - this.options["left-offset"]) /
+        this._extents[1][1];
 
       this.label_width = this._label_width(this.shown_font_size);
 
@@ -751,8 +751,6 @@ class TreeRender {
     this.is_under_collapsed_parent = false;
     this.max_depth = 1;
     
-
-
     // Set initial x
     this.phylotree.nodes.x = this.tree_layout(
       this.phylotree.nodes,

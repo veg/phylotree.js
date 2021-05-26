@@ -309,6 +309,7 @@ $("#newick_file").on ("change", function (e) {
                 rendered_tree = tree.render({
                   container: "#tree_container",
                   'draw-size-bubbles' : false,
+                  'left-right-spacing' : 'fixed-step',
                   'node-styler': node_colorizer,
                   'edge-styler': edge_colorizer
                 });
