@@ -246,6 +246,9 @@ export function getNewick(annotator) {
       element_array.push(")");
     }
 
+    if(n.data.name != 'root') {
+      element_array.push(n.data.name);
+    }
     element_array.push(annotator(n));
 
     let bl = self.branch_length_accessor(n);
@@ -258,6 +261,7 @@ export function getNewick(annotator) {
   let element_array = [];
   annotator = annotator || "";
   nodeDisplay(this.nodes);
+  console.log(element_array);
 
   return element_array.join("")+";";
 
