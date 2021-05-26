@@ -261,7 +261,6 @@ export function getNewick(annotator) {
   let element_array = [];
   annotator = annotator || "";
   nodeDisplay(this.nodes);
-  console.log(element_array);
 
   return element_array.join("")+";";
 
