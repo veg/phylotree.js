@@ -335,7 +335,7 @@ $("#mp_label").on ("click", function (e) {
 });
 
 $ ("[data-direction]").on ("click", function (e) {
-    var which_function = $(this).data ("direction") == 'vertical' ? tree.display.spacingX.bind(tree.display) : tree.display.spacingY.bind(tree.display);
+    var which_function = $(this).data ("direction") == 'vertical' ? tree.display.spacing_x.bind(tree.display) : tree.display.spacing_y.bind(tree.display);
     which_function (which_function () + (+ $(this).data ("amount"))).update();
 });
 
@@ -412,11 +412,11 @@ $("#select_all").on ("click", function (e) {
 });
 
 $("#select_all_internal").on ("click", function (e) {
-    rendered_tree.modifySelection (function (d) { return !tree.is_leafnode (d.target);});
+    rendered_tree.modifySelection (function (d) { return !tree.isLeafNode (d.target);});
 });
 
 $("#select_all_leaves").on ("click", function (e) {
-    rendered_tree.modifySelection (function (d) { return tree.is_leafnode (d.target);});
+    rendered_tree.modifySelection (function (d) { return tree.isLeafNode (d.target);});
 });
 
 
@@ -425,11 +425,11 @@ $("#select_none").on ("click", function (e) {
 });
 
 $("#clear_internal").on ("click", function (e) {
-    rendered_tree.modifySelection (function (d) { return tree.is_leafnode (d.target) ? d.target[current_selection_name] : false;});
+    rendered_tree.modifySelection (function (d) { return tree.isLeafNode (d.target) ? d.target[current_selection_name] : false;});
 });
 
 $("#clear_leaves").on ("click", function (e) {
-    rendered_tree.modifySelection (function (d) { return !tree.is_leafnode (d.target) ? d.target[current_selection_name] : false;});
+    rendered_tree.modifySelection (function (d) { return !tree.isLeafNode (d.target) ? d.target[current_selection_name] : false;});
 });
 
 
