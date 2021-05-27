@@ -170,6 +170,12 @@ let Phylotree = class {
 
     self.links = self.nodes.links();
 
+    // If no branch lengths are supplied, set all to 1
+    if(!this.hasBranchLengths()) {
+      console.warn("Phylotree User Warning : NO BRANCH LENGTHS DETECTED, SETTING ALL LENGTHS TO 1");
+      this.setBranchLength(x => 1)
+    }
+
     return self;
 
   }

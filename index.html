@@ -918,8 +918,23 @@ $( document ).ready( function () {
 
 
 
-
 });
+
+</script>
+
+<script>
+
+    var _warn = console.warn;
+
+    console.warn = function() {
+        if(arguments[0].includes('Phylotree User Warning')) {
+                var warning_div = d3.select ("#main_display").insert ("div", ":first-child");
+                warning_div.attr ("class", "alert alert-danger alert-dismissable")
+                            .html (arguments[0]);
+        }
+        return _warn.apply(console, arguments);
+    };
+
 
 </script>
 

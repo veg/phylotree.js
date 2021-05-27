@@ -44,6 +44,7 @@ export function getBranchLengths() {
 export function defBranchLengthAccessor(_node, new_length) {
 
   let _node_data = _node.data;
+  //let _node_data = _node;
 
   if (
     "attribute" in _node_data &&
@@ -63,6 +64,7 @@ export function defBranchLengthAccessor(_node, new_length) {
 
   }
 
+  console.warn('Undefined branch length at ' + _node_data.name + '!');
   return undefined;
 
 }
