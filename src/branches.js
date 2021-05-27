@@ -23,6 +23,7 @@ export default function hasBranchLengths() {
     return _.every(this.nodes.descendants(), function(node) {
       return !node.parent || !_.isUndefined(bl(node));
     });
+
   }
 
   return false;
@@ -64,7 +65,13 @@ export function defBranchLengthAccessor(_node, new_length) {
 
   }
 
+  // Allow for empty branch length at root
+  if(_node_data.name == "root") {
+    return 0;
+  }
+
   console.warn('Undefined branch length at ' + _node_data.name + '!');
+
   return undefined;
 
 }
