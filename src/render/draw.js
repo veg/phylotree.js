@@ -423,18 +423,23 @@ class TreeRender {
     this.syncEdgeLabels();
 
     if (this.options["zoom"]) {
-      let zoom = d3.behavior
+      let zoom = d3
         .zoom()
         .scaleExtent([0.1, 10])
         .on("zoom", () => {
-          let translate = d3.event.translate;
-          translate[0] += this.offsets[1] + this.options["left-offset"];
-          translate[1] += this.pad_height();
 
-          d3.select("." + css_classes["tree-container"]).attr(
-            "transform",
-            "translate(" + translate + ")scale(" + d3.event.scale + ")"
-          );
+          d3.select("." + css_classes["tree-container"]).attr("transform", d => {
+            let toTransform = d3.event.transform;
+            return toTransform;
+          });
+
+          // Give some extra room
+          d3.select("." + css_classes["tree-scale-bar"]).attr("transform", d => {
+            let toTransform = d3.event.transform;
+            toTransform.y -= 10; 
+            return toTransform;
+          });
+          
         });
 
       this.svg.call(zoom);
