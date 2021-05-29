@@ -386,7 +386,6 @@ class TreeRender {
             shown_links = this.links.filter(render_edges.edgeVisible);
           var selected_links = shown_links
               .filter((d, i) => {
-                console.log(extent);
                 return (
                   d.source.screen_x >= extent[0][0] &&
                   d.source.screen_x <= extent[1][0] &&
