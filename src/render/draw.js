@@ -136,6 +136,7 @@ class TreeRender {
 
     this.initialize_svg(this.container);
     this.links = this.phylotree.nodes.links();
+    this.initializeEdgeLabels();
     this.update();
     events.d3PhylotreeAddEventListener();
   }
