@@ -13,7 +13,7 @@ import * as _ from "underscore";
 export function reroot(node, fraction) {
 
   /** TODO add the option to root in the middle of a branch */
-  if(node instanceof d3.hierarchy) {
+  if(!node instanceof d3.hierarchy) {
    throw new Error('node needs to be an instance of a d3.hierarchy node!');
   }
 
