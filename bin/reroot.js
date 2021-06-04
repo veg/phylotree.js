@@ -9,7 +9,7 @@ const _ = require('underscore');
  * reroot
  *
  * Usage:
- * reroot -f test/data/MERS.txt -n 
+ * reroot -f test/data/CD2-relax.new -n Horse
  *
  */
 
