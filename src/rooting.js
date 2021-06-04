@@ -13,6 +13,9 @@ import * as _ from "underscore";
 export function reroot(node, fraction) {
 
   /** TODO add the option to root in the middle of a branch */
+  if(node instanceof d3.hierarchy) {
+   throw new Error('node needs to be an instance of a d3.hierarchy node!');
+  }
 
   let nodes = this.nodes.copy();
 
@@ -34,7 +37,6 @@ export function reroot(node, fraction) {
     this.setBranchLength(n => {
       return n.data.__mapped_bl;
     });
-
 
     let remove_me = node,
       current_node = node.parent,

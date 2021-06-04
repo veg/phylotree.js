@@ -14,6 +14,7 @@ import { isLeafNode } from "../nodes";
  */
 
 function newickParser(nwk_str, options={}) {
+
   const bootstrap_values = true,
     int_or_float = /^-?\d+(\.\d+)?$/;
   let left_delimiter = options.left_delimiter ||  '{',
@@ -40,6 +41,7 @@ function newickParser(nwk_str, options={}) {
   }
 
   function finishNodeDefinition() {
+
     let this_node = clade_stack.pop();
 
     this_node["name"] = current_node_name;
@@ -232,7 +234,7 @@ export function getNewick(annotator) {
 
   let self = this;
 
-  if (!annotator) annotator = d => d.data.name;
+  if (!annotator) annotator = d => '';
 
   function nodeDisplay(n) {
     if (!isLeafNode(n)) {
