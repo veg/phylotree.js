@@ -7,6 +7,7 @@
   "module": "src/index.js",
   "bin": {
     "root-to-tip": "./bin/root-to-tip.js",
+    "reroot": "./bin/reroot.js",
     "tip-date-extractor": "./bin/tip-date-extractor.js"
   },
   "keywords": [
