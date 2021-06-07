@@ -12,7 +12,7 @@ commander
   .option("-i --include-source-length", "Include source node's length as part of distance")
   .usage("./test/data/CD2-relax.new  -s Cow -t Cat")
   .on("--help", function() {
-    console.log("\nComputes the distance from the source tip to target tip. Does *not* include the length of the source tip.");
+    console.log("\nComputes the distance from the source tip to target tip. Does *not* include the length of the source tip by default.");
   })
   .parse(process.argv);
 
