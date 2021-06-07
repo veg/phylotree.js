@@ -3,10 +3,7 @@
 const fs = require("fs"),
   phylotree = require("../dist/phylotree.js"),
   commander = require("commander"),
-  _ = require("underscore"),
-  moment = require("moment"),
-  winston = require("winston"),
-  stringify = require("csv-stringify");
+  _ = require("underscore");
 
 commander
   .arguments("<newick>", "Input newick file")
@@ -19,9 +16,9 @@ commander
   })
   .parse(process.argv);
 
-fs.readFile(commander.args[0], (err, newick_data) => {
+fs.readFile(commander.args[0], (err, newickData) => {
 
-  const tree = new phylotree.phylotree(newick_data.toString());
+  const tree = new phylotree.phylotree(newickData.toString());
   console.log('name', 'length', 'annotation')
   _.each(tree.getTips(), d => {
     console.log(d.data.name, d.data.attribute, d.data.annotation)
