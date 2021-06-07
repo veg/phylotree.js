@@ -69,6 +69,20 @@ export function reclassEdge(edge) {
 
 }
 
+export function initializeEdgeLabels() {
+
+  this.links.forEach(d => {
+
+    // TODO: Move away from storing attribute data as root (BREAKS occasionally with d3>3)
+    if(d.target.data.annotation) {
+      d.target[d.target.data.annotation] = d.target.data.annotation;
+    }
+
+  });
+
+}
+
+
 export function syncEdgeLabels() {
 
   this.links.forEach(d => {

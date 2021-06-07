@@ -136,6 +136,7 @@ class TreeRender {
 
     this.initialize_svg(this.container);
     this.links = this.phylotree.nodes.links();
+    this.initializeEdgeLabels();
     this.update();
     events.d3PhylotreeAddEventListener();
   }
@@ -381,10 +382,10 @@ class TreeRender {
 
       var brush_object = d3
         .brush()
-        .on("brush", () => {
-          var extent = d3.event.target.extent(),
-            shown_links = this.links.filter(render_edges.edgeVisible),
-            selected_links = shown_links
+        .on("brush", d => {
+          var extent = d3.event.selection,
+            shown_links = this.links.filter(render_edges.edgeVisible);
+          var selected_links = shown_links
               .filter((d, i) => {
                 return (
                   d.source.screen_x >= extent[0][0] &&

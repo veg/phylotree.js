@@ -141,7 +141,7 @@
     <ul class="navbar-nav ml-auto">
       <li>
         <form class="form-inline my-2 my-lg-0">
-          <input type="text" id = 'branch_filter' class="form-control mr-sm-2" placeholder="Filter branches on">
+          <input type="text" id = 'branch_filter' class="form-control mr-sm-2" placeholder="Filter branches on" onkeypress="return event.keyCode != 13">
         </form>
       </li>
     </ul>
@@ -888,7 +888,7 @@ $( document ).ready( function () {
       container: "#tree_container",
     	'draw-size-bubbles' : false,
       'node-styler': node_colorizer,
-      'zoom': true,
+      'zoom': false,
       'edge-styler': edge_colorizer
     });
 
@@ -899,6 +899,10 @@ $( document ).ready( function () {
         }
     );
 
+    // Get selection set names from parsed newick
+    if(tree.parsed_tags.length) {
+      selection_set = tree.parsed_tags;
+    }
 
     // Until a cleaner solution to supporting both Observable and regular HTML
     $(rendered_tree.container).append(rendered_tree.show())
