@@ -30,6 +30,12 @@ fs.readFile(commander.args[0], (err, newick_data) => {
 
   // GET LEAF INDEX OF TARGET
   const targetNode = tree.getNodeByName(commander.target);
+
+  if(_.isUndefined(targetNode)) {
+    throw new Error('Could not find target node with name ' + commander.target)
+  }
+
+
   const targetIndex = targetNode['cot_leaf_index'];
 
   let distance = sourceNode['cot_path_to_leaves_above'][targetIndex];
@@ -38,6 +44,7 @@ fs.readFile(commander.args[0], (err, newick_data) => {
   if(commander.includeSourceLength) {
     distance+=parseFloat(sourceNode.data.attribute);
   }
+
   console.log(distance);
 
 });
