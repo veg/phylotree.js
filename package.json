@@ -1,6 +1,6 @@
 {
   "name": "phylotree",
-  "version": "1.0.8",
+  "version": "1.0.9-alpha",
   "main": "dist/phylotree.js",
   "unpkg": "dist/phylotree.js",
   "jsdelivr": "dist/phylotree.js",
