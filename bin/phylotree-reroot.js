@@ -6,24 +6,24 @@ const commander = require('commander');
 const _ = require('underscore');
 
 /*
- * reroot
+ * phylotree reroot
  *
  * Usage:
- * reroot -f test/data/CD2-relax.new -n Horse
+ * phylotree reroot ./test/data/CD2-relax.new -n Horse 
  *
  */
 
 commander
-  .option('-f --newick <newick>', 'Input newick file')
-  .option("-n --node <node>", "Node to reroot on")
+  .arguments("<newick>", "Input newick file")
+  .requiredOption("-n --node <node>", "Node to reroot on")
 .parse(process.argv);
 
 
-if (!commander.newick){
+if (!commander.args[0]){
   throw 'ERROR: Newick file is required... exiting!';
 }
 
-fs.readFile(commander.newick, (err, newickData) => {
+fs.readFile(commander.args[0], (err, newickData) => {
   const tree = new phylotree.phylotree(newickData.toString());
   const node = tree.getNodeByName(commander.node)
   if(_.isUndefined(node)) {

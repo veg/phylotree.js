@@ -1,13 +1,13 @@
 {
   "name": "phylotree",
-  "version": "1.0.7",
+  "version": "1.0.9-alpha",
   "main": "dist/phylotree.js",
   "unpkg": "dist/phylotree.js",
   "jsdelivr": "dist/phylotree.js",
   "module": "src/index.js",
   "bin": {
     "root-to-tip": "./bin/root-to-tip.js",
-    "reroot": "./bin/reroot.js",
+    "phylotree": "./bin/phylotree.js",
     "tip-date-extractor": "./bin/tip-date-extractor.js"
   },
   "keywords": [
@@ -35,10 +35,10 @@
   },
   "devDependencies": {
     "concurrently": "^6.2.0",
-    "eslint": "^7.27.0",
+    "eslint": "^7.29.0",
     "http-server": "^0.12.1",
     "jsdoc-to-markdown": "^7.0.1",
-    "prettier": "^2.0.4",
+    "prettier": "^2.3.2",
     "rollup": "^2.50.6",
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-terser": "^7.0.2",
