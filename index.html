@@ -296,7 +296,6 @@ $("#newick_file").on ("change", function (e) {
 
             var res = e.target.result;
             var warning_div = d3.select ("#main_display").insert ("div", ":first-child");
-            console.log(res);
 
             tree = new phylotree.phylotree(res);
             global_tree = tree;
@@ -313,6 +312,13 @@ $("#newick_file").on ("change", function (e) {
                   'node-styler': node_colorizer,
                   'edge-styler': edge_colorizer
                 });
+
+                // Get selection set names from parsed newick
+                if(tree.parsed_tags.length) {
+                  selection_set = tree.parsed_tags;
+                }
+
+                update_selection_names();
 
                 $('#newick_modal').modal('hide');
                 $(rendered_tree.container).html(rendered_tree.show())
@@ -471,6 +477,7 @@ $("#validate_newick").on ("click", function (e) {
           container: "#tree_container",
           'draw-size-bubbles' : false,
           'node-styler': node_colorizer,
+          'zoom': false,
           'edge-styler': edge_colorizer
         });
 
@@ -481,6 +488,12 @@ $("#validate_newick").on ("click", function (e) {
             }
         );
 
+        // Get selection set names from parsed newick
+        if(tree.parsed_tags.length) {
+          selection_set = tree.parsed_tags;
+        }
+
+        update_selection_names();
 
         $('#newick_modal').modal('hide');
         $(rendered_tree.container).html(rendered_tree.show())
