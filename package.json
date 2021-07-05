@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "concurrently": "^6.2.0",
-    "eslint": "^7.29.0",
+    "eslint": "^7.30.0",
     "http-server": "^0.12.1",
     "jsdoc-to-markdown": "^7.0.1",
     "prettier": "^2.3.2",
