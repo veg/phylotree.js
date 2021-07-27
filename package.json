@@ -21,7 +21,7 @@
     "index.html"
   ],
   "dependencies": {
-    "commander": "^6.2.1",
+    "commander": "^8.1.0",
     "csv-stringify": "^5.3.6",
     "d3": "6",
     "jquery": "3",
