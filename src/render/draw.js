@@ -651,7 +651,7 @@ class TreeRender {
       let managed_to_display = false;
 
       for (let child_id = 0; child_id < a_node.children.length; child_id++) {
-        let child_x = this.tree_layout(a_node.children[child_id]).bind(this);
+        let child_x = this.tree_layout(a_node.children[child_id]);//.bind(this);
 
         if (typeof child_x == "number") {
           displayed_children++;
