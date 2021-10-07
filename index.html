@@ -124,6 +124,9 @@
           Selection
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a id="filter_add" class="dropdown-item" href="#">Add filtered nodes to selection</a>
+          <a id="filter_remove" class="dropdown-item" href="#">Select all but filtered nodes</a>
+          <div class="dropdown-divider"></div>
           <a id="select_all" class="dropdown-item" href="#">Select all</a>
           <a id="select_all_internal" class="dropdown-item" href="#">Select all internal nodes</a>
           <a id="select_all_leaves" class="dropdown-item" href="#">Select all leaf nodes</a>
@@ -413,6 +416,14 @@ $("#or_label").on ("click", function (e) {
     rendered_tree.internalLabel (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] || prev; }, false)}, true);
 });
 
+$("#filter_add").on ("click", function (e) {
+    rendered_tree.modifySelection(function (d) { return d.tag || d[current_selection_name];} )
+        .modifySelection(function (d) { return false; }, "tag", false, false);
+});
+
+$("#filter_remove").on ("click", function (e) {
+    rendered_tree.modifySelection(function (d) { return !d.tag;});
+});
 
 $("#select_all").on ("click", function (e) {
     rendered_tree.modifySelection (function (d) { return true;});
