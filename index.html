@@ -316,15 +316,25 @@ $("#newick_file").on ("change", function (e) {
                   'edge-styler': edge_colorizer
                 });
 
-                // Get selection set names from parsed newick
-                if(tree.parsed_tags.length) {
-                  selection_set = tree.parsed_tags;
-                }
+								rendered_tree.selectionLabel(current_selection_name);
+
+								rendered_tree.countHandler (count => {
+												$("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
+										}
+								);
+
+								// Get selection set names from parsed newick
+								if(tree.parsed_tags.length) {
+									selection_set = tree.parsed_tags;
+								}
 
                 update_selection_names();
 
                 $('#newick_modal').modal('hide');
+
+                $(rendered_tree.container).empty()
                 $(rendered_tree.container).html(rendered_tree.show())
+
             }
         };
 
@@ -686,8 +696,14 @@ function update_selection_names (id, skip_rebuild) {
       .style ("color",  color_scheme(id))
       .property ("value", current_selection_name);
 
-    rendered_tree.selectionLabel(selection_set[id]);
-    rendered_tree.update();
+		// Loop through all selection_sets
+		_.each(selection_set, function(id) {
+			rendered_tree.selectionLabel(id);
+			rendered_tree.update();
+		})	
+
+		rendered_tree.selectionLabel(selection_set[id]);
+		rendered_tree.update();
 }
 
 var width  = 800, //$(container_id).width(),
