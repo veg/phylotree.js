@@ -14,7 +14,7 @@ cd phylo
 npm install -g yarn
 yarn global add webpack-cli
 yarn
-yarn develop
+yarn serve
 ```
 
 At this point, you should be able to navigate to `http://localhost:8080/` from
