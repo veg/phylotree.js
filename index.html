@@ -1218,6 +1218,13 @@
 
         $('#tree_container').on('reroot', function (e) {  
           update_selection_names();
+
+          tree.display.countHandler(count => {
+            $("#selected_branch_counter").text(function(d) {
+              return count[current_selection_name];
+            });
+          });
+
         });
 
         tree.display.selectionLabel(current_selection_name);
