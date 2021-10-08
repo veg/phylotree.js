@@ -216,6 +216,7 @@ export function nodeDropdownMenu(node, container, phylotree, options) {
   } else {
     menu_object.style("display", "none");
   }
+
 }
 
 export function addCustomMenu(node, name, callback, condition) {

@@ -41,7 +41,9 @@ export function drawNode(container, node, transitions) {
       .append("text")
       .classed(this.css_classes["node_text"], true)
       .merge(labels)
-      .on("click", this.handle_node_click)
+      .on("click", d=> {
+        this.handle_node_click(d);
+      })
       .attr("dy", d => {
         return this.shown_font_size * 0.33;
       })
