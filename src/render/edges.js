@@ -55,6 +55,7 @@ export function drawEdge(container, edge, transition) {
 }
 
 export function reclassEdge(edge) {
+
   let class_var = css_classes["branch"];
 
   if (itemTagged(edge)) {

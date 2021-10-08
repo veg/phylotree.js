@@ -403,6 +403,7 @@ class TreeRender {
               });
 
           this.modifySelection(
+
             this.phylotree.links.map(d => {
               return d.target;
             }),
@@ -413,6 +414,7 @@ class TreeRender {
           );
 
           this.modifySelection(selected_links, "tag", false, false, "true");
+
         })
         .on("end", () => {
           //brush.call(d3.event.target.clear());

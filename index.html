@@ -1,987 +1,1313 @@
 <!DOCTYPE html>
-<html lang = 'en'>
-
-<head>
-
-    <meta charset="utf-8">
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
     <!-- Latest compiled and minified CSS -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
-
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link
+      rel="stylesheet"
+      href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <link
+      href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"
+      rel="stylesheet"
+    />
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="//stackpath.bootstrapcdn.com/bootswatch/4.1.1/spacelab/bootstrap.min.css">
+    <link
+      rel="stylesheet"
+      href="//stackpath.bootstrapcdn.com/bootswatch/4.1.1/spacelab/bootstrap.min.css"
+    />
 
     <!-- Latest compiled and minified JavaScript -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script
+      src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
 
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
     <script src="//d3js.org/d3.v5.js"></script>
     <script src="/dist/phylotree.js"></script>
-    <link href="phylotree.css" rel="stylesheet">
+    <link href="phylotree.css" rel="stylesheet" />
 
     <style>
+      nav {
+        margin-bottom: 25px;
+      }
 
-        nav {
-          margin-bottom: 25px;
+      .fa-rotate-45 {
+        -webkit-transform: rotate(45deg);
+        -moz-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
+        transform: rotate(45deg);
+      }
+
+      .fa-rotate-135 {
+        -webkit-transform: rotate(135deg);
+        -moz-transform: rotate(135deg);
+        -ms-transform: rotate(135deg);
+        -o-transform: rotate(135deg);
+        transform: rotate(135deg);
+      }
+
+      @media (max-width: 1075px) {
+        .container {
+          padding-top: 50px;
         }
+      }
 
-        .fa-rotate-45 {
-          -webkit-transform: rotate(45deg);
-          -moz-transform: rotate(45deg);
-          -ms-transform: rotate(45deg);
-          -o-transform: rotate(45deg);
-          transform: rotate(45deg);
-        }
+      .btn {
+        height: 30px;
+      }
 
-        .fa-rotate-135 {
-          -webkit-transform: rotate(135deg);
-          -moz-transform: rotate(135deg);
-          -ms-transform: rotate(135deg);
-          -o-transform: rotate(135deg);
-          transform: rotate(135deg);
-        }
+      #toolbar {
+        display: flex;
+        justify-content: space-between;
+        width: 550px;
+      }
 
-        @media (max-width: 1075px) { 
-          .container {
-            padding-top: 50px;
-          }
-        }
+      #controls {
+        position: fixed;
+        left: 5px;
+      }
+    </style>
+  </head>
 
-        .btn {
-          height: 30px;
-        }
-
-        #toolbar {
-          display: flex;
-          justify-content: space-between;
-          width: 550px;
-        }
-        
-        #controls {
-          position: fixed;
-          left: 5px;
-        }
-   </style>
-</head>
-
-<body>
-
-<!--
+  <body>
+    <!--
 ###############################################################################################################################
 -->
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">phylotree.js</a>
 
-  <a class="navbar-brand" href="#">phylotree.js</a>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a
+              href="#"
+              id="newick-dropdown"
+              class="nav-link dropdown-toggle"
+              role="button"
+              data-toggle="dropdown"
+              >Newick <b class="caret"></b
+            ></a>
+            <div class="dropdown-menu">
+              <a
+                class="dropdown-item"
+                href="#"
+                data-toggle="modal"
+                data-target="#newick_modal"
+                >Input Text</a
+              >
+              <a class="dropdown-item" href="#"
+                ><input type="file" id="newick_file"
+              /></a>
+              <div class="dropdown-divider"></div>
+              <a
+                class="dropdown-item"
+                href="#"
+                data-toggle="modal"
+                data-target="#newick_export_modal"
+                >Export</a
+              >
+            </div>
+          </li>
+        </ul>
 
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-    <ul class="navbar-nav">
+        <ul class="nav navbar-nav mx-auto">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Tag
+            </a>
+            <div
+              class="dropdown-menu"
+              aria-labelledby="navbarDropdown"
+              id="selection_name_dropdown"
+            >
+              <a id="selection_new" class="dropdown-item" href="#"
+                >New selection set</a
+              >
+              <a id="selection_delete" class="dropdown-item" href="#"
+                >Delete selection set</a
+              >
+              <a id="selection_rename" class="dropdown-item" href="#"
+                >Rename selection set</a
+              >
+              <div class="dropdown-divider"></div>
+            </div>
+          </li>
 
-      <li class="nav-item dropdown">
-        <a href="#" id="newick-dropdown" class="nav-link dropdown-toggle" role="button" data-toggle="dropdown">Newick <b class="caret"></b></a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newick_modal">Input Text</a>
-          <a class="dropdown-item" href="#"><input type="file" id="newick_file"/></a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#" data-toggle="modal" data-target="#newick_export_modal">Export</a>
+          <li>
+            <form class="form-inline my-2 my-lg-0">
+              <input
+                type="text"
+                id="selection_name_box"
+                class="form-control mr-sm-2"
+                value="Foreground"
+                disabled
+                size="40"
+              />
+            </form>
+          </li>
+
+          <li id="save_selection_name" style="display:none;" class="my-auto">
+            <a href="#"
+              ><button id="cancel_selection_button" class="btn btn-info btn-sm">
+                Cancel
+              </button></a
+            >
+            <a href="#"
+              ><button id="save_selection_button" class="btn btn-info btn-sm">
+                Save
+              </button></a
+            >
+          </li>
+
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Selection
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a id="filter_add" class="dropdown-item" href="#"
+                >Add filtered nodes to selection</a
+              >
+              <a id="filter_remove" class="dropdown-item" href="#"
+                >Select all but filtered nodes</a
+              >
+              <div class="dropdown-divider"></div>
+              <a id="select_all" class="dropdown-item" href="#">Select all</a>
+              <a id="select_all_internal" class="dropdown-item" href="#"
+                >Select all internal nodes</a
+              >
+              <a id="select_all_leaves" class="dropdown-item" href="#"
+                >Select all leaf nodes</a
+              >
+              <a id="clear_internal" class="dropdown-item" href="#"
+                >Clear all internal nodes</a
+              >
+              <a id="clear_leaves" class="dropdown-item" href="#"
+                >Clear all leaves</a
+              >
+              <a id="select_none" class="dropdown-item" href="#"
+                >Clear selection</a
+              >
+              <div class="dropdown-divider"></div>
+              <a id="mp_label" class="dropdown-item" href="#"
+                >Label internal nodes using maximum parsimony</a
+              >
+              <a id="and_label" class="dropdown-item" href="#"
+                >Label internal nodes using conjunction (AND)</a
+              >
+              <a id="or_label" class="dropdown-item" href="#"
+                >Label internal nodes using disjunction (OR)</a
+              >
+            </div>
+          </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+          <li>
+            <form class="form-inline my-2 my-lg-0">
+              <input
+                type="text"
+                id="branch_filter"
+                class="form-control mr-sm-2"
+                placeholder="Filter branches on"
+                onkeypress="return event.keyCode != 13"
+              />
+            </form>
+          </li>
+        </ul>
+      </div>
+      <!-- /.container-fluid -->
+    </nav>
+
+    <div class="modal" id="newick_modal" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Newick string to render</h4>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-hidden="true"
+            >
+              &times;
+            </button>
+          </div>
+          <div class="modal-body" id="newick_body">
+            <textarea
+              id="nwk_spec"
+              autofocus="true"
+              placeholder=""
+              style="width: 100%; height: 100%"
+              rows="20"
+              selectionStart="1"
+              selectionEnd="1000"
+            >
+(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)</textarea
+            >
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              id="validate_newick"
+            >
+              Display this tree
+            </button>
+          </div>
         </div>
-      </li>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 
-    </ul>
-
-    <ul class="nav navbar-nav mx-auto">
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Tag 
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown" id="selection_name_dropdown">
-          <a id="selection_new" class="dropdown-item" href="#">New selection set</a>
-          <a id="selection_delete" class="dropdown-item" href="#">Delete selection set</a>
-          <a id="selection_rename" class="dropdown-item" href="#">Rename selection set</a>
-          <div class="dropdown-divider"></div>
+    <div class="modal" id="newick_export_modal" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body" id="newick_body">
+            <textarea
+              id="nwk_export_spec"
+              autofocus="true"
+              placeholder=""
+              style="width: 100%; height: 100%"
+              rows="20"
+            ></textarea>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
         </div>
-      </li>
+        <!-- /.modal-content -->
+      </div>
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 
-      <li>
-        <form class="form-inline my-2 my-lg-0">
-          <input type="text" id = 'selection_name_box' class="form-control mr-sm-2" value="Foreground" disabled size=40>
-        </form>
-      </li>
-
-      <li id="save_selection_name" style="display:none;" class="my-auto">
-        <a href="#"><button id="cancel_selection_button" class="btn btn-info btn-sm">Cancel</button></a>
-        <a href="#"><button id="save_selection_button" class="btn btn-info btn-sm">Save</button></a>
-      </li>
-
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Selection
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a id="filter_add" class="dropdown-item" href="#">Add filtered nodes to selection</a>
-          <a id="filter_remove" class="dropdown-item" href="#">Select all but filtered nodes</a>
-          <div class="dropdown-divider"></div>
-          <a id="select_all" class="dropdown-item" href="#">Select all</a>
-          <a id="select_all_internal" class="dropdown-item" href="#">Select all internal nodes</a>
-          <a id="select_all_leaves" class="dropdown-item" href="#">Select all leaf nodes</a>
-          <a id="clear_internal" class="dropdown-item" href="#">Clear all internal nodes</a>
-          <a id="clear_leaves" class="dropdown-item" href="#">Clear all leaves</a>
-          <a id="select_none" class="dropdown-item" href="#">Clear selection</a>
-          <div class="dropdown-divider"></div>
-          <a id="mp_label" class="dropdown-item" href="#">Label internal nodes using maximum parsimony</a>
-          <a id="and_label" class="dropdown-item" href="#">Label internal nodes using conjunction (AND)</a>
-          <a id="or_label" class="dropdown-item" href="#">Label internal nodes using disjunction (OR)</a>
+    <div class="modal" id="progress_model">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-hidden="true"
+            >
+              &times;
+            </button>
+            <h4 class="modal-title">Task in progress</h4>
+          </div>
+          <div class="modal-body" id="progress_model_body"></div>
         </div>
-      </li>
-    </ul>
-
-    <ul class="navbar-nav ml-auto">
-      <li>
-        <form class="form-inline my-2 my-lg-0">
-          <input type="text" id = 'branch_filter' class="form-control mr-sm-2" placeholder="Filter branches on" onkeypress="return event.keyCode != 13">
-        </form>
-      </li>
-    </ul>
-  </div><!-- /.container-fluid -->
-</nav>
-
-<div class="modal" id = 'newick_modal' role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Newick string to render</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <!-- /.modal-content -->
       </div>
-      <div class="modal-body" id = 'newick_body'>
-         <textarea id = 'nwk_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20 selectionStart = 1 selectionEnd = 1000>(a : 0.1, (b : 0.11, (c : 0.12, d : 0.13) : 0.14) : 0.15)</textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary btn-sm" id = 'validate_newick'>Display this tree</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+      <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
 
-<div class="modal" id = 'newick_export_modal' role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body" id = 'newick_body'>
-         <textarea id = 'nwk_export_spec' autofocus = true placeholder = "" style = 'width: 100%; height: 100%' rows = 20></textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div class="modal" id = 'progress_model'>
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">Task in progress</h4>
-      </div>
-      <div class="modal-body" id = 'progress_model_body'>
-         
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<div id = 'controls'>
-    <form id = 'controls_form' style = 'width:200px;'>
-    </form>
-</div>
-
-<div class = 'container' id = "main_display">
-
-  <div class = 'row'>
-    <div class = 'col-md-8'>
-      <div class="btn-toolbar" role="toolbar" id='toolbar'>
-        <div class="btn-group">
-          <button type="button" class="btn btn-light btn-sm" data-direction = 'vertical' data-amount = '1' title = "Expand vertical spacing">
-              <i class="fa fa-arrows-v" ></i>
-          </button>
-           <button type="button" class="btn btn-light btn-sm" data-direction = 'vertical' data-amount = '-1' title = "Compress vertical spacing">
-              <i class="fa  fa-compress fa-rotate-135" ></i>
-          </button>
-          <button type="button" class="btn btn-light btn-sm" data-direction = 'horizontal' data-amount = '1' title = "Expand horizonal spacing">
-              <i class="fa fa-arrows-h" ></i>
-          </button>
-           <button type="button" class="btn btn-light btn-sm" data-direction = 'horizontal' data-amount = '-1' title = "Compress horizonal spacing">
-              <i class="fa  fa-compress fa-rotate-45" ></i>
-          </button>
-           <button type="button" class="btn btn-light btn-sm" id = "sort_ascending" title = "Sort deepest clades to the bototm">
-              <i class="fa fa-sort-amount-asc" ></i>
-          </button>
-           <button type="button" class="btn btn-light btn-sm" id = "sort_descending" title = "Sort deepsest clades to the top">
-              <i class="fa fa-sort-amount-desc" ></i>
-          </button>
-           <button type="button" class="btn btn-light btn-sm" id = "sort_original" title = "Restore original order">
-              <i class="fa fa-sort" ></i>
-          </button>
-           <button type="button" class="btn btn-light btn-sm" id = "save_image" title = "Save image">
-              <i class="fa fa-picture-o" ></i>
-          </button>
-
-        </div>
-        <div class="btn-group" role="group">
-          <button class="btn btn-light btn-sm active phylotree-layout-mode" data-mode = "linear">
-            Linear
-          </button>
-          <button class="btn btn-light btn-sm phylotree-layout-mode" data-mode = "radial" >
-            Radial
-          </button>
-        </div>
-        <div class="btn-group" role="group">
-          <button class="btn btn-light btn-sm active phylotree-align-toggler" data-align= "left">
-              <i class="fa fa-align-left" ></i>
-          </button>
-          <button class="btn btn-light btn-sm phylotree-align-toggler" data-align= "right">
-              <i class="fa fa-align-right" ></i>
-          </button>
-        </div>
-      </div>
-
+    <div id="controls">
+      <form id="controls_form" style="width:200px;"></form>
     </div>
 
-    <div class = 'col-md-4'>
-      <label class = "pull-right"><b>Selected</b> <span class="badge badge-secondary" id="selected_branch_counter">0</span> <b>branches with current label</b></label>
-    </div>
-  </div>
+    <div class="container" id="main_display">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="btn-toolbar" role="toolbar" id="toolbar">
+            <div class="btn-group">
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                data-direction="vertical"
+                data-amount="1"
+                title="Expand vertical spacing"
+              >
+                <i class="fa fa-arrows-v"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                data-direction="vertical"
+                data-amount="-1"
+                title="Compress vertical spacing"
+              >
+                <i class="fa  fa-compress fa-rotate-135"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                data-direction="horizontal"
+                data-amount="1"
+                title="Expand horizonal spacing"
+              >
+                <i class="fa fa-arrows-h"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                data-direction="horizontal"
+                data-amount="-1"
+                title="Compress horizonal spacing"
+              >
+                <i class="fa  fa-compress fa-rotate-45"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                id="sort_ascending"
+                title="Sort deepest clades to the bototm"
+              >
+                <i class="fa fa-sort-amount-asc"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                id="sort_descending"
+                title="Sort deepsest clades to the top"
+              >
+                <i class="fa fa-sort-amount-desc"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                id="sort_original"
+                title="Restore original order"
+              >
+                <i class="fa fa-sort"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                id="save_image"
+                title="Save image"
+              >
+                <i class="fa fa-picture-o"></i>
+              </button>
+            </div>
+            <div class="btn-group" role="group">
+              <button
+                class="btn btn-light btn-sm active phylotree-layout-mode"
+                data-mode="linear"
+              >
+                Linear
+              </button>
+              <button
+                class="btn btn-light btn-sm phylotree-layout-mode"
+                data-mode="radial"
+              >
+                Radial
+              </button>
+            </div>
+            <div class="btn-group" role="group">
+              <button
+                class="btn btn-light btn-sm active phylotree-align-toggler"
+                data-align="left"
+              >
+                <i class="fa fa-align-left"></i>
+              </button>
+              <button
+                class="btn btn-light btn-sm phylotree-align-toggler"
+                data-align="right"
+              >
+                <i class="fa fa-align-right"></i>
+              </button>
+            </div>
+          </div>
+        </div>
 
-  <div class = 'row'>
-    <div class = 'col-md-12'>
-      <div id = 'tree_container' class = 'tree-widget'></div>
-    </div>
-  </div>
-</div>
+        <div class="col-md-4">
+          <label class="pull-right"
+            ><b>Selected</b>
+            <span class="badge badge-secondary" id="selected_branch_counter"
+              >0</span
+            >
+            <b>branches with current label</b></label
+          >
+        </div>
+      </div>
 
-<!--
+      <div class="row">
+        <div class="col-md-12">
+          <div id="tree_container" class="tree-widget"></div>
+        </div>
+      </div>
+    </div>
+
+    <!--
 ###############################################################################################################################
 -->
 
-<script>
+    <script>
+      var phylotree_extensions = new Object();
 
-var phylotree_extensions = new Object ();
-
-$('#newick_export_modal').on('show.bs.modal', function (e) {
-    $('textarea[id$="nwk_export_spec"]').val(
-        tree.getNewick (
-            function (node) {
-                var tags = [];
-                selection_set.forEach (function (d) { if (node[d]) {tags.push(d)}; });
-                if (tags.length) {
-                    return "{" + tags.join (",") + "}";
-                }
-                return "";
+      $("#newick_export_modal").on("show.bs.modal", function(e) {
+        $('textarea[id$="nwk_export_spec"]').val(
+          tree.getNewick(function(node) {
+            var tags = [];
+            selection_set.forEach(function(d) {
+              if (node[d]) {
+                tags.push(d);
+              }
+            });
+            if (tags.length) {
+              return "{" + tags.join(",") + "}";
             }
-        )
-    );
-})
+            return "";
+          })
+        );
+      });
 
-$("#newick_file").on ("change", function (e) {
+      $("#newick_file").on("change", function(e) {
+        var files = e.target.files; // FileList object
 
-    var files = e.target.files; // FileList object
+        if (files.length == 1) {
+          var f = files[0];
+          var reader = new FileReader();
 
-    if (files.length == 1) {
-      var f = files[0];
-      var reader = new FileReader();
-
-      reader.onload = function(e) {
-
+          reader.onload = function(e) {
             var res = e.target.result;
-            var warning_div = d3.select ("#main_display").insert ("div", ":first-child");
+            var warning_div = d3
+              .select("#main_display")
+              .insert("div", ":first-child");
 
             tree = new phylotree.phylotree(res);
             global_tree = tree;
 
             if (!tree["json"]) {
-                warning_div.attr ("class", "alert alert-danger alert-dismissable")
-                            .html ("<strong>Newick parser error for file " + f.name +": </strong> In file " + res["error"]);
-
+              warning_div
+                .attr("class", "alert alert-danger alert-dismissable")
+                .html(
+                  "<strong>Newick parser error for file " +
+                    f.name +
+                    ": </strong> In file " +
+                    res["error"]
+                );
             } else {
-                rendered_tree = tree.render({
-                  container: "#tree_container",
-                  'draw-size-bubbles' : false,
-                  'left-right-spacing' : 'fixed-step',
-                  'node-styler': node_colorizer,
-                  'edge-styler': edge_colorizer
+              tree.render({
+                container: "#tree_container",
+                "draw-size-bubbles": false,
+                "left-right-spacing": "fixed-step",
+                "node-styler": node_colorizer,
+                "edge-styler": edge_colorizer
+              });
+
+              tree.display.selectionLabel(current_selection_name);
+
+              tree.display.countHandler(count => {
+                $("#selected_branch_counter").text(function(d) {
+                  return count[current_selection_name];
                 });
+              });
 
-								rendered_tree.selectionLabel(current_selection_name);
+              // Get selection set names from parsed newick
+              if (tree.parsed_tags.length) {
+                selection_set = tree.parsed_tags;
+              }
 
-								rendered_tree.countHandler (count => {
-												$("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
-										}
-								);
+              update_selection_names();
 
-								// Get selection set names from parsed newick
-								if(tree.parsed_tags.length) {
-									selection_set = tree.parsed_tags;
-								}
+              $("#newick_modal").modal("hide");
 
-                update_selection_names();
-
-                $('#newick_modal').modal('hide');
-
-                $(rendered_tree.container).empty()
-                $(rendered_tree.container).html(rendered_tree.show())
-
+              $(tree.display.container).empty();
+              $(tree.display.container).html(tree.display.show());
             }
-        };
+          };
 
-      $('#newick-dropdown').dropdown('toggle');
-      reader.readAsText(f);
-    }
-});
+          $("#newick-dropdown").dropdown("toggle");
+          reader.readAsText(f);
+        }
+      });
 
+      $("#display_tree").on("click", function(e) {
+        tree.options({ branches: "straight" }, true);
+      });
 
+      $("#mp_label").on("click", function(e) {
+        tree.maxParsimony(true, "Foreground");
+      });
 
+      $("[data-direction]").on("click", function(e) {
+        var which_function =
+          $(this).data("direction") == "vertical"
+            ? tree.display.spacing_x.bind(tree.display)
+            : tree.display.spacing_y.bind(tree.display);
+        which_function(which_function() + +$(this).data("amount")).update();
+      });
 
-$("#display_tree").on ("click", function (e) {
-    tree.options ({'branches' : 'straight'}, true);
-});
+      $(".phylotree-layout-mode").on("click", function(e) {
+        if (tree.display.radial() != ($(this).data("mode") == "radial")) {
+          $(".phylotree-layout-mode").toggleClass("active");
+          tree.display.radial(!tree.display.radial()).update();
+        }
+      });
 
-$("#mp_label").on ("click", function (e) {
-    tree.maxParsimony (true, 'Foreground');
-});
+      $("#toggle_animation").on("click", function(e) {
+        var current_mode = $(this).hasClass("active");
+        $(this).toggleClass("active");
+        tree.options({ transitions: !current_mode });
+      });
 
-$ ("[data-direction]").on ("click", function (e) {
-    var which_function = $(this).data ("direction") == 'vertical' ? tree.display.spacing_x.bind(tree.display) : tree.display.spacing_y.bind(tree.display);
-    which_function (which_function () + (+ $(this).data ("amount"))).update();
-});
+      $(".phylotree-align-toggler").on("click", function(e) {
+        var button_align = $(this).data("align");
+        var tree_align = tree.display.options.alignTips;
 
+        if (tree_align != button_align) {
+          tree.display.alignTips(button_align == "right");
+          $(".phylotree-align-toggler").toggleClass("active");
+          tree.display.update();
+        }
+      });
 
+      function sort_nodes(asc) {
+        tree.resortChildren(function(a, b) {
+          return (b.height - a.height || b.value - a.value) * (asc ? 1 : -1);
+        });
+      }
 
+      $("#sort_original").on("click", function(e) {
+        tree.resortChildren(function(a, b) {
+          return a["original_child_order"] - b["original_child_order"];
+        });
+      });
 
-$(".phylotree-layout-mode").on ("click", function (e) {
+      $("#sort_ascending").on("click", function(e) {
+        sort_nodes(true);
+        tree.display.update();
+      });
 
-    if (rendered_tree.radial () != ($(this).data ("mode") == "radial")) {
-        $('.phylotree-layout-mode').toggleClass('active');
-        rendered_tree.radial(!rendered_tree.radial()).update();
-    }
-});
+      $("#sort_descending").on("click", function(e) {
+        sort_nodes(false);
+        tree.display.update();
+      });
 
+      $("#and_label").on("click", function(e) {
+        tree.display.internalLabel(function(d) {
+          return d.reduce(function(prev, curr) {
+            return curr[current_selection_name] && prev;
+          }, true);
+        }, true);
+      });
 
-$("#toggle_animation").on ("click", function (e) {
-    var current_mode = $(this).hasClass('active');
-    $(this).toggleClass('active');
-    tree.options ({'transitions' : !current_mode} );
-});
+      $("#or_label").on("click", function(e) {
+        tree.display.internalLabel(function(d) {
+          return d.reduce(function(prev, curr) {
+            return curr[current_selection_name] || prev;
+          }, false);
+        }, true);
+      });
 
+      $("#filter_add").on("click", function(e) {
+        tree.display
+          .modifySelection(function(d) {
+            return d.tag || d[current_selection_name];
+          })
+          .modifySelection(
+            function(d) {
+              return false;
+            },
+            "tag",
+            false,
+            false
+          );
+      });
 
-$(".phylotree-align-toggler").on ("click", function (e) {
+      $("#filter_remove").on("click", function(e) {
+        tree.display.modifySelection(function(d) {
+          return !d.tag;
+        });
+      });
 
-  var button_align = $(this).data ("align");
-  var tree_align = rendered_tree.options.alignTips;
+      $("#select_all").on("click", function(e) {
+        tree.display.modifySelection(function(d) {
+          return true;
+        });
+      });
 
-  if (tree_align != button_align) {
-      rendered_tree.alignTips(button_align == "right");
-      $('.phylotree-align-toggler').toggleClass('active');
-      rendered_tree.update();
-  }
-});
+      $("#select_all_internal").on("click", function(e) {
+        tree.display.modifySelection(function(d) {
+          return !tree.isLeafNode(d.target);
+        });
+      });
 
+      $("#select_all_leaves").on("click", function(e) {
+        tree.display.modifySelection(function(d) {
+          return tree.isLeafNode(d.target);
+        });
+      });
 
+      $("#select_none").on("click", function(e) {
+        tree.display.modifySelection(function(d) {
+          return false;
+        });
+      });
 
+      $("#clear_internal").on("click", function(e) {
+        tree.display.modifySelection(function(d) {
+          return tree.isLeafNode(d.target)
+            ? d.target[current_selection_name]
+            : false;
+        });
+      });
 
+      $("#clear_leaves").on("click", function(e) {
+        tree.display.modifySelection(function(d) {
+          return !tree.isLeafNode(d.target)
+            ? d.target[current_selection_name]
+            : false;
+        });
+      });
 
-function sort_nodes (asc) {
+      $("#display_dengrogram").on("click", function(e) {
+        tree.display.options({ branches: "step" }, true);
+      });
 
-    tree.resortChildren (
-      function(a, b) { return (b.height - a.height || b.value - a.value) * (asc ? 1 : -1); }
-    );
+      $("#branch_filter").on("input propertychange", function(e) {
+        var filter_value = $(this).val();
 
-}
+        var rx = new RegExp(filter_value, "i");
 
-$("#sort_original").on ("click", function (e) {
-    tree.resortChildren (function (a,b) {
-        return a["original_child_order"] - b["original_child_order"];
-    });
-});
+        tree.display.modifySelection(n => {
+          if (!n.target.data.name) {
+            return false;
+          }
+          m = n.target.data.name.search(rx);
+          return filter_value.length && m != -1;
+        }, "tag");
+      });
 
-$("#sort_ascending").on ("click", function (e) {
-    sort_nodes (true);
-    rendered_tree.update();
-});
+      $("#validate_newick").on("click", function(e) {
+        let test_string = $('textarea[id$="nwk_spec"]').val();
 
-$("#sort_descending").on ("click", function (e) {
-    sort_nodes (false);
-    rendered_tree.update();
-});
+        tree = new phylotree.phylotree(test_string);
+        global_tree = tree;
 
-$("#and_label").on ("click", function (e) {
-    rendered_tree.internalLabel (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] && prev; }, true)}, true);
-});
+        if (!tree["json"]) {
+          var warning_div = d3
+            .select("#newick_body")
+            .selectAll("div  .alert-danger")
+            .data([res["error"]]);
+          warning_div.enter().append("div");
+          warning_div
+            .html(function(d) {
+              return d;
+            })
+            .attr("class", "alert-danger");
+        } else {
+          tree.render({
+            container: "#tree_container",
+            "draw-size-bubbles": false,
+            "node-styler": node_colorizer,
+            zoom: false,
+            "edge-styler": edge_colorizer
+          });
 
-$("#or_label").on ("click", function (e) {
-    rendered_tree.internalLabel (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] || prev; }, false)}, true);
-});
+          tree.display.selectionLabel(current_selection_name);
 
-$("#filter_add").on ("click", function (e) {
-    rendered_tree.modifySelection(function (d) { return d.tag || d[current_selection_name];} )
-        .modifySelection(function (d) { return false; }, "tag", false, false);
-});
+          tree.display.countHandler(count => {
+            $("#selected_branch_counter").text(function(d) {
+              return count[current_selection_name];
+            });
+          });
 
-$("#filter_remove").on ("click", function (e) {
-    rendered_tree.modifySelection(function (d) { return !d.tag;});
-});
+          // Get selection set names from parsed newick
+          if (tree.parsed_tags.length) {
+            selection_set = tree.parsed_tags;
+          }
 
-$("#select_all").on ("click", function (e) {
-    rendered_tree.modifySelection (function (d) { return true;});
-});
+          update_selection_names();
 
-$("#select_all_internal").on ("click", function (e) {
-    rendered_tree.modifySelection (function (d) { return !tree.isLeafNode (d.target);});
-});
+          $("#newick_modal").modal("hide");
+          $(tree.display.container).html(tree.display.show());
+        }
+      });
 
-$("#select_all_leaves").on ("click", function (e) {
-    rendered_tree.modifySelection (function (d) { return tree.isLeafNode (d.target);});
-});
+      function default_tree_settings() {
+        tree = phylotree();
+        tree.branchLength(null);
+        tree.branchName(null);
+        tree.display.radial(false).separation(function(a, b) {
+          return 0;
+        });
+      }
 
+      function node_colorizer(element, data) {
+        try {
+          var count_class = 0;
 
-$("#select_none").on ("click", function (e) {
-    rendered_tree.modifySelection (function (d) { return false;});
-});
+          selection_set.forEach(function(d, i) {
+            if (data[d]) {
+              count_class++;
+              element.style(
+                "fill",
+                color_scheme(i),
+                i == current_selection_id ? "important" : null
+              );
+            }
+          });
 
-$("#clear_internal").on ("click", function (e) {
-    rendered_tree.modifySelection (function (d) { return tree.isLeafNode (d.target) ? d.target[current_selection_name] : false;});
-});
+          if (count_class > 1) {
+          } else {
+            if (count_class == 0) {
+              element.style("fill", null);
+            }
+          }
+        } catch (e) {}
+      }
 
-$("#clear_leaves").on ("click", function (e) {
-    rendered_tree.modifySelection (function (d) { return !tree.isLeafNode (d.target) ? d.target[current_selection_name] : false;});
-});
+      function edge_colorizer(element, data) {
 
+        try {
+          var count_class = 0;
 
-$("#display_dengrogram").on ("click", function (e) {
-    rendered_tree.options ({'branches' : 'step'}, true);
-});
+          selection_set.forEach(function(d, i) {
+            if (data[d]) {
+              count_class++;
+              element.style(
+                "stroke",
+                color_scheme(i),
+                i == current_selection_id ? "important" : null
+              );
+            }
+          });
 
-$("#branch_filter").on ("input propertychange", function (e) {
-   var filter_value = $(this).val();
+          if (count_class > 1) {
+            element.classed("branch-multiple", true);
+          } else if (count_class == 0) {
+            element.style("stroke", null).classed("branch-multiple", false);
+          }
+        } catch (e) {}
+      }
 
-   var rx = new RegExp (filter_value,"i");
+      var valid_id = new RegExp("^[\\w]+$");
 
-   rendered_tree.modifySelection (n => {
-     if(!n.target.data.name) {
-       return false;
-     }
-      m = n.target.data.name.search (rx)
-      return filter_value.length && m != -1;
-   },"tag");
+      $("#selection_name_box").on("input propertychange", function(e) {
+        var name = $(this).val();
 
-});
+        var accept_name =
+          selection_set.indexOf(name) < 0 && valid_id.exec(name);
 
-$("#validate_newick").on ("click", function (e) {
+        d3.select("#save_selection_button").classed(
+          "disabled",
+          accept_name ? null : true
+        );
+      });
 
-    let test_string = $('textarea[id$="nwk_spec"]').val()
+      $("#selection_rename").on("click", function(e) {
+        d3.select("#save_selection_button")
+          .classed("disabled", true)
+          .on("click", function(e) {
+            // save selection handler
+            var old_selection_name = current_selection_name;
+            selection_set[current_selection_id] = current_selection_name = $(
+              "#selection_name_box"
+            ).val();
 
-    tree = new phylotree.phylotree(test_string);
-    global_tree = tree;
+            if (old_selection_name != current_selection_name) {
+              tree.update_key_name(old_selection_name, current_selection_name);
+              update_selection_names(current_selection_id);
+            }
+            send_click_event_to_menu_objects(
+              new CustomEvent(selection_menu_element_action, {
+                detail: ["save", this]
+              })
+            );
+          });
 
-    if (!tree["json"]) {
-        var warning_div = d3.select ("#newick_body").selectAll ("div  .alert-danger").data ([res["error"]])
-        warning_div.enter ().append ("div");
-        warning_div.html (function (d) {return d;}).attr ("class", "alert-danger");
+        d3.select("#cancel_selection_button")
+          .classed("disabled", false)
+          .on("click", function(e) {
+            // save selection handler
+            $("#selection_name_box").val(current_selection_name);
+            send_click_event_to_menu_objects(
+              new CustomEvent(selection_menu_element_action, {
+                detail: ["cancel", this]
+              })
+            );
+          });
 
-    } else {
+        send_click_event_to_menu_objects(
+          new CustomEvent(selection_menu_element_action, {
+            detail: ["rename", this]
+          })
+        );
+        e.preventDefault();
+      });
 
-        rendered_tree = tree.render({
-          container: "#tree_container",
-          'draw-size-bubbles' : false,
-          'node-styler': node_colorizer,
-          'zoom': false,
-          'edge-styler': edge_colorizer
+      $("#selection_delete").on("click", function(e) {
+        tree.display.updateKeyName(selection_set[current_selection_id], null);
+        selection_set.splice(current_selection_id, 1);
+
+        if (current_selection_id > 0) {
+          current_selection_id--;
+        }
+        current_selection_name = selection_set[current_selection_id];
+        update_selection_names(current_selection_id);
+        $("#selection_name_box").val(current_selection_name);
+
+        send_click_event_to_menu_objects(
+          new CustomEvent(selection_menu_element_action, {
+            detail: ["save", this]
+          })
+        );
+        e.preventDefault();
+      });
+
+      $("#selection_new").on("click", function(e) {
+        d3.select("#save_selection_button")
+          .classed("disabled", true)
+          .on("click", function(e) {
+            // save selection handler
+            current_selection_name = $("#selection_name_box").val();
+            current_selection_id = selection_set.length;
+            selection_set.push(current_selection_name);
+            update_selection_names(current_selection_id);
+            send_click_event_to_menu_objects(
+              new CustomEvent(selection_menu_element_action, {
+                detail: ["save", this]
+              })
+            );
+          });
+
+        d3.select("#cancel_selection_button")
+          .classed("disabled", false)
+          .on("click", function(e) {
+            // save selection handler
+            $("#selection_name_box").val(current_selection_name);
+            send_click_event_to_menu_objects(
+              new CustomEvent(selection_menu_element_action, {
+                detail: ["cancel", this]
+              })
+            );
+          });
+
+        send_click_event_to_menu_objects(
+          new CustomEvent(selection_menu_element_action, {
+            detail: ["new", this]
+          })
+        );
+        e.preventDefault();
+      });
+
+      function send_click_event_to_menu_objects(e) {
+        $(
+          "#selection_new, #selection_delete, #selection_rename, #save_selection_name, #selection_name_box, #selection_name_dropdown"
+        )
+          .get()
+          .forEach(function(d) {
+            d.dispatchEvent(e);
+          });
+      }
+
+      function update_selection_names(id, skip_rebuild) {
+        skip_rebuild = skip_rebuild || false;
+        id = id || 0;
+
+        current_selection_name = selection_set[id];
+        current_selection_id = id;
+
+        if (!skip_rebuild) {
+          d3.selectAll(".selection_set").remove();
+
+          d3.select("#selection_name_dropdown")
+            .selectAll(".selection_set")
+            .data(selection_set)
+            .enter()
+            .append("a")
+            .attr("class", "selection_set dropdown-item")
+            .attr("href", "#")
+            .text(function(d) {
+              return d;
+            })
+            .style("color", function(d, i) {
+              return color_scheme(i);
+            })
+            .on("click", function(d, i) {
+              update_selection_names(i, true);
+            });
+        }
+
+        d3.select("#selection_name_box")
+          .style("color", color_scheme(id))
+          .property("value", current_selection_name);
+
+        // Loop through all selection_sets
+        _.each(selection_set, function(id) {
+          tree.display.selectionLabel(id);
+          tree.display.update();
         });
 
-        rendered_tree.selectionLabel (current_selection_name);
+        tree.display.selectionLabel(selection_set[id]);
+        tree.display.update();
+      }
 
-        rendered_tree.countHandler (count => {
-                $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
+      var width = 800, //$(container_id).width(),
+        height = 800, //$(container_id).height()
+        selection_set = ["Foreground"],
+        current_selection_name = $("#selection_name_box").val(),
+        current_selection_id = 0,
+        max_selections = 10;
+      (color_scheme = d3.scaleOrdinal(d3.schemeCategory10)),
+        (selection_menu_element_action = "phylotree_menu_element_action");
+
+      var test_string =
+        "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)myroot";
+      var container_id = "#tree_container";
+
+      //var tree = phylotree.phylotree(test_string);
+      //.size([height, width]);
+
+      //window.setInterval (function () {});
+
+      var example_controls = d3.select("#controls_form").append("form");
+
+      //var svg = d3.select(container_id).append("svg")
+      //    .attr("width", width)
+      //    .attr("height", height);
+
+      function selection_handler_name_box(e) {
+        var name_box = d3.select(this);
+        switch (e.detail[0]) {
+          case "save":
+          case "cancel":
+            name_box
+              .property("disabled", true)
+              .style("color", color_scheme(current_selection_id));
+
+            break;
+          case "new":
+            name_box
+              .property("disabled", false)
+              .property("value", "new_selection_name")
+              .style("color", color_scheme(selection_set.length));
+            break;
+          case "rename":
+            name_box.property("disabled", false);
+            break;
+        }
+      }
+
+      function selection_handler_new(e) {
+        var element = d3.select(this);
+        $(this).data("tooltip", false);
+        switch (e.detail[0]) {
+          case "save":
+          case "cancel":
+            if (selection_set.length == max_selections) {
+              element.classed("disabled", true);
+              $(this).tooltip({
+                title: "Up to " + max_selections + " are allowed",
+                placement: "left"
+              });
+            } else {
+              element.classed("disabled", null);
             }
+            break;
+          default:
+            element.classed("disabled", true);
+            break;
+        }
+      }
+
+      function selection_handler_rename(e) {
+        var element = d3.select(this);
+        element.classed(
+          "disabled",
+          e.detail[0] == "save" || e.detail[0] == "cancel" ? null : true
         );
+      }
+
+      function selection_handler_save_selection_name(e) {
+        var element = d3.select(this);
+        element.style(
+          "display",
+          e.detail[0] == "save" || e.detail[0] == "cancel" ? "none" : null
+        );
+      }
+
+      function selection_handler_name_dropdown(e) {
+        var element = d3.select(this).selectAll(".selection_set");
+        element.classed(
+          "disabled",
+          e.detail[0] == "save" || e.detail[0] == "cancel" ? null : true
+        );
+      }
+
+      function selection_handler_delete(e) {
+        var element = d3.select(this);
+        $(this).tooltip("dispose");
+        switch (e.detail[0]) {
+          case "save":
+          case "cancel":
+            if (selection_set.length == 1) {
+              element.classed("disabled", true);
+              $(this).tooltip({
+                title:
+                  "At least one named selection set <br> is required;<br>it can be empty, however",
+                placement: "bottom",
+                html: true
+              });
+            } else {
+              element.classed("disabled", null);
+            }
+            break;
+          default:
+            element.classed("disabled", true);
+            break;
+        }
+      }
+
+      var datamonkey_save_image = function(type, container) {
+        var prefix = {
+          xmlns: "http://www.w3.org/2000/xmlns/",
+          xlink: "http://www.w3.org/1999/xlink",
+          svg: "http://www.w3.org/2000/svg"
+        };
+
+        function get_styles(doc) {
+          function process_stylesheet(ss) {
+            try {
+              if (ss.cssRules) {
+                for (var i = 0; i < ss.cssRules.length; i++) {
+                  var rule = ss.cssRules[i];
+                  if (rule.type === 3) {
+                    // Import Rule
+                    process_stylesheet(rule.styleSheet);
+                  } else {
+                    // hack for illustrator crashing on descendent selectors
+                    if (rule.selectorText) {
+                      if (rule.selectorText.indexOf(">") === -1) {
+                        styles += "\n" + rule.cssText;
+                      }
+                    }
+                  }
+                }
+              }
+            } catch (e) {
+              console.log("Could not process stylesheet : " + ss); // eslint-disable-line
+            }
+          }
+
+          var styles = "",
+            styleSheets = doc.styleSheets;
+
+          if (styleSheets) {
+            for (var i = 0; i < styleSheets.length; i++) {
+              process_stylesheet(styleSheets[i]);
+            }
+          }
+
+          return styles;
+        }
+
+        var svg = $(container).find("svg")[0];
+        if (!svg) {
+          svg = $(container)[0];
+        }
+
+        var styles = get_styles(window.document);
+
+        svg.setAttribute("version", "1.1");
+
+        var defsEl = document.createElement("defs");
+        svg.insertBefore(defsEl, svg.firstChild);
+
+        var styleEl = document.createElement("style");
+        defsEl.appendChild(styleEl);
+        styleEl.setAttribute("type", "text/css");
+
+        // removing attributes so they aren't doubled up
+        svg.removeAttribute("xmlns");
+        svg.removeAttribute("xlink");
+
+        // These are needed for the svg
+        if (!svg.hasAttributeNS(prefix.xmlns, "xmlns")) {
+          svg.setAttributeNS(prefix.xmlns, "xmlns", prefix.svg);
+        }
+
+        if (!svg.hasAttributeNS(prefix.xmlns, "xmlns:xlink")) {
+          svg.setAttributeNS(prefix.xmlns, "xmlns:xlink", prefix.xlink);
+        }
+
+        var source = new XMLSerializer()
+          .serializeToString(svg)
+          .replace("</style>", "<![CDATA[" + styles + "]]></style>");
+        var doctype =
+          '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+        var to_download = [doctype + source];
+        var image_string =
+          "data:image/svg+xml;base66," + encodeURIComponent(to_download);
+
+        if (navigator.msSaveBlob) {
+          // IE10
+          download(image_string, "image.svg", "image/svg+xml");
+        } else if (type == "png") {
+          b64toBlob(
+            image_string,
+            function(blob) {
+              var url = window.URL.createObjectURL(blob);
+              var pom = document.createElement("a");
+              pom.setAttribute("download", "image.png");
+              pom.setAttribute("href", url);
+              $("body").append(pom);
+              pom.click();
+              pom.remove();
+            },
+            function(error) {
+              console.log(error); // eslint-disable-line
+            }
+          );
+        } else {
+          var pom = document.createElement("a");
+          pom.setAttribute("download", "image.svg");
+          pom.setAttribute("href", image_string);
+          $("body").append(pom);
+          pom.click();
+          pom.remove();
+        }
+      };
+
+      $(document).ready(function() {
+        tree = new phylotree.phylotree(test_string);
+        global_tree = tree;
+
+        tree.render({
+          container: "#tree_container",
+          "draw-size-bubbles": false,
+          "node-styler": node_colorizer,
+          zoom: false,
+          "edge-styler": edge_colorizer
+        });
+
+        $('#tree_container').on('reroot', function (e) {  
+          update_selection_names();
+        });
+
+        tree.display.selectionLabel(current_selection_name);
+
+        tree.display.countHandler(count => {
+          $("#selected_branch_counter").text(function(d) {
+            return count[current_selection_name];
+          });
+        });
 
         // Get selection set names from parsed newick
-        if(tree.parsed_tags.length) {
+        if (tree.parsed_tags.length) {
           selection_set = tree.parsed_tags;
         }
 
+        // Until a cleaner solution to supporting both Observable and regular HTML
+        $(tree.display.container).append(tree.display.show());
+
+        $("#selection_new")
+          .get(0)
+          .addEventListener(
+            selection_menu_element_action,
+            selection_handler_new,
+            false
+          );
+        $("#selection_rename")
+          .get(0)
+          .addEventListener(
+            selection_menu_element_action,
+            selection_handler_rename,
+            false
+          );
+        $("#selection_delete")
+          .get(0)
+          .addEventListener(
+            selection_menu_element_action,
+            selection_handler_delete,
+            false
+          );
+        $("#selection_delete")
+          .get(0)
+          .dispatchEvent(
+            new CustomEvent(selection_menu_element_action, {
+              detail: ["cancel", null]
+            })
+          );
+        $("#selection_name_box")
+          .get(0)
+          .addEventListener(
+            selection_menu_element_action,
+            selection_handler_name_box,
+            false
+          );
+        $("#save_selection_name")
+          .get(0)
+          .addEventListener(
+            selection_menu_element_action,
+            selection_handler_save_selection_name,
+            false
+          );
+        $("#selection_name_dropdown")
+          .get(0)
+          .addEventListener(
+            selection_menu_element_action,
+            selection_handler_name_dropdown,
+            false
+          );
+
         update_selection_names();
 
-        $('#newick_modal').modal('hide');
-        $(rendered_tree.container).html(rendered_tree.show())
-    }
-
-});
-
-function default_tree_settings () {
-    tree = phylotree();
-    tree.branchLength (null);
-    tree.branchName (null);
-    rendered_tree.radial (false).separation (function (a,b) {return 0;})
-}
-
-function node_colorizer (element, data) {
-
-try{
-
-   var count_class = 0;
-
-    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("fill", color_scheme(i), i == current_selection_id ?  "important" : null);}});
-
-    if (count_class > 1) {
-
-    } else {
-        if (count_class == 0) {
-            element.style ("fill", null);
-       }
-    }
-
-}
-catch (e) {
-}
-
-}
-
-function edge_colorizer (element, data) {
-try {
-    var count_class = 0;
-
-    selection_set.forEach (function (d,i) { if (data[d]) {count_class ++; element.style ("stroke", color_scheme(i), i == current_selection_id ?  "important" : null);}});
-
-    if (count_class > 1) {
-        element.classed ("branch-multiple", true);
-    } else
-    if (count_class == 0) {
-             element.style ("stroke", null)
-                   .classed ("branch-multiple", false);
-    }
-}
-catch (e) {
-}
-
-}
-
-var valid_id = new RegExp ("^[\\w]+$");
-
-$("#selection_name_box").on ("input propertychange", function (e) {
-
-   var name = $(this).val();
-
-   var accept_name = (selection_set.indexOf (name) < 0) &&
-                     valid_id.exec (name);
-
-   d3.select ("#save_selection_button").classed("disabled", accept_name ? null : true );
-
-});
-
-$("#selection_rename").on ("click", function (e) {
-
-    d3.select ("#save_selection_button")
-           .classed ("disabled",true)
-           .on ("click", function (e) { // save selection handler
-                var old_selection_name = current_selection_name;
-                selection_set[current_selection_id] = current_selection_name = $("#selection_name_box").val();
-
-                if (old_selection_name != current_selection_name) {
-                    tree.update_key_name (old_selection_name, current_selection_name);
-                    update_selection_names (current_selection_id);
-                }
-                send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
-                             {'detail' : ['save', this]}));
-           });
-
-    d3.select ("#cancel_selection_button")
-               .classed ("disabled",false)
-               .on ("click", function (e) { // save selection handler
-                    $("#selection_name_box").val(current_selection_name);
-                    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
-                                 {'detail' : ['cancel', this]}));
-              });
-
-    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
-                                 {'detail' : ['rename', this]}));
-    e.preventDefault    ();
-
-});
-
-$("#selection_delete").on ("click", function (e) {
-
-    rendered_tree.updateKeyName (selection_set[current_selection_id], null)
-    selection_set.splice (current_selection_id, 1);
-
-    if (current_selection_id > 0) {
-        current_selection_id --;
-    }
-    current_selection_name = selection_set[current_selection_id];
-    update_selection_names (current_selection_id)
-    $("#selection_name_box").val(current_selection_name)
-
-
-    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
-                                 {'detail' : ['save', this]}));
-    e.preventDefault    ();
-
-});
-
-$("#selection_new").on ("click", function (e) {
-
-    d3.select ("#save_selection_button")
-               .classed ("disabled",true)
-               .on ("click", function (e) { // save selection handler
-                    current_selection_name = $("#selection_name_box").val();
-                    current_selection_id = selection_set.length;
-                    selection_set.push (current_selection_name);
-                    update_selection_names (current_selection_id);
-                    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
-                                 {'detail' : ['save', this]}));
-              });
-
-     d3.select ("#cancel_selection_button")
-               .classed ("disabled",false)
-               .on ("click", function (e) { // save selection handler
-                    $("#selection_name_box").val(current_selection_name);
-                    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
-                                 {'detail' : ['cancel', this]}));
-              });
-
-    send_click_event_to_menu_objects (new CustomEvent (selection_menu_element_action,
-                                 {'detail' : ['new', this]}));
-    e.preventDefault    ();
-
-});
-
-function send_click_event_to_menu_objects (e) {
-    $("#selection_new, #selection_delete, #selection_rename, #save_selection_name, #selection_name_box, #selection_name_dropdown").get().forEach (
-        function (d) {
-            d.dispatchEvent (e);
-        }
-    );
-}
-
-function update_selection_names (id, skip_rebuild) {
-
-    skip_rebuild = skip_rebuild || false;
-    id = id || 0;
-
-    current_selection_name = selection_set[id];
-    current_selection_id = id;
-
-    if (!skip_rebuild) {
-        d3.selectAll (".selection_set").remove();
-
-        d3.select ("#selection_name_dropdown")
-          .selectAll (".selection_set")
-          .data (selection_set)
-          .enter()
-          .append ("a")
-          .attr ("class", "selection_set dropdown-item")
-          .attr ("href", "#")
-          .text (function (d) { return d;})
-          .style ("color", function (d,i) {return color_scheme(i);})
-          .on ("click", function (d,i) {update_selection_names (i,true);});
-
-    }
-
-
-    d3.select ("#selection_name_box")
-      .style ("color",  color_scheme(id))
-      .property ("value", current_selection_name);
-
-		// Loop through all selection_sets
-		_.each(selection_set, function(id) {
-			rendered_tree.selectionLabel(id);
-			rendered_tree.update();
-		})	
-
-		rendered_tree.selectionLabel(selection_set[id]);
-		rendered_tree.update();
-}
-
-var width  = 800, //$(container_id).width(),
-    height = 800, //$(container_id).height()
-    selection_set = ['Foreground'],
-    current_selection_name = $("#selection_name_box").val(),
-    current_selection_id = 0,
-    max_selections       = 10;
-    color_scheme = d3.scaleOrdinal(d3.schemeCategory10),
-    selection_menu_element_action = "phylotree_menu_element_action";
-
-var test_string = "(((EELA:0.150276,CONGERA:0.213019):0.230956,(EELB:0.263487,CONGERB:0.202633):0.246917):0.094785,((CAVEFISH:0.451027,(GOLDFISH:0.340495,ZEBRAFISH:0.390163):0.220565):0.067778,((((((NSAM:0.008113,NARG:0.014065):0.052991,SPUN:0.061003,(SMIC:0.027806,SDIA:0.015298,SXAN:0.046873):0.046977):0.009822,(NAUR:0.081298,(SSPI:0.023876,STIE:0.013652):0.058179):0.091775):0.073346,(MVIO:0.012271,MBER:0.039798):0.178835):0.147992,((BFNKILLIFISH:0.317455,(ONIL:0.029217,XCAU:0.084388):0.201166):0.055908,THORNYHEAD:0.252481):0.061905):0.157214,LAMPFISH:0.717196,((SCABBARDA:0.189684,SCABBARDB:0.362015):0.282263,((VIPERFISH:0.318217,BLACKDRAGON:0.109912):0.123642,LOOSEJAW:0.397100):0.287152):0.140663):0.206729):0.222485,(COELACANTH:0.558103,((CLAWEDFROG:0.441842,SALAMANDER:0.299607):0.135307,((CHAMELEON:0.771665,((PIGEON:0.150909,CHICKEN:0.172733):0.082163,ZEBRAFINCH:0.099172):0.272338):0.014055,((BOVINE:0.167569,DOLPHIN:0.157450):0.104783,ELEPHANT:0.166557):0.367205):0.050892):0.114731):0.295021)myroot";
-var container_id = '#tree_container';
-
-//var tree = phylotree.phylotree(test_string);
-            //.size([height, width]);
-
-//window.setInterval (function () {});
-
-var example_controls = d3.select ("#controls_form").append ("form");
-
-//var svg = d3.select(container_id).append("svg")
-//    .attr("width", width)
-//    .attr("height", height);
-    
-
-
-
-function selection_handler_name_box (e) {
-    var name_box = d3.select (this);
-     switch (e.detail[0]) {
-        case 'save':
-        case 'cancel':
-            name_box.property ("disabled", true)
-                    .style ("color",  color_scheme(current_selection_id));
-
-            break;
-        case 'new':
-            name_box.property ("disabled", false)
-                    .property ("value", "new_selection_name")
-                    .style ("color",  color_scheme(selection_set.length));
-            break;
-        case 'rename':
-           name_box.property ("disabled", false);
-           break;
-    }
-
-}
-
-function selection_handler_new (e) {
-    var element = d3.select (this);
-    $(this).data('tooltip', false);
-    switch (e.detail[0]) {
-        case 'save':
-        case 'cancel':
-            if (selection_set.length == max_selections) {
-                element.classed ("disabled", true);
-                    $(this).tooltip ({'title' : 'Up to ' + max_selections + ' are allowed', 'placement' : 'left'});
-            } else {
-                element.classed ("disabled", null);
-            }
-            break;
-        default:
-            element.classed ("disabled", true);
-            break;
-
-    }
-}
-
-function selection_handler_rename (e) {
-    var element = d3.select (this);
-    element.classed ("disabled", (e.detail[0] == "save" || e.detail[0] == "cancel") ? null : true);
-}
-
-function selection_handler_save_selection_name (e) {
-    var element = d3.select (this);
-    element.style ("display", (e.detail[0] == "save" || e.detail[0] == "cancel") ? "none" : null);
-}
-
-function selection_handler_name_dropdown (e) {
-    var element = d3.select (this).selectAll (".selection_set");
-    element.classed ("disabled", (e.detail[0] == "save" || e.detail[0] == "cancel") ? null : true);
-}
-
-function selection_handler_delete (e) {
-    var element = d3.select (this);
-    $(this).tooltip('dispose');
-    switch (e.detail[0]) {
-        case 'save':
-        case 'cancel':
-            if (selection_set.length == 1) {
-                element.classed ("disabled", true);
-                    $(this).tooltip ({'title' : 'At least one named selection set <br> is required;<br>it can be empty, however', 'placement' : 'bottom', 'html': true});
-            } else {
-                element.classed ("disabled", null);
-            }
-            break;
-        default:
-            element.classed ("disabled", true);
-            break;
-
-  }
-}
-
-var datamonkey_save_image = function(type, container) {
-  var prefix = {
-    xmlns: "http://www.w3.org/2000/xmlns/",
-    xlink: "http://www.w3.org/1999/xlink",
-    svg: "http://www.w3.org/2000/svg"
-  };
-
-  function get_styles(doc) {
-    function process_stylesheet(ss) {
-      try {
-        if (ss.cssRules) {
-          for (var i = 0; i < ss.cssRules.length; i++) {
-            var rule = ss.cssRules[i];
-            if (rule.type === 3) {
-              // Import Rule
-              process_stylesheet(rule.styleSheet);
-            } else {
-              // hack for illustrator crashing on descendent selectors
-              if (rule.selectorText) {
-                if (rule.selectorText.indexOf(">") === -1) {
-                  styles += "\n" + rule.cssText;
-                }
-              }
-            }
-          }
-        }
-      } catch (e) {
-        console.log("Could not process stylesheet : " + ss); // eslint-disable-line
-      }
-    }
-
-    var styles = "",
-      styleSheets = doc.styleSheets;
-
-    if (styleSheets) {
-      for (var i = 0; i < styleSheets.length; i++) {
-        process_stylesheet(styleSheets[i]);
-      }
-    }
-
-    return styles;
-  }
-
-  var svg = $(container).find("svg")[0];
-  if (!svg) {
-    svg = $(container)[0];
-  }
-
-  var styles = get_styles(window.document);
-
-  svg.setAttribute("version", "1.1");
-
-  var defsEl = document.createElement("defs");
-  svg.insertBefore(defsEl, svg.firstChild);
-
-  var styleEl = document.createElement("style");
-  defsEl.appendChild(styleEl);
-  styleEl.setAttribute("type", "text/css");
-
-  // removing attributes so they aren't doubled up
-  svg.removeAttribute("xmlns");
-  svg.removeAttribute("xlink");
-
-  // These are needed for the svg
-  if (!svg.hasAttributeNS(prefix.xmlns, "xmlns")) {
-    svg.setAttributeNS(prefix.xmlns, "xmlns", prefix.svg);
-  }
-
-  if (!svg.hasAttributeNS(prefix.xmlns, "xmlns:xlink")) {
-    svg.setAttributeNS(prefix.xmlns, "xmlns:xlink", prefix.xlink);
-  }
-
-  var source = new XMLSerializer()
-    .serializeToString(svg)
-    .replace("</style>", "<![CDATA[" + styles + "]]></style>");
-  var doctype =
-    '<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
-  var to_download = [doctype + source];
-  var image_string =
-    "data:image/svg+xml;base66," + encodeURIComponent(to_download);
-
-  if (navigator.msSaveBlob) {
-    // IE10
-    download(image_string, "image.svg", "image/svg+xml");
-  } else if (type == "png") {
-    b64toBlob(
-      image_string,
-      function(blob) {
-        var url = window.URL.createObjectURL(blob);
-        var pom = document.createElement("a");
-        pom.setAttribute("download", "image.png");
-        pom.setAttribute("href", url);
-        $("body").append(pom);
-        pom.click();
-        pom.remove();
-      },
-      function(error) {
-        console.log(error); // eslint-disable-line
-      }
-    );
-  } else {
-    var pom = document.createElement("a");
-    pom.setAttribute("download", "image.svg");
-    pom.setAttribute("href", image_string);
-    $("body").append(pom);
-    pom.click();
-    pom.remove();
-  }
-};
-
-
-$( document ).ready( function () {
-
-    tree = new phylotree.phylotree(test_string);
-    global_tree = tree;
-
-    rendered_tree = tree.render({
-      container: "#tree_container",
-      'draw-size-bubbles' : false,
-      'node-styler': node_colorizer,
-      'zoom': false,
-      'edge-styler': edge_colorizer
-    });
-
-    rendered_tree.selectionLabel (current_selection_name);
-
-    rendered_tree.countHandler (count => {
-            $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
-        }
-    );
-
-    // Get selection set names from parsed newick
-    if(tree.parsed_tags.length) {
-      selection_set = tree.parsed_tags;
-    }
-
-    // Until a cleaner solution to supporting both Observable and regular HTML
-    $(rendered_tree.container).append(rendered_tree.show())
-
-    $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
-    $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
-    $("#selection_delete").get(0).addEventListener(selection_menu_element_action,selection_handler_delete,false);
-    $("#selection_delete").get(0).dispatchEvent (new CustomEvent (selection_menu_element_action,
-                                 {'detail' : ['cancel', null]}));
-    $("#selection_name_box").get(0).addEventListener(selection_menu_element_action,selection_handler_name_box,false);
-    $("#save_selection_name").get(0).addEventListener(selection_menu_element_action,selection_handler_save_selection_name,false);
-    $("#selection_name_dropdown").get(0).addEventListener(selection_menu_element_action,selection_handler_name_dropdown,false);
-    update_selection_names();
-
-   $("#save_image").on ("click", function (e) {
-			datamonkey_save_image('svg', "#tree_container");
-    });
-
-
-
-});
-
-</script>
-
-<script>
-
-    var _warn = console.warn;
-
-    console.warn = function() {
-        if(arguments[0].includes('Phylotree User Warning')) {
-                var warning_div = d3.select ("#main_display").insert ("div", ":first-child");
-                warning_div.attr ("class", "alert alert-danger alert-dismissable")
-                            .html (arguments[0]);
+        $("#save_image").on("click", function(e) {
+          datamonkey_save_image("svg", "#tree_container");
+        });
+      });
+    </script>
+
+    <script>
+      var _warn = console.warn;
+
+      console.warn = function() {
+        if (arguments[0].includes("Phylotree User Warning")) {
+          var warning_div = d3
+            .select("#main_display")
+            .insert("div", ":first-child");
+          warning_div
+            .attr("class", "alert alert-danger alert-dismissable")
+            .html(arguments[0]);
         }
         return _warn.apply(console, arguments);
-    };
-
-
-</script>
-
-</body>
+      };
+    </script>
+  </body>
 </html>

@@ -61,7 +61,9 @@ export function reroot(node, fraction) {
       new_json.children.push(current_node);
 
       while (current_node.parent) {
+
         remove_idx = current_node.children.indexOf(remove_me);
+
         if (current_node.parent.parent) {
           current_node.children.splice(remove_idx, 1, current_node.parent);
         } else {
@@ -74,26 +76,35 @@ export function reroot(node, fraction) {
           current_node.parent.data.__mapped_bl = stashed_bl;
           stashed_bl = t;
         }
+
         remove_me = current_node;
         current_node = current_node.parent;
       }
+
       remove_idx = current_node.children.indexOf(remove_me);
       current_node.children.splice(remove_idx, 1);
+
     } else {
+
       remove_idx = current_node.children.indexOf(remove_me);
       current_node.children.splice(remove_idx, 1);
       stashed_bl = current_node.data.__mapped_bl;
       remove_me = new_json;
+
     }
 
     // current_node is now old root, and remove_me is the root child we came up
     // the tree through
     if (current_node.children.length == 1) {
+
       if (stashed_bl) {
         current_node.children[0].data.__mapped_bl += stashed_bl;
       }
+
       remove_me.children = remove_me.children.concat(current_node.children);
+
     } else {
+
       let new_node = new d3.hierarchy({ name: "__reroot_top_clade", __mapped_bl: stashed_bl });
       _.extendOwn (new_json.children[0], node);
       new_node.data.__mapped_bl = stashed_bl;
@@ -104,7 +115,8 @@ export function reroot(node, fraction) {
 
       new_node.parent = remove_me;
       remove_me.children.push(new_node);
-     }
+
+   }
 
   }
 
@@ -117,13 +129,23 @@ export function reroot(node, fraction) {
 
 
   if(!_.isUndefined(this.display)) {
-    // get container
-    let options = this.display.options;
-    d3.select(this.display.container).select('svg').remove()
+
     // get options
+    let options = this.display.options;
+    // get container
+    d3.select(this.display.container).select('svg').remove()
+
+    // retain selection
+    let selectionName = this.display.selection_attribute_name
+
     delete this.display;
+
     let rendered_tree = this.render(options);
+    rendered_tree.selectionLabel(selectionName);
+    rendered_tree.update();
     d3.select(rendered_tree.container).node().appendChild(rendered_tree.show());
+    d3.select(this.display.container).dispatch('reroot');
+
   }
 
   return this;
