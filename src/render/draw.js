@@ -225,6 +225,7 @@ class TreeRender {
         },
         true
       );
+      
     }
 
     return this;
@@ -1266,6 +1267,7 @@ this.do_lr();
 
   handle_node_click(node) {
     this.nodeDropdownMenu(node, this.container, this, this.options);
+    return true;
   }
 
   refresh() {

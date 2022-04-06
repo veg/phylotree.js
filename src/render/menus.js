@@ -200,7 +200,7 @@ export function nodeDropdownMenu(node, container, phylotree, options) {
           .append("a")
           .attr("class", "dropdown-item")
           .attr("tabindex", "-1")
-          .text(constant(d[0])(node)) // eslint-disable-line
+          .text((d[0])(node)) // eslint-disable-line
           .on("click", _.partial(d[1], node));
       });
     }

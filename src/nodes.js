@@ -157,9 +157,9 @@ export function getNodeByName(name) {
 export function assignAttributes(attributes) {
   //return nodes;
   // add annotations to each matching node
-  _.each(this.nodes, function(d) {
-    if (_.indexOf(_.keys(attributes), d.name) >= 0) {
-      d["annotations"] = attributes[d.name];
+  _.each(this.nodes.descendants(), function(d) {
+    if (d.data && (d.data.name in attributes)) {
+      d["annotations"] = attributes[d.data.name];
     }
   });
 }
