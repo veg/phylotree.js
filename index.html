@@ -124,6 +124,9 @@
           Selection
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a id="filter_add" class="dropdown-item" href="#">Add filtered nodes to selection</a>
+          <a id="filter_remove" class="dropdown-item" href="#">Select all but filtered nodes</a>
+          <div class="dropdown-divider"></div>
           <a id="select_all" class="dropdown-item" href="#">Select all</a>
           <a id="select_all_internal" class="dropdown-item" href="#">Select all internal nodes</a>
           <a id="select_all_leaves" class="dropdown-item" href="#">Select all leaf nodes</a>
@@ -325,11 +328,25 @@ $("#newick_file").on ("change", function (e) {
                 if(tree.parsed_tags.length) {
                   selection_set = tree.parsed_tags;
                 }
+                rendered_tree.selectionLabel(current_selection_name);
+
+                rendered_tree.countHandler (count => {
+                                $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
+                        }
+                );
+
+                // Get selection set names from parsed newick
+                if(tree.parsed_tags.length) {
+                    selection_set = tree.parsed_tags;
+                }
 
                 update_selection_names();
 
                 $('#newick_modal').modal('hide');
+
+                $(rendered_tree.container).empty()
                 $(rendered_tree.container).html(rendered_tree.show())
+
             }
         };
 
@@ -421,6 +438,14 @@ $("#or_label").on ("click", function (e) {
     rendered_tree.internalLabel (function (d) { return d.reduce (function (prev, curr) { return curr[current_selection_name] || prev; }, false)}, true);
 });
 
+$("#filter_add").on ("click", function (e) {
+    rendered_tree.modifySelection(function (d) { return d.tag || d[current_selection_name];} )
+        .modifySelection(function (d) { return false; }, "tag", false, false);
+});
+
+$("#filter_remove").on ("click", function (e) {
+    rendered_tree.modifySelection(function (d) { return !d.tag;});
+});
 
 $("#select_all").on ("click", function (e) {
     rendered_tree.modifySelection (function (d) { return true;});
@@ -699,8 +724,14 @@ function update_selection_names (id, skip_rebuild) {
       .style ("color",  color_scheme(id))
       .property ("value", current_selection_name);
 
-    rendered_tree.selectionLabel(selection_set[id]);
-    rendered_tree.update();
+		// Loop through all selection_sets
+		_.each(selection_set, function(id) {
+			rendered_tree.selectionLabel(id);
+			rendered_tree.update();
+		})	
+
+		rendered_tree.selectionLabel(selection_set[id]);
+		rendered_tree.update();
 }
 
 var width  = 800, //$(container_id).width(),
