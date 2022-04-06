@@ -268,6 +268,7 @@
 <script>
 
 var phylotree_extensions = new Object ();
+var export_root = null;
 
 $('#newick_export_modal').on('show.bs.modal', function (e) {
     $('textarea[id$="nwk_export_spec"]').val(
@@ -279,9 +280,14 @@ $('#newick_export_modal').on('show.bs.modal', function (e) {
                     return "{" + tags.join (",") + "}";
                 }
                 return "";
-            }
+            },
+            export_root
         )
     );
+})
+
+$('#newick_export_modal').on('hidden.bs.modal', function (e) {
+   return true;
 })
 
 $("#newick_file").on ("change", function (e) {
@@ -312,6 +318,8 @@ $("#newick_file").on ("change", function (e) {
                   'node-styler': node_colorizer,
                   'edge-styler': edge_colorizer
                 });
+
+                append_subtree_menu (tree, rendered_tree);
 
                 // Get selection set names from parsed newick
                 if(tree.parsed_tags.length) {
@@ -480,7 +488,10 @@ $("#validate_newick").on ("click", function (e) {
           'zoom': false,
           'edge-styler': edge_colorizer
         });
-
+        
+        append_subtree_menu (tree, rendered_tree);
+    
+ 
         rendered_tree.selectionLabel (current_selection_name);
 
         rendered_tree.countHandler (count => {
@@ -497,6 +508,8 @@ $("#validate_newick").on ("click", function (e) {
 
         $('#newick_modal').modal('hide');
         $(rendered_tree.container).html(rendered_tree.show())
+    
+ 
     }
 
 });
@@ -644,6 +657,17 @@ function send_click_event_to_menu_objects (e) {
             d.dispatchEvent (e);
         }
     );
+}
+
+function append_subtree_menu (t,rt) {
+    t.traverse_and_compute(function(n) {
+        if (!t.isLeafNode(n)) {
+            rt.addCustomMenu (n, (n)=>"Copy subtree Newick", (n)=>{
+                export_root = n;
+                $('#newick_export_modal').modal('show');
+            }, null);
+        }
+  });
 }
 
 function update_selection_names (id, skip_rebuild) {
@@ -911,7 +935,9 @@ $( document ).ready( function () {
             $("#selected_branch_counter").text (function (d) {return count[current_selection_name];});
         }
     );
-
+    
+    append_subtree_menu (tree, rendered_tree);
+    
     // Get selection set names from parsed newick
     if(tree.parsed_tags.length) {
       selection_set = tree.parsed_tags;
@@ -919,6 +945,8 @@ $( document ).ready( function () {
 
     // Until a cleaner solution to supporting both Observable and regular HTML
     $(rendered_tree.container).append(rendered_tree.show())
+
+
 
     $("#selection_new").get(0).addEventListener(selection_menu_element_action,selection_handler_new,false);
     $("#selection_rename").get(0).addEventListener(selection_menu_element_action,selection_handler_rename,false);
