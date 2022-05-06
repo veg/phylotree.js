@@ -429,16 +429,16 @@ class TreeRender {
       let zoom = d3
         .zoom()
         .scaleExtent([0.1, 10])
-        .on("zoom", () => {
+        .on("zoom", (event) => {
 
           d3.select("." + css_classes["tree-container"]).attr("transform", d => {
-            let toTransform = d3.event.transform;
+            let toTransform = event.transform;
             return toTransform;
           });
 
           // Give some extra room
           d3.select("." + css_classes["tree-scale-bar"]).attr("transform", d => {
-            let toTransform = d3.event.transform;
+            let toTransform = event.transform;
             toTransform.y -= 10; 
             return toTransform;
           });
