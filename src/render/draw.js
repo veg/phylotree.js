@@ -1265,8 +1265,8 @@ this.do_lr();
     return this;
   }
 
-  handle_node_click(node) {
-    this.nodeDropdownMenu(node, this.container, this, this.options);
+  handle_node_click(node, event) {
+    this.nodeDropdownMenu(node, this.container, this, this.options, event);
   }
 
   refresh() {
