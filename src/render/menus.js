@@ -205,13 +205,13 @@ export function nodeDropdownMenu(node, container, phylotree, options) {
       });
     }
 
-    let tree_container = d3.select(container); // eslint-disable-line
-    let coordinates = d3.mouse(tree_container[0]);
+    let tree_container = document.querySelector(container); // eslint-disable-line
+    let coordinates = d3.mouse(tree_container);
 
     menu_object
       .style("position", "absolute")
-      .style("left", "" + (coordinates[0] + tree_container.position().left) + "px")
-      .style("top", "" + (coordinates[1] + tree_container.position().top) + "px")
+      .style("left", "" + (coordinates[0] + 12) + "px")
+      .style("top", "" + (coordinates[1]) + "px")
       .style("display", "block");
   } else {
     menu_object.style("display", "none");
