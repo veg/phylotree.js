@@ -205,7 +205,7 @@ export function nodeDropdownMenu(node, container, phylotree, options) {
       });
     }
 
-    let tree_container = $(container); // eslint-disable-line
+    let tree_container = d3.select(container); // eslint-disable-line
     let coordinates = d3.mouse(tree_container[0]);
 
     menu_object
