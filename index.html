@@ -112,6 +112,12 @@
                 data-target="#newick_modal"
                 >Input Text</a
               >
+
+							<div class="dropdown-item">
+								<input id="newick_url" name="newick_url" type="url" placeholder="http://www.example.com">
+                <button id="newick_url_btn">Get</button>
+							</div>
+
               <a class="dropdown-item" href="#"
                 ><input type="file" id="newick_file"
               /></a>
@@ -555,6 +561,76 @@
           reader.readAsText(f);
         }
       });
+
+      function getNewickFromURL(url) {
+				d3.text(url).then(res => {
+
+					var warning_div = d3
+						.select("#main_display")
+						.insert("div", ":first-child");
+
+					tree = new phylotree.phylotree(res);
+					global_tree = tree;
+
+					if (!tree["json"]) {
+						warning_div
+							.attr("class", "alert alert-danger alert-dismissable")
+							.html(
+								"<strong>Newick parser error for file " +
+									f.name +
+									": </strong> In file " +
+									res["error"]
+							);
+					} else {
+						tree.render({
+							container: "#tree_container",
+							"draw-size-bubbles": false,
+							"left-right-spacing": "fixed-step",
+							"node-styler": node_colorizer,
+							"edge-styler": edge_colorizer
+						});
+
+						tree.display.selectionLabel(current_selection_name);
+
+						tree.display.countHandler(count => {
+							$("#selected_branch_counter").text(function(d) {
+								return count[current_selection_name];
+							});
+						});
+
+						// Get selection set names from parsed newick
+						if (tree.parsed_tags.length) {
+							selection_set = tree.parsed_tags;
+						}
+
+						update_selection_names();
+
+						$("#newick_modal").modal("hide");
+
+						$(tree.display.container).empty();
+						$(tree.display.container).html(tree.display.show());
+					}
+          });
+      }
+
+
+      $("#newick_url_btn").on("click", function(e) {
+
+        let url = $("#newick_url").val();
+        getNewickFromURL(url);
+        $("#newick-dropdown").dropdown("toggle");
+
+      });
+
+
+      $("#newick_url").on("change", function(e) {
+
+        let url = $(e.target).val();
+        getNewickFromURL(url);
+        $("#newick-dropdown").dropdown("toggle");
+
+      });
+
 
       $("#display_tree").on("click", function(e) {
         tree.options({ branches: "straight" }, true);
