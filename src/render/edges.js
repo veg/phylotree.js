@@ -11,7 +11,7 @@ export function drawEdge(container, edge, transition) {
       return this.reclassEdge(d);
     })
     .on("click", d => {
-      this.modifySelection([d.target], this.selection_attribute_name);
+      this.modifySelection([edge.target], this.selection_attribute_name);
       this.update();
     });
 
