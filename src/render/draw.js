@@ -79,6 +79,7 @@ class TreeRender {
       "show-scale": "top",
       // currently not implemented to support any other positioning
       "draw-size-bubbles": false,
+      "bubble-styler": this.radius_pad_for_bubbles,
       "binary-selectable": false,
       "is-radial": false,
       "attribute-list": [],

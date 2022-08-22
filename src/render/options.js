@@ -44,9 +44,15 @@ export function alignTips(attr) {
  */
 export function nodeBubbleSize(node) {
 
-  return this.options["draw-size-bubbles"]
-    ? this.relative_nodeSpan(node) * this.scales[0] * 0.25
-    : 0;
+  // if a custom bubble styler, use that instead
+
+  if(this.options["draw-size-bubbles"] && this.options["bubble-styler"]) {
+    return this.options["bubble-styler"](node);
+  } else {
+    return this.options["draw-size-bubbles"]
+      ? this.relative_nodeSpan(node) * this.scales[0] * 0.25
+      : 0;
+    }
 }
 
 export function shiftTip(d) {

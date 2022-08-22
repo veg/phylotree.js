@@ -1287,6 +1287,7 @@
         tree.render({
           container: "#tree_container",
           "draw-size-bubbles": false,
+          "bubble-styler": d => { return 5 },
           "node-styler": node_colorizer,
           zoom: false,
           "edge-styler": edge_colorizer
