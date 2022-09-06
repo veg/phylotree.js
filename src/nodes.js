@@ -2,38 +2,64 @@ import * as _ from "underscore";
 
 // These methods are part of the Phylotree object
 
-export function graftANode(graft_at, new_child, new_parent, lengths) {
+export function graftANode(graftAt, newChild, newParent, lengths) {
 
   let nodes = this.nodes.descendants();
 
-  if (graft_at.parent) {
-    let node_index = nodes.indexOf(graft_at);
+  if (graftAt.parent) {
 
-    if (node_index >= 0) {
-      let parent_index = graft_at.parent.children.indexOf(graft_at);
+    let nodeIndex = nodes.indexOf(graftAt);
 
-      let new_split = {
-          name: new_parent,
-          parent: graft_at.parent,
+    if (nodeIndex >= 0) {
+
+      let parentIndex = graftAt.parent.children.indexOf(graftAt);
+
+      let newSplit = {
+          name: newParent,
+          parent: graftAt.parent,
           attribute: lengths ? lengths[2] : null,
-          original_child_order: graft_at["original_child_order"]
+          original_child_order: graftAt["original_child_order"]
         },
-        new_node = {
-          name: new_child,
-          parent: new_split,
+        newNode = {
+          name: newChild,
+          parent: newSplit,
           attribute: lengths ? lengths[1] : null,
           original_child_order: 2
         };
 
-      new_split["children"] = [graft_at, new_node];
-      graft_at["parent"].children[parent_index] = new_split;
-      graft_at.parent = new_split;
-      graft_at["attribute"] = lengths ? lengths[0] : null;
-      graft_at["original_child_order"] = 1;
+      newSplit["children"] = [graftAt, newNode];
+      graftAt["parent"].children[parentIndex] = newSplit;
+      graftAt.parent = newSplit;
+      graftAt["attribute"] = lengths ? lengths[0] : null;
+      graftAt["original_child_order"] = 1;
     }
   }
 
   return this;
+
+}
+
+export function addChild(parent, child) {
+
+  if(parent.children) {
+    parent.children.push(child);
+  } else {
+    parent["children"] = [child];
+  }
+
+  return parent;
+
+}
+
+export function createNode(name, lengths) {
+
+  return {
+    data: {
+      name: name,
+      attribute: lengths ? lengths[1] : null
+    },
+    parent: '',
+  };
 
 }
 
