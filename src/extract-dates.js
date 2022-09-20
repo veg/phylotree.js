@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import { isLeafNode } from "../nodes";
+import { isLeafNode } from "./nodes";
 
 const default_date_converter = d3.timeParse("%Y%m%d");
 
