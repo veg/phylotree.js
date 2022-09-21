@@ -1035,7 +1035,9 @@
             .style("color", function(d, i) {
               return color_scheme(i);
             })
-            .on("click", function(d, i) {
+            .on("click", function(d, name) {
+              // Pass the index of name
+              let i = _.indexOf(selection_set, name);
               update_selection_names(i, true);
             });
         }
@@ -1050,6 +1052,9 @@
           tree.display.update();
         });
 
+        console.log('Setting label within the tree display');
+        console.log(id);
+        console.log(selection_set[id]);
         tree.display.selectionLabel(selection_set[id]);
         tree.display.update();
       }
