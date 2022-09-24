@@ -45,7 +45,6 @@ export function getBranchLengths() {
 export function defBranchLengthAccessor(_node, new_length) {
 
   let _node_data = _node.data;
-  //let _node_data = _node;
 
   if (
     "attribute" in _node_data &&

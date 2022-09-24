@@ -226,11 +226,12 @@ function newickParser(nwk_str, options={}) {
  *
  * @param {Function} annotator - Function to apply to each node, determining
  * what label is written (optional).
+ * @param {Node} node - start at this node (default == root)
  * @returns {String} newick - Phylogenetic tree serialized as a Newick string.
  */
 
 // TODO: break this out into two seperate functions
-export function getNewick(annotator) {
+export function getNewick(annotator, root) {
 
   let self = this;
 
@@ -262,7 +263,7 @@ export function getNewick(annotator) {
 
   let element_array = [];
   annotator = annotator || "";
-  nodeDisplay(this.nodes);
+  nodeDisplay(root || this.nodes);
 
   return element_array.join("")+";";
 

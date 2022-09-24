@@ -10,6 +10,8 @@ export { default as extract_dates } from "./extract-dates";
 export { default as clusterPicker } from "./clustering/cluster-picker";
 export { default as phylopart } from "./clustering/phylopart";
 
+export { default as parseFasta } from "./msa-parsers/fasta";
+export { default as neighborJoining, getDistanceMatrix } from "./neighbor-join";
 export { parseAnnotations, loadAnnotations } from "./formats/nexus";
 
 export {
