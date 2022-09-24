@@ -94,6 +94,23 @@ function getTotalDistances(distanceMatrix) {
 }
 
 
+/**
+ * Create a neighbor joining tree from a distance matrix
+ * See test/neighbor-join-test.js for a working example
+ *
+ * @param {Array} distanceMatrixArr The NxN distance matrix.
+ *	const D = [
+ *			[0,  5,  9,  9, 8],
+ *			[5,  0, 10, 10, 9],
+ *			[9, 10,  0,  8, 7],
+ *			[9, 10,  8,  0, 3],
+ *			[8,  9,  7,  3, 0]
+ * 	];
+ * 
+ * @param {Number} n The dimension of the distanceMatrixArr.
+ * @param {Array} nodeList The names of each row in the distanceMatrix
+ * @returns The neighbor joining new tree.
+ */
 export default function neighborJoining(distanceMatrixArr, n, nodeList) {
 
 	if(n<=2) {
