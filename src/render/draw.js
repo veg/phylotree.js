@@ -383,8 +383,8 @@ class TreeRender {
 
       var brush_object = d3
         .brush()
-        .on("brush", d => {
-          var extent = d3.event.selection,
+        .on("brush", (event, d) => {
+          var extent = event.selection,
             shown_links = this.links.filter(render_edges.edgeVisible);
           var selected_links = shown_links
               .filter((d, i) => {
