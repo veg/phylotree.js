@@ -14,6 +14,8 @@ export { default as parseFasta } from "./msa-parsers/fasta";
 export { default as neighborJoining, getDistanceMatrix } from "./neighbor-join";
 export { parseAnnotations, loadAnnotations } from "./formats/nexus";
 
+export { default as newickParser, getNewick } from "./formats/newick";
+
 export {
   leftChildRightSibling,
   postOrder,

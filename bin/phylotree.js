@@ -7,6 +7,7 @@ const { program } = require('commander');
 program
   .version('1.0.7')
   .command('tips', 'get tips from newick tree')
+  .command('validate', 'validate newick string')
   .command('reroot', 'reroot newick tree based on node')
   .command('distance', 'find distance between two nodes')
 
