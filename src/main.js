@@ -44,30 +44,25 @@ function resortChildren(comparator, start_node, filter) {
  * Return most recent common ancestor of a pair of nodes.
  * @returns An array of strings, comprising each tag that was read.
  */
-function mrca() {
+function mrca(mrca_nodes) {
 
-  var mrca_nodes, mrca;
-
-  if (arguments.length == 1) {
-    mrca_nodes = arguments[0];
-  } else {
-    mrca_nodes = Array.from(arguments);
-  }
+  var mrca;
 
   mrca_nodes = mrca_nodes.map(function(mrca_node) {
-    return typeof mrca_node == "string" ? mrca_node : mrca_node.name;
+    console.log(mrca_node.data.name);
+    return typeof mrca_node == "string" ? mrca_node : mrca_node.data.name;
   });
 
   this.traverse_and_compute(function(node) {
     if (!node.children) {
-      node.mrca = _.intersection([node.name], mrca_nodes);
+      node.data.mrca = _.intersection([node.data.name], mrca_nodes);
     } else if (!node.parent) {
       if (!mrca) {
         mrca = node;
       }
     } else {
-      node.mrca = _.union(...node.descendants().map(child => child.mrca));
-      if (!mrca && node.mrca.length == mrca_nodes.length) {
+      node.data.mrca = _.union(...node.descendants().map(child => child.data.mrca));
+      if (!mrca && node.data.mrca.length == mrca_nodes.length) {
         mrca = node;
       }
     }
