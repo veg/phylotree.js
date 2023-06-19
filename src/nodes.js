@@ -238,4 +238,33 @@ export function clearInternalNodes(respect) {
   }
 }
 
+/**
+ * Select all descendents of a given node, with options for selecting
+ * terminal/internal nodes.
+ *
+ * @param {Node} node The node whose descendents should be selected.
+ * @param {Boolean} terminal Whether to include terminal nodes.
+ * @param {Boolean} internal Whther to include internal nodes.
+ * @returns {Array} An array of selected nodes.
+ */
+export function selectAllDescendants(node, terminal, internal) {
+
+  let selection = [];
+
+  function sel(d) {
+    if (isLeafNode(d)) {
+      if (terminal) {
+        if (d != node) selection.push(d);
+      }
+    } else {
+      if (internal) {
+        if (d != node) selection.push(d);
+      }
+      d.children.forEach(sel);
+    }
+  }
+
+  sel(node);
+  return selection;
+}
 

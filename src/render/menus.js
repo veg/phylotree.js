@@ -418,6 +418,7 @@ export function getSelection() {
  * @returns {Array} An array of selected nodes.
  */
 export function selectAllDescendants(node, terminal, internal) {
+
   let selection = [];
 
   function sel(d) {

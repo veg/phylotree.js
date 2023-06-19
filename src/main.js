@@ -7,7 +7,12 @@ import { default as getTipLengths } from "./export";
 import * as nexus from "./formats/nexus";
 import { default as phyloxml_parser } from "./formats/phyloxml";
 import { default as maxParsimony } from "./max-parsimony";
-import { leftChildRightSibling, postOrder, preOrder, default as inOrder } from "./traversal";
+import {
+  leftChildRightSibling,
+  postOrder,
+  preOrder,
+  default as inOrder,
+} from "./traversal";
 
 import {
   default as hasBranchLengths,
@@ -16,7 +21,7 @@ import {
   setBranchLength,
   branchName,
   normalize,
-  scale
+  scale,
 } from "./branches";
 
 import * as node_operations from "./nodes";
@@ -26,7 +31,7 @@ import { default as TreeRender } from "./render/draw";
 function resortChildren(comparator, start_node, filter) {
   // ascending
   this.nodes
-    .sum(function(d) {
+    .sum(function (d) {
       return d.value;
     })
     .sort(comparator);
@@ -45,15 +50,13 @@ function resortChildren(comparator, start_node, filter) {
  * @returns An array of strings, comprising each tag that was read.
  */
 function mrca(mrca_nodes) {
-
   var mrca;
 
-  mrca_nodes = mrca_nodes.map(function(mrca_node) {
-    console.log(mrca_node.data.name);
+  mrca_nodes = mrca_nodes.map(function (mrca_node) {
     return typeof mrca_node == "string" ? mrca_node : mrca_node.data.name;
   });
 
-  this.traverse_and_compute(function(node) {
+  this.traverse_and_compute(function (node) {
     if (!node.children) {
       node.data.mrca = _.intersection([node.data.name], mrca_nodes);
     } else if (!node.parent) {
@@ -61,7 +64,9 @@ function mrca(mrca_nodes) {
         mrca = node;
       }
     } else {
-      node.data.mrca = _.union(...node.descendants().map(child => child.data.mrca));
+      node.data.mrca = _.union(
+        ...node.descendants().map((child) => child.data.mrca)
+      );
       if (!mrca && node.data.mrca.length == mrca_nodes.length) {
         mrca = node;
       }
@@ -69,7 +74,6 @@ function mrca(mrca_nodes) {
   });
 
   return mrca;
-
 }
 
 /**
@@ -83,9 +87,7 @@ function mrca(mrca_nodes) {
  * @returns {Phylotree} phylotree - itself, following the builder pattern.
  */
 let Phylotree = class {
-
   constructor(nwk, options = {}) {
-
     this.newick_string = "";
 
     this.nodes = [];
@@ -139,40 +141,36 @@ let Phylotree = class {
         this.newick_string = nwk;
         _node_data = newickParser(nwk, options);
       }
-
     }
 
     if (!_node_data["json"]) {
-
       self.nodes = [];
-
     } else {
-
       self.nodes = d3.hierarchy(_node_data.json);
 
       // Parse tags
       let _parsed_tags = {};
 
-      self.nodes.each(node => {
+      self.nodes.each((node) => {
         if (node.data.annotation) {
           _parsed_tags[node.data.annotation] = true;
         }
       });
 
       self.parsed_tags = Object.keys(_parsed_tags);
-
     }
 
     self.links = self.nodes.links();
 
     // If no branch lengths are supplied, set all to 1
-    if(!this.hasBranchLengths()) {
-      console.warn("Phylotree User Warning : NO BRANCH LENGTHS DETECTED, SETTING ALL LENGTHS TO 1");
-      this.setBranchLength(x => 1)
+    if (!this.hasBranchLengths()) {
+      console.warn(
+        "Phylotree User Warning : NO BRANCH LENGTHS DETECTED, SETTING ALL LENGTHS TO 1"
+      );
+      this.setBranchLength((x) => 1);
     }
 
     return self;
-
   }
 
   /*
@@ -183,10 +181,9 @@ let Phylotree = class {
 
   */
   json(traversal_type) {
-
     var index = 0;
 
-    this.traverse_and_compute(function(n) {
+    this.traverse_and_compute(function (n) {
       n.json_export_index = index++;
     }, traversal_type);
 
@@ -194,7 +191,7 @@ let Phylotree = class {
 
     index = 0;
 
-    this.traverse_and_compute(function(n) {
+    this.traverse_and_compute(function (n) {
       let node_copy = _.clone(n);
       delete node_copy.json_export_index;
 
@@ -203,14 +200,14 @@ let Phylotree = class {
       }
 
       if (n.children) {
-        node_copy.children = _.map(n.children, function(c) {
+        node_copy.children = _.map(n.children, function (c) {
           return c.json_export_index;
         });
       }
       node_array[index++] = node_copy;
     }, traversal_type);
 
-    this.traverse_and_compute(function(n) {
+    this.traverse_and_compute(function (n) {
       delete n.json_export_index;
     }, traversal_type);
 
@@ -236,7 +233,6 @@ let Phylotree = class {
       }
 
       postOrder(node, callback, backtrack);
-
     }
 
     function pre_order(node) {
@@ -260,7 +256,6 @@ let Phylotree = class {
     traversal_type(root_node ? root_node : this.nodes);
 
     return this;
-
   }
 
   get_parsed_tags() {
@@ -277,10 +272,10 @@ let Phylotree = class {
     this.display = new TreeRender(this, options);
     return this.display;
   }
-
 };
 
 Phylotree.prototype.isLeafNode = node_operations.isLeafNode;
+Phylotree.prototype.selectAllDescendants = node_operations.selectAllDescendants;
 Phylotree.prototype.mrca = mrca;
 Phylotree.prototype.hasBranchLengths = hasBranchLengths;
 Phylotree.prototype.getBranchLengths = getBranchLengths;

@@ -10,5 +10,6 @@ program
   .command('validate', 'validate newick string')
   .command('reroot', 'reroot newick tree based on node')
   .command('distance', 'find distance between two nodes')
+  .command('mrca', 'tag all descendants of mrca')
 
 program.parse(process.argv);
