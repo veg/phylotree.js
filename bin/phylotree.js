@@ -11,5 +11,6 @@ program
   .command('reroot', 'reroot newick tree based on node')
   .command('distance', 'find distance between two nodes')
   .command('mrca', 'tag all descendants of mrca')
+  .command('shuffle', 'shuffle tips in a tree')
 
 program.parse(process.argv);

@@ -11,7 +11,7 @@ commander
     console.log("");
     console.log("Examples:");
     console.log(
-      'phylotree tips test/data/MERS.txt'
+      'phylotree shuffle test/data/MERS.txt'
     );
   })
   .parse(process.argv);
