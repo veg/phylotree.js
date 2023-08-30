@@ -250,6 +250,10 @@ export function getNewick(annotator, root) {
     }
 
     if(n.data.name != 'root') {
+      const node_label = n.data.name.replace("'", "''");
+      if (node_label.contains(/\w/)) {
+        element_array.push("'" + node_label + "'");
+      }
       element_array.push(n.data.name);
     }
     element_array.push(annotator(n));
