@@ -76,7 +76,13 @@ tape("BEAST newick parse", function(test) {
 });
 
 tape("Handle Newick strings with spaces", function(test) {
-  let nwk = fs.readFileSync(__dirname + "/data/newick-with-strings.new").toString();
+  /* 
+   * As per the Newick specification, labels can be quoted with single quote characters,
+   * which can be escaped with double single quotes. This test ensures that phylotree.js
+   * can read and write Newick strings correctly.
+   */
+
+  let nwk = "('Alpha beta', ('Alpha gamma', 'Delta''s epsilon'))";
   let phylo = new phylotree.phylotree(nwk);
 
   let test_leaves = ['Alpha beta', 'Alpha gamma', "Delta's epsilon"];
@@ -85,5 +91,10 @@ tape("Handle Newick strings with spaces", function(test) {
     test.equal(node.data.name, leaf);
   });
 
-  test.equal(phylo.getNewick(), "()");
+  // This would be identical to the original Newick string, but phylotree.js coerces
+  // lengths to 1 (see https://github.com/veg/phylotree.js/issues/440). So we expect
+  // all lengths to be set to 1 on export.
+  //
+  // This test currently fails because of https://github.com/veg/phylotree.js/issues/438
+  test.equal(phylo.getNewick(), "('Alpha beta':1, ('Alpha gamma':1, 'Delta''s epsilon':1))");
 });
