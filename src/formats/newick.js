@@ -251,10 +251,13 @@ export function getNewick(annotator, root) {
 
     if(n.data.name != 'root') {
       const node_label = n.data.name.replace("'", "''");
-      if (node_label.contains(/\w/)) {
+
+      // Escape the entire string if it contains any whitespace.
+      if (/\w/.test(node_label)) {
         element_array.push("'" + node_label + "'");
+      } else {
+        element_array.push(n.data.name);
       }
-      element_array.push(n.data.name);
     }
     element_array.push(annotator(n));
 
