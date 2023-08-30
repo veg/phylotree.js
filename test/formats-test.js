@@ -74,3 +74,16 @@ tape("BEAST newick parse", function(test) {
   test.assert(almost_equal(beast_data.b_u_N_range[1], 10.0));
   test.end();
 });
+
+tape("Handle Newick strings with spaces", function(test) {
+  let nwk = fs.readFileSync(__dirname + "/data/newick-with-strings.new").toString();
+  let phylo = new phylotree.phylotree(nwk);
+
+  let test_leaves = ['Alpha beta', 'Alpha gamma', "Delta's epsilon"];
+  test_leaves.forEach(function(leaf) {
+    let node = phylo.getNodeByName(leaf);
+    test.equal(node.data.name, leaf);
+  });
+
+  test.equal(phylo.getNewick(), "()");
+});
