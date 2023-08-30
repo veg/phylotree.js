@@ -96,5 +96,5 @@ tape("Handle Newick strings with spaces", function(test) {
   // all lengths to be set to 1 on export.
   //
   // This test currently fails because of https://github.com/veg/phylotree.js/issues/438
-  test.equal(phylo.getNewick(), "('Alpha beta':1, ('Alpha gamma':1, 'Delta''s epsilon':1))");
+  test.equal(phylo.getNewick(), "('Alpha beta':1,('Alpha gamma':1,'Delta''s epsilon':1):1):1");
 });
