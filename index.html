@@ -1052,9 +1052,9 @@
           tree.display.update();
         });
 
-        console.log('Setting label within the tree display');
-        console.log(id);
-        console.log(selection_set[id]);
+        //console.log('Setting label within the tree display');
+        //console.log(id);
+        //console.log(selection_set[id]);
         tree.display.selectionLabel(selection_set[id]);
         tree.display.update();
       }
@@ -1202,7 +1202,7 @@
                 }
               }
             } catch (e) {
-              console.log("Could not process stylesheet : " + ss); // eslint-disable-line
+              //console.log("Could not process stylesheet : " + ss); // eslint-disable-line
             }
           }
 
@@ -1294,6 +1294,7 @@
           "draw-size-bubbles": false,
           "bubble-styler": d => { return 5 },
           "node-styler": node_colorizer,
+          "font-size": 12,
           zoom: false,
           "edge-styler": edge_colorizer
         });
