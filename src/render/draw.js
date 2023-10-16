@@ -35,9 +35,7 @@ class TreeRender {
     this.scales = [1, 1];
     this.size = [1, 1];
     this.fixed_width = [14, 30];
-    this.font_size = 12;
     this.scale_bar_font_size = 12;
-    this.offsets = [0, this.font_size / 2];
 
     this.draw_branch = draw_line;
     this.draw_scale_bar = null;
@@ -46,7 +44,6 @@ class TreeRender {
     this.layout_listener_handler = function() {};
     this.node_styler = undefined;
     this.edge_styler = undefined;
-    this.shown_font_size = this.font_size;
     this.selection_attribute_name = "selected";
     this.right_most_leaf = 0;
     this.label_width = 0;
@@ -65,6 +62,7 @@ class TreeRender {
       scaling: true,
       bootstrap: false,
       "color-fill": true,
+      "font-size": 14,
       "internal-names": false,
       selectable: true,
       // restricted-selectable can take an array of predetermined
@@ -110,6 +108,10 @@ class TreeRender {
     };
 
     this.options = _.defaults(options, default_options);
+
+    this.font_size = this.options["font-size"];
+    this.offsets = [0, this.font_size / 2];
+    this.shown_font_size = this.font_size;
 
     this.width = this.options.width || 800;
     this.height = this.options.height || 600;
