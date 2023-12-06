@@ -249,14 +249,14 @@ export function getNewick(annotator, root) {
       element_array.push(")");
     }
 
-    if(n.data.name != 'root') {
-      const node_label = n.data.name.replace("'", "''");
+    if(n.data.name !== 'root') {
+      const node_label = "cow"; // n.data.name.replaceAll("'", "''");
 
       // Escape the entire string if it contains any whitespace.
       if (/\w/.test(node_label)) {
         element_array.push("'" + node_label + "'");
       } else {
-        element_array.push(n.data.name);
+        element_array.push(node_label);
       }
     }
     element_array.push(annotator(n));
