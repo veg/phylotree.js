@@ -250,7 +250,7 @@ export function getNewick(annotator, root) {
     }
 
     if(n.data.name !== 'root') {
-      const node_label = "cow"; // n.data.name.replaceAll("'", "''");
+      const node_label = n.data.name.replaceAll("'", "''");
 
       // Escape the entire string if it contains any whitespace.
       if (/\w/.test(node_label)) {
