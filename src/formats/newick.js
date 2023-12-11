@@ -230,14 +230,16 @@ function newickParser(nwk_str, options={}) {
  * @returns {String} newick - Phylogenetic tree serialized as a Newick string.
  */
 
-// TODO: break this out into two seperate functions
-export function getNewick(annotator, root) {
 
+export function getNewick(annotator, root) {
   let self = this;
 
   if (!annotator) annotator = d => '';
 
   function nodeDisplay(n) {
+    // Skip the node if it is hidden
+    if (n.notshown) return;
+
     if (!isLeafNode(n)) {
       element_array.push("(");
       n.children.forEach(function(d, i) {
@@ -273,7 +275,6 @@ export function getNewick(annotator, root) {
   nodeDisplay(root || this.nodes);
 
   return element_array.join("")+";";
-
 }
 
 export default newickParser;
