@@ -13,7 +13,7 @@ tape("neighbor joining", function(test) {
 
 	const nodeList = ["A","B","C","D","E"];
 	const nj = phylotree.neighborJoining(D, nodeList.length, nodeList);
-  const expectedTree = "((((A:2,B:3)InternalNode0:3,C:4)InternalNode1:2,D:2)InternalNode2:0.5,E:0.5):0;";
+  const expectedTree = '((((\'A\':2,\'B\':3)\'InternalNode0\':3,\'C\':4)\'InternalNode1\':2,\'D\':2)\'InternalNode2\':0.5,\'E\':0.5):0;'
   test.equal(nj.getNewick(), expectedTree);
   test.end();
 

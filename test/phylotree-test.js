@@ -70,7 +70,7 @@ tape("phylotree newick export", function(test) {
 
   let newick_string = String(fs.readFileSync(__dirname + "/data/MERS.txt"));
   let phylo = new phylotree.phylotree(newick_string);
-  test.equal(phylo.getNewick().length, 18350);
+  test.equal(phylo.getNewick().length, 18898);
   test.end();
   
 });
