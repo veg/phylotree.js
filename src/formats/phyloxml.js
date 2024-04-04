@@ -46,15 +46,18 @@ var phyloxml_parser = function(xml, options) {
 
   function parsePhyloxml(node, index) {
     if (node.clade) {
+      if (!Array.isArray(node.clade)) {
+		node.clade = [node.clade];
+      }  
       node.clade.forEach(parsePhyloxml);
       node.children = node.clade;
       delete node.clade;
     }
 
-		node.annotation = 1;
-		node.attribute = "0.01";
+    node.annotation = 1;
+    node.attribute = "0.01";
     if (node.branch_length) {
-			node.attribute = node.branch_length;
+      node.attribute = node.branch_length;
     }
     if (node.taxonomy) {
       node.name = node.taxonomy.scientific_name;
