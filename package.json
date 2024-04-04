@@ -24,6 +24,7 @@
     "commander": "^6.2.1",
     "csv-stringify": "^5.3.6",
     "d3": "6",
+    "fast-xml-parser": "^4.3.6",
     "jquery": "3",
     "lodash": "^4.17.11",
     "moment": "^2.29.4",

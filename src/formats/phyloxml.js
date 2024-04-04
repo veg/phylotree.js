@@ -1,3 +1,5 @@
+import { XMLParser } from 'fast-xml-parser';
+
 // Changes XML to JSON
 // Modified version from here: http://davidwalsh.name/convert-xml-json
 function xmlToJson(xml) {
@@ -69,9 +71,18 @@ var phyloxml_parser = function(xml, options) {
 
   var tree_json;
 
+  if (typeof xml === "string") {
+	if (DOMParser) {
+		const parser = new DOMParser();
+		xml = parser.parseFromString(xml, "text/xml");
+	} else {
+		const parser = new XMLParser();
+		xml = parser.parse(xml);
+	}
+  }
+
   xml = xmlToJson(xml);
   var phylogeny = xml.phyloxml.phylogeny;
-  console.log(phylogeny)
   if (Array.isArray(phylogeny)) {
 	phylogeny = phylogeny[0];
 	console.warn('PhyloXML files with multiple phylogenies are not currently supported. Only the first phylogeny will be loaded.')
