@@ -403,7 +403,7 @@ export function modifySelection(
  * @returns {Array} An array of nodes that match the current selection.
  */
 export function getSelection() {
-  return this.nodes.filter(d => {
+  return selectAllDescendants(this.phylotree.getRootNode(), true, true).filter(d => {
     return d[this.selection_attribute_name];
   });
 }
