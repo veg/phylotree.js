@@ -132,10 +132,10 @@ export var predefined_selecters = {
  * an array of nodes that make up the current selection.
  *
  * @param {Function} callback (Optional) The selection callback function.
- * @returns The current ``selectionCallback`` if getting, or the current ``this`` if setting.
+ * @returns The current ``_selectionCallback`` if getting, or the current ``this`` if setting.
  */
 export function selectionCallback(callback) {
-  if (!callback) return this.selectionCallback;
-  this.selectionCallback = callback;
+  if (!callback) return this._selectionCallback;
+  this._selectionCallback = callback;
   return this;
 }
