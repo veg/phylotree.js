@@ -18,6 +18,12 @@ export const css_classes = {
   node_text: "phylotree-node-text"
 };
 
+export function initializeCssClasses(classes = {}) {
+  Object.keys(classes).forEach(key => {
+    css_classes[key] = classes[key]
+  })
+}
+
 export function internalNames(attr) {
   if (!arguments.length) return this.options["internal-names"];
   this.options["internal-names"] = attr;
