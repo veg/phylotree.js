@@ -12,15 +12,13 @@ export { default as phylopart } from "./clustering/phylopart";
 
 export { default as parseFasta } from "./msa-parsers/fasta";
 export { default as neighborJoining, getDistanceMatrix } from "./neighbor-join";
-export { parseAnnotations, loadAnnotations } from "./formats/nexus";
+export { loadAnnotations, parseAnnotations } from "./formats/nexus";
 
 export { default as newickParser, getNewick } from "./formats/newick";
 
 export {
+  default as inOrder,
   leftChildRightSibling,
   postOrder,
   preOrder,
-  default as inOrder
 } from "./traversal.js";
-
-

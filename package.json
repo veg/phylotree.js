@@ -7,6 +7,7 @@
   "module": "src/index.js",
   "bin": {
     "root-to-tip": "./bin/root-to-tip.js",
+    "tag-branches": "./bin/phylotree-tag.js",
     "phylotree": "./bin/phylotree.js",
     "tip-date-extractor": "./bin/tip-date-extractor.js"
   },
