@@ -6,7 +6,7 @@ import * as meta from "./package.json";
 
 const config = {
   input: "src/index.js",
-  external: Object.keys(meta.dependencies || {}),
+  external: Object.keys(meta.dependencies || {}).filter(dep => dep !== 'd3'),
   output: {
     file: `dist/${meta.name}.js`,
     name: "phylotree",
@@ -14,7 +14,7 @@ const config = {
     indent: true,
     sourcemap: true,
     extend: true,
-    globals: {d3:'d3', underscore:'_'}
+    globals: {underscore:'_', lodash: '_$1', xml2js: 'xml2js'}
   },
   plugins: [
     node(), 
