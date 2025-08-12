@@ -388,8 +388,8 @@ export function modifySelection(
     }
   }
 
-  if (this.selectionCallback && attr != "tag") {
-    this.selectionCallback(this.getSelection());
+  if (this._selectionCallback && attr != "tag") {
+    this._selectionCallback(this.getSelection());
   }
 
   this.refresh();
@@ -403,7 +403,7 @@ export function modifySelection(
  * @returns {Array} An array of nodes that match the current selection.
  */
 export function getSelection() {
-  return this.nodes.filter(d => {
+  return selectAllDescendants(this.phylotree.getRootNode(), true, true).filter(d => {
     return d[this.selection_attribute_name];
   });
 }
@@ -444,10 +444,10 @@ export function selectAllDescendants(node, terminal, internal) {
  * an array of nodes that make up the current selection.
  *
  * @param {Function} callback (Optional) The selection callback function.
- * @returns The current ``selectionCallback`` if getting, or the current ``this`` if setting.
+ * @returns The current ``_selectionCallback`` if getting, or the current ``this`` if setting.
  */
 export function selectionCallback(callback) {
-  if (!callback) return this.selectionCallback;
-  this.selectionCallback = callback;
+  if (!callback) return this._selectionCallback;
+  this._selectionCallback = callback;
   return this;
 }

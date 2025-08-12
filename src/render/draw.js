@@ -31,7 +31,7 @@ class TreeRender {
 
     this._nodeLabel = this.defNodeLabel;
     this.svg = null;
-    this.selectionCallback = null;
+    this._selectionCallback = null;
     this.scales = [1, 1];
     this.size = [1, 1];
     this.fixed_width = [14, 30];
