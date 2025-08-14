@@ -1,3 +1,5 @@
+import { XMLParser } from 'fast-xml-parser';
+
 // Changes XML to JSON
 // Modified version from here: http://davidwalsh.name/convert-xml-json
 function xmlToJson(xml) {
@@ -46,15 +48,18 @@ var phyloxml_parser = function(xml, options) {
 
   function parsePhyloxml(node, index) {
     if (node.clade) {
+      if (!Array.isArray(node.clade)) {
+		node.clade = [node.clade];
+      }  
       node.clade.forEach(parsePhyloxml);
       node.children = node.clade;
       delete node.clade;
     }
 
-		node.annotation = 1;
-		node.attribute = "0.01";
+    node.annotation = 1;
+    node.attribute = "0.01";
     if (node.branch_length) {
-			node.attribute = node.branch_length;
+      node.attribute = node.branch_length;
     }
     if (node.taxonomy) {
       node.name = node.taxonomy.scientific_name;
@@ -66,8 +71,23 @@ var phyloxml_parser = function(xml, options) {
 
   var tree_json;
 
+  if (typeof xml === "string") {
+	if (DOMParser) {
+		const parser = new DOMParser();
+		xml = parser.parseFromString(xml, "text/xml");
+	} else {
+		const parser = new XMLParser();
+		xml = parser.parse(xml);
+	}
+  }
+
   xml = xmlToJson(xml);
-  tree_json = xml.phyloxml.phylogeny.clade;
+  var phylogeny = xml.phyloxml.phylogeny;
+  if (Array.isArray(phylogeny)) {
+	phylogeny = phylogeny[0];
+	console.warn('PhyloXML files with multiple phylogenies are not currently supported. Only the first phylogeny will be loaded.')
+  }
+  tree_json = phylogeny.clade;
   tree_json.name = "root";
   parsePhyloxml(tree_json, 0);
 
