@@ -9,7 +9,7 @@ import * as clades from "./clades";
 import * as render_nodes from "./nodes";
 import * as render_edges from "./edges";
 import * as events from "./events";
-import { css_classes } from "./options";
+import { css_classes, initializeCssClasses } from "./options";
 import * as opt from "./options";
 import * as menus from "./menus";
 
@@ -22,6 +22,7 @@ function constant(x) {
 
 class TreeRender {
   constructor(phylotree, options = {}) {
+    initializeCssClasses(options['css-classes']);
     this.css_classes = css_classes;
     this.phylotree = phylotree;
     this.container = options.container;
@@ -31,7 +32,7 @@ class TreeRender {
 
     this._nodeLabel = this.defNodeLabel;
     this.svg = null;
-    this.selectionCallback = null;
+    this._selectionCallback = null;
     this.scales = [1, 1];
     this.size = [1, 1];
     this.fixed_width = [14, 30];

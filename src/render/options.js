@@ -18,6 +18,12 @@ export const css_classes = {
   node_text: "phylotree-node-text"
 };
 
+export function initializeCssClasses(classes = {}) {
+  Object.keys(classes).forEach(key => {
+    css_classes[key] = classes[key]
+  })
+}
+
 export function internalNames(attr) {
   if (!arguments.length) return this.options["internal-names"];
   this.options["internal-names"] = attr;
@@ -132,10 +138,10 @@ export var predefined_selecters = {
  * an array of nodes that make up the current selection.
  *
  * @param {Function} callback (Optional) The selection callback function.
- * @returns The current ``selectionCallback`` if getting, or the current ``this`` if setting.
+ * @returns The current ``_selectionCallback`` if getting, or the current ``this`` if setting.
  */
 export function selectionCallback(callback) {
-  if (!callback) return this.selectionCallback;
-  this.selectionCallback = callback;
+  if (!callback) return this._selectionCallback;
+  this._selectionCallback = callback;
   return this;
 }
