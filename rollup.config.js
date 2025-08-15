@@ -2,13 +2,12 @@ import {terser} from "rollup-plugin-terser";
 import {nodeResolve} from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import copy from 'rollup-plugin-copy';
-import nodePolyfills from 'rollup-plugin-polyfill-node';
 
 import * as meta from "./package.json";
 
 const config = {
   input: "src/index.js",
-  external: Object.keys(meta.dependencies || {}).filter(dep => !['d3', 'xml2js', 'fast-xml-parser'].includes(dep)),
+  external: Object.keys(meta.dependencies || {}).filter(dep => !['d3', 'fast-xml-parser'].includes(dep)),
   output: {
     file: `dist/${meta.name}.js`,
     name: "phylotree",
@@ -19,12 +18,8 @@ const config = {
     globals: {underscore:'_', lodash: '_$1'}
   },
   plugins: [
-    nodeResolve({
-      preferBuiltins: false,
-      browser: true
-    }), 
+    nodeResolve(), 
     commonjs(),
-    nodePolyfills(),
     copy({
       targets: [
         { src: 'phylotree.css', dest: 'dist/' },
