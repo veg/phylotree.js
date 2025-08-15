@@ -1,9 +1,9 @@
 import * as _ from "underscore";
-import { parseString } from "xml2js";
+import * as xml2js from "xml2js";
 
 var nexml_parser = function(xml_string, options) {
   var trees;
-  parseString(xml_string, function(error, xml) {
+  xml2js.parseString(xml_string, function(error, xml) {
     trees = xml["nex:nexml"].trees[0].tree.map(function(nexml_tree) {
       var node_list = nexml_tree.node.map(d => d.$),
         node_hash = node_list.reduce(function(a, b) {
