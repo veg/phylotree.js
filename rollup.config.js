@@ -2,6 +2,7 @@ import {terser} from "rollup-plugin-terser";
 import {nodeResolve} from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import copy from 'rollup-plugin-copy';
+import nodePolyfills from 'rollup-plugin-polyfill-node';
 
 import * as meta from "./package.json";
 
@@ -18,8 +19,12 @@ const config = {
     globals: {underscore:'_', lodash: '_$1'}
   },
   plugins: [
-    nodeResolve(), 
+    nodeResolve({
+      preferBuiltins: false,
+      browser: true
+    }), 
     commonjs(),
+    nodePolyfills(),
     copy({
       targets: [
         { src: 'phylotree.css', dest: 'dist/' },
