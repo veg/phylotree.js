@@ -18,8 +18,14 @@ const config = {
     globals: {underscore:'_', lodash: '_$1'}
   },
   plugins: [
-    nodeResolve(), 
-    commonjs(),
+    nodeResolve({
+      browser: true,
+      preferBuiltins: false,
+      mainFields: ['browser', 'module', 'main']
+    }), 
+    commonjs({
+      include: 'node_modules/**'
+    }),
     copy({
       targets: [
         { src: 'phylotree.css', dest: 'dist/' },
