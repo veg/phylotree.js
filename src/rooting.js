@@ -9,6 +9,23 @@ import * as _ from "underscore";
                    the specified fraction
                    
 * @returns {Phylotree} The current ``phylotree``.
+* @example
+* // Reroot tree on a specific node
+* const tree = new Phylotree("((A:0.1,B:0.2):0.05,(C:0.3,D:0.1):0.08);");
+* const nodeC = tree.getNodeByName("C");
+* tree.reroot(nodeC);
+* // Tree is now rooted on the branch leading to C
+* 
+* @example
+* // Reroot with custom branch length partitioning
+* const nodeA = tree.getNodeByName("A");
+* tree.reroot(nodeA, 0.3); // 30% of branch length goes to new root
+* 
+* @example
+* // Reroot on midpoint of tree (balance tree)
+* const tips = tree.getTips();
+* const midpoint = tree.computeMidpoint();
+* tree.reroot(midpoint);
 */
 export function reroot(node, fraction) {
 

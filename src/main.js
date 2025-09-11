@@ -85,6 +85,28 @@ function mrca(mrca_nodes) {
  * - boostrap_values
  * - type - format type
  * @returns {Phylotree} phylotree - itself, following the builder pattern.
+ * @example
+ * // Create a simple phylotree from a Newick string
+ * const newick = "((A:0.1,B:0.2):0.05,C:0.3)";
+ * const tree = new Phylotree(newick);
+ * 
+ * @example
+ * // Create a phylotree with options
+ * const tree = new Phylotree(newick, {
+ *   bootstrap_values: true,
+ *   type: "newick"
+ * });
+ * 
+ * @example
+ * // Create from hierarchical JSON
+ * const jsonTree = {
+ *   name: "root",
+ *   children: [
+ *     { name: "A", length: 0.1 },
+ *     { name: "B", length: 0.2 }
+ *   ]
+ * };
+ * const tree = new Phylotree(jsonTree);
  */
 let Phylotree = class {
   constructor(nwk, options = {}) {
@@ -214,7 +236,7 @@ let Phylotree = class {
     return JSON.stringify(node_array);
   }
 
-  /*
+  /**
    * Traverse the tree in a prescribed order, and compute a value at each node.
    *
    * @param {Function} callback A function to be called on each node.
@@ -223,6 +245,31 @@ let Phylotree = class {
    * @param {Function} backtrack ; if provided, then at each node n, backtrack (n) will be called,
                                    and if it returns TRUE, traversal will NOT continue past into this
                                    node and its children
+   * @example
+   * // Count all nodes in the tree
+   * let nodeCount = 0;
+   * tree.traverse_and_compute(function(node) {
+   *   nodeCount++;
+   * });
+   * console.log(`Tree has ${nodeCount} nodes`);
+   * 
+   * @example
+   * // Find maximum depth in post-order traversal
+   * tree.traverse_and_compute(function(node) {
+   *   if (!node.children) {
+   *     node.depth = 0;
+   *   } else {
+   *     node.depth = Math.max(...node.children.map(c => c.depth)) + 1;
+   *   }
+   * }, "post-order");
+   * 
+   * @example
+   * // Add custom attributes to leaf nodes only
+   * tree.traverse_and_compute(function(node) {
+   *   if (!node.children) {
+   *     node.data.isLeaf = true;
+   *   }
+   * });
    */
   traverse_and_compute(callback, traversal_type, root_node, backtrack) {
     traversal_type = traversal_type || "post-order";
@@ -267,7 +314,42 @@ let Phylotree = class {
     this.nodes = json;
   }
 
-  // Warning : Requires DOM!
+  /**
+   * Render the phylotree to a DOM element. Warning: Requires DOM!
+   * 
+   * @param {Object} options - Rendering options including container, dimensions, and styling
+   * @returns {TreeRender} The display object for further customization
+   * @example
+   * // Basic rendering to a div element
+   * const tree = new Phylotree(newick);
+   * tree.render({
+   *   container: "#tree-container",
+   *   width: 800,
+   *   height: 600
+   * });
+   * 
+   * @example
+   * // Render with custom styling options
+   * const display = tree.render({
+   *   container: d3.select("#my-tree"),
+   *   width: 1000,
+   *   height: 800,
+   *   'left-right-spacing': 'fit-to-size',
+   *   'top-bottom-spacing': 'fit-to-size',
+   *   'show-scale': true,
+   *   selectable: true,
+   *   collapsible: true
+   * });
+   * 
+   * @example
+   * // Render radial tree layout
+   * tree.render({
+   *   container: "#radial-tree",
+   *   layout: "radial",
+   *   width: 600,
+   *   height: 600
+   * });
+   */
   render(options) {
     this.display = new TreeRender(this, options);
     return this.display;

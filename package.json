@@ -58,6 +58,9 @@
     "build": "rollup -c rollup.config.js",
     "watch": "tape-watch -r source-map-support/register test/*-test.js",
     "test": "tape -r source-map-support/register 'test/*-test.js'",
+    "docs:generate": "jsdoc2md 'src/**/*.js' > API.md",
+    "docs:validate": "jsdoc2md 'src/**/*.js' --no-cache --partial 'partials/**/*.hbs'",
+    "docs:watch": "jsdoc2md 'src/**/*.js' -w > API.md",
     "postpublish": "zip -j dist/phylotree.js.zip -- LICENSE README.md dist/phylotree.js dist/phylotree.min.js dist/phylotree.css"
   },
   "files": [

@@ -1,0 +1,90 @@
+name: API Documentation
+
+on:
+  push:
+    branches: [master]
+    paths: 
+      - 'src/**/*.js'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'src/**/*.js'
+      - '.github/workflows/docs.yml'
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Generate API documentation
+      run: npm run docs:generate
+      
+    - name: Check if API.md changed
+      id: verify-changed-files
+      run: |
+        if git diff --quiet HEAD -- API.md; then
+          echo "changed=false" >> $GITHUB_OUTPUT
+        else
+          echo "changed=true" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Commit updated API documentation
+      if: steps.verify-changed-files.outputs.changed == 'true' && github.event_name == 'push'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add API.md
+        git commit -m "Auto-update API documentation 🤖"
+        git push
+        
+    - name: Deploy to GitHub Pages
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        destination_dir: ./
+        keep_files: true
+        publish_branch: gh-pages
+        include_files: |
+          API.md
+          README.md
+          index.html
+          dist/**
+          
+    - name: Comment on PR with documentation preview
+      if: github.event_name == 'pull_request' && steps.verify-changed-files.outputs.changed == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const apiDocs = fs.readFileSync('API.md', 'utf8');
+          const preview = apiDocs.substring(0, 2000) + (apiDocs.length > 2000 ? '\n\n... (truncated)' : '');
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `## 📖 API Documentation Preview
+            
+The API documentation has been updated in this PR. Here's a preview:
+
+\`\`\`markdown
+${preview}
+\`\`\`
+
+Full documentation will be available at: https://${context.repo.owner}.github.io/${context.repo.repo}/API.md when merged.`
+          });
