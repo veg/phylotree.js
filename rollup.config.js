@@ -7,7 +7,7 @@ import * as meta from "./package.json";
 
 const config = {
   input: "src/index.js",
-  external: Object.keys(meta.dependencies || {}).filter(dep => !['d3', 'xml2js', 'fast-xml-parser'].includes(dep)),
+  external: Object.keys(meta.dependencies || {}).filter(dep => !['d3', 'fast-xml-parser'].includes(dep)),
   output: {
     file: `dist/${meta.name}.js`,
     name: "phylotree",
@@ -18,8 +18,14 @@ const config = {
     globals: {underscore:'_', lodash: '_$1'}
   },
   plugins: [
-    nodeResolve(), 
-    commonjs(),
+    nodeResolve({
+      browser: true,
+      preferBuiltins: false,
+      mainFields: ['browser', 'module', 'main']
+    }), 
+    commonjs({
+      include: 'node_modules/**'
+    }),
     copy({
       targets: [
         { src: 'phylotree.css', dest: 'dist/' },

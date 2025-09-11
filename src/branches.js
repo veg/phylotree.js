@@ -80,6 +80,23 @@ export function defBranchLengthAccessor(_node, new_length) {
  *
  * @param {Function} attr Empty if getting, or new branch length accessor if setting.
  * @returns {Object} The branch length accessor if getting, or the current this if setting.
+ * @example
+ * // Set a custom branch length accessor
+ * const tree = new Phylotree(newick);
+ * tree.setBranchLength(function(node) {
+ *   // Use a transformed branch length
+ *   return Math.log(node.data.attribute + 1);
+ * });
+ * 
+ * @example
+ * // Set all branch lengths to 1 (equal branch lengths)
+ * tree.setBranchLength(function(node) {
+ *   return 1;
+ * });
+ * 
+ * @example
+ * // Get the current branch length accessor
+ * const currentAccessor = tree.setBranchLength();
  */
 export function setBranchLength(attr) {
   if (!arguments.length) return this.branch_length_accessor;
@@ -88,7 +105,19 @@ export function setBranchLength(attr) {
 }
 
 /**
- * Normalizes branch lengths
+ * Normalizes branch lengths to range [0,1]
+ * @returns {Phylotree} The current phylotree instance
+ * @example
+ * // Normalize all branch lengths to 0-1 range
+ * const tree = new Phylotree(newick);
+ * tree.normalizeBranchLengths();
+ * // Now all branch lengths are between 0 and 1
+ * 
+ * @example
+ * // Useful for comparing trees with different scales
+ * const tree1 = new Phylotree(newick1).normalizeBranchLengths();
+ * const tree2 = new Phylotree(newick2).normalizeBranchLengths();
+ * // Both trees now have comparable branch length scales
  */
 export function normalize(attr) {
 
@@ -122,9 +151,29 @@ export function normalize(attr) {
 
 
 /**
- * Scales branch lengths
+ * Scales branch lengths using a custom transformation function
  *
- * @param {Function} function that scales the branches
+ * @param {Function} scale_by Function that transforms each branch length
+ * @returns {Phylotree} The current phylotree instance
+ * @example
+ * // Scale all branch lengths by a constant factor
+ * const tree = new Phylotree(newick);
+ * tree.scaleBranchLengths(function(length) {
+ *   return length * 2; // Double all branch lengths
+ * });
+ * 
+ * @example
+ * // Apply logarithmic transformation
+ * tree.scaleBranchLengths(function(length) {
+ *   return Math.log10(length + 1);
+ * });
+ * 
+ * @example
+ * // Convert to time units (assuming substitutions per site)
+ * const mutationRate = 1e-8;
+ * tree.scaleBranchLengths(function(length) {
+ *   return length / mutationRate; // Convert to years
+ * });
  */
 export function scale(scale_by) {
 

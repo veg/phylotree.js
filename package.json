@@ -1,6 +1,6 @@
 {
   "name": "phylotree",
-  "version": "2.1.4",
+  "version": "2.1.7",
   "main": "dist/phylotree.js",
   "unpkg": "dist/phylotree.js",
   "jsdelivr": "dist/phylotree.js",
@@ -32,8 +32,7 @@
     "pretty-data": "^0.40.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "underscore": "1.x",
-    "winston": "^3.2.1",
-    "xml2js": "^0.6.2"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.6",
@@ -59,6 +58,9 @@
     "build": "rollup -c rollup.config.js",
     "watch": "tape-watch -r source-map-support/register test/*-test.js",
     "test": "tape -r source-map-support/register 'test/*-test.js'",
+    "docs:generate": "jsdoc2md 'src/**/*.js' > API.md",
+    "docs:validate": "jsdoc2md 'src/**/*.js' --no-cache --partial 'partials/**/*.hbs'",
+    "docs:watch": "jsdoc2md 'src/**/*.js' -w > API.md",
     "postpublish": "zip -j dist/phylotree.js.zip -- LICENSE README.md dist/phylotree.js dist/phylotree.min.js dist/phylotree.css"
   },
   "files": [

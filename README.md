@@ -64,6 +64,22 @@ curly braces directly after identifiers, e.g.:
 ```
 
 ## Examples
+
+### Interactive Examples Gallery
+🚀 **[Browse Local Examples](examples/)** - Self-contained HTML/JS examples that you can run locally
+
+**Available Examples:**
+* [Basic Tree Visualization](examples/basic/01-basic-tree/) - Learn phylotree.js fundamentals
+* [Cluster Analysis](examples/intermediate/05-cluster-analysis/) - Identify phylogenetic clusters
+
+**Coming Soon:**
+* Radial Tree Layout
+* Bootstrap Value Coloring  
+* Metadata & Host Coloring
+* Root-to-Tip Analysis
+* Tree Center Computation
+
+### Original Observable Notebooks
 * [Simple Example](https://observablehq.com/@stevenweaver/phylotree-1-0-0?collection=@stevenweaver/phylotree-utilities)
 * [Unscaled IAV HA colored by host](https://observablehq.com/@stevenweaver/phylotree-1-0-0-unscaled-iav-ha-colored-by-host?collection=@stevenweaver/phylotree-utilities)
 * [HIV RT](https://observablehq.com/@stevenweaver/phylotree-1-0-0-hiv-rt?collection=@stevenweaver/phylotree-utilities)
@@ -73,6 +89,8 @@ curly braces directly after identifiers, e.g.:
 * [Computing the Center of the Tree with Phylotree.js](https://observablehq.com/@stevenweaver/computing-the-center-of-the-tree-with-phylotree-js?collection=@stevenweaver/phylotree-utilities)
 * [Identifying Clusters in a Phylogenetic Tree with Phylotree.js](https://observablehq.com/@stevenweaver/identifying-clusters-in-a-phylogenetic-tree-with-phylotre?collection=@stevenweaver/phylotree-utilities)
 * [Identifying Clusters in a Phylogenetic Tree with Phylotree.js Part II](https://observablehq.com/@stevenweaver/identifying-clusters-in-a-phylogenetic-tree-with-phylotre/2?collection=@stevenweaver/phylotree-utilities)
+
+📚 View the complete [Observable Collection](https://observablehq.com/collection/@stevenweaver/phylotree-utilities)
 
 ## Options
 

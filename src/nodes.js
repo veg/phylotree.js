@@ -124,6 +124,16 @@ export function deleteANode(index) {
 /**
  * Get the tips of the tree
  * @returns {Array} Nodes in the current ``phylotree``.
+ * @example
+ * // Get all leaf nodes from a tree
+ * const tree = new Phylotree("((A:0.1,B:0.2):0.05,C:0.3);");
+ * const tips = tree.getTips();
+ * console.log(tips.map(tip => tip.data.name)); // ["A", "B", "C"]
+ * 
+ * @example
+ * // Count the number of taxa in the tree
+ * const numTaxa = tree.getTips().length;
+ * console.log(`Tree has ${numTaxa} taxa`);
  */
 export function getTips() {
   // get all nodes that have no nodes
@@ -166,6 +176,18 @@ export function getNodes() {
  *
  * @param {String} name Name of the desired node.
  * @returns {Node} Desired node.
+ * @example
+ * // Find a specific node by name
+ * const tree = new Phylotree("((A:0.1,B:0.2):0.05,C:0.3);");
+ * const nodeA = tree.getNodeByName("A");
+ * console.log(nodeA.data.name); // "A"
+ * 
+ * @example
+ * // Check if a node exists and get its branch length
+ * const nodeB = tree.getNodeByName("B");
+ * if (nodeB) {
+ *   console.log(`Node B has branch length: ${nodeB.data.attribute}`);
+ * }
  */
 export function getNodeByName(name) {
   return _.filter(this.nodes.descendants(), d => {
@@ -179,6 +201,21 @@ export function getNodeByName(name) {
  *
  * @param {Object} attributes An object whose keys are the names of nodes
  * to modify, and whose values are the new attributes to add.
+ * @example
+ * // Add species information to nodes
+ * const tree = new Phylotree(newick);
+ * tree.assignAttributes({
+ *   "Human": { species: "Homo sapiens", host: "human" },
+ *   "Chimp": { species: "Pan troglodytes", host: "chimpanzee" }
+ * });
+ * 
+ * @example
+ * // Add selection categories for visualization
+ * tree.assignAttributes({
+ *   "foreground_1": { category: "foreground", color: "red" },
+ *   "foreground_2": { category: "foreground", color: "red" },
+ *   "background_1": { category: "background", color: "blue" }
+ * });
  */
 export function assignAttributes(attributes) {
   //return nodes;
@@ -246,6 +283,22 @@ export function clearInternalNodes(respect) {
  * @param {Boolean} terminal Whether to include terminal nodes.
  * @param {Boolean} internal Whther to include internal nodes.
  * @returns {Array} An array of selected nodes.
+ * @example
+ * // Select all descendants of an internal node
+ * const tree = new Phylotree("(((A,B)AB,(C,D)CD)ABCD,E);");
+ * const internalNode = tree.getNodeByName("ABCD");
+ * const allDescendants = tree.selectAllDescendants(internalNode, true, true);
+ * console.log(allDescendants.map(n => n.data.name)); // ["AB", "A", "B", "CD", "C", "D"]
+ * 
+ * @example
+ * // Select only terminal descendants (tips in a clade)
+ * const cladeTips = tree.selectAllDescendants(internalNode, true, false);
+ * console.log(cladeTips.map(n => n.data.name)); // ["A", "B", "C", "D"]
+ * 
+ * @example
+ * // Select only internal descendants
+ * const cladeInternals = tree.selectAllDescendants(internalNode, false, true);
+ * console.log(cladeInternals.map(n => n.data.name)); // ["AB", "CD"]
  */
 export function selectAllDescendants(node, terminal, internal) {
 
