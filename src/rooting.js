@@ -163,6 +163,11 @@ export function reroot(node, fraction) {
     d3.select(rendered_tree.container).node().appendChild(rendered_tree.show());
     d3.select(this.display.container).dispatch('reroot');
 
+    // Emit rerooted event via new event system
+    if (rendered_tree.emit) {
+      rendered_tree.emit('rerooted', this.nodes);
+    }
+
   }
 
   return this;

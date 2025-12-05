@@ -12,6 +12,8 @@ import * as events from "./events";
 import { css_classes, initializeCssClasses } from "./options";
 import * as opt from "./options";
 import * as menus from "./menus";
+import * as eventEmitter from "./event-emitter";
+import * as selectionSets from "./selection-sets";
 
 // replacement for d3.functor
 function constant(x) {
@@ -33,6 +35,7 @@ class TreeRender {
     this._nodeLabel = this.defNodeLabel;
     this.svg = null;
     this._selectionCallback = null;
+    this._eventListeners = {};
     this.scales = [1, 1];
     this.size = [1, 1];
     this.fixed_width = [14, 30];
@@ -101,7 +104,13 @@ class TreeRender {
       "show-labels": true,
       "node-styler": null,
       "edge-styler": null,
-      "node-span": null
+      "node-span": null,
+      "responsive": false,
+      "preserve-aspect-ratio": "xMidYMid meet",
+      "selection-mode": "single",
+      "selection-sets": [],
+      "initial-selection": [],
+      "initial-sets": {}
     };
 
     this.ensure_size_is_in_px = function(value) {
@@ -143,6 +152,37 @@ class TreeRender {
     this.initializeEdgeLabels();
     this.update();
     events.d3PhylotreeAddEventListener();
+
+    // Initialize multi-set selection if configured
+    if (this.options["selection-mode"] === "multi-set" &&
+        this.options["selection-sets"].length > 0) {
+      this.initializeSelectionSets(this.options["selection-sets"]);
+    }
+
+    // Apply initial selection if configured
+    this.applyInitialSelection();
+  }
+
+  /**
+   * Apply initial selection from render options.
+   * @private
+   */
+  applyInitialSelection() {
+    // Single selection mode
+    if (this.options["initial-selection"] &&
+        this.options["initial-selection"].length > 0) {
+      this.selectNodes(this.options["initial-selection"]);
+    }
+
+    // Multi-set mode
+    if (this.options["selection-mode"] === "multi-set" &&
+        this.options["initial-sets"]) {
+      Object.entries(this.options["initial-sets"]).forEach(([setName, nodeNames]) => {
+        nodeNames.forEach(nodeName => {
+          this.addToSet(nodeName, setName);
+        });
+      });
+    }
   }
 
   pad_height() {
@@ -210,10 +250,22 @@ class TreeRender {
         .select("svg")
         .remove();
 
-      this.svg = d3
-        .create("svg")
-        .attr("width", this.width)
-        .attr("height", this.height);
+      this.svg = d3.create("svg");
+
+      if (this.options["responsive"]) {
+        // Responsive mode: use viewBox for scaling
+        this.svg
+          .attr("viewBox", `0 0 ${this.width} ${this.height}`)
+          .attr("preserveAspectRatio", this.options["preserve-aspect-ratio"])
+          .style("width", "100%")
+          .style("height", "auto")
+          .style("max-width", "100%");
+      } else {
+        // Fixed mode: explicit width/height
+        this.svg
+          .attr("width", this.width)
+          .attr("height", this.height);
+      }
 
       this.set_size([this.height, this.width]);
 
@@ -451,6 +503,9 @@ class TreeRender {
 
       this.svg.call(zoom);
     }
+
+    // Emit rendered event
+    this.emit('rendered');
 
     return this;
   }
@@ -1364,5 +1419,7 @@ _.extend(TreeRender.prototype, render_edges);
 _.extend(TreeRender.prototype, events);
 _.extend(TreeRender.prototype, menus);
 _.extend(TreeRender.prototype, opt);
+_.extend(TreeRender.prototype, eventEmitter);
+_.extend(TreeRender.prototype, selectionSets);
 
 export default TreeRender;

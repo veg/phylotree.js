@@ -41,8 +41,12 @@ export function drawNode(container, node, transitions) {
       .append("text")
       .classed(this.css_classes["node_text"], true)
       .merge(labels)
-      .on("click", d=> {
-        this.handle_node_click(node, d);
+      .on("click", (event, d) => {
+        this.emit('nodeClick', node, event);
+        this.handle_node_click(node, event);
+      })
+      .on("mouseenter", (event) => {
+        this.emit('nodeHover', node, event);
       })
       .attr("dy", d => {
         return this.shown_font_size * 0.33;
@@ -183,8 +187,12 @@ export function drawNode(container, node, transitions) {
         .attr("r", d => {
           return Math.min(this.shown_font_size * 0.75, radius);
         })
-        .on("click", d => {
-          this.handle_node_click(node, d);
+        .on("click", (event, d) => {
+          this.emit('nodeClick', node, event);
+          this.handle_node_click(node, event);
+        })
+        .on("mouseenter", (event) => {
+          this.emit('nodeHover', node, event);
         });
     } else {
       circles.remove();

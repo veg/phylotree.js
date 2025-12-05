@@ -29,6 +29,7 @@ const config = {
     copy({
       targets: [
         { src: 'phylotree.css', dest: 'dist/' },
+        { src: 'src/render/styles/phylotree-menus.css', dest: 'dist/' },
         { src: 'index.html', dest: 'dist/' }
       ]
     })
