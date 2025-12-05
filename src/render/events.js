@@ -30,6 +30,10 @@ export function toggleCollapse(node) {
   }
 
   this.placenodes();
+
+  // Emit collapsed event with node and current collapsed state
+  this.emit('collapsed', node, node.collapsed);
+
   return this;
 }
 
@@ -82,7 +86,13 @@ export function resizeSvg(tree, svg, tr) {
       svg = svg.transition(100);
     }
 
-    svg.attr("height", sizes[0]).attr("width", sizes[1]);
+    if (this.options["responsive"]) {
+      // Responsive mode: update viewBox
+      svg.attr("viewBox", `0 0 ${sizes[1]} ${sizes[0]}`);
+    } else {
+      // Fixed mode: update width/height
+      svg.attr("height", sizes[0]).attr("width", sizes[1]);
+    }
 
   }
 

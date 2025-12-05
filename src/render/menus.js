@@ -17,7 +17,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
       .select(container)
       .append("div")
       .attr("id", d3_layout_phylotree_context_menu_id)
-      .attr("class", "dropdown-menu")
+      .attr("class", "phylotree-context-menu dropdown-menu")
       .attr("role", "menu");
   }
 
@@ -40,7 +40,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
       if (options["collapsible"]) {
         menu_object
           .append("a")
-          .attr("class", "dropdown-item")
+          .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text(isNodeCollapsed(node) ? "Expand Subtree" : "Collapse Subtree")
           .on("click", d => {
@@ -48,10 +48,10 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
             this.toggleCollapse(node).update();
           });
         if (options["selectable"]) {
-          menu_object.append("div").attr("class", "dropdown-divider");
+          menu_object.append("div").attr("class", "phylotree-menu-divider dropdown-divider");
           menu_object
             .append("h6")
-            .attr("class", "dropdown-header")
+            .attr("class", "phylotree-menu-header dropdown-header")
             .text("Toggle selection");
         }
       }
@@ -59,7 +59,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
       if (options["selectable"]) {
         menu_object
           .append("a")
-          .attr("class", "dropdown-item")
+          .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("All descendant branches")
           .on("click", function(d) {
@@ -71,7 +71,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
 
         menu_object
           .append("a")
-          .attr("class", "dropdown-item")
+          .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("All terminal branches")
           .on("click", function(d) {
@@ -83,7 +83,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
 
         menu_object
           .append("a")
-          .attr("class", "dropdown-item")
+          .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("All internal branches")
           .on("click", function(d) {
@@ -99,7 +99,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
       if (options["selectable"]) {
         menu_object
           .append("a")
-          .attr("class", "dropdown-item")
+          .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("Incident branch")
           .on("click", function(d) {
@@ -109,7 +109,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
 
         menu_object
           .append("a")
-          .attr("class", "dropdown-item")
+          .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("Path to root")
           .on("click", d => {
@@ -118,14 +118,14 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
           });
 
         if (options["reroot"] || options["hide"]) {
-          menu_object.append("div").attr("class", "dropdown-divider");
+          menu_object.append("div").attr("class", "phylotree-menu-divider dropdown-divider");
         }
       }
 
       if (options["reroot"]) {
         menu_object
           .append("a")
-          .attr("class", "dropdown-item")
+          .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("Reroot on this node")
           .on("click", d => {
@@ -138,7 +138,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
       if (options["hide"]) {
         menu_object
           .append("a")
-          .attr("class", "dropdown-item")
+          .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("Hide this " + (isLeafNode(node) ? "node" : "subtree"))
           .on("click", d => {
@@ -153,7 +153,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
     if (hasHiddenNodes(node)) {
       menu_object
         .append("a")
-        .attr("class", "dropdown-item")
+        .attr("class", "phylotree-menu-item dropdown-item")
         .attr("tabindex", "-1")
         .text("Show all descendant nodes")
         .on("click", function(d) {
@@ -192,13 +192,13 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
       ];
 
       if (_.some(show_divider_options)) {
-        menu_object.append("div").attr("class", "dropdown-divider");
+        menu_object.append("div").attr("class", "phylotree-menu-divider dropdown-divider");
       }
 
       has_user_elements.forEach(function(d) {
         menu_object
           .append("a")
-          .attr("class", "dropdown-item")
+          .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text((d[0])(node)) // eslint-disable-line
           .on("click", _.partial(d[1], node));
@@ -388,8 +388,14 @@ export function modifySelection(
     }
   }
 
-  if (this._selectionCallback && attr != "tag") {
-    this._selectionCallback(this.getSelection());
+  if (attr != "tag") {
+    const selection = this.getSelection();
+    // Call legacy callback for backward compatibility
+    if (this._selectionCallback) {
+      this._selectionCallback(selection);
+    }
+    // Emit event for new event system
+    this.emit('selectionChange', selection);
   }
 
   this.refresh();
@@ -449,5 +455,64 @@ export function selectAllDescendants(node, terminal, internal) {
 export function selectionCallback(callback) {
   if (!callback) return this._selectionCallback;
   this._selectionCallback = callback;
+  return this;
+}
+
+/**
+ * Select nodes by their names.
+ *
+ * @param {string[]} names - Array of node names to select.
+ * @returns {this} For chaining.
+ * @example
+ * tree.selectNodes(['HUMAN', 'CHIMP', 'GORILLA']);
+ */
+export function selectNodes(names) {
+  if (!names || !Array.isArray(names) || names.length === 0) {
+    return this;
+  }
+
+  const nodesToSelect = this.phylotree.nodes.descendants()
+    .filter(node => names.includes(node.data.name));
+
+  if (nodesToSelect.length > 0) {
+    this.modifySelection(nodesToSelect, this.selection_attribute_name, false, false, 'true');
+  }
+
+  return this;
+}
+
+/**
+ * Deselect nodes by their names.
+ *
+ * @param {string[]} names - Array of node names to deselect.
+ * @returns {this} For chaining.
+ * @example
+ * tree.deselectNodes(['HUMAN']);
+ */
+export function deselectNodes(names) {
+  if (!names || !Array.isArray(names) || names.length === 0) {
+    return this;
+  }
+
+  const nodesToDeselect = this.phylotree.nodes.descendants()
+    .filter(node => names.includes(node.data.name));
+
+  if (nodesToDeselect.length > 0) {
+    this.modifySelection(nodesToDeselect, this.selection_attribute_name, false, false, 'false');
+  }
+
+  return this;
+}
+
+/**
+ * Clear all current selection.
+ *
+ * @returns {this} For chaining.
+ * @example
+ * tree.clearSelection();
+ */
+export function clearSelection() {
+  const allNodes = this.phylotree.nodes.descendants();
+  this.modifySelection(allNodes, this.selection_attribute_name, false, false, 'false');
   return this;
 }

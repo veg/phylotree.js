@@ -320,4 +320,52 @@ export function getNewick(annotator, root) {
   return element_array.join("")+";";
 }
 
+/**
+ * Generate Newick string with selection tags.
+ *
+ * @param {Object} options - Configuration options.
+ * @param {string} [options.tag='Foreground'] - Tag name for selected nodes (single selection mode).
+ * @param {boolean} [options.multiSet=false] - Use multi-set mode tags (uses set names as tags).
+ * @returns {string} Tagged Newick string.
+ * @example
+ * // Basic tagged output (uses selection state)
+ * const tagged = tree.getTaggedNewick();
+ * // Returns: "((A{Foreground}:0.1,B:0.2):0.05,C{Foreground}:0.3);"
+ *
+ * @example
+ * // Custom tag name
+ * const tagged = tree.getTaggedNewick({ tag: 'TEST' });
+ * // Returns: "((A{TEST}:0.1,B:0.2):0.05,C{TEST}:0.3);"
+ *
+ * @example
+ * // Multi-set mode (uses set names as tags)
+ * const tagged = tree.getTaggedNewick({ multiSet: true });
+ * // Returns: "((A{TEST}:0.1,B{REFERENCE}):0.2,C{TEST}:0.3);"
+ */
+export function getTaggedNewick(options = {}) {
+  const tag = options.tag || 'Foreground';
+  const multiSet = options.multiSet || false;
+
+  // Get selection attribute name from display if available
+  const selectionAttr = this.display
+    ? this.display.selection_attribute_name
+    : 'selected';
+
+  // Get selection sets from display if in multi-set mode
+  const selectionSets = this.display ? this.display._selectionSets : null;
+
+  const annotator = (node) => {
+    if (multiSet && node._selectionSet) {
+      // Multi-set mode: use set name as tag
+      return `{${node._selectionSet}}`;
+    } else if (node[selectionAttr]) {
+      // Single selection mode: use configured tag
+      return `{${tag}}`;
+    }
+    return '';
+  };
+
+  return this.getNewick(annotator);
+}
+
 export default newickParser;

@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import * as _ from "underscore";
 
 import { default as parser_registry } from "./formats/registry";
-import { default as newickParser, getNewick } from "./formats/newick";
+import { default as newickParser, getNewick, getTaggedNewick } from "./formats/newick";
 import { default as getTipLengths } from "./export";
 import * as nexus from "./formats/nexus";
 import { default as phyloxml_parser } from "./formats/phyloxml";
@@ -365,6 +365,7 @@ Phylotree.prototype.branchName = branchName;
 Phylotree.prototype.normalizeBranchLengths = normalize;
 Phylotree.prototype.scaleBranchLengths = scale;
 Phylotree.prototype.getNewick = getNewick;
+Phylotree.prototype.getTaggedNewick = getTaggedNewick;
 Phylotree.prototype.resortChildren = resortChildren;
 Phylotree.prototype.setBranchLength = setBranchLength;
 Phylotree.prototype.maxParsimony = maxParsimony;

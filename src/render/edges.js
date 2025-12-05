@@ -10,9 +10,15 @@ export function drawEdge(container, edge, transition) {
     .attr("class", d => {
       return this.reclassEdge(d);
     })
-    .on("click", d => {
-      this.modifySelection([edge.target], this.selection_attribute_name);
-      this.update();
+    .on("click", (event, d) => {
+      this.emit('branchClick', edge, event);
+      // Check for multi-set selection mode
+      if (this.options["selection-mode"] === "multi-set" && this._activeSetName) {
+        this.handleMultiSetClick(edge.target);
+      } else {
+        this.modifySelection([edge.target], this.selection_attribute_name);
+        this.update();
+      }
     });
 
   let new_branch_path = this.draw_branch([edge.source, edge.target]);
@@ -64,6 +70,12 @@ export function reclassEdge(edge) {
 
   if (itemSelected(edge, this.selection_attribute_name)) {
     class_var += " " + css_classes["selected-branch"];
+  }
+
+  // Multi-set selection mode: add set-specific class
+  if (edge.target && edge.target._selectionSet) {
+    const safeName = edge.target._selectionSet.replace(/[^a-zA-Z0-9-_]/g, '_');
+    class_var += " phylotree-set-branch-" + safeName;
   }
 
   return class_var;
