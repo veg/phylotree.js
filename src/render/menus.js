@@ -62,11 +62,15 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
           .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("All descendant branches")
-          .on("click", function(d) {
+          .on("click", (d) => {
             menu_object.style("display", "none");
-            phylotree.modifySelection(
-              phylotree.selectAllDescendants(node, true, true)
-            );
+            const nodes = phylotree.selectAllDescendants(node, true, true);
+            if (this.options["selection-mode"] === "multi-set" && this._activeSetName) {
+              nodes.forEach(n => this.addToSet(n, this._activeSetName));
+              this.update();
+            } else {
+              this.modifySelection(nodes);
+            }
           });
 
         menu_object
@@ -74,11 +78,15 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
           .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("All terminal branches")
-          .on("click", function(d) {
+          .on("click", (d) => {
             menu_object.style("display", "none");
-            phylotree.modifySelection(
-              phylotree.selectAllDescendants(node, true, false)
-            );
+            const nodes = phylotree.selectAllDescendants(node, true, false);
+            if (this.options["selection-mode"] === "multi-set" && this._activeSetName) {
+              nodes.forEach(n => this.addToSet(n, this._activeSetName));
+              this.update();
+            } else {
+              this.modifySelection(nodes);
+            }
           });
 
         menu_object
@@ -86,11 +94,15 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
           .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("All internal branches")
-          .on("click", function(d) {
+          .on("click", (d) => {
             menu_object.style("display", "none");
-            phylotree.modifySelection(
-              phylotree.selectAllDescendants(node, false, true)
-            );
+            const nodes = phylotree.selectAllDescendants(node, false, true);
+            if (this.options["selection-mode"] === "multi-set" && this._activeSetName) {
+              nodes.forEach(n => this.addToSet(n, this._activeSetName));
+              this.update();
+            } else {
+              this.modifySelection(nodes);
+            }
           });
       }
     }
@@ -102,9 +114,14 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
           .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("Incident branch")
-          .on("click", function(d) {
+          .on("click", (d) => {
             menu_object.style("display", "none");
-            phylotree.modifySelection([node]);
+            if (this.options["selection-mode"] === "multi-set" && this._activeSetName) {
+              this.addToSet(node, this._activeSetName);
+              this.update();
+            } else {
+              this.modifySelection([node]);
+            }
           });
 
         menu_object
@@ -112,9 +129,15 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
           .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
           .text("Path to root")
-          .on("click", d => {
+          .on("click", (d) => {
             menu_object.style("display", "none");
-            this.modifySelection(this.phylotree.pathToRoot(node));
+            const nodes = this.phylotree.pathToRoot(node);
+            if (this.options["selection-mode"] === "multi-set" && this._activeSetName) {
+              nodes.forEach(n => this.addToSet(n, this._activeSetName));
+              this.update();
+            } else {
+              this.modifySelection(nodes);
+            }
           });
 
         if (options["reroot"] || options["hide"]) {
