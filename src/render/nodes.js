@@ -15,7 +15,7 @@ export function shiftTip(d) {
   }
 
   if (this.options["right-to-left"]) {
-    return [this.right_most_leaf - d.screen_x, 0];
+    return [d.screen_x - this.left_most_leaf, 0];
   }
 
   return [this.right_most_leaf - d.screen_x, 0];
@@ -72,8 +72,17 @@ export function drawNode(container, node, transitions) {
           return d.text_align;
         });
     } else {
-      labels = labels.attr("text-anchor", "start").attr("transform", d => {
+      labels = labels
+      .attr("text-anchor", d => {
+        // For right-to-left labels to the right of nodes -> alignment "end"
+        return this.options["layout"] == "right-to-left" ? "end" : "start";
+      })
+      .attr("transform", d => {
         if (this.options["layout"] == "right-to-left") {
+          if (this.alignTips()) {
+            const shift = this.max_label_shift || (d.screen_x - this.left_most_leaf);
+            return this.d3PhylotreeSvgTranslate([-shift - 20, 0]);
+          }
           return this.d3PhylotreeSvgTranslate([-20, 0]);
         }
         return this.d3PhylotreeSvgTranslate(
@@ -92,6 +101,11 @@ export function drawNode(container, node, transitions) {
           .classed(this.css_classes["branch-tracer"], true)
           .merge(tracers)
           .attr("x1", d => {
+            if (this.options["layout"] == "right-to-left" && !this.radial()) {
+              // line begins at label - use max_label_shift
+              const shift = this.max_label_shift || (d.screen_x - this.left_most_leaf);
+              return -shift;
+            }
             return (
               (d.text_align == "end" ? -1 : 1) * this.nodeBubbleSize(node)
             );
@@ -111,7 +125,7 @@ export function drawNode(container, node, transitions) {
           })
           .attr("x2", d => {
             if (this.options["layout"] == "right-to-left") {
-              return d.screen_x;
+              return 0;
             }
             return this.shiftTip(d)[0];
           })
@@ -125,6 +139,11 @@ export function drawNode(container, node, transitions) {
           .classed(this.css_classes["branch-tracer"], true)
           .merge(tracers)
           .attr("x1", d => {
+            if (this.options["layout"] == "right-to-left" && !this.radial()) {
+              // line begins at label - use max_label_shift
+              const shift = this.max_label_shift || (d.screen_x - this.left_most_leaf);
+              return -shift;
+            }
             return (
               (d.text_align == "end" ? -1 : 1) * this.nodeBubbleSize(node)
             );
@@ -132,6 +151,10 @@ export function drawNode(container, node, transitions) {
           .attr("y2", 0)
           .attr("y1", 0)
           .attr("x2", d => {
+            if (this.options["layout"] == "right-to-left") {
+              // node's line end (x2 = 0)
+              return 0;
+            }
             return this.shiftTip(d)[0];
           });
         tracers.attr("transform", d => {
