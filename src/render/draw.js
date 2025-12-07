@@ -1035,6 +1035,7 @@ this.do_lr();
       this.draw_branch = draw_line;
       this.edge_placer = lineSegmentPlacer;
       this.right_most_leaf = 0;
+      this.left_most_leaf = Infinity; 
 
       this.phylotree.nodes.each(d => {
 
@@ -1050,6 +1051,10 @@ this.do_lr();
           this.right_most_leaf = Math.max(
             this.right_most_leaf,
             d.y + this.nodeBubbleSize(d)
+          );
+          this.left_most_leaf = Math.min(
+            this.left_most_leaf,
+            d.y - this.nodeBubbleSize(d)
           );
         }
 
@@ -1101,11 +1106,21 @@ this.do_lr();
           this.size[1] - this.offsets[1] - this.options["left-offset"] - this.shown_font_size;
      }
 
-      let scale = d3
+      let scale, scaleTickFormatter;
+
+      // For right-to-left, flip the domain and range
+      if (this.options["layout"] == "right-to-left") {
+        scale = d3
+          .scaleLinear()
+          .domain([domain_limit, 0])  // Inverted Domain
+          .range([0, range_limit]);    //The range remains the same
+      } else {
+        scale = d3
           .scaleLinear()
           .domain([0, domain_limit])
-          .range([0, range_limit]),
-         
+          .range([0, range_limit]);
+      }
+
           scaleTickFormatter = d3.format(".2f");
 
       this.draw_scale_bar = d3
