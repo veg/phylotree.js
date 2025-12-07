@@ -14,7 +14,7 @@ export function shiftTip(d) {
     ];
   }
 
-  if (this.options["right-to-left"]) {
+  if (this.options["layout"] == "right-to-left") {
     return [d.screen_x - this.left_most_leaf, 0];
   }
 
@@ -94,72 +94,55 @@ export function drawNode(container, node, transitions) {
     if (this.alignTips()) {
       tracers = tracers.data([node]);
 
-      if (transitions) {
-        tracers = tracers
-          .enter()
-          .append("line")
+      const makeTracers = (sel) => {
+        sel
           .classed(this.css_classes["branch-tracer"], true)
-          .merge(tracers)
-          .attr("x1", d => {
-            if (this.options["layout"] == "right-to-left" && !this.radial()) {
-              // line begins at label - use max_label_shift
-              const shift = this.max_label_shift || (d.screen_x - this.left_most_leaf);
-              return -shift;
-            }
-            return (
-              (d.text_align == "end" ? -1 : 1) * this.nodeBubbleSize(node)
-            );
-          })
-          .attr("x2", 0)
           .attr("y1", 0)
           .attr("y2", 0)
-          .attr("x2", d => {
-            if (this.options["layout"] == "right-to-left") {
-              return d.screen_x;
+          .attr("x1", d => {
+            if (this.radial()) {
+              return (d.text_align === "end" ? -1 : 1) * this.nodeBubbleSize(node);
             }
 
-            return this.shiftTip(d)[0];
-          })
-          .attr("transform", d => {
-            return this.d3PhylotreeSvgRotate(d.text_angle);
-          })
-          .attr("x2", d => {
-            if (this.options["layout"] == "right-to-left") {
-              return 0;
-            }
-            return this.shiftTip(d)[0];
-          })
-          .attr("transform", d => {
-            return this.d3PhylotreeSvgRotate(d.text_angle);
-          });
-      } else {
-        tracers = tracers
-          .enter()
-          .append("line")
-          .classed(this.css_classes["branch-tracer"], true)
-          .merge(tracers)
-          .attr("x1", d => {
-            if (this.options["layout"] == "right-to-left" && !this.radial()) {
-              // line begins at label - use max_label_shift
+            
+            if (this.options["layout"] === "right-to-left") {
               const shift = this.max_label_shift || (d.screen_x - this.left_most_leaf);
               return -shift;
             }
-            return (
-              (d.text_align == "end" ? -1 : 1) * this.nodeBubbleSize(node)
-            );
+
+            return (d.text_align === "end" ? -1 : 1) * this.nodeBubbleSize(node);
           })
-          .attr("y2", 0)
-          .attr("y1", 0)
           .attr("x2", d => {
-            if (this.options["layout"] == "right-to-left") {
-              // node's line end (x2 = 0)
+            if (this.radial()) {
+            return this.shiftTip(d)[0];
+            }
+
+            if (this.options["layout"] === "right-to-left") {
               return 0;
             }
             return this.shiftTip(d)[0];
           });
-        tracers.attr("transform", d => {
-          return this.d3PhylotreeSvgRotate(d.text_angle);
-        });
+
+        
+        if (this.radial()) {
+          sel.attr("transform", d => {
+            return this.d3PhylotreeSvgRotate(d.text_angle);
+          });
+        } else {
+          sel.attr("transform", null);
+        }
+
+        return sel;
+      };
+
+      if (transitions) {
+        tracers = makeTracers(
+          tracers.enter().append("line").merge(tracers)
+        );
+      } else {
+        tracers = makeTracers(
+          tracers.enter().append("line").merge(tracers)
+        );
       }
     } else {
       tracers.remove();
