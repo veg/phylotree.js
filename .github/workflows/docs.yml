@@ -3,7 +3,7 @@ name: API Documentation
 on:
   push:
     branches: [master]
-    paths: 
+    paths:
       - 'src/**/*.js'
       - '.github/workflows/docs.yml'
   pull_request:
@@ -11,6 +11,11 @@ on:
     paths:
       - 'src/**/*.js'
       - '.github/workflows/docs.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+  pages: write
 
 jobs:
   generate-docs:
