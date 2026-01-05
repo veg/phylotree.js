@@ -317,6 +317,10 @@ class TreeRender {
 
     this.placenodes();
 
+    // Sync edge labels BEFORE drawing edges so that edge.selected reflects node.selected
+    // This is critical for custom edge stylers that rely on selection state
+    this.syncEdgeLabels();
+
     transitions = this.transitions(transitions);
 
     let node_id = 0;
@@ -494,7 +498,8 @@ class TreeRender {
       brush.call(brush_object);
     }
 
-    this.syncEdgeLabels();
+    // Note: syncEdgeLabels() is called at the start of update() before edges are drawn
+    // to ensure selection state is synced before reclassEdge and edge_styler run
 
     if (this.options["zoom"]) {
       // Create zoom behavior if not already created
