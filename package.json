@@ -46,9 +46,7 @@
     "rollup-plugin-copy": "^3.3.0",
     "rollup-plugin-execute": "^1.1.1",
     "rollup-plugin-terser": "^7.0.2",
-    "rollup-watch": "^3.2.2",
     "tape": "5.2.2",
-    "tape-watch": "^2.3.0",
     "yarn": "^1.22.11"
   },
   "scripts": {
@@ -56,7 +54,6 @@
     "dev": "rollup -w -c rollup.config.js",
     "serve": "concurrently 'rollup -w -c rollup.config.js' 'http-server'",
     "build": "rollup -c rollup.config.js",
-    "watch": "tape-watch -r source-map-support/register test/*-test.js",
     "test": "tape -r source-map-support/register 'test/*-test.js'",
     "docs:generate": "jsdoc2md 'src/**/*.js' > API.md",
     "docs:validate": "jsdoc2md 'src/**/*.js' --no-cache --partial 'partials/**/*.hbs'",
