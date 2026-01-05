@@ -14,8 +14,9 @@ export function shiftTip(d) {
     ];
   }
 
-  if (this.options["right-to-left"]) {
-    return [this.right_most_leaf - d.screen_x, 0];
+  if (this.options["layout"] == "right-to-left") {
+    // For RTL, shift label to the left of the node (negative direction)
+    return [-(this.right_most_leaf - d.screen_x), 0];
   }
 
   return [this.right_most_leaf - d.screen_x, 0];
@@ -72,14 +73,14 @@ export function drawNode(container, node, transitions) {
           return d.text_align;
         });
     } else {
-      labels = labels.attr("text-anchor", "start").attr("transform", d => {
-        if (this.options["layout"] == "right-to-left") {
-          return this.d3PhylotreeSvgTranslate([-20, 0]);
-        }
-        return this.d3PhylotreeSvgTranslate(
-          this.alignTips() ? this.shiftTip(d) : null
-        );
-      });
+      const isRTL = this.options["layout"] == "right-to-left";
+      labels = labels
+        .attr("text-anchor", isRTL ? "end" : "start")
+        .attr("transform", d => {
+          return this.d3PhylotreeSvgTranslate(
+            this.alignTips() ? this.shiftTip(d) : null
+          );
+        });
     }
 
     if (this.alignTips()) {
@@ -157,17 +158,24 @@ export function drawNode(container, node, transitions) {
       });
 
       if (this.shown_font_size >= 5) {
+        const isRTL = this.options["layout"] == "right-to-left";
         labels = labels.attr("dx", d => {
-          return (
-            (d.text_align == "end" ? -1 : 1) *
-            ((this.alignTips() ? 0 : shift) + this.shown_font_size * 0.33)
-          );
+          // For radial, use text_align; for linear RTL, use negative offset; otherwise positive
+          const direction = this.radial()
+            ? (d.text_align == "end" ? -1 : 1)
+            : (isRTL ? -1 : 1);
+          return direction * ((this.alignTips() ? 0 : shift) + this.shown_font_size * 0.33);
         });
       }
     } else {
       if (this.shown_font_size >= 5) {
+        const isRTL = this.options["layout"] == "right-to-left";
         labels = labels.attr("dx", d => { // eslint-disable-line
-          return (d.text_align == "end" ? -1 : 1) * this.shown_font_size * 0.33;
+          // For radial, use text_align; for linear RTL, use negative offset; otherwise positive
+          const direction = this.radial()
+            ? (d.text_align == "end" ? -1 : 1)
+            : (isRTL ? -1 : 1);
+          return direction * this.shown_font_size * 0.33;
         });
       }
     }
