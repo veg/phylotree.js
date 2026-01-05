@@ -1071,10 +1071,9 @@ class TreeRender {
         d.y *= this.scales[1]*.8;
 
         if (this.options["layout"] == "right-to-left") {
-          // For RTL with align-tips, add label_width offset to shift tree right,
-          // creating space on the left for aligned labels
-          const rtlLabelOffset = this.options["align-tips"] ? this.label_width : 0;
-          d.y = this._extents[1][1] * this.scales[1] - d.y + rtlLabelOffset;
+          // For RTL, always add label_width offset to shift tree right,
+          // creating space on the left for labels (prevents labels overlapping branches)
+          d.y = this._extents[1][1] * this.scales[1] - d.y + this.label_width;
         }
 
 
