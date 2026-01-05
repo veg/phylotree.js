@@ -2,6 +2,7 @@
   "name": "phylotree",
   "version": "2.2.1",
   "main": "dist/phylotree.js",
+  "types": "dist/phylotree.d.ts",
   "unpkg": "dist/phylotree.js",
   "jsdelivr": "dist/phylotree.js",
   "module": "src/index.js",
@@ -64,6 +65,7 @@
     "dist/phylotree.css",
     "dist/phylotree.js",
     "dist/phylotree.min.js",
+    "dist/phylotree.d.ts",
     "bin",
     "src"
   ]
