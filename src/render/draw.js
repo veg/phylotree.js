@@ -1053,7 +1053,7 @@ class TreeRender {
       this.size[0] = this.radial_center + this.radius / scaler;
       this.size[1] = this.radial_center + this.radius / scaler;
     } else {
-this.do_lr();
+      this.do_lr();
 
       this.draw_branch = draw_line;
       this.edge_placer = lineSegmentPlacer;
@@ -1064,8 +1064,11 @@ this.do_lr();
         d.x *= this.scales[0];
         d.y *= this.scales[1]*.8;
 
-        if (this.options["layout"] == "right-to-left") {   
-          d.y = this._extents[1][1] * this.scales[1] - d.y;
+        if (this.options["layout"] == "right-to-left") {
+          // For RTL with align-tips, add label_width offset to shift tree right,
+          // creating space on the left for aligned labels
+          const rtlLabelOffset = this.options["align-tips"] ? this.label_width : 0;
+          d.y = this._extents[1][1] * this.scales[1] - d.y + rtlLabelOffset;
         }
 
 
