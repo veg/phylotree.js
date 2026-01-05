@@ -510,10 +510,11 @@ class TreeRender {
             const zt = event.transform;
             const composedTransform = `translate(${zt.x + this.baseTransform.x * zt.k}, ${zt.y + this.baseTransform.y * zt.k}) scale(${zt.k})`;
 
-            d3.select("." + css_classes["tree-container"]).attr("transform", composedTransform);
+            // Use this.svg.select() to target only this tree instance (not global d3.select)
+            this.svg.select("." + css_classes["tree-container"]).attr("transform", composedTransform);
 
             // Apply same transform to scale bar
-            d3.select("." + css_classes["tree-scale-bar"]).attr("transform", d => {
+            this.svg.select("." + css_classes["tree-scale-bar"]).attr("transform", d => {
               return `translate(${zt.x + this.baseTransform.x * zt.k}, ${zt.y + (this.baseTransform.y - 10) * zt.k}) scale(${zt.k})`;
             });
           });
