@@ -73,18 +73,11 @@ jobs:
           const fs = require('fs');
           const apiDocs = fs.readFileSync('API.md', 'utf8');
           const preview = apiDocs.substring(0, 2000) + (apiDocs.length > 2000 ? '\n\n... (truncated)' : '');
-          
+          const codeBlock = '```';
+
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `## 📖 API Documentation Preview
-            
-The API documentation has been updated in this PR. Here's a preview:
-
-\`\`\`markdown
-${preview}
-\`\`\`
-
-Full documentation will be available at: https://${context.repo.owner}.github.io/${context.repo.repo}/API.md when merged.`
+            body: `## API Documentation Preview\n\nThe API documentation has been updated in this PR. Here is a preview:\n\n${codeBlock}markdown\n${preview}\n${codeBlock}\n\nFull documentation will be available at: https://${context.repo.owner}.github.io/${context.repo.repo}/API.md when merged.`
           });
