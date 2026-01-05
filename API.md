@@ -1,3 +1,15 @@
+## Modules
+
+<dl>
+<dt><a href="#module_render/event-emitter">render/event-emitter</a></dt>
+<dd><p>Event emitter mixin for phylotree TreeRender
+Provides on/off/emit pattern for tree events</p>
+</dd>
+<dt><a href="#module_render/selection-sets">render/selection-sets</a></dt>
+<dd><p>Multi-set selection management for phylotree</p>
+</dd>
+</dl>
+
 ## Classes
 
 <dl>
@@ -37,6 +49,9 @@ as well as tagged trees such as
 </dd>
 <dt><a href="#getNewick">getNewick(annotator, node)</a> ⇒ <code>String</code></dt>
 <dd><p>Return Newick string representation of a phylotree.</p>
+</dd>
+<dt><a href="#getTaggedNewick">getTaggedNewick(options)</a> ⇒ <code>string</code></dt>
+<dd><p>Generate Newick string with selection tags.</p>
 </dd>
 <dt><a href="#loadAnnotations">loadAnnotations(tree, NEXUS)</a> ⇒ <code>Object</code></dt>
 <dd><p>Loads annotations from a nexus-formatted buffer and annotates existing tree
@@ -100,6 +115,15 @@ terminal/internal nodes.</p>
 every time the current selection is modified, and its argument is
 an array of nodes that make up the current selection.</p>
 </dd>
+<dt><a href="#selectNodes">selectNodes(names)</a> ⇒ <code>this</code></dt>
+<dd><p>Select nodes by their names.</p>
+</dd>
+<dt><a href="#deselectNodes">deselectNodes(names)</a> ⇒ <code>this</code></dt>
+<dd><p>Deselect nodes by their names.</p>
+</dd>
+<dt><a href="#clearSelection">clearSelection()</a> ⇒ <code>this</code></dt>
+<dd><p>Clear all current selection.</p>
+</dd>
 <dt><a href="#nodeSpan">nodeSpan(attr)</a> ⇒</dt>
 <dd><p>Get or set the current node span. If setting, the argument should
 be a function of a node which returns a number, so that node spans
@@ -134,6 +158,172 @@ an array of nodes that make up the current selection.</p>
 <dd><p>Traverses a tree that represents left-child right-sibling</p>
 </dd>
 </dl>
+
+<a name="module_render/event-emitter"></a>
+
+## render/event-emitter
+Event emitter mixin for phylotree TreeRender
+Provides on/off/emit pattern for tree events
+
+
+* [render/event-emitter](#module_render/event-emitter)
+    * [.on(eventName, callback)](#module_render/event-emitter.on) ⇒ <code>this</code>
+    * [.off(eventName, callback)](#module_render/event-emitter.off) ⇒ <code>this</code>
+
+<a name="module_render/event-emitter.on"></a>
+
+### render/event-emitter.on(eventName, callback) ⇒ <code>this</code>
+Register an event listener
+
+**Kind**: static method of [<code>render/event-emitter</code>](#module_render/event-emitter)  
+**Returns**: <code>this</code> - For chaining  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| eventName | <code>string</code> | Event name (nodeClick, branchClick, nodeHover,                             contextMenu, rendered, selectionChange, collapsed, rerooted) |
+| callback | <code>function</code> | Handler function |
+
+**Example**  
+```js
+tree.on('nodeClick', (node, event) => console.log(node.data.name));
+tree.on('selectionChange', (selectedNodes) => updatePanel(selectedNodes));
+```
+<a name="module_render/event-emitter.off"></a>
+
+### render/event-emitter.off(eventName, callback) ⇒ <code>this</code>
+Remove an event listener
+
+**Kind**: static method of [<code>render/event-emitter</code>](#module_render/event-emitter)  
+**Returns**: <code>this</code> - For chaining  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| eventName | <code>string</code> | Event name |
+| callback | <code>function</code> | Handler to remove (must be same reference) |
+
+**Example**  
+```js
+const handler = (node) => console.log(node);
+tree.on('nodeClick', handler);
+tree.off('nodeClick', handler);
+```
+<a name="module_render/selection-sets"></a>
+
+## render/selection-sets
+Multi-set selection management for phylotree
+
+
+* [render/selection-sets](#module_render/selection-sets)
+    * [.setActiveSet(name)](#module_render/selection-sets.setActiveSet) ⇒ <code>this</code>
+    * [.getActiveSet()](#module_render/selection-sets.getActiveSet) ⇒ <code>string</code> \| <code>null</code>
+    * [.getSetMembers(setName)](#module_render/selection-sets.getSetMembers) ⇒ <code>Array.&lt;Node&gt;</code>
+    * [.addToSet(node, setName)](#module_render/selection-sets.addToSet) ⇒ <code>this</code>
+    * [.removeFromSet(node, setName)](#module_render/selection-sets.removeFromSet) ⇒ <code>this</code>
+    * [.isInSet(node, setName)](#module_render/selection-sets.isInSet) ⇒ <code>boolean</code>
+    * [.getNodeSet(node)](#module_render/selection-sets.getNodeSet) ⇒ <code>string</code> \| <code>null</code>
+
+<a name="module_render/selection-sets.setActiveSet"></a>
+
+### render/selection-sets.setActiveSet(name) ⇒ <code>this</code>
+Set the active selection set. Clicks will add nodes to this set.
+
+**Kind**: static method of [<code>render/selection-sets</code>](#module_render/selection-sets)  
+**Returns**: <code>this</code> - For chaining.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>string</code> | Name of the set to activate. |
+
+**Example**  
+```js
+tree.setActiveSet('foreground');
+```
+<a name="module_render/selection-sets.getActiveSet"></a>
+
+### render/selection-sets.getActiveSet() ⇒ <code>string</code> \| <code>null</code>
+Get the currently active selection set name.
+
+**Kind**: static method of [<code>render/selection-sets</code>](#module_render/selection-sets)  
+**Returns**: <code>string</code> \| <code>null</code> - Active set name or null if not in multi-set mode.  
+**Example**  
+```js
+const activeSet = tree.getActiveSet(); // 'foreground'
+```
+<a name="module_render/selection-sets.getSetMembers"></a>
+
+### render/selection-sets.getSetMembers(setName) ⇒ <code>Array.&lt;Node&gt;</code>
+Get all members (nodes) of a selection set.
+
+**Kind**: static method of [<code>render/selection-sets</code>](#module_render/selection-sets)  
+**Returns**: <code>Array.&lt;Node&gt;</code> - Array of nodes in the set.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| setName | <code>string</code> | Name of the selection set. |
+
+**Example**  
+```js
+const foregroundNodes = tree.getSetMembers('foreground');
+```
+<a name="module_render/selection-sets.addToSet"></a>
+
+### render/selection-sets.addToSet(node, setName) ⇒ <code>this</code>
+Add a node to a selection set.
+
+**Kind**: static method of [<code>render/selection-sets</code>](#module_render/selection-sets)  
+**Returns**: <code>this</code> - For chaining.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Node</code> \| <code>string</code> | Node object or node name. |
+| setName | <code>string</code> | Target set name. |
+
+**Example**  
+```js
+tree.addToSet('HUMAN', 'foreground');
+tree.addToSet(nodeObject, 'background');
+```
+<a name="module_render/selection-sets.removeFromSet"></a>
+
+### render/selection-sets.removeFromSet(node, setName) ⇒ <code>this</code>
+Remove a node from a selection set.
+
+**Kind**: static method of [<code>render/selection-sets</code>](#module_render/selection-sets)  
+**Returns**: <code>this</code> - For chaining.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Node</code> \| <code>string</code> | Node object or node name. |
+| setName | <code>string</code> | Target set name. |
+
+**Example**  
+```js
+tree.removeFromSet('HUMAN', 'foreground');
+```
+<a name="module_render/selection-sets.isInSet"></a>
+
+### render/selection-sets.isInSet(node, setName) ⇒ <code>boolean</code>
+Check if a node belongs to a specific set.
+
+**Kind**: static method of [<code>render/selection-sets</code>](#module_render/selection-sets)  
+**Returns**: <code>boolean</code> - True if node is in the set.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Node</code> | The node to check. |
+| setName | <code>string</code> | The set name to check. |
+
+<a name="module_render/selection-sets.getNodeSet"></a>
+
+### render/selection-sets.getNodeSet(node) ⇒ <code>string</code> \| <code>null</code>
+Get the set name a node belongs to.
+
+**Kind**: static method of [<code>render/selection-sets</code>](#module_render/selection-sets)  
+**Returns**: <code>string</code> \| <code>null</code> - The set name or null if not in any set.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Node</code> | The node to check. |
 
 <a name="Phylotree"></a>
 
@@ -484,6 +674,38 @@ const annotatedNewick = tree.getNewick(function(node) {
 const nodeOfInterest = tree.getNodeByName("A");
 const subtreeNewick = tree.getNewick(null, nodeOfInterest);
 ```
+<a name="getTaggedNewick"></a>
+
+## getTaggedNewick(options) ⇒ <code>string</code>
+Generate Newick string with selection tags.
+
+**Kind**: global function  
+**Returns**: <code>string</code> - Tagged Newick string.  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| options | <code>Object</code> |  | Configuration options. |
+| [options.tag] | <code>string</code> | <code>&quot;&#x27;Foreground&#x27;&quot;</code> | Tag name for selected nodes (single selection mode). |
+| [options.multiSet] | <code>boolean</code> | <code>false</code> | Use multi-set mode tags (uses set names as tags). |
+
+**Example**  
+```js
+// Basic tagged output (uses selection state)
+const tagged = tree.getTaggedNewick();
+// Returns: "((A{Foreground}:0.1,B:0.2):0.05,C{Foreground}:0.3);"
+```
+**Example**  
+```js
+// Custom tag name
+const tagged = tree.getTaggedNewick({ tag: 'TEST' });
+// Returns: "((A{TEST}:0.1,B:0.2):0.05,C{TEST}:0.3);"
+```
+**Example**  
+```js
+// Multi-set mode (uses set names as tags)
+const tagged = tree.getTaggedNewick({ multiSet: true });
+// Returns: "((A{TEST}:0.1,B{REFERENCE}):0.2,C{TEST}:0.3);"
+```
 <a name="loadAnnotations"></a>
 
 ## loadAnnotations(tree, NEXUS) ⇒ <code>Object</code>
@@ -754,6 +976,49 @@ an array of nodes that make up the current selection.
 | --- | --- | --- |
 | callback | <code>function</code> | (Optional) The selection callback function. |
 
+<a name="selectNodes"></a>
+
+## selectNodes(names) ⇒ <code>this</code>
+Select nodes by their names.
+
+**Kind**: global function  
+**Returns**: <code>this</code> - For chaining.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| names | <code>Array.&lt;string&gt;</code> | Array of node names to select. |
+
+**Example**  
+```js
+tree.selectNodes(['HUMAN', 'CHIMP', 'GORILLA']);
+```
+<a name="deselectNodes"></a>
+
+## deselectNodes(names) ⇒ <code>this</code>
+Deselect nodes by their names.
+
+**Kind**: global function  
+**Returns**: <code>this</code> - For chaining.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| names | <code>Array.&lt;string&gt;</code> | Array of node names to deselect. |
+
+**Example**  
+```js
+tree.deselectNodes(['HUMAN']);
+```
+<a name="clearSelection"></a>
+
+## clearSelection() ⇒ <code>this</code>
+Clear all current selection.
+
+**Kind**: global function  
+**Returns**: <code>this</code> - For chaining.  
+**Example**  
+```js
+tree.clearSelection();
+```
 <a name="nodeSpan"></a>
 
 ## nodeSpan(attr) ⇒
