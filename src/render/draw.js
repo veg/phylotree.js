@@ -129,6 +129,10 @@ class TreeRender {
     this.node_styler = this.options['node-styler'];
     this.edge_styler = this.options['edge-styler'];
 
+    // Store zoom state to preserve across updates
+    this.currentZoomTransform = null;
+    this.baseTransform = { x: 0, y: 0 };
+
     this.nodeSpan = this.options['node-span'];
 
     if(!this.nodeSpan) {
@@ -321,15 +325,26 @@ class TreeRender {
       .selectAll("." + css_classes["tree-container"])
       .data([0]);
 
+    // Store base transform for composition with zoom
+    this.baseTransform = {
+      x: this.offsets[1] + this.options["left-offset"],
+      y: this.pad_height()
+    };
+
     enclosure = enclosure
       .enter()
       .append("g")
       .attr("class", css_classes["tree-container"])
       .merge(enclosure)
       .attr("transform", d => {
+        // Compose base transform with current zoom transform if present
+        if (this.currentZoomTransform && this.options["zoom"]) {
+          const zt = this.currentZoomTransform;
+          return `translate(${zt.x + this.baseTransform.x * zt.k}, ${zt.y + this.baseTransform.y * zt.k}) scale(${zt.k})`;
+        }
         return this.d3PhylotreeSvgTranslate([
-          this.offsets[1] + this.options["left-offset"],
-          this.pad_height()
+          this.baseTransform.x,
+          this.baseTransform.y
         ]);
       });
 
@@ -482,26 +497,34 @@ class TreeRender {
     this.syncEdgeLabels();
 
     if (this.options["zoom"]) {
-      let zoom = d3
-        .zoom()
-        .scaleExtent([0.1, 10])
-        .on("zoom", (event) => {
+      // Create zoom behavior if not already created
+      if (!this.zoomBehavior) {
+        this.zoomBehavior = d3
+          .zoom()
+          .scaleExtent([0.1, 10])
+          .on("zoom", (event) => {
+            // Store the current zoom transform
+            this.currentZoomTransform = event.transform;
 
-          d3.select("." + css_classes["tree-container"]).attr("transform", d => {
-            let toTransform = event.transform;
-            return toTransform;
+            // Compose zoom transform with base transform
+            const zt = event.transform;
+            const composedTransform = `translate(${zt.x + this.baseTransform.x * zt.k}, ${zt.y + this.baseTransform.y * zt.k}) scale(${zt.k})`;
+
+            d3.select("." + css_classes["tree-container"]).attr("transform", composedTransform);
+
+            // Apply same transform to scale bar
+            d3.select("." + css_classes["tree-scale-bar"]).attr("transform", d => {
+              return `translate(${zt.x + this.baseTransform.x * zt.k}, ${zt.y + (this.baseTransform.y - 10) * zt.k}) scale(${zt.k})`;
+            });
           });
+      }
 
-          // Give some extra room
-          d3.select("." + css_classes["tree-scale-bar"]).attr("transform", d => {
-            let toTransform = event.transform;
-            toTransform.y -= 10; 
-            return toTransform;
-          });
-          
-        });
+      this.svg.call(this.zoomBehavior);
 
-      this.svg.call(zoom);
+      // Restore zoom transform if we have one stored (preserves zoom across updates)
+      if (this.currentZoomTransform) {
+        this.svg.call(this.zoomBehavior.transform, this.currentZoomTransform);
+      }
     }
 
     // Emit rendered event

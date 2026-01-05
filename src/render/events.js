@@ -53,17 +53,25 @@ export function resizeSvg(tree, svg, tr) {
       sizes[0] + 2 * pad_radius + vertical_offset
     ];
 
+    // Update base transform for radial layout
+    this.baseTransform = {
+      x: pad_radius,
+      y: pad_radius + vertical_offset
+    };
+
     if (svg) {
+      // Compose with zoom transform if present
+      let transform;
+      if (this.currentZoomTransform && this.options["zoom"]) {
+        const zt = this.currentZoomTransform;
+        transform = `translate(${zt.x + this.baseTransform.x * zt.k}, ${zt.y + this.baseTransform.y * zt.k}) scale(${zt.k})`;
+      } else {
+        transform = "translate(" + pad_radius + "," + (pad_radius + vertical_offset) + ")";
+      }
+
       svg
         .selectAll("." + css_classes["tree-container"])
-        .attr(
-          "transform",
-          "translate (" +
-            pad_radius +
-            "," +
-            (pad_radius + vertical_offset) +
-            ")"
-        );
+        .attr("transform", transform);
     }
   } else {
 
