@@ -319,6 +319,11 @@ export function getNewick(tree: PhylotreeNode, annotator?: (node: PhylotreeNode)
 export function pairwise_distances(tree: phylotree): number[][];
 
 /**
+ * Compute pairwise distances between nodes (camelCase alias)
+ */
+export function pairwiseDistances(tree: phylotree): number[][];
+
+/**
  * Compute Sackin's index (tree balance measure)
  */
 export function sackin(tree: phylotree): number;
@@ -356,6 +361,11 @@ export function fitRootToTip(tree: phylotree, attr?: string): {
  * Extract dates from tip names
  */
 export function extract_dates(tree: phylotree, pattern?: RegExp): { [name: string]: number };
+
+/**
+ * Extract dates from tip names (camelCase alias)
+ */
+export function extractDates(tree: phylotree, pattern?: RegExp): { [name: string]: number };
 
 /**
  * Cluster Picker algorithm

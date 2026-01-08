@@ -38,11 +38,11 @@ export function initializeSelectionSets(sets) {
  * @private
  */
 export function _injectSetStyles(sets) {
-  const styleId = 'phylotree-selection-set-styles';
+  const styleId = "phylotree-selection-set-styles";
   let styleEl = document.getElementById(styleId);
 
   if (!styleEl) {
-    styleEl = document.createElement('style');
+    styleEl = document.createElement("style");
     styleEl.id = styleId;
     document.head.appendChild(styleEl);
   }
@@ -127,8 +127,8 @@ export function addToSet(node, setName) {
     return this;
   }
 
-  const nodeName = typeof node === 'string' ? node : node.data.name;
-  const nodeObj = typeof node === 'string'
+  const nodeName = typeof node === "string" ? node : node.data.name;
+  const nodeObj = typeof node === "string"
     ? this.phylotree.getNodeByName(node)
     : node;
 
@@ -141,8 +141,8 @@ export function addToSet(node, setName) {
     this._selectionSets[setName].members.add(nodeName);
     nodeObj._selectionSet = setName;
 
-    this.emit('setChange', {
-      action: 'add',
+    this.emit("setChange", {
+      action: "add",
       set: setName,
       node: nodeObj,
       allSets: this._getSetsSummary()
@@ -169,8 +169,8 @@ export function removeFromSet(node, setName) {
     return this;
   }
 
-  const nodeName = typeof node === 'string' ? node : node.data.name;
-  const nodeObj = typeof node === 'string'
+  const nodeName = typeof node === "string" ? node : node.data.name;
+  const nodeObj = typeof node === "string"
     ? this.phylotree.getNodeByName(node)
     : node;
 
@@ -180,8 +180,8 @@ export function removeFromSet(node, setName) {
       delete nodeObj._selectionSet;
     }
 
-    this.emit('setChange', {
-      action: 'remove',
+    this.emit("setChange", {
+      action: "remove",
       set: setName,
       node: nodeObj,
       allSets: this._getSetsSummary()

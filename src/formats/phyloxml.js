@@ -1,47 +1,47 @@
-import { XMLParser } from 'fast-xml-parser';
+import { XMLParser } from "fast-xml-parser";
 
 // Changes XML to JSON
 // Modified version from here: http://davidwalsh.name/convert-xml-json
 function xmlToJson(xml) {
 
-	// Create the return object
-	var obj = {};
+  // Create the return object
+  var obj = {};
 
-	if (xml.nodeType == 1) { // element
-		// do attributes
-		if (xml.attributes.length > 0) {
-		obj["@attributes"] = {};
-			for (var j = 0; j < xml.attributes.length; j++) {
-				var attribute = xml.attributes.item(j);
-				obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
-			}
-		}
-	} else if (xml.nodeType == 3) { // text
-		obj = xml.nodeValue;
-	}
+  if (xml.nodeType == 1) { // element
+    // do attributes
+    if (xml.attributes.length > 0) {
+    obj["@attributes"] = {};
+      for (var j = 0; j < xml.attributes.length; j++) {
+        var attribute = xml.attributes.item(j);
+        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+      }
+    }
+  } else if (xml.nodeType == 3) { // text
+    obj = xml.nodeValue;
+  }
 
-	// do children
-	// If just one text node inside
-	if (xml.hasChildNodes() && xml.childNodes.length === 1 && xml.childNodes[0].nodeType === 3) {
-		obj = xml.childNodes[0].nodeValue;
-	}
-	else if (xml.hasChildNodes()) {
-		for(var i = 0; i < xml.childNodes.length; i++) {
-			var item = xml.childNodes.item(i);
-			var nodeName = item.nodeName;
-			if (typeof(obj[nodeName]) == "undefined") {
-				obj[nodeName] = xmlToJson(item);
-			} else {
-				if (typeof(obj[nodeName].push) == "undefined") {
-					var old = obj[nodeName];
-					obj[nodeName] = [];
-					obj[nodeName].push(old);
-				}
-				obj[nodeName].push(xmlToJson(item));
-			}
-		}
-	}
-	return obj;
+  // do children
+  // If just one text node inside
+  if (xml.hasChildNodes() && xml.childNodes.length === 1 && xml.childNodes[0].nodeType === 3) {
+    obj = xml.childNodes[0].nodeValue;
+  }
+  else if (xml.hasChildNodes()) {
+    for(var i = 0; i < xml.childNodes.length; i++) {
+      var item = xml.childNodes.item(i);
+      var nodeName = item.nodeName;
+      if (typeof(obj[nodeName]) == "undefined") {
+        obj[nodeName] = xmlToJson(item);
+      } else {
+        if (typeof(obj[nodeName].push) == "undefined") {
+          var old = obj[nodeName];
+          obj[nodeName] = [];
+          obj[nodeName].push(old);
+        }
+        obj[nodeName].push(xmlToJson(item));
+      }
+    }
+  }
+  return obj;
 }
 
 var phyloxml_parser = function(xml, options) {
@@ -49,8 +49,8 @@ var phyloxml_parser = function(xml, options) {
   function parsePhyloxml(node, index) {
     if (node.clade) {
       if (!Array.isArray(node.clade)) {
-		node.clade = [node.clade];
-      }  
+        node.clade = [node.clade];
+      }
       node.clade.forEach(parsePhyloxml);
       node.children = node.clade;
       delete node.clade;
@@ -72,20 +72,20 @@ var phyloxml_parser = function(xml, options) {
   var tree_json;
 
   if (typeof xml === "string") {
-	if (DOMParser) {
-		const parser = new DOMParser();
-		xml = parser.parseFromString(xml, "text/xml");
-	} else {
-		const parser = new XMLParser();
-		xml = parser.parse(xml);
-	}
+    if (DOMParser) {
+      const parser = new DOMParser();
+      xml = parser.parseFromString(xml, "text/xml");
+    } else {
+      const parser = new XMLParser();
+      xml = parser.parse(xml);
+    }
   }
 
   xml = xmlToJson(xml);
   var phylogeny = xml.phyloxml.phylogeny;
   if (Array.isArray(phylogeny)) {
-	phylogeny = phylogeny[0];
-	console.warn('PhyloXML files with multiple phylogenies are not currently supported. Only the first phylogeny will be loaded.')
+    phylogeny = phylogeny[0];
+    console.warn("PhyloXML files with multiple phylogenies are not currently supported. Only the first phylogeny will be loaded.")
   }
   tree_json = phylogeny.clade;
   tree_json.name = "root";
