@@ -357,7 +357,7 @@ export function defNodeLabel(_node) {
 export function nodeLabel(attr) {
   if (!arguments.length) return this._nodeLabel;
   this._nodeLabel = attr ? attr : defNodeLabel;
-	this.update();
+  this.update();
   return this;
 }
 
