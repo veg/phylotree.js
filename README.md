@@ -2,10 +2,42 @@
 
 A JavaScript library for developing applications and interactive visualizations involving [phylogenetic trees](https://en.wikipedia.org/wiki/Phylogenetic_tree), written as an extension of the [D3](http://d3js.org) [hierarchy layout](https://github.com/d3/d3-3.x-api-reference/blob/master/Hierarchy-Layout.md). It generates high quality SVG vector graphics, allows a great degree of customizability (CSS or JavaScript callbacks), and comes with a lot of *built-in* convenience features. 
 
-## Example Notebooks
+## Quick Start
 
+### Installation
 
-### Standalone web application
+```bash
+npm install phylotree
+```
+
+### Basic Usage
+
+```javascript
+import { phylotree } from "phylotree";
+
+// Parse a Newick string
+const newick = "((A:0.1,B:0.2):0.3,(C:0.4,D:0.5):0.6);";
+const tree = new phylotree(newick);
+
+// Render to an SVG container
+const renderer = tree.render({
+  container: "#tree-container",
+  width: 800,
+  height: 600,
+  "align-tips": true,
+  zoom: true
+});
+```
+
+### TypeScript Support
+
+phylotree.js includes TypeScript declarations. Import types alongside the main export:
+
+```typescript
+import { phylotree, PhylotreeNode, RenderOptions } from "phylotree";
+```
+
+## Standalone Web Application
 
 A [full-featured web application](http://phylotree.hyphy.org) based on phylotree.js, implemented in [index.html](index.html).
 
@@ -65,21 +97,7 @@ curly braces directly after identifiers, e.g.:
 
 ## Examples
 
-### Interactive Examples Gallery
-🚀 **[Browse Local Examples](examples/)** - Self-contained HTML/JS examples that you can run locally
-
-**Available Examples:**
-* [Basic Tree Visualization](examples/basic/01-basic-tree/) - Learn phylotree.js fundamentals
-* [Cluster Analysis](examples/intermediate/05-cluster-analysis/) - Identify phylogenetic clusters
-
-**Coming Soon:**
-* Radial Tree Layout
-* Bootstrap Value Coloring  
-* Metadata & Host Coloring
-* Root-to-Tip Analysis
-* Tree Center Computation
-
-### Original Observable Notebooks
+### Observable Notebooks
 * [Simple Example](https://observablehq.com/@stevenweaver/phylotree-1-0-0?collection=@stevenweaver/phylotree-utilities)
 * [Unscaled IAV HA colored by host](https://observablehq.com/@stevenweaver/phylotree-1-0-0-unscaled-iav-ha-colored-by-host?collection=@stevenweaver/phylotree-utilities)
 * [HIV RT](https://observablehq.com/@stevenweaver/phylotree-1-0-0-hiv-rt?collection=@stevenweaver/phylotree-utilities)
@@ -91,6 +109,64 @@ curly braces directly after identifiers, e.g.:
 * [Identifying Clusters in a Phylogenetic Tree with Phylotree.js Part II](https://observablehq.com/@stevenweaver/identifying-clusters-in-a-phylogenetic-tree-with-phylotre/2?collection=@stevenweaver/phylotree-utilities)
 
 📚 View the complete [Observable Collection](https://observablehq.com/collection/@stevenweaver/phylotree-utilities)
+
+## Utility Functions
+
+phylotree.js exports several utility functions for phylogenetic analysis:
+
+### Tree Metrics
+
+```javascript
+import {
+  pairwiseDistances,  // Compute pairwise distances between nodes
+  sackin,             // Sackin's index (tree balance measure)
+  centerOfTree,       // Find the center node of the tree
+  computeMidpoint,    // Compute midpoint for rooting
+  rootToTip,          // Root-to-tip distance regression
+  fitRootToTip        // Find optimal root by R² maximization
+} from "phylotree";
+```
+
+### Clustering Algorithms
+
+```javascript
+import {
+  clusterPicker,  // Cluster Picker algorithm for transmission cluster identification
+  phylopart       // PhyloPart clustering algorithm
+} from "phylotree";
+
+// Example: Identify clusters
+const clusters = clusterPicker(tree, {
+  bootstrap_threshold: 0.9,
+  distance_threshold: 0.045
+});
+```
+
+### Tree Construction
+
+```javascript
+import {
+  neighborJoining,    // Build tree from distance matrix
+  getDistanceMatrix,  // Compute distance matrix from sequences
+  parseFasta          // Parse FASTA format sequences
+} from "phylotree";
+
+// Example: Build tree from sequences
+const sequences = parseFasta(fastaString);
+const { matrix, labels } = getDistanceMatrix(sequences);
+const treeJson = neighborJoining(matrix, labels);
+```
+
+### Parsers and Export
+
+```javascript
+import {
+  newickParser,      // Parse Newick format strings
+  getNewick,         // Export tree to Newick format
+  loadAnnotations,   // Load annotations from NEXUS files
+  extractDates       // Extract dates from tip names
+} from "phylotree";
+```
 
 ## Options
 
