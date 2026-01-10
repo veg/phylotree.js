@@ -9,18 +9,14 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x, 20.x]
-    
+
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Use Node.js ${{ matrix.node-version }}
+
+    - name: Use Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 22.x
         cache: 'yarn'
 
     - name: Install dependencies
@@ -32,23 +28,5 @@ jobs:
     - name: Run tests
       run: yarn test
 
-  coverage:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Use Node.js 20.x
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20.x
-        cache: 'yarn'
-
-    - name: Install dependencies
-      run: yarn install --frozen-lockfile
-
-    - name: Build project
-      run: yarn build
-
-    - name: Run tests
-      run: yarn test
+    - name: Run linter
+      run: yarn lint
