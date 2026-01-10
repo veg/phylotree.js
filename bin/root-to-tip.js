@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const phylotree = require('../dist/phylotree.js');
-const commander = require('commander');
-const _ = require('underscore');
+const fs = require("fs");
+const phylotree = require("../dist/phylotree.js");
+const { program } = require("commander");
+const _ = require("underscore");
 
 /*
  * Computes root-to-tip distance and fits linear regression
@@ -15,14 +15,15 @@ const _ = require('underscore');
  *
  */
 
-commander.option(
-    '-n --newick <newick>',
-    'Input newick file'
+program.option(
+    "-n --newick <newick>",
+    "Input newick file"
   ).parse(process.argv);
 
+const options = program.opts();
 
-if (!commander.newick){
-  throw 'ERROR: Newick file is required... exiting!';
+if (!options.newick){
+  throw "ERROR: Newick file is required... exiting!";
 }
 
 // Assumes date formatted like 1984-09-20
@@ -48,7 +49,7 @@ let date_parser = function(tree, node) {
   return null;
 }
 
-fs.readFile(commander.newick, (err, newick_data) => {
+fs.readFile(options.newick, (err, newick_data) => {
   const tree = new phylotree.phylotree(newick_data.toString());
   let computed_tree = phylotree.rootToTip(tree);
   let tree_with_dates = phylotree.extract_dates(computed_tree, _.partial(date_parser, computed_tree));

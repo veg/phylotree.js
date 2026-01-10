@@ -2,11 +2,11 @@
 
 const fs = require("fs"),
   phylotree = require("../dist/phylotree.js"),
-  commander = require("commander"),
+  { program } = require("commander"),
   _ = require("underscore"),
   moment = require("moment"),
   winston = require("winston"),
-  stringify = require("csv-stringify");
+  { stringify } = require("csv-stringify");
 
 const logger = winston.createLogger({
   level: "warn",
@@ -38,7 +38,7 @@ function collect(value, previous) {
   return previous.concat([value]);
 }
 
-commander
+program
   .requiredOption("-n --newick <newick>", "Input newick file")
   .option("-r --regex <regex>", "Regular expression to search date for", collect, [])
   .option(
@@ -57,7 +57,7 @@ commander
   )
   .option("-l --log-level <level>", "Specify log level", default_log);
 
-commander
+program
   .on("--help", function() {
     console.log("");
     console.log("Examples:");
@@ -70,23 +70,25 @@ commander
   })
   .parse(process.argv);
 
-if (commander.regex.length && commander.splitOnChar) {
+const options = program.opts();
+
+if (options.regex.length && options.splitOnChar) {
   logger.warn("-r and -s options are mutually exclusive");
   process.exit(1);
 }
 
-if (commander.regex.length) {
-  regexp = _.map(commander.regex, r => new RegExp(r));
+if (options.regex.length) {
+  regexp = _.map(options.regex, r => new RegExp(r));
 }
 
-if (commander.logLevel) {
-  logger.level = commander.logLevel;
+if (options.logLevel) {
+  logger.level = options.logLevel;
 }
 
 var date_format = undefined;
 
-if (commander.dateFormat) {
-  date_format = commander.dateFormat;
+if (options.dateFormat) {
+  date_format = options.dateFormat;
 }
 
 // Assumes date formatted like 1984-09-20
@@ -163,22 +165,22 @@ let split_date_parser = function(tree, delimiter, pos, format, node) {
   return null;
 };
 
-fs.readFile(commander.newick, (err, newick_data) => {
+fs.readFile(options.newick, (err, newick_data) => {
   const tree = new phylotree.phylotree(newick_data.toString());
   let computed_tree = phylotree.rootToTip(tree);
 
   let date_parser = _.partial(default_date_parser, computed_tree);
 
   // Set appropriate date parser
-  if (commander.splitOnChar) {
+  if (options.splitOnChar) {
     date_parser = _.partial(
       split_date_parser,
       computed_tree,
-      commander.splitOnChar,
+      options.splitOnChar,
       "last",
       date_format
     );
-  } else if (commander.regex.length) {
+  } else if (options.regex.length) {
     date_parser = _.partial(
       regex_date_parser,
       computed_tree,

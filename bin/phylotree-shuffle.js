@@ -2,21 +2,21 @@
 
 const fs = require("fs"),
   phylotree = require("../dist/phylotree.js"),
-  commander = require("commander"),
+  { program } = require("commander"),
   _ = require("underscore");
 
-commander
+program
   .arguments("<newick>", "Input newick file")
   .on("--help", function() {
     console.log("");
     console.log("Examples:");
     console.log(
-      'phylotree shuffle test/data/MERS.txt'
+      "phylotree shuffle test/data/MERS.txt"
     );
   })
   .parse(process.argv);
 
-fs.readFile(commander.args[0], (err, newickData) => {
+fs.readFile(program.args[0], (err, newickData) => {
 
   const tree = new phylotree.phylotree(newickData.toString());
   let tips = tree.getTips();
@@ -27,7 +27,7 @@ fs.readFile(commander.args[0], (err, newickData) => {
   // Shuffle names
   let shuffledNames = _.shuffle(names);
 
-  _.each(tips, (d,i) => d.data.name = shuffledNames[i])
+  _.each(tips, (d,i) => d.data.name = shuffledNames[i]);
 
   console.log(tree.getNewick());
 

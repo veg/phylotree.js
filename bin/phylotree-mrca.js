@@ -2,10 +2,10 @@
 
 const fs = require("fs"),
   phylotree = require("../dist/phylotree.js"),
-  commander = require("commander"),
+  { program } = require("commander"),
   _ = require("underscore");
 
-commander
+program
   .arguments("<newick>", "Input newick file")
   .requiredOption("-s --source <node>", "Source Node")
   .requiredOption("-t --target <node>", "Target Node")
@@ -17,20 +17,22 @@ commander
   })
   .parse(process.argv);
 
-fs.readFile(commander.args[0], (err, newick_data) => {
+const options = program.opts();
+
+fs.readFile(program.args[0], (err, newick_data) => {
   const tree = new phylotree.phylotree(newick_data.toString());
 
-  const targetNode = tree.getNodeByName(commander.target);
+  const targetNode = tree.getNodeByName(options.target);
 
   // GET SOURCE NODE
-  const sourceNode = tree.getNodeByName(commander.source);
+  const sourceNode = tree.getNodeByName(options.source);
 
   if (_.isUndefined(sourceNode)) {
-    throw new Error("Could not find source node with name " + commander.source);
+    throw new Error("Could not find source node with name " + options.source);
   }
 
   if (_.isUndefined(targetNode)) {
-    throw new Error("Could not find target node with name " + commander.target);
+    throw new Error("Could not find target node with name " + options.target);
   }
 
   let mrca = tree.mrca([sourceNode, targetNode]);

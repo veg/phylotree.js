@@ -2,10 +2,10 @@
 
 const fs = require("fs");
 const phylotree = require("../dist/phylotree.js");
-const commander = require("commander");
+const { program } = require("commander");
 const _ = require("underscore");
 
-commander
+program
   .arguments("<newick>", "Input newick file")
   .requiredOption(
     "-p --patterns <patterns>",
@@ -24,16 +24,18 @@ commander
   })
   .parse(process.argv);
 
-if (commander.patterns.split(",").length !== commander.tags.split(",").length) {
+const options = program.opts();
+
+if (options.patterns.split(",").length !== options.tags.split(",").length) {
   throw new Error(
     "The number of patterns must match the number of corresponding tags."
   );
 }
 
-const patterns = commander.patterns.split(",");
-const tags = commander.tags.split(",");
+const patterns = options.patterns.split(",");
+const tags = options.tags.split(",");
 
-fs.readFile(commander.args[0], (err, newick_data) => {
+fs.readFile(program.args[0], (err, newick_data) => {
   if (err) {
     throw new Error("Error reading the Newick file: " + err.message);
   }

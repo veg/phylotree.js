@@ -1,35 +1,35 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const phylotree = require('../dist/phylotree.js');
-const commander = require('commander');
-const _ = require('underscore');
+const fs = require("fs");
+const phylotree = require("../dist/phylotree.js");
+const { program } = require("commander");
+const _ = require("underscore");
 
 /*
  * phylotree reroot
  *
  * Usage:
- * phylotree reroot ./test/data/CD2-relax.new -n Horse 
+ * phylotree reroot ./test/data/CD2-relax.new -n Horse
  *
  */
 
-commander
+program
   .arguments("<newick>", "Input newick file")
   .requiredOption("-n --node <node>", "Node to reroot on")
-.parse(process.argv);
+  .parse(process.argv);
 
+const options = program.opts();
 
-if (!commander.args[0]){
-  throw 'ERROR: Newick file is required... exiting!';
+if (!program.args[0]){
+  throw "ERROR: Newick file is required... exiting!";
 }
 
-fs.readFile(commander.args[0], (err, newickData) => {
+fs.readFile(program.args[0], (err, newickData) => {
   const tree = new phylotree.phylotree(newickData.toString());
-  const node = tree.getNodeByName(commander.node)
+  const node = tree.getNodeByName(options.node);
   if(_.isUndefined(node)) {
-    throw new Error('Could not find node with name ' + commander.node)
+    throw new Error("Could not find node with name " + options.node);
   }
   tree.reroot(node);
   console.log(tree.getNewick());
 });
-
