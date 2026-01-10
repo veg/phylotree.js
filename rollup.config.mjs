@@ -1,13 +1,14 @@
-import {terser} from "rollup-plugin-terser";
-import {nodeResolve} from "@rollup/plugin-node-resolve";
+import terser from "@rollup/plugin-terser";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import copy from 'rollup-plugin-copy';
+import copy from "rollup-plugin-copy";
+import { readFileSync } from "fs";
 
-import * as meta from "./package.json";
+const meta = JSON.parse(readFileSync("./package.json", "utf8"));
 
 const config = {
   input: "src/index.js",
-  external: Object.keys(meta.dependencies || {}).filter(dep => !['d3', 'fast-xml-parser'].includes(dep)),
+  external: Object.keys(meta.dependencies || {}).filter(dep => !["d3", "fast-xml-parser"].includes(dep)),
   output: {
     file: `dist/${meta.name}.js`,
     name: "phylotree",

@@ -2,11 +2,11 @@
 
 const fs = require("fs");
 const phylotree = require("../dist/phylotree.js");
-const commander = require("commander");
+const { program } = require("commander");
 const _ = require("underscore");
 
 // Parse command line arguments
-commander
+program
   .arguments("<newick>", "Input newick file")
   .requiredOption(
     "-p --patterns <patterns>",
@@ -30,16 +30,18 @@ commander
   )
   .parse(process.argv);
 
+const options = program.opts();
+
 // Input validation
-if (commander.patterns.split(",").length !== commander.tags.split(",").length) {
+if (options.patterns.split(",").length !== options.tags.split(",").length) {
   throw new Error(
     "The number of patterns must match the number of corresponding tags.",
   );
 }
 
 // Parse patterns and tags
-const patterns = commander.patterns.split(",");
-const tags = commander.tags.split(",");
+const patterns = options.patterns.split(",");
+const tags = options.tags.split(",");
 
 // Function to get annotations for Newick output
 function annotator(node) {
@@ -47,15 +49,15 @@ function annotator(node) {
 }
 
 // Main tagging function
-fs.readFile(commander.args[0], (err, newick_data) => {
+fs.readFile(program.args[0], (err, newick_data) => {
   if (err) throw new Error("Error reading Newick file: " + err.message);
 
   // Parse tree
   const tree = new phylotree.phylotree(newick_data.toString());
 
   // Reroot if specified
-  if (commander.reroot) {
-    const reroot_node = tree.getNodeByName(commander.reroot);
+  if (options.reroot) {
+    const reroot_node = tree.getNodeByName(options.reroot);
     if (reroot_node) {
       tree.reroot(reroot_node);
     }
@@ -66,7 +68,7 @@ fs.readFile(commander.args[0], (err, newick_data) => {
     if (tree.isLeafNode(node)) {
       for (let i = 0; i < patterns.length; i++) {
         const matches = new RegExp(patterns[i]).test(node.data.name);
-        if (commander.invert ? !matches : matches) {
+        if (options.invert ? !matches : matches) {
           node.data.annotation = tags[i];
           break;
         }
@@ -75,7 +77,7 @@ fs.readFile(commander.args[0], (err, newick_data) => {
   }
 
   function applyStrategy() {
-    switch (commander.strategy) {
+    switch (options.strategy) {
       case "none":
         // Only leaf nodes are tagged
         break;
@@ -119,7 +121,7 @@ fs.readFile(commander.args[0], (err, newick_data) => {
   }
 
   // Apply tagging
-  if (!commander.leafOnly) {
+  if (!options.leafOnly) {
     tree.traverse_and_compute(tagLeafNodes);
     applyStrategy();
   } else {
