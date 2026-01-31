@@ -1,0 +1,11 @@
+title: Phylotree.js Documentation
+description: A JavaScript library for phylogenetic tree visualization
+theme: minima
+plugins:
+  - jekyll-relative-links
+relative_links:
+  enabled: true
+  collections: true
+include:
+  - API.md
+  - README.md
