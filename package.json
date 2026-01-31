@@ -28,7 +28,7 @@
     "d3": "^7.9.0",
     "fast-xml-parser": "^5.3.4",
     "jquery": "^3.7.1",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "moment": "^2.30.1",
     "pretty-data": "^0.40.0",
     "underscore": "^1.13.7",
