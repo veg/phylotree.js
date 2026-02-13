@@ -116,6 +116,8 @@ export class TreeRender {
   label_width: number;
   /** Rightmost leaf x position */
   right_most_leaf: number;
+  /** The container element */
+  container: string | HTMLElement;
 
   constructor(phylotree: Phylotree, options?: RenderOptions);
 
@@ -166,6 +168,117 @@ export class TreeRender {
 
   /** Selection callback setter */
   selectionCallback(callback: (selection: PhylotreeNode[]) => void): this;
+
+  /**
+   * Get or set spacing in the x-direction (horizontal spacing between nodes)
+   * @param attr The new spacing value if setting
+   * @param skip_render Whether to skip re-rendering after setting
+   * @returns The current spacing_x value if getting, or the TreeRender instance if setting
+   */
+  spacing_x(): number;
+  spacing_x(attr: number, skip_render?: boolean): this;
+
+  /**
+   * Get or set spacing in the y-direction (vertical spacing between levels)
+   * @param attr The new spacing value if setting
+   * @param skip_render Whether to skip re-rendering after setting
+   * @returns The current spacing_y value if getting, or the TreeRender instance if setting
+   */
+  spacing_y(): number;
+  spacing_y(attr: number, skip_render?: boolean): this;
+
+  /**
+   * Get or set the font size for labels
+   * @param attr The new font size if setting
+   * @returns The current font size if getting, or the TreeRender instance if setting
+   */
+  font_size(): number;
+  font_size(attr: number): this;
+
+  /**
+   * Get or set the scale bar font size
+   * @param attr The new font size if setting
+   * @returns The current scale bar font size if getting, or the TreeRender instance if setting
+   */
+  scale_bar_font_size(): number;
+  scale_bar_font_size(attr: number): this;
+
+  /**
+   * Get or set the node circle size
+   * @param attr The new circle size if setting
+   * @param attr2 Optional second parameter
+   * @returns The current node circle size if getting, or the TreeRender instance if setting
+   */
+  node_circle_size(): number;
+  node_circle_size(attr: number, attr2?: number): this;
+
+  /**
+   * Get or set CSS classes
+   * @param opt CSS class options
+   * @returns The current CSS classes if getting, or the TreeRender instance if setting
+   */
+  css(): { [key: string]: string };
+  css(opt: { [key: string]: string }): this;
+
+  /**
+   * Get or set transitions
+   * @param arg Transition settings
+   * @returns The current transition settings if getting, or the TreeRender instance if setting
+   */
+  transitions(): boolean | null;
+  transitions(arg: boolean): this;
+
+  /**
+   * Layout the tree
+   * @param transitions Whether to use transitions
+   * @returns The TreeRender instance
+   */
+  layout(transitions?: boolean): this;
+
+  /** Refresh the tree display */
+  refresh(): this;
+
+  /** Place nodes in the layout */
+  placenodes(): this;
+
+  /**
+   * Set the separation function for node spacing
+   * @param callback Function that returns additional spacing between nodes
+   * @returns The TreeRender instance
+   */
+  separation(callback: (node: PhylotreeNode, previous: PhylotreeNode) => number): this;
+
+  /**
+   * Set internal node labels based on children
+   * @param callback Function that determines label based on children
+   * @param respect_existing Whether to respect existing selections
+   * @returns The TreeRender instance
+   */
+  internalLabel(callback: (children: PhylotreeNode[]) => boolean, respect_existing?: boolean): this;
+
+  /**
+   * Get or set the count handler callback
+   * @param callback Function called with selection count
+   * @returns The current handler if getting, or the TreeRender instance if setting
+   */
+  countHandler(): ((count: number) => void) | null;
+  countHandler(callback: (count: number) => void): this;
+
+  /**
+   * Update the selection key name
+   * @param old_key The old key name
+   * @param new_key The new key name
+   * @returns The TreeRender instance
+   */
+  updateKeyName(old_key: string, new_key: string | null): this;
+
+  /**
+   * Set the size of the tree display
+   * @param attr Size as [width, height]
+   * @returns The current size if getting, or the TreeRender instance if setting
+   */
+  set_size(): [number, number];
+  set_size(attr: [number, number]): this;
 }
 
 /**

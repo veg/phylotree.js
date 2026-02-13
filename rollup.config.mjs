@@ -31,7 +31,8 @@ const config = {
       targets: [
         { src: 'phylotree.css', dest: 'dist/' },
         { src: 'src/render/styles/phylotree-menus.css', dest: 'dist/' },
-        { src: 'index.html', dest: 'dist/' }
+        { src: 'index.html', dest: 'dist/' },
+        { src: 'types/phylotree.d.ts', dest: 'dist/' }
       ]
     })
   ]
