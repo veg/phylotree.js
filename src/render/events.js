@@ -41,7 +41,25 @@ export function resizeSvg(tree, svg, tr) {
 
   let sizes = this.size;
 
-  if (this.radial()) {
+  if (this.unrooted()) {
+    // Unrooted layout: use the computed size (may differ from initial width/height
+    // due to spacing button scaling)
+    this.baseTransform = { x: 0, y: 0 };
+
+    if (svg) {
+      let transform;
+      if (this.currentZoomTransform && this.options["zoom"]) {
+        const zt = this.currentZoomTransform;
+        transform = `translate(${zt.x}, ${zt.y}) scale(${zt.k})`;
+      } else {
+        transform = "translate(0,0)";
+      }
+
+      svg
+        .selectAll("." + css_classes["tree-container"])
+        .attr("transform", transform);
+    }
+  } else if (this.radial()) {
     let pad_radius = this.pad_width(),
       vertical_offset =
         this.options["top-bottom-spacing"] != "fit-to-size"

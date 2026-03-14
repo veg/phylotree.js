@@ -6,6 +6,11 @@ import { css_classes } from "./options";
 
 export function shiftTip(d) {
 
+  if (this.unrooted()) {
+    // No tip alignment for unrooted layout
+    return [0, 0];
+  }
+
   if (this.radial()) {
     return [
       (d.text_align == "end" ? -1 : 1) *
@@ -60,7 +65,15 @@ export function drawNode(container, node, transitions) {
         return this.ensure_size_is_in_px(this.shown_font_size);
       });
 
-    if (this.radial()) {
+    if (this.unrooted()) {
+      labels = labels
+        .attr("transform", d => {
+          return this.d3PhylotreeSvgRotate(d.text_angle);
+        })
+        .attr("text-anchor", d => {
+          return d.text_align;
+        });
+    } else if (this.radial()) {
       labels = labels
         .attr("transform", d => {
           return (
@@ -153,8 +166,7 @@ export function drawNode(container, node, transitions) {
       if (this.shown_font_size >= 5) {
         const isRTL = this.options["layout"] == "right-to-left";
         labels = labels.attr("dx", d => {
-          // For radial, use text_align; for linear RTL, use negative offset; otherwise positive
-          const direction = this.radial()
+          const direction = (this.radial() || this.unrooted())
             ? (d.text_align == "end" ? -1 : 1)
             : (isRTL ? -1 : 1);
           return direction * ((this.alignTips() ? 0 : shift) + this.shown_font_size * 0.33);
@@ -164,8 +176,7 @@ export function drawNode(container, node, transitions) {
       if (this.shown_font_size >= 5) {
         const isRTL = this.options["layout"] == "right-to-left";
         labels = labels.attr("dx", d => { // eslint-disable-line
-          // For radial, use text_align; for linear RTL, use negative offset; otherwise positive
-          const direction = this.radial()
+          const direction = (this.radial() || this.unrooted())
             ? (d.text_align == "end" ? -1 : 1)
             : (isRTL ? -1 : 1);
           return direction * this.shown_font_size * 0.33;

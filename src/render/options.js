@@ -36,6 +36,12 @@ export function radial(attr) {
   return this;
 }
 
+export function unrooted(attr) {
+  if (!arguments.length) return this.options["is-unrooted"];
+  this.options["is-unrooted"] = attr;
+  return this;
+}
+
 export function alignTips(attr) {
   if (!arguments.length) return this.options["align-tips"];
   this.options["align-tips"] = attr;

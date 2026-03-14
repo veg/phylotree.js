@@ -54,6 +54,8 @@ export interface RenderOptions {
   layout?: 'left-to-right' | 'right-to-left';
   /** Use radial/circular layout */
   'is-radial'?: boolean;
+  /** Use unrooted (equal-angle) layout */
+  'is-unrooted'?: boolean;
   /** Align tip labels */
   'align-tips'?: boolean;
   /** Show node labels */
@@ -132,6 +134,9 @@ export class TreeRender {
 
   /** Get/set radial mode */
   radial(value?: boolean): boolean | this;
+
+  /** Get/set unrooted (equal-angle) layout mode */
+  unrooted(value?: boolean): boolean | this;
 
   /** Get/set align tips mode */
   alignTips(value?: boolean): boolean | this;
