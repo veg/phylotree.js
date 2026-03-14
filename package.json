@@ -45,7 +45,7 @@
     "http-server": "^14.1.1",
     "jsdoc-to-markdown": "^9.1.0",
     "prettier": "^3.7.0",
-    "rollup": "^4.40.0",
+    "rollup": "^4.59.0",
     "rollup-plugin-copy": "^3.5.0",
     "tape": "^5.9.0"
   },
