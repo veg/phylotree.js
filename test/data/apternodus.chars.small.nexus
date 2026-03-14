@@ -1,0 +1,42 @@
+#NEXUS
+
+[Asher, R. J., McKenna, M. C., Emry, R. J., Tabrum, A. R. & Kron, D. G., 2002: Morphology and relationships of Apternodus and other extinct, zalambdodont placental mammals.
+–Bulletin of the American Museum of Natural History: #273, pp. 1-117]
+
+begin data;
+    dimensions ntax=30 nchar=1;
+    format symbols="01234" missing=? gap=-;
+    matrix
+Didelphis       0
+A.mediaevus     0
+A.gregoryi      0
+A.brevirostris  0
+A.iliffensis    0
+A.dasophylakas  0
+A.major         0
+A.baladontus    0
+O.altitalonidus 0
+O.cameronensis  0
+TaberButte      ?
+Parapternodus   ?
+Koniaryctes     ?
+Micropternodus  ?
+Silvercoulee    1
+Pararyctes      1
+Eoryctes        1
+Nesophontes     0
+Centetodon      0
+Echinosorex     1
+Erinaceus       1
+Microgale       1
+Setifer         1
+S.paradoxus     0
+S.cubanus       0
+Crocidura       0
+Blarina         0
+Domnina         0
+Elephantulus    0
+Macroscelides   1
+    ;
+end;   
+

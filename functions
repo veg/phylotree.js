@@ -1,0 +1,51 @@
+##### RENDERING ####
+
+# cartesian.js
+export function line_segment_placer(edge, where) {
+
+# clades.js
+export function update_collapsed_clades(transitions) {
+
+# coordinates.js
+export function x_coord(d) {
+export function y_coord(d) {
+
+# draw.js
+export function style_nodes(attr) {
+export function style_edges(attr) {
+
+# edge.js
+export function draw_edge(container, edge, transition) {
+export function reclass_edge(edge) {
+export function sync_edge_labels() {
+
+# events.js
+export function toggle_collapse(node) {
+export function resize_svg(tree, svg, tr) {
+export function rescale(scale, attr_name) {
+export function trigger_refresh(tree) {
+export function count_update(tree, counts) {
+export function d3_phylotree_trigger_layout(tree) {
+export function d3_phylotree_event_listener(event) {
+export function d3_phylotree_add_event_listener() {
+export function d3_phylotree_svg_translate(x) {
+export function d3_phylotree_svg_rotate(a) {
+
+# menus.js
+export function node_dropdown_menu(node, container, phylotree, options) {
+export function add_custom_menu(node, name, callback, condition) {
+export function modify_selection(
+export function get_selection() {
+export function select_all_descendants(node, terminal, internal) {
+export function selection_callback(callback) {
+
+# node.js
+export function shift_tip(d) {
+export function clear_internal_nodes(respect) {
+export function draw_node(container, node, transitions) {
+export function update_has_hidden_nodes() {
+
+# radial.js
+export function cartesian_to_polar(
+export function draw_arc(points, radial_center) {
+export function arc_segment_placer(edge, where, radial_center) {
