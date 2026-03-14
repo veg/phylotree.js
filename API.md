@@ -151,6 +151,26 @@ string <code>&quot;equal&quot;</code>, to give all nodes an equal span.</p>
 every time the current selection is modified, and its argument is
 an array of nodes that make up the current selection.</p>
 </dd>
+<dt><a href="#countLeaves">countLeaves(node)</a> ⇒ <code>Number</code></dt>
+<dd><p>Count the number of leaf nodes in a subtree.</p>
+</dd>
+<dt><a href="#computeUnrootedLayout">computeUnrootedLayout(root, scales, width, height, labelPad)</a></dt>
+<dd><p>Compute unrooted (equal-angle) layout coordinates for all nodes.</p>
+<p>The algorithm allocates 2π of angular space at the root, then recursively
+assigns each child subtree angular space proportional to its leaf count.
+Each node is placed at parent_position + branch_length * (cos(angle), sin(angle)).</p>
+<p>After computing raw positions, coordinates are normalized to fit within
+the given width × height.</p>
+</dd>
+<dt><a href="#equalAngle">equalAngle(node, startAngle, arcSize)</a></dt>
+<dd><p>Recursive equal-angle layout.</p>
+</dd>
+<dt><a href="#drawUnrootedEdge">drawUnrootedEdge(points)</a> ⇒ <code>String</code></dt>
+<dd><p>Draw a straight line edge between two nodes (for unrooted layout).</p>
+</dd>
+<dt><a href="#unrootedSegmentPlacer">unrootedSegmentPlacer(edge, where)</a> ⇒ <code>Object</code></dt>
+<dd><p>Place a label along an unrooted edge via linear interpolation.</p>
+</dd>
 <dt><a href="#reroot">reroot(node, if)</a> ⇒ <code><a href="#Phylotree">Phylotree</a></code></dt>
 <dd><p>Reroot the tree on the given node.</p>
 </dd>
@@ -458,26 +478,10 @@ const display = tree.render({
 // Render radial tree layout
 tree.render({
   container: "#radial-tree",
-  'is-radial': true,
+  layout: "radial",
   width: 600,
   height: 600
 });
-```
-**Example**
-```js
-// Render unrooted (equal-angle) tree layout
-tree.render({
-  container: "#unrooted-tree",
-  'is-unrooted': true,
-  width: 800,
-  height: 800
-});
-```
-**Example**
-```js
-// Toggle to unrooted layout after rendering
-const display = tree.render({ container: "#tree" });
-display.unrooted(true).update();
 ```
 <a name="getBranchLengths"></a>
 
@@ -1115,6 +1119,78 @@ an array of nodes that make up the current selection.
 | Param | Type | Description |
 | --- | --- | --- |
 | callback | <code>function</code> | (Optional) The selection callback function. |
+
+<a name="countLeaves"></a>
+
+## countLeaves(node) ⇒ <code>Number</code>
+Count the number of leaf nodes in a subtree.
+
+**Kind**: global function  
+**Returns**: <code>Number</code> - The number of leaves  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Object</code> | A D3 hierarchy node |
+
+<a name="computeUnrootedLayout"></a>
+
+## computeUnrootedLayout(root, scales, width, height, labelPad)
+Compute unrooted (equal-angle) layout coordinates for all nodes.
+
+The algorithm allocates 2π of angular space at the root, then recursively
+assigns each child subtree angular space proportional to its leaf count.
+Each node is placed at parent_position + branch_length * (cos(angle), sin(angle)).
+
+After computing raw positions, coordinates are normalized to fit within
+the given width × height.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| root | <code>Object</code> | The root node of the D3 hierarchy |
+| scales | <code>Array</code> | [scale_x, scale_y] from placenodes |
+| width | <code>Number</code> | Available width in pixels |
+| height | <code>Number</code> | Available height in pixels |
+| labelPad | <code>Number</code> | Pixel padding to reserve for labels on all sides |
+
+<a name="equalAngle"></a>
+
+## equalAngle(node, startAngle, arcSize)
+Recursive equal-angle layout.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Object</code> | Current node |
+| startAngle | <code>Number</code> | Start of the angular arc allocated to this node |
+| arcSize | <code>Number</code> | Total angular arc allocated to this node |
+
+<a name="drawUnrootedEdge"></a>
+
+## drawUnrootedEdge(points) ⇒ <code>String</code>
+Draw a straight line edge between two nodes (for unrooted layout).
+
+**Kind**: global function  
+**Returns**: <code>String</code> - SVG path string  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| points | <code>Array</code> | Array of [source, target] node objects |
+
+<a name="unrootedSegmentPlacer"></a>
+
+## unrootedSegmentPlacer(edge, where) ⇒ <code>Object</code>
+Place a label along an unrooted edge via linear interpolation.
+
+**Kind**: global function  
+**Returns**: <code>Object</code> - {x, y} screen coordinates  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| edge | <code>Object</code> | Edge object with source and target |
+| where | <code>Number</code> | Interpolation factor (0 = target, 1 = source) |
 
 <a name="reroot"></a>
 
