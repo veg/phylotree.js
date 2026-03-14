@@ -441,6 +441,12 @@
               >
                 Radial
               </button>
+              <button
+                class="btn btn-light btn-sm phylotree-layout-mode"
+                data-mode="unrooted"
+              >
+                Unrooted
+              </button>
             </div>
             <div class="btn-group" role="group">
               <button
@@ -649,10 +655,12 @@
       });
 
       $(".phylotree-layout-mode").on("click", function(e) {
-        if (tree.display.radial() != ($(this).data("mode") == "radial")) {
-          $(".phylotree-layout-mode").toggleClass("active");
-          tree.display.radial(!tree.display.radial()).update();
-        }
+        var mode = $(this).data("mode");
+        $(".phylotree-layout-mode").removeClass("active");
+        $(this).addClass("active");
+        tree.display.radial(mode === "radial");
+        tree.display.unrooted(mode === "unrooted");
+        tree.display.update();
       });
 
       $("#toggle_animation").on("click", function(e) {

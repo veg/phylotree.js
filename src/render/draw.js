@@ -3,6 +3,7 @@ import * as _ from "underscore";
 
 import { drawArc, cartesianToPolar, arcSegmentPlacer } from "./radial";
 import { default as draw_line, lineSegmentPlacer } from "./cartesian";
+import { computeUnrootedLayout, drawUnrootedEdge, unrootedSegmentPlacer } from "./unrooted";
 import { isLeafNode } from "../nodes";
 import { xCoord, yCoord } from "./coordinates";
 import * as clades from "./clades";
@@ -84,6 +85,7 @@ class TreeRender {
       "bubble-styler": this.radius_pad_for_bubbles,
       "binary-selectable": false,
       "is-radial": false,
+      "is-unrooted": false,
       "attribute-list": [],
       "max-radius": 768,
       "annular-limit": 0.38196601125010515,
@@ -884,7 +886,42 @@ class TreeRender {
 
     this.shown_font_size = Math.min(this.font_size, this.scales[0]);
 
-    if (this.radial()) {
+    if (this.unrooted()) {
+      // Unrooted (equal-angle) layout
+      //
+      // For unrooted, there's no meaningful horizontal vs vertical axis.
+      // Both spacing buttons grow the canvas uniformly. Each click beyond
+      // the default adds pixels in both dimensions.
+      let pixelsPerClick = 40;
+      let deltaV = this.fixed_width[0] - 14; // clicks from default vertical
+      let deltaH = this.fixed_width[1] - 30; // clicks from default horizontal
+      let extraPx = (deltaV + deltaH) * pixelsPerClick;
+
+      let availWidth = this.width + extraPx;
+      let availHeight = this.height + extraPx;
+      if (availWidth < 100) availWidth = 100;
+      if (availHeight < 100) availHeight = 100;
+
+      // Reserve space for labels on all sides
+      this.shown_font_size = this.font_size;
+      this.label_width = this._label_width(this.shown_font_size);
+      let labelPad = this.label_width + this.shown_font_size;
+
+      computeUnrootedLayout(
+        this.phylotree.nodes,
+        this.scales,
+        availWidth,
+        availHeight,
+        labelPad
+      );
+
+      // Set size so resizeSvg sizes the SVG to fit the tree
+      this.size = [availHeight, availWidth];
+
+      this.draw_branch = drawUnrootedEdge;
+      this.edge_placer = unrootedSegmentPlacer;
+      this.draw_scale_bar = null;
+    } else if (this.radial()) {
       // map the nodes to polar coordinates
       this.draw_branch = _.partial(drawArc, this.radial_center);
       this.edge_placer = arcSegmentPlacer;

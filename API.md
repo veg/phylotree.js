@@ -458,10 +458,26 @@ const display = tree.render({
 // Render radial tree layout
 tree.render({
   container: "#radial-tree",
-  layout: "radial",
+  'is-radial': true,
   width: 600,
   height: 600
 });
+```
+**Example**
+```js
+// Render unrooted (equal-angle) tree layout
+tree.render({
+  container: "#unrooted-tree",
+  'is-unrooted': true,
+  width: 800,
+  height: 800
+});
+```
+**Example**
+```js
+// Toggle to unrooted layout after rendering
+const display = tree.render({ container: "#tree" });
+display.unrooted(true).update();
 ```
 <a name="getBranchLengths"></a>
 
