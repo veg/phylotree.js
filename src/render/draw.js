@@ -1408,8 +1408,9 @@ class TreeRender {
         .attr("class", this.reclassEdge.bind(this));
 
       if (this.edge_styler) {
-        edges.each(d => {
-          this.edge_styler(d3.select(this), d);
+        let self = this;
+        edges.each(function(d) {
+          self.edge_styler(d3.select(this), d);
         });
       }
 
