@@ -1413,16 +1413,6 @@ class TreeRender {
           self.edge_styler(d3.select(this), d);
         });
       }
-
-      //let nodes = this.enclosure
-      //  .selectAll(inspector.nodeCssSelectors(this.css_classes))
-      //  .attr("class", this.phylotree.reclassNode);
-
-      //if (this.node_styler) {
-      //  nodes.each(function(d) {
-      //    this.node_styler(d3.select(this), d);
-      //  });
-      //}
     }
 
     return this;
