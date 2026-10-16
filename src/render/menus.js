@@ -242,6 +242,21 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
 
 }
 
+/**
+ * Add a custom menu item to a node's menu.
+ *
+ * It is easy to add the menu items inside the `node-styler` function in tree.render(), which gets (element, node) as
+ * its two arguments -- that `node` can be passed to addCustomMenu() as its first argument. You may want to set
+ * `node.menu_items = []` to avoid adding the same menu item multiple times.
+ *
+ * The custom item will be added in addition to the default items: "Collapse Subtree", the "Toggle selection" submenu,
+ * "Reroot on this node" and "Hide this subtree". It will be added at the end of the menu after a menu divider.
+ *
+ * @param {Object} node The node to add the custom menu item to.
+ * @param {Function} name Given a node, returns the name of the menu item.
+ * @param {Function} callback Function to call when the menu item is clicked.
+ * @param {Function} condition Function to determine whether the menu item should be shown.
+ */
 export function addCustomMenu(node, name, callback, condition) {
   if (!("menu_items" in node)) {
     node["menu_items"] = [];
