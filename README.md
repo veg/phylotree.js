@@ -31,7 +31,7 @@ const renderer = tree.render({
 
 ### TypeScript Support
 
-phylotree.js includes TypeScript declarations. Import types alongside the main export:
+phylotree.js includes TypeScript declarations. They build on the d3 types, so `@types/d3` is installed with the package as a dependency. Import types alongside the main export:
 
 ```typescript
 import { phylotree, PhylotreeNode, RenderOptions } from "phylotree";

@@ -51,6 +51,21 @@ tape("package declares the Node versions it supports", function(t) {
   t.end();
 });
 
+tape("types the shipped declarations import are installed for consumers", function(t) {
+  const dts = fs.readFileSync(path.join(ROOT, "types", "phylotree.d.ts"), "utf8");
+  const imports = dts.match(/from\s+["']([^"'.][^"']*)["']/g) || [];
+  t.ok(imports.length > 0, "phylotree.d.ts imports a package");
+  imports.forEach(function(stmt) {
+    const name = stmt.replace(/^from\s+["']|["']$/g, "");
+    const types = "@types/" + name;
+    t.ok(
+      (pkg.dependencies || {})[types],
+      types + " is a dependency, so consumers of phylotree.d.ts get it"
+    );
+  });
+  t.end();
+});
+
 tape("every built stylesheet is shipped", function(t) {
   ["dist/phylotree.css", "dist/phylotree-menus.css"].forEach(function(file) {
     t.ok(pkg.files.includes(file), file + " is in files");
