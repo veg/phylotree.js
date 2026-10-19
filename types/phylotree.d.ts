@@ -226,9 +226,12 @@ export interface LinearFit {
 }
 
 /**
- * The TreeRender class handles visualization of the tree
+ * The TreeRender class handles visualization of the tree.
+ *
+ * Type-only: the class is not exported at runtime, so create instances with
+ * `phylotree.render()` rather than `new TreeRender()` or `instanceof`.
  */
-export class TreeRender {
+declare class TreeRender {
   /** The phylotree instance this renderer belongs to */
   phylotree: phylotree;
   /** The SVG element */
@@ -457,6 +460,8 @@ export class TreeRender {
   set_size(): [number, number];
   set_size(attr: [number, number]): this;
 }
+
+export type { TreeRender };
 
 /**
  * Main phylotree class for creating and manipulating phylogenetic trees

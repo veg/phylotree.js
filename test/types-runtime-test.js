@@ -45,7 +45,8 @@ function setupDom() {
 
 // Returns [{ name, kind: "method" | "property" }] for a declared class.
 function classMembers(className) {
-  const start = DTS.indexOf("export class " + className + " {");
+  let start = DTS.indexOf("export class " + className + " {");
+  if (start < 0) start = DTS.indexOf("declare class " + className + " {");
   if (start < 0) throw new Error("class " + className + " not found");
   const body = DTS.slice(start, DTS.indexOf("\n}", start));
   const members = {};
@@ -108,5 +109,23 @@ tape("declared module functions are exported", function(test) {
     test.equal(typeof phylotree[name], "function", name + " is exported");
   });
   test.equal(typeof phylotree.phylotree, "function", "phylotree is exported");
+  test.end();
+});
+
+tape("declared value classes are exported", function(test) {
+  // `export class` promises a runtime value (usable with new/instanceof);
+  // classes that exist only as types must be `declare class` + `export type`
+  const names = [];
+  const re = /^export (?:declare )?class ([A-Za-z_$][\w$]*)/gm;
+  let m;
+
+  while ((m = re.exec(DTS))) {
+    names.push(m[1]);
+  }
+
+  test.ok(names.length > 0, "d.ts declares value classes");
+  names.forEach(function(name) {
+    test.equal(typeof phylotree[name], "function", name + " is exported");
+  });
   test.end();
 });

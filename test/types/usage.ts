@@ -177,6 +177,8 @@ display.edgeStyler;
 display.getSelectedBranches;
 // @ts-expect-error -- font_size is a number, not a getter/setter
 display.font_size(12);
+// @ts-expect-error -- TreeRender is type-only; it is not exported at runtime
+display instanceof TreeRender;
 
 // ----------------------------------------------------------- module functions
 
