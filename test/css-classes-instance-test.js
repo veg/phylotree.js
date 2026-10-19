@@ -92,3 +92,30 @@ tape("css() setter only changes its own tree", function(test) {
   env.restore();
   test.end();
 });
+
+tape("css() overrides survive reroot()", function(test) {
+  const env = setupDom();
+
+  const tree = new phylotree.phylotree(NEWICK);
+  const display = tree.render({
+    container: "#a",
+    brush: false, // jsdom cannot drive d3-brush
+    "css-classes": { node: "opt-node" }
+  });
+  document.querySelector("#a").appendChild(display.show());
+  display.css({ branch: "my-branch" });
+  display.update();
+  test.ok(countIn("a", "path.my-branch") > 0, "custom branch class before reroot");
+
+  tree.reroot(tree.getNodeByName("C"));
+
+  test.notEqual(tree.display, display, "reroot built a new TreeRender");
+  test.equal(tree.display.css().branch, "my-branch", "css() override is kept");
+  test.equal(tree.display.css().node, "opt-node", "option override is kept");
+  test.ok(countIn("a", "path.my-branch") > 0, "custom branch class after reroot");
+  test.equal(countIn("a", "path.branch"), 0, "no default branch class after reroot");
+  test.ok(countIn("a", "g.opt-node") > 0, "option node class after reroot");
+
+  env.restore();
+  test.end();
+});
