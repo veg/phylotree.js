@@ -45,7 +45,10 @@ jobs:
         # Copy main files
         cp README.md docs-site/
         cp API.md docs-site/
+        # the demo page loads dist/phylotree.js and phylotree.css relative
+        # to itself, so both must sit next to it on the project site
         cp index.html docs-site/
+        cp phylotree.css docs-site/
         cp -r dist docs-site/
         cp -r examples docs-site/ 2>/dev/null || true
         
