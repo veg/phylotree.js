@@ -5,12 +5,12 @@ on:
     branches: [master]
   workflow_dispatch:
 
-# This is the only workflow that deploys to gh-pages (docs.yml just keeps
-# API.md current). peaceiris/actions-gh-pages pushes with GITHUB_TOKEN.
+# This is the only workflow that deploys master to gh-pages (docs.yml just keeps
+# API.md current; pr-preview-deploy.yml only writes under pr-preview/).
 permissions:
   contents: write
 
-# Never let two deploys race on the gh-pages branch.
+# Shared with pr-preview-deploy.yml so no two pushes race on gh-pages.
 concurrency:
   group: gh-pages
   cancel-in-progress: false
@@ -18,11 +18,11 @@ concurrency:
 jobs:
   build-docs-site:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
@@ -37,79 +37,17 @@ jobs:
 
     - name: Generate API documentation
       run: yarn docs:generate
-      
-    - name: Create documentation site
-      run: |
-        mkdir -p docs-site
-        
-        # Copy main files
-        cp README.md docs-site/
-        cp API.md docs-site/
-        # the demo page loads dist/phylotree.js and phylotree.css relative
-        # to itself, so both must sit next to it on the project site
-        cp index.html docs-site/
-        cp phylotree.css docs-site/
-        cp -r dist docs-site/
-        cp -r examples docs-site/ 2>/dev/null || true
-        
-        # Create a simple index page
-        cat > docs-site/index.md << 'EOF'
-        # Phylotree.js Documentation
-        
-        A JavaScript library for developing applications and interactive visualizations involving phylogenetic trees.
-        
-        ## Quick Links
-        
-        - [📖 API Reference](API.md) - Complete API documentation with examples
-        - [🚀 Getting Started](README.md) - Installation and basic usage
-        - [🎨 Live Demo](index.html) - Interactive tree visualization demo
-        
-        ## Key Features
-        
-        - Parse and render phylogenetic trees from Newick format
-        - Interactive selection and manipulation
-        - Multiple layout options (linear, radial, scaled)
-        - D3.js integration for custom styling
-        - Branch length transformations and tree operations
-        
-        ## Basic Usage
-        
-        ```javascript
-        import Phylotree from 'phylotree';
-        
-        // Create tree from Newick string
-        const tree = new Phylotree("((A:0.1,B:0.2):0.05,C:0.3);");
-        
-        // Render to DOM element
-        tree.render({
-          container: "#tree-container",
-          width: 800,
-          height: 600
-        });
-        ```
-        
-        For complete documentation with examples, see the [API Reference](API.md).
-        EOF
-        
-        # Create a simple GitHub Pages config
-        cat > docs-site/_config.yml << 'EOF'
-        title: Phylotree.js Documentation
-        description: A JavaScript library for phylogenetic tree visualization
-        theme: minima
-        plugins:
-          - jekyll-relative-links
-        relative_links:
-          enabled: true
-          collections: true
-        include:
-          - API.md
-          - README.md
-        EOF
-        
+
+    - name: Assemble site
+      run: bash scripts/build-site.sh docs-site
+
+    # Replaces the site root but leaves the per-PR previews in place.
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs-site
-        publish_branch: gh-pages
-        force_orphan: true
+        folder: docs-site
+        branch: gh-pages
+        clean: true
+        clean-exclude: |
+          pr-preview/
+        commit-message: Deploy master ${{ github.sha }}
