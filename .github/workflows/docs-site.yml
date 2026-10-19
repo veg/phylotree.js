@@ -5,6 +5,16 @@ on:
     branches: [master]
   workflow_dispatch:
 
+# This is the only workflow that deploys to gh-pages (docs.yml just keeps
+# API.md current). peaceiris/actions-gh-pages pushes with GITHUB_TOKEN.
+permissions:
+  contents: write
+
+# Never let two deploys race on the gh-pages branch.
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
 jobs:
   build-docs-site:
     runs-on: ubuntu-latest
@@ -22,6 +32,9 @@ jobs:
     - name: Install dependencies
       run: yarn install --frozen-lockfile
 
+    - name: Build library
+      run: yarn build
+
     - name: Generate API documentation
       run: yarn docs:generate
       
@@ -33,7 +46,7 @@ jobs:
         cp README.md docs-site/
         cp API.md docs-site/
         cp index.html docs-site/
-        cp -r dist docs-site/ 2>/dev/null || true
+        cp -r dist docs-site/
         cp -r examples docs-site/ 2>/dev/null || true
         
         # Create a simple index page
