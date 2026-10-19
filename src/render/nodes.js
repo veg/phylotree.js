@@ -300,12 +300,24 @@ export function nodeNotshown(node) {
 }
 
 // true if the node or any of its ancestors is hidden (notshown); the layout
-// skips a hidden node's whole subtree, so its descendants are hidden too
+// skips a hidden node's whole subtree, so its descendants are hidden too.
+// Reads the flag cached by markNotshownSubtrees() (run by placenodes) so the
+// check stays O(1) on deep trees; walks the ancestors if it is not set yet.
 export function nodeOrAncestorNotshown(node) {
-  for (let n = node; n; n = n.parent) {
+  if (node.notshown) return true;
+  if (node.notshown_ancestor !== undefined) return node.notshown_ancestor;
+  for (let n = node.parent; n; n = n.parent) {
     if (n.notshown) return true;
   }
   return false;
+}
+
+// cache, on every node, whether one of its ancestors is notshown
+export function markNotshownSubtrees(root) {
+  root.eachBefore(d => {
+    d.notshown_ancestor =
+      !!d.parent && (!!d.parent.notshown || d.parent.notshown_ancestor);
+  });
 }
 
 export function hasHiddenNodes(node) {

@@ -827,6 +827,8 @@ class TreeRender {
    * @returns The current ``phylotree``.
    */
   placenodes() {
+    render_nodes.markNotshownSubtrees(this.phylotree.nodes);
+
     this._extents = [
       [0, 0],
       [0, 0]
