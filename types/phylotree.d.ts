@@ -1,105 +1,228 @@
 // Type definitions for phylotree
 // Project: https://github.com/veg/phylotree.js
+//
+// Every declaration here mirrors code in src/. Run `yarn typecheck` after
+// changing this file; it compiles test/types/usage.ts against it.
 
-import { HierarchyNode, HierarchyLink } from 'd3-hierarchy';
+import type * as d3 from 'd3';
 
 /**
- * Node data stored in the phylogenetic tree
+ * Node data stored in the phylogenetic tree (the `data` field of each node)
  */
 export interface PhylotreeNodeData {
   name: string;
+  /** Branch length as parsed from the input, as a string */
   attribute?: string;
+  /** Annotation parsed from `{...}` (or `[...]`) after the node name */
   annotation?: string;
+  /** Internal node label, kept when bootstrap values are parsed */
+  bootstrap_values?: string;
   [key: string]: any;
 }
 
 /**
- * A node in the phylogenetic tree (D3 hierarchy node with phylotree data)
+ * A node in the phylogenetic tree (D3 hierarchy node with phylotree state)
  */
-export type PhylotreeNode = HierarchyNode<PhylotreeNodeData> & {
+export interface PhylotreeNode extends d3.HierarchyNode<PhylotreeNodeData> {
+  /** Default selection attribute; see `TreeRender.selectionLabel` */
   selected?: boolean;
   tag?: boolean;
   collapsed?: boolean;
   hidden?: boolean;
   notshown?: boolean;
+  /** Name of the selection set this node belongs to (multi-set mode) */
+  _selectionSet?: string;
   screen_x?: number;
   screen_y?: number;
   text_angle?: number;
   text_align?: string;
   angle?: number;
   radius?: number;
-};
+}
 
 /**
  * A link/branch in the phylogenetic tree
  */
-export type PhylotreeLink = HierarchyLink<PhylotreeNodeData> & {
+export interface PhylotreeLink extends d3.HierarchyLink<PhylotreeNodeData> {
   source: PhylotreeNode;
   target: PhylotreeNode;
-};
+  /** Default selection attribute, mirrored from `target` */
+  selected?: boolean;
+  tag?: boolean;
+}
 
 /**
- * Options for rendering a phylogenetic tree
+ * Node styler: called with a selection of the node's `<g>` element.
+ */
+export type NodeStyler = (
+  element: d3.Selection<SVGGElement, PhylotreeNode, null, undefined>,
+  node: PhylotreeNode
+) => void;
+
+/**
+ * Edge styler: called with a selection of the branch's `<path>` element.
+ * `transition` is passed while the tree is being drawn, not on refresh.
+ */
+export type EdgeStyler = (
+  element: d3.Selection<SVGPathElement, PhylotreeLink, null, undefined>,
+  link: PhylotreeLink,
+  transition?: boolean
+) => void;
+
+/** Names accepted by `modifySelection` when `restricted-selectable` is on */
+export type PredefinedSelector = 'all' | 'none' | 'all-leaf-nodes' | 'all-internal-nodes';
+
+/** Keys of the CSS class map (see `css-classes` and `TreeRender.css`) */
+export type CssClassKey =
+  | 'tree-container'
+  | 'tree-scale-bar'
+  | 'node'
+  | 'internal-node'
+  | 'tagged-node'
+  | 'selected-node'
+  | 'collapsed-node'
+  | 'root-node'
+  | 'branch'
+  | 'selected-branch'
+  | 'tagged-branch'
+  | 'tree-selection-brush'
+  | 'branch-tracer'
+  | 'clade'
+  | 'node_text';
+
+/** A named, coloured selection set for `selection-mode: "multi-set"` */
+export interface SelectionSetDefinition {
+  name: string;
+  color: string;
+}
+
+/**
+ * Options for rendering a phylogenetic tree (defaults in src/render/draw.js)
  */
 export interface RenderOptions {
   /** CSS selector or DOM element for the container */
   container?: string | HTMLElement;
-  /** Width of the SVG in pixels */
+  /** Width of the SVG in pixels (default 800) */
   width?: number;
-  /** Height of the SVG in pixels */
+  /** Height of the SVG in pixels (default 600) */
   height?: number;
-  /** Enable zoom/pan behavior */
-  zoom?: boolean;
-  /** Tree layout: "left-to-right" or "right-to-left" */
+  /** Tree layout direction */
   layout?: 'left-to-right' | 'right-to-left';
-  /** Use radial/circular layout */
-  'is-radial'?: boolean;
-  /** Use unrooted (equal-angle) layout */
-  'is-unrooted'?: boolean;
-  /** Align tip labels */
-  'align-tips'?: boolean;
-  /** Show node labels */
-  'show-labels'?: boolean;
-  /** Show scale bar */
-  'show-scale'?: boolean;
-  /** Draw size bubbles on nodes */
-  'draw-size-bubbles'?: boolean;
+  /** Logger instance */
+  logger?: Console;
+  branches?: string;
+  /** Scale branches by length */
+  scaling?: boolean;
+  bootstrap?: boolean;
+  'color-fill'?: boolean;
+  /** Font size for labels */
+  'font-size'?: number;
   /** Show internal node names */
   'internal-names'?: boolean | ((node: PhylotreeNode) => boolean);
   /** Enable node selection */
   selectable?: boolean;
+  /** Only allow selection through the predefined selector names */
+  'restricted-selectable'?: false | PredefinedSelector[];
   /** Enable collapsing of clades */
   collapsible?: boolean;
-  /** Enable brushing for selection */
-  brush?: boolean;
+  /** Horizontal spacing mode */
+  'left-right-spacing'?: 'fixed-step' | 'fit-to-size';
+  /** Vertical spacing mode */
+  'top-bottom-spacing'?: 'fixed-step' | 'fit-to-size';
   /** Left offset in pixels */
   'left-offset'?: number;
-  /** Spacing mode for top-bottom */
-  'top-bottom-spacing'?: 'fixed-step' | 'fit';
-  /** Spacing mode for left-right */
-  'left-right-spacing'?: 'fixed-step' | 'fit';
-  /** Font size for labels */
-  'font-size'?: number;
-  /** Maximum label width in characters */
-  'max-label-width'?: number;
-  /** Bubble styler function */
+  /** Show scale bar (only top placement is implemented) */
+  'show-scale'?: boolean | 'top';
+  /** Draw size bubbles on nodes */
+  'draw-size-bubbles'?: boolean;
+  /** Bubble size for a node, used when `draw-size-bubbles` is on */
   'bubble-styler'?: (node: PhylotreeNode) => number;
-  /** Restrict which nodes can be selected */
-  'restricted-selectable'?: string | ((link: PhylotreeLink) => boolean);
-  /** Logger instance */
-  logger?: Console;
+  'binary-selectable'?: boolean;
+  /** Attributes cleared by binary selection */
+  'attribute-list'?: string[];
+  /** Use radial/circular layout */
+  'is-radial'?: boolean;
+  /** Use unrooted (equal-angle) layout */
+  'is-unrooted'?: boolean;
+  'max-radius'?: number;
+  'annular-limit'?: number;
+  /** Compression applied to collapsed clades */
+  compression?: number;
+  /** Align tip labels */
+  'align-tips'?: boolean;
+  'maximum-per-node-spacing'?: number;
+  'minimum-per-node-spacing'?: number;
+  'maximum-per-level-spacing'?: number;
+  'minimum-per-level-spacing'?: number;
+  /** Node circle radius accessor */
+  node_circle_size?: (node: PhylotreeNode) => number;
+  /** Force transitions on or off; null picks based on tree size */
+  transitions?: boolean | null;
+  /** Enable brushing for selection */
+  brush?: boolean;
+  /** Offer "reroot" in the node menu */
+  reroot?: boolean;
+  /** Offer "hide" in the node menu */
+  hide?: boolean;
+  'label-nodes-with-name'?: boolean;
+  /** Enable zoom/pan behavior */
+  zoom?: boolean;
+  /** Show the node context menu */
+  'show-menu'?: boolean;
+  /** Show node labels */
+  'show-labels'?: boolean;
+  /** Node styler; same as `TreeRender.style_nodes` */
+  'node-styler'?: NodeStyler | null;
+  /** Edge styler; same as `TreeRender.style_edges` */
+  'edge-styler'?: EdgeStyler | null;
+  /** Vertical span of each node */
+  'node-span'?: ((node: PhylotreeNode) => number) | null;
+  /** Scale the SVG with its container using a viewBox */
+  responsive?: boolean;
+  /** `preserveAspectRatio` used when `responsive` is on */
+  'preserve-aspect-ratio'?: string;
+  /** Single selection or several named selection sets */
+  'selection-mode'?: 'single' | 'multi-set';
+  /** Selection sets for multi-set mode */
+  'selection-sets'?: SelectionSetDefinition[];
+  /** Names of nodes to select after the first render */
+  'initial-selection'?: string[];
+  /** Set name to node names, applied after the first render (multi-set mode) */
+  'initial-sets'?: { [setName: string]: string[] };
+  /** Override CSS class names */
+  'css-classes'?: Partial<Record<CssClassKey, string>>;
 }
 
 /**
  * Options for parsing tree input
  */
 export interface ParseOptions {
-  /** Enable bootstrap value parsing */
-  bootstrap_values?: boolean;
-  /** Format type: "newick", "phyloxml", "nexus" */
-  type?: string | ((input: string, options: ParseOptions) => any);
+  /** A registered format name, or a custom parser function */
+  type?:
+    | 'nexml'
+    | 'phyloxml'
+    | 'nexus'
+    | 'nwk'
+    | 'nhx'
+    | 'beast'
+    | ((input: any, options: ParseOptions) => { json: object | null; error: string | null });
+  /** Newick annotation delimiters (default `{` and `}`) */
+  left_delimiter?: string;
+  right_delimiter?: string;
   /** Logger instance */
   logger?: Console;
+}
+
+/** Branch length accessor; called with a second argument to set a length */
+export type BranchLengthAccessor = (node: PhylotreeNode, new_length?: number) => number | undefined;
+
+/** Result of the linear fit used by `fitRootToTip` */
+export interface LinearFit {
+  intercept: number;
+  slope: number;
+  r2: number;
+  'var (intercept)': number;
+  'var (slope)': number;
 }
 
 /**
@@ -107,10 +230,10 @@ export interface ParseOptions {
  */
 export class TreeRender {
   /** The phylotree instance this renderer belongs to */
-  phylotree: Phylotree;
+  phylotree: phylotree;
   /** The SVG element */
-  svg: d3.Selection<SVGSVGElement, unknown, null, undefined>;
-  /** Rendering options */
+  svg: d3.Selection<SVGSVGElement, undefined, null, undefined>;
+  /** Rendering options, merged with the defaults */
   options: RenderOptions;
   /** Current zoom transform */
   currentZoomTransform: d3.ZoomTransform | null;
@@ -119,66 +242,153 @@ export class TreeRender {
   /** Rightmost leaf x position */
   right_most_leaf: number;
   /** The container element */
-  container: string | HTMLElement;
+  container: string | HTMLElement | undefined;
+  /** Width of the SVG in pixels */
+  width: number;
+  /** Height of the SVG in pixels */
+  height: number;
+  /** Links being drawn */
+  links: PhylotreeLink[];
+  /** Label font size */
+  font_size: number;
+  /** Scale bar font size */
+  scale_bar_font_size: number;
+  /** CSS class names in use */
+  css_classes: Record<CssClassKey, string>;
+  /** Selection attribute name; see `selectionLabel` */
+  selection_attribute_name: string;
+  /** Current node styler */
+  node_styler: NodeStyler | null | undefined;
+  /** Current edge styler */
+  edge_styler: EdgeStyler | null | undefined;
+  /** Vertical span of each node */
+  nodeSpan: (node: PhylotreeNode) => number;
+  /** Extra spacing between a node and the previous one */
+  separation: (node: PhylotreeNode, previous: PhylotreeNode) => number;
 
-  constructor(phylotree: Phylotree, options?: RenderOptions);
+  constructor(phylotree: phylotree, options?: RenderOptions);
 
   /** Get the SVG element */
   show(): SVGSVGElement;
 
   /** Update the tree display */
-  update(): this;
+  update(transitions?: boolean): this;
 
-  /** Update layout coordinates */
-  update_layout(tree: PhylotreeNode): this;
+  /** Re-run the layout and redraw */
+  update_layout(new_json: object, do_hierarchy?: boolean): void;
 
   /** Get/set radial mode */
-  radial(value?: boolean): boolean | this;
+  radial(): boolean;
+  radial(value: boolean): this;
 
   /** Get/set unrooted (equal-angle) layout mode */
-  unrooted(value?: boolean): boolean | this;
+  unrooted(): boolean;
+  unrooted(value: boolean): this;
 
   /** Get/set align tips mode */
-  alignTips(value?: boolean): boolean | this;
+  alignTips(): boolean;
+  alignTips(value: boolean): this;
 
-  /** Get/set selection label */
-  selectionLabel(label?: string): string | this;
+  /** Get/set whether internal node names are shown */
+  internalNames(): boolean | ((node: PhylotreeNode) => boolean);
+  internalNames(value: boolean | ((node: PhylotreeNode) => boolean)): this;
 
-  /** Get/set node label accessor */
-  nodeLabel(accessor?: (node: PhylotreeNode) => string): ((node: PhylotreeNode) => string) | this;
+  /** Get/set the selection attribute name */
+  selectionLabel(): string;
+  selectionLabel(label: string): this;
+
+  /** Get/set node label accessor (a falsy value restores the default) */
+  nodeLabel(): (node: PhylotreeNode) => string;
+  nodeLabel(accessor: ((node: PhylotreeNode) => string) | null | undefined): this;
 
   /** Get/set node styler function */
-  nodeStyler(styler?: (element: d3.Selection<any, PhylotreeNode, any, any>, node: PhylotreeNode) => void): this;
+  style_nodes(): NodeStyler | null | undefined;
+  style_nodes(styler: NodeStyler | null): this;
 
   /** Get/set edge styler function */
-  edgeStyler(styler?: (element: d3.Selection<any, PhylotreeLink, any, any>, link: PhylotreeLink) => void): this;
+  style_edges(): EdgeStyler | null | undefined;
+  style_edges(styler: EdgeStyler): this;
 
-  /** Collapse a node */
-  collapse_node(node: PhylotreeNode): this;
+  /** Mark a node as collapsed (call `update()` to redraw) */
+  collapse_node(node: PhylotreeNode): void;
 
-  /** Modify selection based on a callback */
-  modifySelection(callback: (link: PhylotreeLink, callback: (selected: boolean) => void) => boolean): this;
+  /** Collapse or expand a node and lay out the tree again */
+  toggleCollapse(node: PhylotreeNode): this;
+
+  /**
+   * Modify the selection.
+   * @param node_selecter A predicate over links; an array of nodes to change;
+   * or, when `restricted-selectable` is set, a predefined selector name
+   * (any other value is then ignored and nothing is returned)
+   * @param attr Selection attribute to modify (default: `selectionLabel()`)
+   * @param place Whether to call `placenodes` afterwards
+   * @param skip_refresh Whether to skip the refresh
+   * @param mode For an array of nodes: toggle them, or set to true / false
+   */
+  modifySelection(
+    node_selecter: ((link: PhylotreeLink) => boolean) | PhylotreeNode[] | PredefinedSelector,
+    attr?: string,
+    place?: boolean,
+    skip_refresh?: boolean,
+    mode?: 'toggle' | 'true' | 'false'
+  ): this;
 
   /** Get selected nodes */
   getSelection(): PhylotreeNode[];
 
-  /** Get selected branches */
-  getSelectedBranches(): PhylotreeLink[];
+  /** Select nodes by name */
+  selectNodes(names: string[]): this;
 
-  /** Register event listener */
+  /** Deselect nodes by name */
+  deselectNodes(names: string[]): this;
+
+  /** Clear the selection */
+  clearSelection(): this;
+
+  /**
+   * Register an event listener. Emitted events: nodeClick, nodeHover,
+   * branchClick, rendered, selectionChange, collapsed, rerooted, setChange.
+   */
   on(event: string, callback: (...args: any[]) => void): this;
+
+  /** Remove an event listener */
+  off(event: string, callback: (...args: any[]) => void): this;
 
   /** Emit an event */
   emit(event: string, ...args: any[]): this;
 
-  /** Selection callback setter */
+  /** Get/set the selection callback */
+  selectionCallback(): ((selection: PhylotreeNode[]) => void) | null;
   selectionCallback(callback: (selection: PhylotreeNode[]) => void): this;
+
+  /** Make a set's members the target of node/branch clicks (multi-set mode) */
+  setActiveSet(name: string): this;
+
+  /** Name of the active selection set */
+  getActiveSet(): string | null | undefined;
+
+  /** Nodes in a selection set */
+  getSetMembers(setName: string): PhylotreeNode[];
+
+  /** Add a node (or node name) to a selection set, removing it from the others */
+  addToSet(node: PhylotreeNode | string, setName: string): this;
+
+  /** Remove a node (or node name) from a selection set */
+  removeFromSet(node: PhylotreeNode | string, setName: string): this;
+
+  /** Whether a node is in a selection set */
+  isInSet(node: PhylotreeNode, setName: string): boolean;
+
+  /** Name of the selection set a node belongs to */
+  getNodeSet(node: PhylotreeNode): string | null;
+
+  /** Set up selection sets (called by the constructor in multi-set mode) */
+  initializeSelectionSets(sets: SelectionSetDefinition[]): void;
 
   /**
    * Get or set spacing in the x-direction (horizontal spacing between nodes)
    * @param attr The new spacing value if setting
    * @param skip_render Whether to skip re-rendering after setting
-   * @returns The current spacing_x value if getting, or the TreeRender instance if setting
    */
   spacing_x(): number;
   spacing_x(attr: number, skip_render?: boolean): this;
@@ -187,121 +397,87 @@ export class TreeRender {
    * Get or set spacing in the y-direction (vertical spacing between levels)
    * @param attr The new spacing value if setting
    * @param skip_render Whether to skip re-rendering after setting
-   * @returns The current spacing_y value if getting, or the TreeRender instance if setting
    */
   spacing_y(): number;
   spacing_y(attr: number, skip_render?: boolean): this;
 
-  /**
-   * Get or set the font size for labels
-   * @param attr The new font size if setting
-   * @returns The current font size if getting, or the TreeRender instance if setting
-   */
-  font_size(): number;
-  font_size(attr: number): this;
+  /** Get the node circle radius accessor, or set a constant radius */
+  node_circle_size(): (node: PhylotreeNode) => number;
+  node_circle_size(attr: number): this;
 
-  /**
-   * Get or set the scale bar font size
-   * @param attr The new font size if setting
-   * @returns The current scale bar font size if getting, or the TreeRender instance if setting
-   */
-  scale_bar_font_size(): number;
-  scale_bar_font_size(attr: number): this;
+  /** Get or set CSS class names (shared by every tree on the page) */
+  css(): Record<CssClassKey, string>;
+  css(opt: Partial<Record<CssClassKey, string>>): this;
 
-  /**
-   * Get or set the node circle size
-   * @param attr The new circle size if setting
-   * @param attr2 Optional second parameter
-   * @returns The current node circle size if getting, or the TreeRender instance if setting
-   */
-  node_circle_size(): number;
-  node_circle_size(attr: number, attr2?: number): this;
+  /** Whether transitions are used: `arg` if given, else the option, else size-based */
+  transitions(arg?: boolean): boolean;
 
-  /**
-   * Get or set CSS classes
-   * @param opt CSS class options
-   * @returns The current CSS classes if getting, or the TreeRender instance if setting
-   */
-  css(): { [key: string]: string };
-  css(opt: { [key: string]: string }): this;
-
-  /**
-   * Get or set transitions
-   * @param arg Transition settings
-   * @returns The current transition settings if getting, or the TreeRender instance if setting
-   */
-  transitions(): boolean | null;
-  transitions(arg: boolean): this;
-
-  /**
-   * Layout the tree
-   * @param transitions Whether to use transitions
-   * @returns The TreeRender instance
-   */
+  /** Lay out the tree */
   layout(transitions?: boolean): this;
 
-  /** Refresh the tree display */
+  /** Re-apply classes and the edge styler to the drawn edges */
   refresh(): this;
 
-  /** Place nodes in the layout */
+  /** Compute node positions */
   placenodes(): this;
 
   /**
-   * Set the separation function for node spacing
-   * @param callback Function that returns additional spacing between nodes
-   * @returns The TreeRender instance
+   * Set internal node selection from their children
+   * @param callback Called with an internal node's children; returns its selection state
+   * @param respect_existing Whether to keep existing internal selections
    */
-  separation(callback: (node: PhylotreeNode, previous: PhylotreeNode) => number): this;
+  internalLabel(callback: (children: PhylotreeNode[]) => boolean, respect_existing?: boolean): void;
+
+  /** Get or set the selection count handler */
+  countHandler(): (counts: { [attr: string]: number }) => void;
+  countHandler(callback: (counts: { [attr: string]: number }) => void): this;
+
+  /** Get or set the layout handler */
+  layoutHandler(): (tree: TreeRender) => void;
+  layoutHandler(callback: (tree: TreeRender) => void): this;
 
   /**
-   * Set internal node labels based on children
-   * @param callback Function that determines label based on children
-   * @param respect_existing Whether to respect existing selections
-   * @returns The TreeRender instance
+   * Add an item to a node's context menu
+   * @param node The node
+   * @param name Returns the menu item label
+   * @param callback Called when the item is clicked
+   * @param condition Optional; the item is shown only if it returns true
    */
-  internalLabel(callback: (children: PhylotreeNode[]) => boolean, respect_existing?: boolean): this;
+  addCustomMenu(
+    node: PhylotreeNode,
+    name: (node: PhylotreeNode) => string,
+    callback: (node: PhylotreeNode, ...args: any[]) => void,
+    condition?: (node: PhylotreeNode) => boolean
+  ): void;
 
   /**
-   * Get or set the count handler callback
-   * @param callback Function called with selection count
-   * @returns The current handler if getting, or the TreeRender instance if setting
-   */
-  countHandler(): ((count: number) => void) | null;
-  countHandler(callback: (count: number) => void): this;
-
-  /**
-   * Update the selection key name
-   * @param old_key The old key name
-   * @param new_key The new key name
-   * @returns The TreeRender instance
-   */
-  updateKeyName(old_key: string, new_key: string | null): this;
-
-  /**
-   * Set the size of the tree display
-   * @param attr Size as [width, height]
-   * @returns The current size if getting, or the TreeRender instance if setting
+   * Get or set the size of the tree as `[height, width]`. Setting only
+   * changes dimensions whose spacing mode is not "fixed-step".
    */
   set_size(): [number, number];
   set_size(attr: [number, number]): this;
 }
 
 /**
- * Main Phylotree class for creating and manipulating phylogenetic trees
+ * Main phylotree class for creating and manipulating phylogenetic trees
  */
 export class phylotree {
-  /** Hierarchical tree structure (D3 hierarchy) */
+  /** Root of the hierarchy (D3 hierarchy) */
   nodes: PhylotreeNode;
   /** Links between nodes */
   links: PhylotreeLink[];
   /** Parsed annotation tags */
   parsed_tags: string[];
   /** The tree renderer (set after calling render()) */
-  display: TreeRender | null;
+  display?: TreeRender;
   /** Original Newick string */
   newick_string: string;
   /** Selection attribute name */
   selection_attribute_name: string;
+  /** Branch length accessor in use */
+  branch_length: BranchLengthAccessor;
+  /** Logger instance */
+  logger: Console;
 
   /**
    * Create a new phylogenetic tree
@@ -320,52 +496,58 @@ export class phylotree {
   /**
    * Traverse the tree and compute values at each node
    * @param callback Function called on each node
-   * @param traversal_type "pre-order", "post-order", or "in-order"
+   * @param traversal_type "pre-order", "post-order" (default), or "in-order"
    * @param root_node Optional starting node
-   * @param backtrack Optional function to stop traversal
+   * @param backtrack Optional; returning true skips a node and its subtree
    */
   traverse_and_compute(
     callback: (node: PhylotreeNode) => void,
     traversal_type?: 'pre-order' | 'post-order' | 'in-order',
-    root_node?: PhylotreeNode,
+    root_node?: PhylotreeNode | null,
     backtrack?: (node: PhylotreeNode) => boolean
-  ): void;
+  ): this;
 
-  /** Export tree to JSON string */
-  json(traversal_type?: string): string;
+  /** Export the nodes to a JSON string, in the given traversal order */
+  json(traversal_type?: 'pre-order' | 'post-order' | 'in-order'): string;
 
   /** Get parsed annotation tags */
   get_parsed_tags(): string[];
 
-  /** Update tree from JSON */
-  update(json: object): this;
+  /** Replace the hierarchy */
+  update(json: PhylotreeNode): void;
 
-  /** Check if tree has branch lengths */
+  /** Check if every non-root node has a branch length */
   hasBranchLengths(): boolean;
 
   /** Get all branch lengths */
-  getBranchLengths(): number[];
+  getBranchLengths(): Array<number | undefined>;
 
-  /** Set branch length accessor */
-  setBranchLength(accessor: (node: PhylotreeNode) => number): this;
+  /** Get or set the branch length accessor (a falsy value restores the default) */
+  setBranchLength(): BranchLengthAccessor;
+  setBranchLength(accessor: BranchLengthAccessor | null | undefined): this;
 
-  /** Normalize branch lengths */
-  normalizeBranchLengths(attr?: string): this;
+  /** Rescale branch lengths to [0, 1] */
+  normalizeBranchLengths(): this;
 
-  /** Scale branch lengths by a factor */
-  scaleBranchLengths(scale: number): this;
+  /** Transform every branch length with a function */
+  scaleBranchLengths(scale_by: (length: number) => number): this;
 
-  /** Get branch name accessor */
-  branchName(accessor?: (node: PhylotreeNode) => string): string | this;
+  /** Get or set the branch name accessor */
+  branchName(): ((node: PhylotreeNode) => string) | undefined;
+  branchName(accessor: (node: PhylotreeNode) => string): this;
 
-  /** Get Newick representation of tree */
-  getNewick(annotator?: (node: PhylotreeNode) => string): string;
+  /**
+   * Get Newick representation of the tree
+   * @param annotator Returns a label to write after each node name
+   * @param root Start at this node (default: the root)
+   */
+  getNewick(annotator?: ((node: PhylotreeNode) => string) | null, root?: PhylotreeNode): string;
 
-  /** Get tagged Newick representation */
-  getTaggedNewick(): string;
+  /** Get Newick with `{tag}` annotations on selected nodes (or set names) */
+  getTaggedNewick(options?: { tag?: string; multiSet?: boolean }): string;
 
-  /** Find most recent common ancestor of nodes */
-  mrca(nodes: (PhylotreeNode | string)[]): PhylotreeNode;
+  /** Find most recent common ancestor of nodes (given as nodes or names) */
+  mrca(nodes: Array<PhylotreeNode | string>): PhylotreeNode | undefined;
 
   /** Check if a node is a leaf */
   isLeafNode(node: PhylotreeNode): boolean;
@@ -379,44 +561,56 @@ export class phylotree {
   /** Get root node */
   getRootNode(): PhylotreeNode;
 
-  /** Get all nodes */
-  getNodes(): PhylotreeNode[];
+  /** Get the root of the hierarchy (same as getRootNode) */
+  getNodes(): PhylotreeNode;
 
   /** Get node by name */
   getNodeByName(name: string): PhylotreeNode | undefined;
 
-  /** Select all descendants of a node */
+  /** Get the descendants of a node */
   selectAllDescendants(node: PhylotreeNode, terminal?: boolean, internal?: boolean): PhylotreeNode[];
 
-  /** Reroot the tree at a node */
+  /** Reroot the tree on the branch above a node */
   reroot(node: PhylotreeNode, fraction?: number): this;
 
-  /** Get path from a node to the root */
+  /** Get the path from a node to the root, starting with the node */
   pathToRoot(node: PhylotreeNode): PhylotreeNode[];
 
-  /** Resort children of nodes */
+  /** Re-sort children of nodes */
   resortChildren(comparator: (a: PhylotreeNode, b: PhylotreeNode) => number): this;
 
-  /** Graft a new node */
-  graftANode(graftAt: PhylotreeNode, newChild: PhylotreeNode, newParent?: PhylotreeNode, lengths?: { new_child: number; new_parent: number }): void;
+  /**
+   * Graft a new leaf next to a node
+   * @param graftAt The node to graft next to
+   * @param newChild Name of the new leaf
+   * @param newParent Name of the new internal node
+   * @param lengths Branch lengths for `[graftAt, newChild, newParent]`
+   */
+  graftANode(graftAt: PhylotreeNode, newChild: string, newParent: string, lengths?: string[]): this;
 
-  /** Add a child node */
-  addChild(parent: PhylotreeNode, child: PhylotreeNode): void;
+  /** Create a node stub for `addChild` */
+  createNode(name: string, lengths?: unknown[]): { data: { name: string; attribute: unknown }; parent: string };
 
-  /** Delete a node */
-  deleteANode(index: number): void;
+  /** Add a child to a node; returns the parent */
+  addChild<T extends object>(parent: T, child: object): T;
 
-  /** Assign attributes to nodes */
-  assignAttributes(attributes: object): this;
+  /** Delete a node, given the node or its index in `nodes.descendants()` */
+  deleteANode(index: number | PhylotreeNode): this;
 
-  /** Get tip lengths for date extraction */
-  getTipLengths(): { [name: string]: number };
+  /** Store attributes in the `annotations` field of the nodes named by the keys */
+  assignAttributes(attributes: { [name: string]: unknown }): void;
 
-  /** Maximum parsimony ancestral state reconstruction */
-  maxParsimony(attr: string, states: string[]): this;
+  /** Get tips and their branch lengths, longest first */
+  getTipLengths(): Array<{ name: string; length: number }>;
 
-  /** Clear internal node selections */
-  clearInternalNodes(respect?: boolean): this;
+  /** Maximum parsimony reconstruction of a selection attribute; needs a rendered tree */
+  maxParsimony(respect_existing: boolean, attr_name: string): void;
+
+  /** Clear selection of internal nodes (unless `respect` is true) */
+  clearInternalNodes(respect?: boolean): void;
+
+  /** Rename (or, with a null new_key, delete) a key on every node */
+  updateKeyName(old_key: string, new_key: string | null): this;
 }
 
 // Utility functions
@@ -424,22 +618,32 @@ export class phylotree {
 /**
  * Parse a Newick format string
  */
-export function newickParser(newick: string, options?: ParseOptions): { json: object; error: string | null };
+export function newickParser(
+  newick: string,
+  options?: { left_delimiter?: string; right_delimiter?: string }
+): { json: object | null; error: string | null };
 
 /**
- * Get Newick string from tree
+ * Get Newick string from a tree; must be called with a phylotree as `this`
+ * (prefer `tree.getNewick()`)
  */
-export function getNewick(tree: PhylotreeNode, annotator?: (node: PhylotreeNode) => string): string;
+export function getNewick(
+  this: phylotree,
+  annotator?: ((node: PhylotreeNode) => string) | null,
+  root?: PhylotreeNode
+): string;
 
 /**
- * Compute pairwise distances between nodes
+ * Annotate nodes with path lengths for pairwise distance computations
+ * @returns The number of leaves
  */
-export function pairwise_distances(tree: phylotree): number[][];
+export function pairwise_distances(tree: phylotree): number;
 
 /**
- * Compute pairwise distances between nodes (camelCase alias)
+ * Annotate nodes with path lengths for pairwise distance computations (camelCase alias)
+ * @returns The number of leaves
  */
-export function pairwiseDistances(tree: phylotree): number[][];
+export function pairwiseDistances(tree: phylotree): number;
 
 /**
  * Compute Sackin's index (tree balance measure)
@@ -447,91 +651,110 @@ export function pairwiseDistances(tree: phylotree): number[][];
 export function sackin(tree: phylotree): number;
 
 /**
- * Find center of tree
+ * Find the center of the tree (minimises the sum of distances^power to the leaves)
  */
-export function centerOfTree(tree: phylotree): PhylotreeNode;
-
-/**
- * Compute midpoint for rooting
- */
-export function computeMidpoint(tree: phylotree): { node: PhylotreeNode; fraction: number };
-
-/**
- * Root to tip regression
- */
-export function rootToTip(tree: phylotree, attr?: string): {
-  slope: number;
-  intercept: number;
-  r2: number;
-  data: Array<{ date: number; distance: number; name: string }>;
+export function centerOfTree(tree: phylotree, power?: number): {
+  location: PhylotreeNode;
+  breakpoint: number;
+  distance: number;
 };
 
 /**
- * Fit root to tip (find optimal root)
+ * Compute the midpoint for rooting
  */
-export function fitRootToTip(tree: phylotree, attr?: string): {
-  node: PhylotreeNode;
-  fraction: number;
-  r2: number;
-};
+export function computeMidpoint(tree: phylotree): { location: PhylotreeNode; breakpoint: number };
 
 /**
- * Extract dates from tip names
+ * Store root-to-tip distances on the nodes; returns the tree
  */
-export function extract_dates(tree: phylotree, pattern?: RegExp): { [name: string]: number };
+export function rootToTip(tree: phylotree): phylotree;
 
 /**
- * Extract dates from tip names (camelCase alias)
+ * Find the root that maximises the root-to-tip regression r2 (needs dates;
+ * see extractDates). `root` is 0 if the current root is best.
  */
-export function extractDates(tree: phylotree, pattern?: RegExp): { [name: string]: number };
+export function fitRootToTip(tree: phylotree): { root: PhylotreeNode | 0; fit: LinearFit };
+
+/**
+ * Extract dates from nodes and store `date_value` / `decimal_date_value` in their data
+ */
+export function extract_dates(
+  tree: phylotree,
+  date_getter?: (node: PhylotreeNode) => string | null,
+  date_converter?: (date: string) => Date | null
+): phylotree;
+
+/**
+ * Extract dates from nodes (camelCase alias)
+ */
+export function extractDates(
+  tree: phylotree,
+  date_getter?: (node: PhylotreeNode) => string | null,
+  date_converter?: (date: string) => Date | null
+): phylotree;
 
 /**
  * Cluster Picker algorithm
  */
-export function clusterPicker(tree: phylotree, options?: {
-  bootstrap_threshold?: number;
-  distance_threshold?: number;
-}): PhylotreeNode[][];
+export function clusterPicker(
+  tree: phylotree,
+  bootstrap_threshold: number,
+  diameter_threshold: number,
+  root_node?: PhylotreeNode | null,
+  missing_bootstrap_value?: number
+): Array<{ root: PhylotreeNode; diameter: number; bootstrap: number; members: PhylotreeNode[] }>;
 
 /**
  * PhyloPart clustering algorithm
  */
-export function phylopart(tree: phylotree, options?: {
-  bootstrap_threshold?: number;
-}): PhylotreeNode[][];
+export function phylopart(
+  tree: phylotree,
+  bootstrap_threshold: number,
+  percentile_threshold: number,
+  missing_bootstrap_value?: number,
+  resolution?: number
+): Array<{ root: PhylotreeNode; median: number; bootstrap: number; members: PhylotreeNode[] }>;
 
 /**
- * Parse FASTA format
+ * Parse FASTA format into a map of sequence name to sequence
  */
-export function parseFasta(fasta: string): Array<{ name: string; seq: string }>;
+export function parseFasta(fasta: string): { [name: string]: string };
 
 /**
  * Neighbor joining tree construction
+ * @param matrix The n x n distance matrix
+ * @param n The dimension of the matrix
+ * @param labels Row names (modified in place)
  */
-export function neighborJoining(matrix: number[][], labels: string[]): object;
+export function neighborJoining(matrix: number[][], n: number, labels: string[]): phylotree | null;
 
 /**
- * Get distance matrix from sequences
+ * Pairwise (gap-masked) distances between aligned sequences
  */
-export function getDistanceMatrix(sequences: Array<{ name: string; seq: string }>): {
-  matrix: number[][];
-  labels: string[];
+export function getDistanceMatrix(sequences: { [name: string]: string }): { [name: string]: number[] };
+
+/**
+ * Store `annotations.matrix[name]` in the `test` field of each tip's data
+ */
+export function loadAnnotations(
+  tree: phylotree,
+  label: string,
+  annotations: { matrix: { [name: string]: unknown } }
+): void;
+
+/**
+ * Parse the DATA block of a NEXUS string ('' if there is none)
+ */
+export function parseAnnotations(nexus: string): '' | {
+  dimensions: { [key: string]: string };
+  format: { symbols: string[]; [key: string]: string | string[] };
+  matrix: { [name: string]: string[] };
 };
-
-/**
- * Load annotations from NEXUS file
- */
-export function loadAnnotations(nexus: string): object;
-
-/**
- * Parse annotations from NEXUS
- */
-export function parseAnnotations(nexus: string): object;
 
 // Tree traversal functions
 
 /**
- * In-order traversal
+ * Level-order traversal (exported as inOrder)
  */
 export function inOrder(node: PhylotreeNode, callback: (node: PhylotreeNode) => void, backtrack?: (node: PhylotreeNode) => boolean): void;
 
@@ -546,6 +769,10 @@ export function preOrder(node: PhylotreeNode, callback: (node: PhylotreeNode) =>
 export function postOrder(node: PhylotreeNode, callback: (node: PhylotreeNode) => void, backtrack?: (node: PhylotreeNode) => boolean): void;
 
 /**
- * Left-child right-sibling traversal
+ * Edge list of the multi-way tree encoded by a left-child right-sibling binary tree
  */
-export function leftChildRightSibling(node: PhylotreeNode, callback: (node: PhylotreeNode) => void): void;
+export function leftChildRightSibling(root: PhylotreeNode): Array<{
+  source: PhylotreeNode | null | undefined;
+  target: PhylotreeNode;
+  name: string;
+}>;
