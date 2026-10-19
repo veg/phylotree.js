@@ -382,3 +382,49 @@ tape("API: hiding an internal node hides its subtree (linear layout)", function(
 tape("API: hiding an internal node hides its subtree (radial layout)", function(test) {
   checkApiHideInternalNode(test, true);
 });
+
+// A collapsed clade that is then hidden must not leave its polygon behind.
+function checkCollapseThenHide(test, radial) {
+  const env = setupDom();
+  const tree = new phylotree.phylotree(NEWICK);
+  const display = tree.render({
+    container: "#tree",
+    brush: false,
+    "is-radial": radial
+  });
+  document.querySelector("#tree").appendChild(display.show());
+
+  test.ok(
+    clickMenuItem(display, findNode(tree, "AB"), "Collapse Subtree"),
+    "menu offers 'Collapse Subtree' for AB"
+  );
+  test.equal(
+    document.querySelectorAll("#tree svg path.clade").length,
+    1,
+    "collapsed AB is drawn as a clade"
+  );
+
+  test.ok(
+    clickMenuItem(display, findNode(tree, "AB"), "Hide this subtree"),
+    "menu offers 'Hide this subtree' for AB"
+  );
+  for (let i = 0; i < 3; i++) display.update();
+  test.equal(
+    document.querySelectorAll("#tree svg path.clade").length,
+    0,
+    "no clade drawn for the hidden AB"
+  );
+  test.deepEqual(drawnBranchTargets(), ["C", "CD", "D"], "only C, CD, D drawn");
+
+  test.deepEqual(env.listenerErrors.map(String), [], "no listener errors");
+  env.restore();
+  test.end();
+}
+
+tape("collapse then hide leaves no clade polygon (linear layout)", function(test) {
+  checkCollapseThenHide(test, false);
+});
+
+tape("collapse then hide leaves no clade polygon (radial layout)", function(test) {
+  checkCollapseThenHide(test, true);
+});
