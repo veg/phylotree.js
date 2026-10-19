@@ -408,7 +408,7 @@ declare class TreeRender {
   node_circle_size(): (node: PhylotreeNode) => number;
   node_circle_size(attr: number): this;
 
-  /** Get or set CSS class names (shared by every tree on the page) */
+  /** Get or set this tree's CSS class names (kept across reroot) */
   css(): Record<CssClassKey, string>;
   css(opt: Partial<Record<CssClassKey, string>>): this;
 
