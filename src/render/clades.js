@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import * as _ from "underscore";
-import { isNodeCollapsed } from "./nodes";
+import { isNodeCollapsed, nodeOrAncestorNotshown } from "./nodes";
 
 export function cladeCssSelectors(css_classes) {
   return [css_classes["clade"]].reduce(function(p, c, i, a) {
@@ -16,7 +16,10 @@ export function updateCollapsedClades(transitions) {
   let collapsed_clades = enclosure
     .selectAll(cladeCssSelectors(this.css_classes))
     .data(
-      this.phylotree.nodes.descendants().filter(isNodeCollapsed),
+      // a hidden clade is not laid out, so do not draw its stale polygon
+      this.phylotree.nodes
+        .descendants()
+        .filter(d => isNodeCollapsed(d) && !nodeOrAncestorNotshown(d)),
       function(d) {
         return d.id || (d.id = ++node_id);
       }

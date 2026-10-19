@@ -8,7 +8,14 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Windows is included because package scripts have broken there before
+    # (#527, #530) without any Linux-visible symptom.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest ]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v4
@@ -28,5 +35,11 @@ jobs:
     - name: Run tests
       run: yarn test
 
+    # Platform-independent checks only need to run once.
+    - name: Type-check declarations
+      if: matrix.os == 'ubuntu-latest'
+      run: yarn typecheck
+
     - name: Run linter
+      if: matrix.os == 'ubuntu-latest'
       run: yarn lint

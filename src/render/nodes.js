@@ -2,7 +2,6 @@ import * as d3 from "d3";
 
 import { itemTagged, itemSelected } from "./helpers";
 import { isLeafNode } from "../nodes";
-import { css_classes } from "./options";
 
 export function shiftTip(d) {
 
@@ -271,33 +270,54 @@ export function nodeSpan(attr) {
 
 export function reclassNode(node) {
 
-  let class_var = css_classes[isLeafNode(node) ? "node" : "internal-node"];
+  let class_var = this.css_classes[isLeafNode(node) ? "node" : "internal-node"];
 
   if (itemTagged(node)) {
-    class_var += " " + css_classes["tagged-node"];
+    class_var += " " + this.css_classes["tagged-node"];
   }
 
   if (itemSelected(node, this.selection_attribute_name)) {
-    class_var += " " + css_classes["selected-node"];
+    class_var += " " + this.css_classes["selected-node"];
   }
 
   if (!node["parent"]) {
-    class_var += " " + css_classes["root-node"];
+    class_var += " " + this.css_classes["root-node"];
   }
 
   if (isNodeCollapsed(node) || hasHiddenNodes(node)) {
-    class_var += " " + css_classes["collapsed-node"];
+    class_var += " " + this.css_classes["collapsed-node"];
   }
 
   return class_var;
 }
 
 export function nodeVisible(node) {
-  return !(node.hidden || node.notshown || false);
+  return !(node.hidden || nodeOrAncestorNotshown(node));
 }
 
 export function nodeNotshown(node) {
   return node.notshown;
+}
+
+// true if the node or any of its ancestors is hidden (notshown); the layout
+// skips a hidden node's whole subtree, so its descendants are hidden too.
+// Reads the flag cached by markNotshownSubtrees() (run by placenodes) so the
+// check stays O(1) on deep trees; walks the ancestors if it is not set yet.
+export function nodeOrAncestorNotshown(node) {
+  if (node.notshown) return true;
+  if (node.notshown_ancestor !== undefined) return node.notshown_ancestor;
+  for (let n = node.parent; n; n = n.parent) {
+    if (n.notshown) return true;
+  }
+  return false;
+}
+
+// cache, on every node, whether one of its ancestors is notshown
+export function markNotshownSubtrees(root) {
+  root.eachBefore(d => {
+    d.notshown_ancestor =
+      !!d.parent && (!!d.parent.notshown || d.parent.notshown_ancestor);
+  });
 }
 
 export function hasHiddenNodes(node) {

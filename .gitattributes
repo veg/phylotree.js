@@ -1,0 +1,5 @@
+# Keep the JSDoc sources and the generated API reference LF on every platform,
+# so docs:generate and docs:validate give the same result on Windows.
+*.js text eol=lf
+*.mjs text eol=lf
+API.md text eol=lf

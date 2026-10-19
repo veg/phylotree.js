@@ -166,7 +166,14 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
           .text("Hide this " + (isLeafNode(node) ? "node" : "subtree"))
           .on("click", d => {
             menu_object.style("display", "none");
-            this.modifySelection([node], "notshown", true, true)
+            // hide the whole subtree, mirroring "Show all descendant nodes"
+            this.modifySelection(
+              [node].concat(selectAllDescendants(node, true, true)),
+              "notshown",
+              true,
+              true,
+              "true"
+            )
               .updateHasHiddenNodes()
               .update();
           });
@@ -353,8 +360,12 @@ export function modifySelection(
       }
     }
   } else if (this.options["binary-selectable"]) {
+    // Only selection attributes are mutually exclusive; hiding ("notshown")
+    // or brushing ("tag") must not clear the attributes in attribute-list.
+    const exclusive = attr != "notshown" && attr != "tag";
+
     if (typeof node_selecter === "function") {
-      this.links.forEach(function(d) {
+      this.links.forEach(d => {
         var select_me = node_selecter(d);
         d[attr] = d[attr] || false;
 
@@ -364,6 +375,7 @@ export function modifySelection(
           d.target[attr] = select_me;
         }
 
+        if (!exclusive) return;
         this.options["attribute-list"].forEach(function(type) {
           if (type != attr && d[attr] === true) {
             d[type] = false;
@@ -374,7 +386,17 @@ export function modifySelection(
     } else {
       node_selecter.forEach(function(d) {
         var new_value;
-        new_value = !d[attr];
+        switch (mode) {
+          case "true":
+            new_value = true;
+            break;
+          case "false":
+            new_value = false;
+            break;
+          default:
+            new_value = !d[attr];
+            break;
+        }
 
         if (d[attr] != new_value) {
           d[attr] = new_value;
@@ -382,8 +404,9 @@ export function modifySelection(
         }
       });
 
-      this.links.forEach(function(d) {
+      this.links.forEach(d => {
         d[attr] = d.target[attr];
+        if (!exclusive) return;
         this.options["attribute-list"].forEach(function(type) {
           if (type != attr && d[attr] !== true) {
             d[type] = false;

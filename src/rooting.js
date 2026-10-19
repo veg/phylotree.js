@@ -155,6 +155,9 @@ export function reroot(node, fraction) {
     // retain selection
     let selectionName = this.display.selection_attribute_name
 
+    // retain class names, including any set at runtime with css()
+    options["css-classes"] = Object.assign({}, this.display.css_classes);
+
     delete this.display;
 
     let rendered_tree = this.render(options);

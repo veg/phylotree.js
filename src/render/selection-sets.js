@@ -106,9 +106,9 @@ export function getSetMembers(setName) {
     return [];
   }
 
-  const memberNames = this._selectionSets[setName].members;
+  const members = this._selectionSets[setName].members;
   return this.phylotree.nodes.descendants()
-    .filter(node => memberNames.has(node.data.name));
+    .filter(node => members.has(node));
 }
 
 /**
@@ -127,7 +127,8 @@ export function addToSet(node, setName) {
     return this;
   }
 
-  const nodeName = typeof node === "string" ? node : node.data.name;
+  // Membership is keyed by node identity; names are resolved here so that
+  // unnamed or duplicate-named nodes do not share membership.
   const nodeObj = typeof node === "string"
     ? this.phylotree.getNodeByName(node)
     : node;
@@ -135,10 +136,10 @@ export function addToSet(node, setName) {
   if (nodeObj) {
     // Remove from all other sets (mutually exclusive)
     Object.keys(this._selectionSets).forEach(otherSet => {
-      this._selectionSets[otherSet].members.delete(nodeName);
+      this._selectionSets[otherSet].members.delete(nodeObj);
     });
 
-    this._selectionSets[setName].members.add(nodeName);
+    this._selectionSets[setName].members.add(nodeObj);
     nodeObj._selectionSet = setName;
 
     this.emit("setChange", {
@@ -169,16 +170,13 @@ export function removeFromSet(node, setName) {
     return this;
   }
 
-  const nodeName = typeof node === "string" ? node : node.data.name;
   const nodeObj = typeof node === "string"
     ? this.phylotree.getNodeByName(node)
     : node;
 
-  if (this._selectionSets[setName].members.has(nodeName)) {
-    this._selectionSets[setName].members.delete(nodeName);
-    if (nodeObj) {
-      delete nodeObj._selectionSet;
-    }
+  if (nodeObj && this._selectionSets[setName].members.has(nodeObj)) {
+    this._selectionSets[setName].members.delete(nodeObj);
+    delete nodeObj._selectionSet;
 
     this.emit("setChange", {
       action: "remove",
@@ -204,7 +202,8 @@ export function _getSetsSummary() {
   const summary = {};
   if (this._selectionSets) {
     Object.keys(this._selectionSets).forEach(setName => {
-      summary[setName] = Array.from(this._selectionSets[setName].members);
+      summary[setName] = Array.from(this._selectionSets[setName].members,
+        node => node.data.name);
     });
   }
   return summary;
@@ -222,7 +221,6 @@ export function handleMultiSetClick(node) {
     return;
   }
 
-  const nodeName = node.data.name;
   const currentSet = node._selectionSet;
 
   if (currentSet === this._activeSetName) {
@@ -245,7 +243,7 @@ export function isInSet(node, setName) {
   if (!this._selectionSets || !this._selectionSets[setName]) {
     return false;
   }
-  return this._selectionSets[setName].members.has(node.data.name);
+  return this._selectionSets[setName].members.has(node);
 }
 
 /**

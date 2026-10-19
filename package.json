@@ -6,6 +6,9 @@
   "unpkg": "dist/phylotree.js",
   "jsdelivr": "dist/phylotree.js",
   "module": "src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
   "bin": {
     "root-to-tip": "./bin/root-to-tip.js",
     "tag-branches": "./bin/phylotree-tag.js",
@@ -23,6 +26,7 @@
     "index.html"
   ],
   "dependencies": {
+    "@types/d3": "^7.4.3",
     "commander": "^14.0.0",
     "csv-stringify": "^6.6.0",
     "d3": "^7.9.0",
@@ -48,7 +52,9 @@
     "prettier": "^3.7.0",
     "rollup": "^4.59.0",
     "rollup-plugin-copy": "^3.5.0",
-    "tape": "^5.9.0"
+    "source-map-support": "0.5.21",
+    "tape": "^5.9.0",
+    "typescript": "5.9.3"
   },
   "scripts": {
     "lint": "eslint .",
@@ -56,13 +62,15 @@
     "serve": "concurrently \"rollup -w -c rollup.config.mjs\" \"http-server\"",
     "build": "rollup -c rollup.config.mjs",
     "test": "tape --strict -r source-map-support/register \"test/*-test.js\"",
-    "docs:generate": "jsdoc2md \"src/**/*.js\" > API.md",
-    "docs:validate": "jsdoc2md \"src/**/*.js\" --no-cache --partial \"partials/**/*.hbs\"",
-    "docs:watch": "jsdoc2md \"src/**/*.js\" -w > API.md",
-    "postpublish": "zip -j dist/phylotree.js.zip -- LICENSE README.md dist/phylotree.js dist/phylotree.min.js dist/phylotree.css"
+    "typecheck": "tsc -p test/types",
+    "docs:generate": "node scripts/docs.mjs generate",
+    "docs:validate": "node scripts/docs.mjs validate",
+    "docs:watch": "node scripts/docs.mjs watch",
+    "prepublishOnly": "npm run build && npm test"
   },
   "files": [
     "dist/phylotree.css",
+    "dist/phylotree-menus.css",
     "dist/phylotree.js",
     "dist/phylotree.min.js",
     "dist/phylotree.d.ts",
