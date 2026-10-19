@@ -2,26 +2,51 @@
 
 ## Requirements
 
-Node > 9.x.x
+- Node.js 20 or newer (CI uses Node 22).
+- Yarn 1 (classic). The repository uses a Yarn 1 `yarn.lock`; Yarn 2+ will
+  not read it. If your global `yarn` is a newer major version, run the
+  commands below as `npx yarn@1 <command>`.
 
 ## Development workflow
 
-First, run the following commands in order to generate your environment.
-
 ```
-git clone http://www.github.com/veg/phylotree.js phylo
-cd phylo
-npm install -g yarn
-yarn global add webpack-cli
-yarn
+git clone https://github.com/veg/phylotree.js phylotree.js
+cd phylotree.js
+yarn install --frozen-lockfile
 yarn serve
 ```
 
-At this point, you should be able to navigate to `http://localhost:8080/` from
-your browser.
+`yarn serve` rebuilds the bundle with rollup whenever a file in `src/`
+changes and serves the repository at `http://localhost:8080/`. Refresh the
+browser after a rebuild to see your changes.
 
+The library source lives in `src/` (entry point `src/index.js`). Rollup
+writes the bundles to `dist/`, which is generated and not committed; do not
+edit it by hand.
 
-Edit the file `src/main.js` while yarn develop is running in your terminal. Webpack
-will generate `phylotree.js` in the root directory. Any edits to the file
-`phylotree.js` will be overwritten by `webpack`. Note that you'll need to refresh your
-browser after webpack builds to observe changes.
+## Scripts
+
+| Command              | What it does                                                     |
+| -------------------- | ---------------------------------------------------------------- |
+| `yarn build`         | Build `dist/phylotree.js`, `dist/phylotree.min.js` and the CSS.  |
+| `yarn dev`           | Rebuild `dist/` on every change (no web server).                 |
+| `yarn test`          | Run the tape tests in `test/`. Run `yarn build` first: the tests load `dist/phylotree.js`. |
+| `yarn lint`          | Run ESLint over the repository.                                  |
+| `yarn docs:generate` | Regenerate `API.md` from the JSDoc comments in `src/`.           |
+| `yarn docs:validate` | Fail if `API.md` is out of date with the JSDoc comments.         |
+| `yarn docs:watch`    | Regenerate `API.md` whenever a file in `src/` changes.           |
+
+Before opening a pull request, run:
+
+```
+yarn build
+yarn test
+yarn lint
+```
+
+CI runs the build and tests on both Linux and Windows, so keep package
+scripts portable (quote globs with double quotes, avoid POSIX-only tools).
+
+`API.md` is regenerated and committed automatically after changes reach
+`master`, but if you change JSDoc comments you can run `yarn docs:generate`
+and commit the result yourself.
