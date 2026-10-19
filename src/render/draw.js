@@ -945,7 +945,12 @@ class TreeRender {
 
       let max_r = 0;
 
+      // hidden (notshown) nodes are not laid out and keep stale coordinates;
+      // leave them out of the coordinate transforms and extents below
+      const shown = d => !render_nodes.nodeNotshown(d);
+
       this.phylotree.nodes.each(d => {
+        if (!shown(d)) return;
         let my_circ_position = d.x * this.scales[0];
         d.angle = (2 * Math.PI * my_circ_position) / effective_span;
         d.text_angle = d.angle - Math.PI / 2;
@@ -957,6 +962,7 @@ class TreeRender {
       this.do_lr(at_least_one_dimension_fixed);
 
       this.phylotree.nodes.each(d => {
+        if (!shown(d)) return;
         d.radius = (d.y * this.scales[1]) / this.size[1];
         max_r = Math.max(d.radius, max_r);
       });
@@ -964,7 +970,7 @@ class TreeRender {
       let annular_shift = 0;
 
       this.phylotree.nodes.each(d => {
-        if (!d.children) {
+        if (!d.children && shown(d)) {
           let my_circ_position = d.x * this.scales[0];
           if (last_child_angle !== null) {
             let required_spacing = my_circ_position - last_circ_position,
@@ -1036,6 +1042,7 @@ class TreeRender {
       }
 
       this.phylotree.nodes.each(d => {
+        if (!shown(d)) return;
         cartesianToPolar(
           d,
           this.radius,
@@ -1103,6 +1110,8 @@ class TreeRender {
       this.right_most_leaf = 0;
 
       this.phylotree.nodes.each(d => {
+        // hidden nodes are not laid out; do not rescale their stale coordinates
+        if (render_nodes.nodeNotshown(d)) return;
 
         d.x *= this.scales[0];
         d.y *= this.scales[1]*.8;

@@ -166,7 +166,14 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
           .text("Hide this " + (isLeafNode(node) ? "node" : "subtree"))
           .on("click", d => {
             menu_object.style("display", "none");
-            this.modifySelection([node], "notshown", true, true)
+            // hide the whole subtree, mirroring "Show all descendant nodes"
+            this.modifySelection(
+              [node].concat(selectAllDescendants(node, true, true)),
+              "notshown",
+              true,
+              true,
+              "true"
+            )
               .updateHasHiddenNodes()
               .update();
           });
