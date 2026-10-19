@@ -1,5 +1,6 @@
 // Helpers behind the docs:* package scripts.
 //
+//   node scripts/docs.mjs generate  - regenerate API.md from src/
 //   node scripts/docs.mjs validate  - fail if API.md is not what jsdoc2md
 //                                     generates from src/ (or if jsdoc fails)
 //   node scripts/docs.mjs watch     - regenerate API.md whenever src/ changes
@@ -132,7 +133,10 @@ async function main(command) {
   process.chdir(ROOT);
   const target = path.join(ROOT, "API.md");
 
-  if (command === "validate") {
+  if (command === "generate") {
+    await generate(target);
+    console.log("API.md written.");
+  } else if (command === "validate") {
     const problem = await validate(target);
     if (problem) {
       console.error(`${problem}\nRun "yarn docs:generate" and commit API.md.`);
@@ -143,7 +147,7 @@ async function main(command) {
   } else if (command === "watch") {
     watch(target);
   } else {
-    console.error("usage: node scripts/docs.mjs <validate|watch>");
+    console.error("usage: node scripts/docs.mjs <generate|validate|watch>");
     process.exitCode = 2;
   }
 }

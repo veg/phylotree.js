@@ -63,7 +63,7 @@
     "build": "rollup -c rollup.config.mjs",
     "test": "tape --strict -r source-map-support/register \"test/*-test.js\"",
     "typecheck": "tsc -p test/types",
-    "docs:generate": "jsdoc2md \"src/**/*.js\" > API.md",
+    "docs:generate": "node scripts/docs.mjs generate",
     "docs:validate": "node scripts/docs.mjs validate",
     "docs:watch": "node scripts/docs.mjs watch",
     "prepublishOnly": "npm run build && npm test"

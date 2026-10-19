@@ -86,6 +86,10 @@ tape("modules required by the test script are declared", function(t) {
 tape("docs scripts do not use jsdoc2md options that do not exist", function(t) {
   t.doesNotMatch(pkg.scripts["docs:watch"], /jsdoc2md.*\s-w\b/);
   t.doesNotMatch(pkg.scripts["docs:validate"], /--partial/);
+  // A shell redirect truncates API.md before jsdoc runs; go through the
+  // render-then-write helper instead.
+  t.doesNotMatch(pkg.scripts["docs:generate"], />/, "docs:generate does not redirect");
+  t.equal(pkg.scripts["docs:generate"], "node scripts/docs.mjs generate");
   t.end();
 });
 
