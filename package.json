@@ -66,7 +66,7 @@
     "docs:generate": "jsdoc2md \"src/**/*.js\" > API.md",
     "docs:validate": "node scripts/docs.mjs validate",
     "docs:watch": "node scripts/docs.mjs watch",
-    "prepublishOnly": "yarn build && yarn test"
+    "prepublishOnly": "npm run build && npm test"
   },
   "files": [
     "dist/phylotree.css",

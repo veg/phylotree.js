@@ -40,7 +40,8 @@ function waitFor(predicate, timeout) {
 }
 
 tape("publishing builds and tests first, without postpublish zip", function(t) {
-  t.equal(pkg.scripts.prepublishOnly, "yarn build && yarn test");
+  // npm is always present with node; yarn may be missing or Yarn Berry.
+  t.equal(pkg.scripts.prepublishOnly, "npm run build && npm test");
   t.notOk("postpublish" in pkg.scripts, "no postpublish script");
   t.end();
 });
