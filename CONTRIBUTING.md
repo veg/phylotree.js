@@ -33,7 +33,7 @@ edit it by hand.
 | `yarn test`          | Run the tape tests in `test/`. Run `yarn build` first: the tests load `dist/phylotree.js`. |
 | `yarn lint`          | Run ESLint over the repository.                                  |
 | `yarn docs:generate` | Regenerate `API.md` from the JSDoc comments in `src/`.           |
-| `yarn docs:validate` | Fail if `API.md` is out of date with the JSDoc comments.         |
+| `yarn docs:validate` | Local check: fail if `API.md` is out of date with the JSDoc comments (not run in CI). |
 | `yarn docs:watch`    | Regenerate `API.md` whenever a file in `src/` changes.           |
 
 Before opening a pull request, run:
@@ -48,5 +48,6 @@ CI runs the build and tests on both Linux and Windows, so keep package
 scripts portable (quote globs with double quotes, avoid POSIX-only tools).
 
 `API.md` is regenerated and committed automatically after changes reach
-`master`, but if you change JSDoc comments you can run `yarn docs:generate`
-and commit the result yourself.
+`master`, so CI does not require it to be current in pull requests. If you
+change JSDoc comments you can still run `yarn docs:generate` and commit the
+result yourself, and `yarn docs:validate` tells you whether that is needed.
