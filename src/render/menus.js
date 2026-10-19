@@ -354,7 +354,7 @@ export function modifySelection(
     }
   } else if (this.options["binary-selectable"]) {
     if (typeof node_selecter === "function") {
-      this.links.forEach(function(d) {
+      this.links.forEach(d => {
         var select_me = node_selecter(d);
         d[attr] = d[attr] || false;
 
@@ -382,7 +382,7 @@ export function modifySelection(
         }
       });
 
-      this.links.forEach(function(d) {
+      this.links.forEach(d => {
         d[attr] = d.target[attr];
         this.options["attribute-list"].forEach(function(type) {
           if (type != attr && d[attr] !== true) {
