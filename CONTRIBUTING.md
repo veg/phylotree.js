@@ -53,3 +53,11 @@ scripts portable (quote globs with double quotes, avoid POSIX-only tools).
 `master`, so CI does not require it to be current in pull requests. If you
 change JSDoc comments you can still run `yarn docs:generate` and commit the
 result yourself, and `yarn docs:validate` tells you whether that is needed.
+
+## Previews
+
+Every pull request gets a live preview of the demo app and API docs at
+`https://veg.github.io/phylotree.js/pr-preview/pr-<number>/`. A bot comment on
+the pull request links to it and is updated on every push; the preview is
+removed when the pull request is closed. The latest `master` is at
+<https://veg.github.io/phylotree.js/>.

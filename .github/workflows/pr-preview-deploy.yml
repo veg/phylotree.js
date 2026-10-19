@@ -1,0 +1,114 @@
+name: PR Preview Deploy
+
+# Publishes the site built by pr-preview-build.yml to
+# https://<owner>.github.io/<repo>/pr-preview/pr-<number>/ and removes it when
+# the pull request closes. Runs from the default branch with write access, so it
+# only copies the static files from the artifact: it never checks out or runs
+# code from the pull request, and the PR number is validated before use.
+on:
+  workflow_run:
+    workflows: [PR Preview Build]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+# Shared with docs-site.yml so no two pushes race on gh-pages.
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download preview metadata
+      uses: actions/download-artifact@v4
+      with:
+        name: preview-meta
+        path: preview-meta
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Read and validate metadata
+      id: meta
+      run: |
+        number=$(head -c 16 preview-meta/number | tr -d '[:space:]')
+        action=$(head -c 16 preview-meta/action | tr -d '[:space:]')
+        sha=$(head -c 64 preview-meta/sha | tr -d '[:space:]')
+        [[ "$number" =~ ^[0-9]+$ ]] || { echo "bad PR number"; exit 1; }
+        [[ "$action" =~ ^(opened|reopened|synchronize|closed)$ ]] || { echo "bad action"; exit 1; }
+        [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "bad sha"; exit 1; }
+        echo "number=$number" >> "$GITHUB_OUTPUT"
+        echo "action=$action" >> "$GITHUB_OUTPUT"
+        echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+    - name: Download preview site
+      if: steps.meta.outputs.action != 'closed'
+      uses: actions/download-artifact@v4
+      with:
+        name: preview-site
+        path: preview-site
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Deploy preview
+      if: steps.meta.outputs.action != 'closed'
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: preview-site
+        branch: gh-pages
+        target-folder: pr-preview/pr-${{ steps.meta.outputs.number }}
+        clean: true
+        commit-message: Deploy preview for PR ${{ steps.meta.outputs.number }} (${{ steps.meta.outputs.sha }})
+
+    - name: Remove preview
+      if: steps.meta.outputs.action == 'closed'
+      env:
+        NUMBER: ${{ steps.meta.outputs.number }}
+        REPO: ${{ github.repository }}
+        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        git clone --depth 1 --branch gh-pages "https://x-access-token:${TOKEN}@github.com/${REPO}.git" gh-pages
+        cd gh-pages
+        if [ -d "pr-preview/pr-${NUMBER}" ]; then
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -rq "pr-preview/pr-${NUMBER}"
+          git commit -qm "Remove preview for PR ${NUMBER}"
+          git push -q origin gh-pages
+        fi
+
+    - name: Comment with preview link
+      uses: actions/github-script@v7
+      env:
+        NUMBER: ${{ steps.meta.outputs.number }}
+        ACTION: ${{ steps.meta.outputs.action }}
+        SHA: ${{ steps.meta.outputs.sha }}
+      with:
+        script: |
+          const number = Number(process.env.NUMBER);
+          const marker = '<!-- pr-preview -->';
+          const base = `https://${context.repo.owner}.github.io/${context.repo.repo}/pr-preview/pr-${number}/`;
+          const body = process.env.ACTION === 'closed'
+            ? `${marker}\n**Preview removed** because the pull request was closed.`
+            : `${marker}\n**Preview** of ${process.env.SHA.slice(0, 7)}:\n\n` +
+              `- Demo app: ${base}\n- API docs: ${base}API.md\n\n` +
+              `It can take a minute or two for GitHub Pages to update after this comment.`;
+          const comments = await github.paginate(github.rest.issues.listComments, {
+            owner: context.repo.owner, repo: context.repo.repo, issue_number: number,
+          });
+          const existing = comments.find(c => c.user.type === 'Bot' && c.body.startsWith(marker));
+          if (existing) {
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body,
+            });
+          } else {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: number, body,
+            });
+          }
