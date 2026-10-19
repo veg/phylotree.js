@@ -53,12 +53,12 @@
   "scripts": {
     "lint": "eslint .",
     "dev": "rollup -w -c rollup.config.mjs",
-    "serve": "concurrently 'rollup -w -c rollup.config.mjs' 'http-server'",
+    "serve": "concurrently \"rollup -w -c rollup.config.mjs\" \"http-server\"",
     "build": "rollup -c rollup.config.mjs",
     "test": "tape --strict -r source-map-support/register \"test/*-test.js\"",
-    "docs:generate": "jsdoc2md 'src/**/*.js' > API.md",
-    "docs:validate": "jsdoc2md 'src/**/*.js' --no-cache --partial 'partials/**/*.hbs'",
-    "docs:watch": "jsdoc2md 'src/**/*.js' -w > API.md",
+    "docs:generate": "jsdoc2md \"src/**/*.js\" > API.md",
+    "docs:validate": "jsdoc2md \"src/**/*.js\" --no-cache --partial \"partials/**/*.hbs\"",
+    "docs:watch": "jsdoc2md \"src/**/*.js\" -w > API.md",
     "postpublish": "zip -j dist/phylotree.js.zip -- LICENSE README.md dist/phylotree.js dist/phylotree.min.js dist/phylotree.css"
   },
   "files": [
