@@ -1,5 +1,4 @@
 import { isLeafNode } from "../nodes";
-import { css_classes } from "./options";
 
 let d3_layout_phylotree_event_id = "phylotree.event";
 
@@ -56,7 +55,7 @@ export function resizeSvg(tree, svg, tr) {
       }
 
       svg
-        .selectAll("." + css_classes["tree-container"])
+        .selectAll("." + this.css_classes["tree-container"])
         .attr("transform", transform);
     }
   } else if (this.radial()) {
@@ -88,7 +87,7 @@ export function resizeSvg(tree, svg, tr) {
       }
 
       svg
-        .selectAll("." + css_classes["tree-container"])
+        .selectAll("." + this.css_classes["tree-container"])
         .attr("transform", transform);
     }
   } else {

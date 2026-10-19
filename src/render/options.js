@@ -1,5 +1,7 @@
 import { isLeafNode } from "../nodes";
 
+// Default class names. Each TreeRender works on its own copy
+// (this.css_classes), so this object is never mutated.
 export const css_classes = {
   "tree-container": "phylotree-container",
   "tree-scale-bar": "tree-scale-bar",
@@ -20,7 +22,7 @@ export const css_classes = {
 
 export function initializeCssClasses(classes = {}) {
   Object.keys(classes).forEach(key => {
-    css_classes[key] = classes[key]
+    this.css_classes[key] = classes[key]
   })
 }
 
