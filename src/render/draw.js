@@ -417,8 +417,8 @@ class TreeRender {
     drawn_nodes = drawn_nodes
       .enter()
       .append("g")
-      .attr("class", this.reclassNode)
       .merge(drawn_nodes)
+      .attr("class", d => this.reclassNode(d))
       .attr("transform", d => {
         const should_shift =
           this.options["layout"] == "right-to-left" && isLeafNode(d);
