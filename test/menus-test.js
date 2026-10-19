@@ -238,3 +238,82 @@ tape("modifySelection works with binary-selectable", function(test) {
   env.restore();
   test.end();
 });
+
+tape("binary-selectable: hide/show menu items honour their mode", function(test) {
+  const env = setupDom();
+  const tree = new phylotree.phylotree(NEWICK);
+  const display = tree.render({
+    container: "#tree",
+    brush: false,
+    "binary-selectable": true,
+    "attribute-list": ["selected"]
+  });
+  document.querySelector("#tree").appendChild(display.show());
+
+  display.modifySelection([findNode(tree, "C")]);
+  test.equal(findNode(tree, "C").selected, true, "C is selected");
+
+  test.ok(
+    clickMenuItem(display, findNode(tree, "A"), "Hide this node"),
+    "menu offers 'Hide this node' for A"
+  );
+  test.deepEqual(drawnNodeNames(), ["AB", "B", "C", "CD", "D"], "A is hidden");
+  test.equal(findNode(tree, "C").selected, true, "hiding a node keeps the selection");
+
+  test.ok(
+    clickMenuItem(display, findNode(tree, "AB"), "Hide this subtree"),
+    "menu offers 'Hide this subtree' for AB"
+  );
+  test.deepEqual(
+    drawnNodeNames(),
+    ["C", "CD", "D"],
+    "hiding AB keeps the already hidden A hidden"
+  );
+  ["A", "B", "AB"].forEach(function(name) {
+    test.equal(findNode(tree, name).notshown, true, name + " is notshown");
+  });
+  test.ok(allFinite(nodeTransforms(["C", "CD", "D"])), "coordinates are finite");
+
+  test.ok(
+    clickMenuItem(display, tree.getRootNode(), "Show all descendant nodes"),
+    "root menu offers 'Show all descendant nodes'"
+  );
+  test.deepEqual(
+    drawnBranchTargets(),
+    ["A", "AB", "B", "C", "CD", "D"],
+    "'Show all descendant nodes' shows every branch"
+  );
+  ["A", "B", "AB", "C", "CD", "D"].forEach(function(name) {
+    test.notOk(findNode(tree, name).notshown, name + " is shown");
+  });
+  test.equal(findNode(tree, "C").selected, true, "C is still selected");
+
+  test.deepEqual(env.listenerErrors.map(String), [], "no listener errors");
+  env.restore();
+  test.end();
+});
+
+tape("binary-selectable: modifySelection honours mode 'true'/'false'", function(test) {
+  const env = setupDom();
+  const tree = new phylotree.phylotree(NEWICK);
+  const display = tree.render({
+    container: "#tree",
+    brush: false,
+    "binary-selectable": true,
+    "attribute-list": ["selected"]
+  });
+  document.querySelector("#tree").appendChild(display.show());
+
+  const tips = tree.getTips();
+  display.modifySelection(tips, "tag", false, true, "true");
+  display.modifySelection(tips, "tag", false, true, "true");
+  test.ok(tips.every(function(n) { return n.tag === true; }), "'true' twice keeps tags set");
+  display.modifySelection(tips, "tag", false, true, "false");
+  display.modifySelection(tips, "tag", false, true, "false");
+  test.ok(tips.every(function(n) { return n.tag === false; }), "'false' twice keeps tags cleared");
+  display.modifySelection([tips[0]], "tag", false, true);
+  test.equal(tips[0].tag, true, "default mode toggles");
+
+  env.restore();
+  test.end();
+});
