@@ -1,6 +1,5 @@
 import * as d3 from "d3";
 import { itemTagged, itemSelected } from "./helpers";
-import { css_classes } from "./options";
 
 export function drawEdge(container, edge, transition) {
 
@@ -62,14 +61,14 @@ export function drawEdge(container, edge, transition) {
 
 export function reclassEdge(edge) {
 
-  let class_var = css_classes["branch"];
+  let class_var = this.css_classes["branch"];
 
   if (itemTagged(edge)) {
-    class_var += " " + css_classes["tagged-branch"];
+    class_var += " " + this.css_classes["tagged-branch"];
   }
 
   if (itemSelected(edge, this.selection_attribute_name)) {
-    class_var += " " + css_classes["selected-branch"];
+    class_var += " " + this.css_classes["selected-branch"];
   }
 
   // Multi-set selection mode: add set-specific class

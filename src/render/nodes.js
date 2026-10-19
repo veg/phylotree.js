@@ -2,7 +2,6 @@ import * as d3 from "d3";
 
 import { itemTagged, itemSelected } from "./helpers";
 import { isLeafNode } from "../nodes";
-import { css_classes } from "./options";
 
 export function shiftTip(d) {
 
@@ -271,22 +270,22 @@ export function nodeSpan(attr) {
 
 export function reclassNode(node) {
 
-  let class_var = css_classes[isLeafNode(node) ? "node" : "internal-node"];
+  let class_var = this.css_classes[isLeafNode(node) ? "node" : "internal-node"];
 
   if (itemTagged(node)) {
-    class_var += " " + css_classes["tagged-node"];
+    class_var += " " + this.css_classes["tagged-node"];
   }
 
   if (itemSelected(node, this.selection_attribute_name)) {
-    class_var += " " + css_classes["selected-node"];
+    class_var += " " + this.css_classes["selected-node"];
   }
 
   if (!node["parent"]) {
-    class_var += " " + css_classes["root-node"];
+    class_var += " " + this.css_classes["root-node"];
   }
 
   if (isNodeCollapsed(node) || hasHiddenNodes(node)) {
-    class_var += " " + css_classes["collapsed-node"];
+    class_var += " " + this.css_classes["collapsed-node"];
   }
 
   return class_var;

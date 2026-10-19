@@ -10,7 +10,7 @@ import * as clades from "./clades";
 import * as render_nodes from "./nodes";
 import * as render_edges from "./edges";
 import * as events from "./events";
-import { css_classes, initializeCssClasses } from "./options";
+import { css_classes } from "./options";
 import * as opt from "./options";
 import * as menus from "./menus";
 import * as eventEmitter from "./event-emitter";
@@ -25,8 +25,7 @@ function constant(x) {
 
 class TreeRender {
   constructor(phylotree, options = {}) {
-    initializeCssClasses(options['css-classes']);
-    this.css_classes = css_classes;
+    this.css_classes = Object.assign({}, css_classes, options["css-classes"]);
     this.phylotree = phylotree;
     this.container = options.container;
     this.separation = function(_node, _previous) {
@@ -328,7 +327,7 @@ class TreeRender {
     let node_id = 0;
 
     let enclosure = this.svg
-      .selectAll("." + css_classes["tree-container"])
+      .selectAll("." + this.css_classes["tree-container"])
       .data([0]);
 
     // Store base transform for composition with zoom
@@ -340,7 +339,7 @@ class TreeRender {
     enclosure = enclosure
       .enter()
       .append("g")
-      .attr("class", css_classes["tree-container"])
+      .attr("class", this.css_classes["tree-container"])
       .merge(enclosure)
       .attr("transform", d => {
         // Compose base transform with current zoom transform if present
@@ -356,13 +355,13 @@ class TreeRender {
 
     if (this.draw_scale_bar) {
       let scale_bar = this.svg
-        .selectAll("." + css_classes["tree-scale-bar"])
+        .selectAll("." + this.css_classes["tree-scale-bar"])
         .data([0]);
 
       scale_bar
         .enter()
         .append("g")
-        .attr("class", css_classes["tree-scale-bar"])
+        .attr("class", this.css_classes["tree-scale-bar"])
         .style("font-size", this.ensure_size_is_in_px(this.scale_bar_font_size))
         .merge(scale_bar)
         .attr("transform", d => {
@@ -375,17 +374,17 @@ class TreeRender {
 
       scale_bar.selectAll("text").style("text-anchor", "end");
     } else {
-      this.svg.selectAll("." + css_classes["tree-scale-bar"]).remove();
+      this.svg.selectAll("." + this.css_classes["tree-scale-bar"]).remove();
     }
 
     enclosure = this.svg
-      .selectAll("." + css_classes["tree-container"])
+      .selectAll("." + this.css_classes["tree-container"])
       .data([0]);
 
     this.updateCollapsedClades(transitions);
 
     let drawn_links = enclosure
-      .selectAll(render_edges.edgeCssSelectors(css_classes))
+      .selectAll(render_edges.edgeCssSelectors(this.css_classes))
       .data(this.links.filter(render_edges.edgeVisible), d => {
         return d.target.id || (d.target.id = ++node_id);
       });
@@ -405,7 +404,7 @@ class TreeRender {
       });
 
     let drawn_nodes = enclosure
-      .selectAll(render_nodes.nodeCssSelectors(css_classes))
+      .selectAll(render_nodes.nodeCssSelectors(this.css_classes))
       .data(
         this.phylotree.nodes.descendants().filter(render_nodes.nodeVisible),
         d => {
@@ -418,8 +417,8 @@ class TreeRender {
     drawn_nodes = drawn_nodes
       .enter()
       .append("g")
-      .attr("class", this.reclassNode)
       .merge(drawn_nodes)
+      .attr("class", d => this.reclassNode(d))
       .attr("transform", d => {
         const should_shift =
           this.options["layout"] == "right-to-left" && isLeafNode(d);
@@ -451,11 +450,11 @@ class TreeRender {
 
     if (this.options["brush"]) {
       var brush = enclosure
-        .selectAll("." + css_classes["tree-selection-brush"])
+        .selectAll("." + this.css_classes["tree-selection-brush"])
         .data([0])
         .enter()
         .insert("g", ":first-child")
-        .attr("class", css_classes["tree-selection-brush"]);
+        .attr("class", this.css_classes["tree-selection-brush"]);
 
       var brush_object = d3
         .brush()
@@ -518,10 +517,10 @@ class TreeRender {
             const composedTransform = `translate(${zt.x + this.baseTransform.x * zt.k}, ${zt.y + this.baseTransform.y * zt.k}) scale(${zt.k})`;
 
             // Use this.svg.select() to target only this tree instance (not global d3.select)
-            this.svg.select("." + css_classes["tree-container"]).attr("transform", composedTransform);
+            this.svg.select("." + this.css_classes["tree-container"]).attr("transform", composedTransform);
 
             // Apply same transform to scale bar
-            this.svg.select("." + css_classes["tree-scale-bar"]).attr("transform", d => {
+            this.svg.select("." + this.css_classes["tree-scale-bar"]).attr("transform", d => {
               return `translate(${zt.x + this.baseTransform.x * zt.k}, ${zt.y + (this.baseTransform.y - 10) * zt.k}) scale(${zt.k})`;
             });
           });
@@ -1318,9 +1317,9 @@ class TreeRender {
       return this.css(arg);
     }
 
-    for (var key in css_classes) {
-      if (key in opt && opt[key] != css_classes[key]) {
-        css_classes[key] = opt[key];
+    for (var key in this.css_classes) {
+      if (key in opt && opt[key] != this.css_classes[key]) {
+        this.css_classes[key] = opt[key];
       }
     }
 
@@ -1352,7 +1351,7 @@ class TreeRender {
 
     let do_update = false;
 
-    for (var key in css_classes) {
+    for (var key in this.css_classes) {
       if (key in opt && opt[key] != this.css_classes[key]) {
         do_update = true;
         this.css_classes[key] = opt[key];
