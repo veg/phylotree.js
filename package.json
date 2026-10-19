@@ -6,6 +6,9 @@
   "unpkg": "dist/phylotree.js",
   "jsdelivr": "dist/phylotree.js",
   "module": "src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
   "bin": {
     "root-to-tip": "./bin/root-to-tip.js",
     "tag-branches": "./bin/phylotree-tag.js",
@@ -48,6 +51,7 @@
     "prettier": "^3.7.0",
     "rollup": "^4.59.0",
     "rollup-plugin-copy": "^3.5.0",
+    "source-map-support": "0.5.21",
     "tape": "^5.9.0"
   },
   "scripts": {
@@ -59,10 +63,11 @@
     "docs:generate": "jsdoc2md \"src/**/*.js\" > API.md",
     "docs:validate": "jsdoc2md \"src/**/*.js\" --no-cache --partial \"partials/**/*.hbs\"",
     "docs:watch": "jsdoc2md \"src/**/*.js\" -w > API.md",
-    "postpublish": "zip -j dist/phylotree.js.zip -- LICENSE README.md dist/phylotree.js dist/phylotree.min.js dist/phylotree.css"
+    "prepublishOnly": "yarn build && yarn test"
   },
   "files": [
     "dist/phylotree.css",
+    "dist/phylotree-menus.css",
     "dist/phylotree.js",
     "dist/phylotree.min.js",
     "dist/phylotree.d.ts",

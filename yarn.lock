@@ -3028,7 +3028,7 @@ sort-array@^5.0.0:
     array-back "^6.2.2"
     typical "^7.1.1"
 
-source-map-support@~0.5.20:
+source-map-support@0.5.21, source-map-support@~0.5.20:
   version "0.5.21"
   resolved "https://registry.npmjs.org/source-map-support/-/source-map-support-0.5.21.tgz"
   integrity sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==
