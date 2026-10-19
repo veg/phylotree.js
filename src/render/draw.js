@@ -944,9 +944,9 @@ class TreeRender {
 
       let max_r = 0;
 
-      // hidden (notshown) nodes are not laid out and keep stale coordinates;
-      // leave them out of the coordinate transforms and extents below
-      const shown = d => !render_nodes.nodeNotshown(d);
+      // hidden (notshown) nodes and their descendants are not laid out and
+      // keep stale coordinates; leave them out of the transforms and extents
+      const shown = d => !render_nodes.nodeOrAncestorNotshown(d);
 
       this.phylotree.nodes.each(d => {
         if (!shown(d)) return;
@@ -1109,8 +1109,9 @@ class TreeRender {
       this.right_most_leaf = 0;
 
       this.phylotree.nodes.each(d => {
-        // hidden nodes are not laid out; do not rescale their stale coordinates
-        if (render_nodes.nodeNotshown(d)) return;
+        // hidden nodes (and their descendants) are not laid out; do not
+        // rescale their stale coordinates
+        if (render_nodes.nodeOrAncestorNotshown(d)) return;
 
         d.x *= this.scales[0];
         d.y *= this.scales[1]*.8;

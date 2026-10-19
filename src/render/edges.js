@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { itemTagged, itemSelected } from "./helpers";
+import { nodeOrAncestorNotshown } from "./nodes";
 
 export function drawEdge(container, edge, transition) {
 
@@ -127,7 +128,7 @@ export function syncEdgeLabels() {
 }
 
 export function edgeVisible(edge) {
-  return !(edge.target.hidden || edge.target.notshown || false);
+  return !(edge.target.hidden || nodeOrAncestorNotshown(edge.target));
 }
 
 export function edgeCssSelectors(css_classes) {

@@ -317,3 +317,68 @@ tape("binary-selectable: modifySelection honours mode 'true'/'false'", function(
   env.restore();
   test.end();
 });
+
+// Hiding only an internal node through the public API (without flagging its
+// descendants) must hide the whole subtree, as the context menu does.
+function checkApiHideInternalNode(test, radial) {
+  const env = setupDom();
+  const tree = new phylotree.phylotree(NEWICK);
+  const display = tree.render({
+    container: "#tree",
+    brush: false,
+    "is-radial": radial
+  });
+  document.querySelector("#tree").appendChild(display.show());
+
+  display
+    .modifySelection([findNode(tree, "AB")], "notshown", true, true, "true")
+    .updateHasHiddenNodes()
+    .update();
+
+  test.deepEqual(
+    drawnNodeNames(),
+    ["C", "CD", "D"],
+    "no node drawn for A, B or AB after hiding AB"
+  );
+  test.deepEqual(
+    drawnBranchTargets(),
+    ["C", "CD", "D"],
+    "no branch drawn for A, B or AB after hiding AB"
+  );
+
+  const visible = ["C", "CD", "D"];
+  const first = nodeTransforms(visible);
+  test.ok(allFinite(first), "remaining node coordinates are finite");
+  for (let i = 0; i < 3; i++) display.update();
+  test.deepEqual(
+    nodeTransforms(visible),
+    first,
+    "remaining node coordinates are stable across update() calls"
+  );
+
+  test.ok(
+    clickMenuItem(display, tree.getRootNode(), "Show all descendant nodes"),
+    "root menu offers 'Show all descendant nodes'"
+  );
+  test.deepEqual(
+    drawnBranchTargets(),
+    ["A", "AB", "B", "C", "CD", "D"],
+    "'Show all descendant nodes' restores every branch"
+  );
+  test.ok(
+    allFinite(nodeTransforms(["A", "B", "AB", "C", "CD", "D"])),
+    "restored node coordinates are finite"
+  );
+
+  test.deepEqual(env.listenerErrors.map(String), [], "no listener errors");
+  env.restore();
+  test.end();
+}
+
+tape("API: hiding an internal node hides its subtree (linear layout)", function(test) {
+  checkApiHideInternalNode(test, false);
+});
+
+tape("API: hiding an internal node hides its subtree (radial layout)", function(test) {
+  checkApiHideInternalNode(test, true);
+});

@@ -292,11 +292,20 @@ export function reclassNode(node) {
 }
 
 export function nodeVisible(node) {
-  return !(node.hidden || node.notshown || false);
+  return !(node.hidden || nodeOrAncestorNotshown(node));
 }
 
 export function nodeNotshown(node) {
   return node.notshown;
+}
+
+// true if the node or any of its ancestors is hidden (notshown); the layout
+// skips a hidden node's whole subtree, so its descendants are hidden too
+export function nodeOrAncestorNotshown(node) {
+  for (let n = node; n; n = n.parent) {
+    if (n.notshown) return true;
+  }
+  return false;
 }
 
 export function hasHiddenNodes(node) {
