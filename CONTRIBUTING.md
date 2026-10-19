@@ -32,6 +32,7 @@ edit it by hand.
 | `yarn dev`           | Rebuild `dist/` on every change (no web server).                 |
 | `yarn test`          | Run the tape tests in `test/`. Run `yarn build` first: the tests load `dist/phylotree.js`. |
 | `yarn lint`          | Run ESLint over the repository.                                  |
+| `yarn typecheck`     | Type-check `types/phylotree.d.ts` against `test/types/usage.ts` (run in CI). |
 | `yarn docs:generate` | Regenerate `API.md` from the JSDoc comments in `src/`.           |
 | `yarn docs:validate` | Local check: fail if `API.md` is out of date with the JSDoc comments (not run in CI). |
 | `yarn docs:watch`    | Regenerate `API.md` whenever a file in `src/` changes.           |
@@ -42,6 +43,7 @@ Before opening a pull request, run:
 yarn build
 yarn test
 yarn lint
+yarn typecheck
 ```
 
 CI runs the build and tests on both Linux and Windows, so keep package
