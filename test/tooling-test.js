@@ -125,6 +125,22 @@ tape("docs validate reports a stale API.md and accepts a current one", async fun
   fs.writeFileSync(target, "# API\r\n\r\nline two\r\n");
   t.equal(await docs.validate(target, render), null, "CRLF checkout is current");
 
+  // On a CRLF checkout of src/, jsdoc2md emits bare CRs inside multi-line
+  // descriptions.
+  fs.writeFileSync(target, "# API\n\nline\ntwo\n");
+  t.equal(
+    await docs.validate(target, async function() {
+      return "# API\r\n\r\nline\rtwo\r\n";
+    }),
+    null,
+    "bare CRs in the jsdoc output (CRLF sources) are ignored"
+  );
+
+  await docs.generate(target, async function() {
+    return "# API\r\n\r\nline\rtwo\r\n";
+  });
+  t.equal(fs.readFileSync(target, "utf8"), "# API\n\nline\ntwo\n", "generate writes LF");
+
   fs.writeFileSync(target, "# API\n\nline 2\n");
   t.match(await docs.validate(target, render), /out of date.*line 3/);
 

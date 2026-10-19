@@ -42,14 +42,17 @@ export function writeFileAtomic(target, content) {
   }
 }
 
+// jsdoc2md output uses CRLF, or bare CRs inside multi-line descriptions, when
+// src/ is checked out with CRLF line endings (the Windows default). Always
+// compare and write LF.
+const normalize = text => text.replace(/\r\n?/g, "\n");
+
 // Render first, then write: if rendering throws, `target` is left untouched.
 export async function generate(target, render = renderApi) {
-  const content = await render();
+  const content = normalize(await render());
   writeFileAtomic(target, content);
   return content;
 }
-
-const normalize = text => text.replace(/\r\n/g, "\n");
 
 // Returns null when `target` matches the rendered output, otherwise a message
 // describing the first difference.
