@@ -44,7 +44,7 @@
     "@rollup/plugin-node-resolve": "^16.0.1",
     "@rollup/plugin-terser": "^1.0.0",
     "concurrently": "^9.2.5",
-    "eslint": "^9.39.5",
+    "eslint": "^10.13.0",
     "globals": "^17.13.0",
     "http-server": "^14.1.1",
     "jsdoc-to-markdown": "^9.1.0",
