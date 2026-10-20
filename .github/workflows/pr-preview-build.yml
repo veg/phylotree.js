@@ -20,13 +20,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Record pull request
-      run: |
-        mkdir -p preview-meta
-        echo "${{ github.event.pull_request.number }}" > preview-meta/number
-        echo "${{ github.event.action }}" > preview-meta/action
-        echo "${{ github.event.pull_request.head.sha }}" > preview-meta/sha
-
     - name: Checkout pull request
       if: github.event.action != 'closed'
       uses: actions/checkout@v4
@@ -52,11 +45,20 @@ jobs:
       if: github.event.action != 'closed'
       run: bash scripts/build-site.sh preview-site
 
+    # Written after checkout: actions/checkout cleans the workspace.
+    - name: Record pull request
+      run: |
+        mkdir -p preview-meta
+        echo "${{ github.event.pull_request.number }}" > preview-meta/number
+        echo "${{ github.event.action }}" > preview-meta/action
+        echo "${{ github.event.pull_request.head.sha }}" > preview-meta/sha
+
     - name: Upload preview metadata
       uses: actions/upload-artifact@v4
       with:
         name: preview-meta
         path: preview-meta/
+        if-no-files-found: error
         retention-days: 1
 
     - name: Upload preview site
@@ -66,4 +68,5 @@ jobs:
         name: preview-site
         path: preview-site/
         include-hidden-files: true
+        if-no-files-found: error
         retention-days: 1
