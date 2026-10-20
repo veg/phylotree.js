@@ -28,7 +28,7 @@ if (!options.newick){
 
 // Assumes date formatted like 1984-09-20
 let date_parser = function(tree, node) {
-  var location = '';
+  var location;
 
   const default_regexp = /([0-9]{4})-?([0-9]{2})-?([0-9]{2})$/g;
   if (tree.isLeafNode(node)) {

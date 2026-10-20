@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Node.js 20 or newer (CI uses Node 22).
+- Node.js 22.12 or newer (jsdom, used by the tests, needs 22.22 or newer).
 - Yarn 1 (classic). The repository uses a Yarn 1 `yarn.lock`; Yarn 2+ will
   not read it. If your global `yarn` is a newer major version, run the
   commands below as `npx yarn@1 <command>`.

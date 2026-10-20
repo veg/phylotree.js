@@ -4,7 +4,7 @@ import { isNodeCollapsed, nodeOrAncestorNotshown } from "./nodes";
 
 export function cladeCssSelectors(css_classes) {
   return [css_classes["clade"]].reduce(function(p, c, i, a) {
-    return (p += "path." + c + (i < a.length - 1 ? "," : ""));
+    return p + "path." + c + (i < a.length - 1 ? "," : "");
   }, "");
 }
 

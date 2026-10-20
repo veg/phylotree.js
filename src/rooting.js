@@ -57,7 +57,7 @@ export function reroot(node, fraction) {
 
     let remove_me = node,
       current_node = node.parent,
-      stashed_bl = _.noop();
+      stashed_bl;
 
     let apportioned_bl =
       node.data.__mapped_bl === undefined ? undefined : node.data.__mapped_bl * fraction;

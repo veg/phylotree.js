@@ -95,7 +95,7 @@ if (options.dateFormat) {
 let default_date_parser = function(tree, node) {
   const default_regexp = /([0-9]{4})-?([0-9]{2})-?([0-9]{2})$/g;
 
-  var location = "";
+  var location;
 
   if (tree.isLeafNode(node)) {
     if ("name" in node.data) {
@@ -117,7 +117,7 @@ let default_date_parser = function(tree, node) {
 
 // Example - [0-9]{4}-[0-9]{2}-[0-9]{2}
 let regex_date_parser = function(tree, regex, format, node) {
-  var location = "";
+  var location;
 
   if (tree.isLeafNode(node) && "name" in node.data) {
 

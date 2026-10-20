@@ -47,7 +47,7 @@ tape("publishing builds and tests first, without postpublish zip", function(t) {
 });
 
 tape("package declares the Node versions it supports", function(t) {
-  t.equal(pkg.engines && pkg.engines.node, ">=20");
+  t.equal(pkg.engines && pkg.engines.node, ">=22.12");
   t.end();
 });
 
