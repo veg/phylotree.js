@@ -26,6 +26,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # The deploy action needs a git repository to work in. This checks out the
+    # default branch (trusted code), never the pull request.
+    - name: Checkout default branch
+      uses: actions/checkout@v4
+
     - name: Download preview metadata
       uses: actions/download-artifact@v4
       with:
