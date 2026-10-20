@@ -29,10 +29,10 @@ jobs:
     # The deploy action needs a git repository to work in. This checks out the
     # default branch (trusted code), never the pull request.
     - name: Checkout default branch
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Download preview metadata
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: preview-meta
         path: preview-meta
@@ -54,7 +54,7 @@ jobs:
 
     - name: Download preview site
       if: steps.meta.outputs.action != 'closed'
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: preview-site
         path: preview-site
@@ -89,7 +89,7 @@ jobs:
         fi
 
     - name: Comment with preview link
-      uses: actions/github-script@v7
+      uses: actions/github-script@v9
       env:
         NUMBER: ${{ steps.meta.outputs.number }}
         ACTION: ${{ steps.meta.outputs.action }}

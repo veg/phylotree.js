@@ -22,11 +22,11 @@ jobs:
     steps:
     - name: Checkout pull request
       if: github.event.action != 'closed'
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Setup Node.js
       if: github.event.action != 'closed'
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
         node-version: '20'
         cache: 'yarn'
@@ -54,7 +54,7 @@ jobs:
         echo "${{ github.event.pull_request.head.sha }}" > preview-meta/sha
 
     - name: Upload preview metadata
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: preview-meta
         path: preview-meta/
@@ -63,7 +63,7 @@ jobs:
 
     - name: Upload preview site
       if: github.event.action != 'closed'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: preview-site
         path: preview-site/
