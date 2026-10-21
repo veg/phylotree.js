@@ -7,6 +7,41 @@ import { predefined_selecters } from "./options";
 
 let d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
 
+/**
+ * Whether the node menu opens on events of `type` ("click" or
+ * "contextmenu"), per the `menu-trigger` option.
+ * @private
+ */
+export function menuOpensOn(type) {
+  const trigger = this.options["menu-trigger"] || "click";
+  return trigger === "both" || trigger === type;
+}
+
+/**
+ * Open the menu for `node` at the position of `event`.
+ *
+ * Emits `contextMenu` with `(node, event)` first; a listener that calls
+ * `event.preventDefault()` replaces the built-in menu with its own. For a
+ * right-click, the browser's own context menu is suppressed.
+ *
+ * @param {Object} node The node whose menu to open.
+ * @param {Event} event The triggering mouse event; its `clientX`/`clientY`
+ *   position the menu.
+ * @returns The current ``this``.
+ * @example
+ * tree.display.on("contextMenu", (node, event) => {
+ *   event.preventDefault(); // skip the built-in menu
+ *   showMyMenu(node, event.clientX, event.clientY);
+ * });
+ */
+export function openNodeMenu(node, event) {
+  this.emit("contextMenu", node, event);
+  if (event.defaultPrevented) return this;
+  if (event.type === "contextmenu") event.preventDefault();
+  this.handle_node_click(node, event);
+  return this;
+}
+
 export function nodeDropdownMenu(node, container, phylotree, options, event) {
   let menu_object = d3
     .select(container)
@@ -259,10 +294,27 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
  * The custom item will be added in addition to the default items: "Collapse Subtree", the "Toggle selection" submenu,
  * "Reroot on this node" and "Hide this subtree". It will be added at the end of the menu after a menu divider.
  *
+ * Available both as a package export and as a method on the rendered tree.
+ *
  * @param {Object} node The node to add the custom menu item to.
  * @param {Function} name Given a node, returns the name of the menu item.
- * @param {Function} callback Function to call when the menu item is clicked.
- * @param {Function} condition Function to determine whether the menu item should be shown.
+ * @param {Function} callback Called as `callback(node, event)` when the menu item is clicked.
+ * @param {Function} [condition] Given a node, returns whether the menu item should be shown. Always shown if omitted.
+ * @example
+ * import { phylotree, addCustomMenu } from "phylotree";
+ *
+ * const tree = new phylotree(newick);
+ * tree.render({
+ *   container: "#tree",
+ *   "node-styler": (element, node) => {
+ *     addCustomMenu(
+ *       node,
+ *       n => "Show details for " + n.data.name,
+ *       n => showDetails(n),
+ *       n => !n.children
+ *     );
+ *   }
+ * });
  */
 export function addCustomMenu(node, name, callback, condition) {
   if (!("menu_items" in node)) {

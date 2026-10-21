@@ -169,6 +169,11 @@ export interface RenderOptions {
   zoom?: boolean;
   /** Show the node context menu */
   'show-menu'?: boolean;
+  /**
+   * Which mouse action opens the node menu: a left click (default), a
+   * right-click, or either
+   */
+  'menu-trigger'?: 'click' | 'contextmenu' | 'both';
   /** Show node labels */
   'show-labels'?: boolean;
   /** Node styler; same as `TreeRender.style_nodes` */
@@ -350,7 +355,9 @@ declare class TreeRender {
 
   /**
    * Register an event listener. Emitted events: nodeClick, nodeHover,
-   * branchClick, rendered, selectionChange, collapsed, rerooted, setChange.
+   * branchClick, contextMenu, rendered, selectionChange, collapsed, rerooted,
+   * setChange. `contextMenu` receives `(node, event)` when a node's menu is
+   * about to open; call `event.preventDefault()` to skip the built-in menu.
    */
   on(event: string, callback: (...args: any[]) => void): this;
 
@@ -449,9 +456,15 @@ declare class TreeRender {
   addCustomMenu(
     node: PhylotreeNode,
     name: (node: PhylotreeNode) => string,
-    callback: (node: PhylotreeNode, ...args: any[]) => void,
+    callback: (node: PhylotreeNode, event: MouseEvent) => void,
     condition?: (node: PhylotreeNode) => boolean
   ): void;
+
+  /**
+   * Open a node's menu at the position of `event`, emitting `contextMenu`
+   * first
+   */
+  openNodeMenu(node: PhylotreeNode, event: MouseEvent): this;
 
   /**
    * Get or set the size of the tree as `[height, width]`. Setting only
@@ -637,6 +650,20 @@ export function getNewick(
   annotator?: ((node: PhylotreeNode) => string) | null,
   root?: PhylotreeNode
 ): string;
+
+/**
+ * Add an item to a node's context menu; same as `TreeRender.addCustomMenu`
+ * @param node The node
+ * @param name Returns the menu item label
+ * @param callback Called when the item is clicked
+ * @param condition Optional; the item is shown only if it returns true
+ */
+export function addCustomMenu(
+  node: PhylotreeNode,
+  name: (node: PhylotreeNode) => string,
+  callback: (node: PhylotreeNode, event: MouseEvent) => void,
+  condition?: (node: PhylotreeNode) => boolean
+): void;
 
 /**
  * Annotate nodes with path lengths for pairwise distance computations

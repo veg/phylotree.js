@@ -100,6 +100,21 @@ terminal/internal nodes.</p>
 a smaller blob for viewing large trees, or expands a node that was
 previously collapsed.</p>
 </dd>
+<dt><a href="#openNodeMenu">openNodeMenu(node, event)</a> ⇒</dt>
+<dd><p>Open the menu for <code>node</code> at the position of <code>event</code>.</p>
+<p>Emits <code>contextMenu</code> with <code>(node, event)</code> first; a listener that calls
+<code>event.preventDefault()</code> replaces the built-in menu with its own. For a
+right-click, the browser&#39;s own context menu is suppressed.</p>
+</dd>
+<dt><a href="#addCustomMenu">addCustomMenu(node, name, callback, [condition])</a></dt>
+<dd><p>Add a custom menu item to a node&#39;s menu.</p>
+<p>It is easy to add the menu items inside the <code>node-styler</code> function in tree.render(), which gets (element, node) as
+its two arguments -- that <code>node</code> can be passed to addCustomMenu() as its first argument. You may want to set
+<code>node.menu_items = []</code> to avoid adding the same menu item multiple times.</p>
+<p>The custom item will be added in addition to the default items: &quot;Collapse Subtree&quot;, the &quot;Toggle selection&quot; submenu,
+&quot;Reroot on this node&quot; and &quot;Hide this subtree&quot;. It will be added at the end of the menu after a menu divider.</p>
+<p>Available both as a package export and as a method on the rendered tree.</p>
+</dd>
 <dt><a href="#modifySelection">modifySelection(node_selecter, attr, place, skip_refresh, mode)</a> ⇒</dt>
 <dd><p>Modify the current selection, via functional programming.</p>
 </dd>
@@ -944,6 +959,70 @@ previously collapsed.
 | --- | --- | --- |
 | node | <code>Node</code> | The node to toggle. |
 
+<a name="openNodeMenu"></a>
+
+## openNodeMenu(node, event) ⇒
+Open the menu for `node` at the position of `event`.
+
+Emits `contextMenu` with `(node, event)` first; a listener that calls
+`event.preventDefault()` replaces the built-in menu with its own. For a
+right-click, the browser's own context menu is suppressed.
+
+**Kind**: global function  
+**Returns**: The current ``this``.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Object</code> | The node whose menu to open. |
+| event | <code>Event</code> | The triggering mouse event; its `clientX`/`clientY`   position the menu. |
+
+**Example**  
+```js
+tree.display.on("contextMenu", (node, event) => {
+  event.preventDefault(); // skip the built-in menu
+  showMyMenu(node, event.clientX, event.clientY);
+});
+```
+<a name="addCustomMenu"></a>
+
+## addCustomMenu(node, name, callback, [condition])
+Add a custom menu item to a node's menu.
+
+It is easy to add the menu items inside the `node-styler` function in tree.render(), which gets (element, node) as
+its two arguments -- that `node` can be passed to addCustomMenu() as its first argument. You may want to set
+`node.menu_items = []` to avoid adding the same menu item multiple times.
+
+The custom item will be added in addition to the default items: "Collapse Subtree", the "Toggle selection" submenu,
+"Reroot on this node" and "Hide this subtree". It will be added at the end of the menu after a menu divider.
+
+Available both as a package export and as a method on the rendered tree.
+
+**Kind**: global function  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Object</code> | The node to add the custom menu item to. |
+| name | <code>function</code> | Given a node, returns the name of the menu item. |
+| callback | <code>function</code> | Called as `callback(node, event)` when the menu item is clicked. |
+| [condition] | <code>function</code> | Given a node, returns whether the menu item should be shown. Always shown if omitted. |
+
+**Example**  
+```js
+import { phylotree, addCustomMenu } from "phylotree";
+
+const tree = new phylotree(newick);
+tree.render({
+  container: "#tree",
+  "node-styler": (element, node) => {
+    addCustomMenu(
+      node,
+      n => "Show details for " + n.data.name,
+      n => showDetails(n),
+      n => !n.children
+    );
+  }
+});
+```
 <a name="modifySelection"></a>
 
 ## modifySelection(node_selecter, attr, place, skip_refresh, mode) ⇒
