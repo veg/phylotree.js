@@ -9,6 +9,7 @@ import {
   RenderOptions,
   newickParser,
   getNewick,
+  addCustomMenu,
   pairwiseDistances,
   sackin,
   centerOfTree,
@@ -99,6 +100,9 @@ const options: RenderOptions = {
 };
 
 const display: TreeRender = tree.render(options);
+tree.render({ ...options, "menu-trigger": "contextmenu" });
+addCustomMenu(root, (n) => "Inspect " + n.data.name, (n, event) => void event.clientX, (n) => !n.children);
+display.addCustomMenu(root, (n) => "Inspect", (n) => void n);
 const svg: SVGSVGElement = display.show();
 const sameDisplay: TreeRender | undefined = tree.display;
 
@@ -124,6 +128,8 @@ display
   .layoutHandler((t) => void t)
   .selectionCallback((selection) => void selection.length)
   .on("nodeClick", (node, event) => void node)
+  .on("contextMenu", (node, event) => void node)
+  .openNodeMenu(tips[0], new MouseEvent("contextmenu"))
   .off("nodeClick", () => undefined)
   .selectNodes(["A", "B"])
   .deselectNodes(["B"])

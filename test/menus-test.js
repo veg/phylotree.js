@@ -428,3 +428,182 @@ tape("collapse then hide leaves no clade polygon (linear layout)", function(test
 tape("collapse then hide leaves no clade polygon (radial layout)", function(test) {
   checkCollapseThenHide(test, true);
 });
+
+// Node menu triggers (`menu-trigger`), the `contextMenu` event, and the
+// package-level addCustomMenu export.
+
+function renderForMenu(options) {
+  const env = setupDom();
+  const tree = new phylotree.phylotree(NEWICK);
+  const display = tree.render(
+    Object.assign({ container: "#tree", brush: false }, options)
+  );
+  document.querySelector("#tree").appendChild(display.show());
+  return { env: env, tree: tree, display: display };
+}
+
+function nodeLabel(name) {
+  return Array.from(document.querySelectorAll("#tree svg g")).find(function(el) {
+    return el.__data__ && el.__data__.data && el.__data__.data.name === name;
+  }).querySelector("text");
+}
+
+// Dispatch a cancelable mouse event; returns the event so callers can check
+// defaultPrevented.
+function mouse(el, type) {
+  const event = new window.MouseEvent(type, { bubbles: true, cancelable: true });
+  el.dispatchEvent(event);
+  return event;
+}
+
+function menuShown() {
+  const menu = document.querySelector("#d3_layout_phylotree_context_menu");
+  return Boolean(menu) && menu.style.display === "block";
+}
+
+function menuItems() {
+  return Array.from(document.querySelectorAll("#tree .phylotree-menu-item")).map(
+    function(el) {
+      return el.textContent;
+    }
+  );
+}
+
+tape("menu-trigger defaults to click; right-click is left to the browser", function(test) {
+  const t = renderForMenu({});
+  const fired = [];
+  t.display.on("contextMenu", function(node, event) {
+    fired.push(node.data.name + ":" + event.type);
+  });
+
+  const right = mouse(nodeLabel("A"), "contextmenu");
+  test.notOk(menuShown(), "right-click does not open the menu");
+  test.notOk(right.defaultPrevented, "browser context menu is not suppressed");
+
+  mouse(nodeLabel("A"), "click");
+  test.ok(menuShown(), "click opens the menu");
+  test.deepEqual(fired, ["A:click"], "contextMenu fires for the click only");
+
+  test.deepEqual(t.env.listenerErrors.map(String), [], "no listener errors");
+  t.env.restore();
+  test.end();
+});
+
+tape("menu-trigger 'contextmenu' opens the menu on right-click only", function(test) {
+  const t = renderForMenu({ "menu-trigger": "contextmenu" });
+  const fired = [];
+  t.display.on("contextMenu", function(node, event) {
+    fired.push(node.data.name + ":" + event.type);
+  });
+
+  mouse(nodeLabel("A"), "click");
+  test.notOk(menuShown(), "click does not open the menu");
+
+  const right = mouse(nodeLabel("A"), "contextmenu");
+  test.ok(menuShown(), "right-click opens the menu");
+  test.ok(right.defaultPrevented, "browser context menu is suppressed");
+  test.deepEqual(fired, ["A:contextmenu"], "contextMenu fires for the right-click");
+
+  mouse(document.querySelector("#tree svg"), "contextmenu");
+  test.notOk(menuShown(), "right-click elsewhere closes the menu");
+
+  test.deepEqual(t.env.listenerErrors.map(String), [], "no listener errors");
+  t.env.restore();
+  test.end();
+});
+
+tape("menu-trigger 'both' opens the menu on click and right-click", function(test) {
+  const t = renderForMenu({ "menu-trigger": "both" });
+
+  mouse(nodeLabel("A"), "click");
+  test.ok(menuShown(), "click opens the menu");
+  mouse(document.querySelector("#tree svg"), "click");
+  test.notOk(menuShown(), "click elsewhere closes the menu");
+  mouse(nodeLabel("A"), "contextmenu");
+  test.ok(menuShown(), "right-click opens the menu");
+
+  t.env.restore();
+  test.end();
+});
+
+tape("a contextMenu listener can replace the built-in menu", function(test) {
+  const t = renderForMenu({ "menu-trigger": "contextmenu" });
+  let seen = null;
+  t.display.on("contextMenu", function(node, event) {
+    event.preventDefault();
+    seen = node.data.name;
+  });
+
+  const right = mouse(nodeLabel("B"), "contextmenu");
+  test.equal(seen, "B", "listener receives the node");
+  test.ok(right.defaultPrevented, "browser context menu is suppressed");
+  test.notOk(menuShown(), "built-in menu stays closed");
+
+  t.env.restore();
+  test.end();
+});
+
+tape("openNodeMenu opens the menu from code", function(test) {
+  const t = renderForMenu({});
+  const fired = [];
+  t.display.on("contextMenu", function(node) {
+    fired.push(node.data.name);
+  });
+
+  const result = t.display.openNodeMenu(
+    findNode(t.tree, "AB"),
+    new window.MouseEvent("click", { cancelable: true })
+  );
+  test.equal(result, t.display, "returns the display for chaining");
+  test.ok(menuShown(), "menu is open");
+  test.ok(menuItems().indexOf("Collapse Subtree") >= 0, "it is AB's menu");
+  test.deepEqual(fired, ["AB"], "contextMenu fires");
+
+  t.env.restore();
+  test.end();
+});
+
+tape("addCustomMenu is exported and adds items to the node menu", function(test) {
+  test.equal(typeof phylotree.addCustomMenu, "function", "package exports addCustomMenu");
+
+  const clicked = [];
+  const t = renderForMenu({
+    "node-styler": function(element, node) {
+      phylotree.addCustomMenu(
+        node,
+        function(n) {
+          return "Inspect " + n.data.name;
+        },
+        function(n) {
+          clicked.push(n.data.name);
+        },
+        function(n) {
+          return !n.children;
+        }
+      );
+    }
+  });
+
+  mouse(nodeLabel("A"), "click");
+  test.ok(menuItems().indexOf("Inspect A") >= 0, "leaf menu shows the custom item");
+  const item = Array.from(document.querySelectorAll("#tree .phylotree-menu-item")).find(
+    function(el) {
+      return el.textContent === "Inspect A";
+    }
+  );
+  mouse(item, "click");
+  test.deepEqual(clicked, ["A"], "callback receives the node");
+
+  t.display.openNodeMenu(findNode(t.tree, "AB"), { clientX: 0, clientY: 0 });
+  test.equal(
+    menuItems().filter(function(label) {
+      return label.indexOf("Inspect") === 0;
+    }).length,
+    0,
+    "condition hides the item on internal nodes"
+  );
+
+  test.deepEqual(t.env.listenerErrors.map(String), [], "no listener errors");
+  t.env.restore();
+  test.end();
+});

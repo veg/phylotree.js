@@ -102,6 +102,7 @@ class TreeRender {
       "label-nodes-with-name": false,
       zoom: false,
       "show-menu": true,
+      "menu-trigger": "click",
       "show-labels": true,
       "node-styler": null,
       "edge-styler": null,
@@ -279,13 +280,21 @@ class TreeRender {
         this.svg.append("defs");
       }
 
-      d3.select(this.container).on(
-        "click",
-        d => {
-          this.handle_node_click(null);
-        },
-        true
-      );
+      d3.select(this.container)
+        .on(
+          "click",
+          d => {
+            this.handle_node_click(null);
+          },
+          true
+        )
+        .on(
+          "contextmenu",
+          d => {
+            if (this.menuOpensOn("contextmenu")) this.handle_node_click(null);
+          },
+          true
+        );
     }
 
     return this;
