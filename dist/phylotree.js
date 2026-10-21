@@ -13453,7 +13453,7 @@
 
       let remove_me = node,
         current_node = node.parent,
-        stashed_bl = ___namespace.noop();
+        stashed_bl;
 
       let apportioned_bl =
         node.data.__mapped_bl === undefined ? undefined : node.data.__mapped_bl * fraction;
@@ -13974,7 +13974,7 @@
         };
 
         if (transitions) {
-          tracers = tracers
+          tracers
             .enter()
             .append("line")
             .classed(this.css_classes["branch-tracer"], true)
@@ -14029,7 +14029,7 @@
 
         if (this.shown_font_size >= 5) {
           const isRTL = this.options["layout"] == "right-to-left";
-          labels = labels.attr("dx", d => {
+          labels.attr("dx", d => {
             const direction = (this.radial() || this.unrooted())
               ? (d.text_align == "end" ? -1 : 1)
               : (isRTL ? -1 : 1);
@@ -14201,7 +14201,7 @@
       css_classes["tagged-node"],
       css_classes["root-node"]
     ].reduce(function(p, c, i, a) {
-      return (p += "g." + c + (i < a.length - 1 ? "," : ""));
+      return p + "g." + c + (i < a.length - 1 ? "," : "");
     }, "");
   }
 
@@ -14279,7 +14279,7 @@
 
   function cladeCssSelectors(css_classes) {
     return [css_classes["clade"]].reduce(function(p, c, i, a) {
-      return (p += "path." + c + (i < a.length - 1 ? "," : ""));
+      return p + "path." + c + (i < a.length - 1 ? "," : "");
     }, "");
   }
 
@@ -14532,7 +14532,7 @@
       css_classes["selected-branch"],
       css_classes["tagged-branch"]
     ].reduce(function(p, c, i, a) {
-      return (p += "path." + c + (i < a.length - 1 ? "," : ""));
+      return p + "path." + c + (i < a.length - 1 ? "," : "");
     }, "");
   }
 
@@ -16157,7 +16157,7 @@
         y: this.pad_height()
       };
 
-      enclosure = enclosure
+      enclosure
         .enter()
         .append("g")
         .attr("class", this.css_classes["tree-container"])
@@ -16216,7 +16216,7 @@
         drawn_links.exit().remove();
       }
 
-      drawn_links = drawn_links
+      drawn_links
         .enter()
         .insert("path", ":first-child")
         .merge(drawn_links)
@@ -16262,7 +16262,7 @@
         });
 
       if (this.options["label-nodes-with-name"]) {
-        drawn_nodes = drawn_nodes.attr("id", d => {
+        drawn_nodes.attr("id", d => {
           return "node-" + d.name;
         });
       }
@@ -16466,6 +16466,9 @@
           a_node.y = this.phylotree.branch_length_accessor(a_node);
 
           if (typeof a_node.y === "undefined") {
+            // Never read: placenodes() has its own undef_BL, so the no-branch-length
+            // fallback there does not fire.
+            // eslint-disable-next-line no-useless-assignment
             undef_BL = true;
             return 0;
           }
@@ -16620,6 +16623,8 @@
       } else {
         this.label_width = this._label_width(this.shown_font_size);
 
+        // Only updates the local parameter; the caller's flag is unchanged.
+        // eslint-disable-next-line no-useless-assignment
         at_least_one_dimension_fixed = true;
 
         let available_width =
@@ -18743,7 +18748,7 @@
         let highestNum = ___namespace$1.max(
           ___namespace$1.map(internalNodes, (label) => ___namespace$1.split(label, "InternalNode")[1])
         );
-        m = "InternalNode" + ++highestNum;
+        m = "InternalNode" + (Number(highestNum) + 1);
       }
 
       nodeList.unshift(m);
