@@ -109,7 +109,7 @@ export function drawNode(container, node, transitions) {
       };
 
       if (transitions) {
-        tracers = tracers
+        tracers
           .enter()
           .append("line")
           .classed(this.css_classes["branch-tracer"], true)
@@ -164,7 +164,7 @@ export function drawNode(container, node, transitions) {
 
       if (this.shown_font_size >= 5) {
         const isRTL = this.options["layout"] == "right-to-left";
-        labels = labels.attr("dx", d => {
+        labels.attr("dx", d => {
           const direction = (this.radial() || this.unrooted())
             ? (d.text_align == "end" ? -1 : 1)
             : (isRTL ? -1 : 1);
@@ -336,7 +336,7 @@ export function nodeCssSelectors(css_classes) {
     css_classes["tagged-node"],
     css_classes["root-node"]
   ].reduce(function(p, c, i, a) {
-    return (p += "g." + c + (i < a.length - 1 ? "," : ""));
+    return p + "g." + c + (i < a.length - 1 ? "," : "");
   }, "");
 }
 

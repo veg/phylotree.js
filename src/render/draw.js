@@ -336,7 +336,7 @@ class TreeRender {
       y: this.pad_height()
     };
 
-    enclosure = enclosure
+    enclosure
       .enter()
       .append("g")
       .attr("class", this.css_classes["tree-container"])
@@ -395,7 +395,7 @@ class TreeRender {
       drawn_links.exit().remove();
     }
 
-    drawn_links = drawn_links
+    drawn_links
       .enter()
       .insert("path", ":first-child")
       .merge(drawn_links)
@@ -441,7 +441,7 @@ class TreeRender {
       });
 
     if (this.options["label-nodes-with-name"]) {
-      drawn_nodes = drawn_nodes.attr("id", d => {
+      drawn_nodes.attr("id", d => {
         return "node-" + d.name;
       });
     }
@@ -647,6 +647,9 @@ class TreeRender {
         a_node.y = this.phylotree.branch_length_accessor(a_node);
 
         if (typeof a_node.y === "undefined") {
+          // Never read: placenodes() has its own undef_BL, so the no-branch-length
+          // fallback there does not fire.
+          // eslint-disable-next-line no-useless-assignment
           undef_BL = true;
           return 0;
         }
@@ -801,6 +804,8 @@ class TreeRender {
     } else {
       this.label_width = this._label_width(this.shown_font_size);
 
+      // Only updates the local parameter; the caller's flag is unchanged.
+      // eslint-disable-next-line no-useless-assignment
       at_least_one_dimension_fixed = true;
 
       let available_width =

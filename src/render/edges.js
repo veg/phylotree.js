@@ -137,7 +137,7 @@ export function edgeCssSelectors(css_classes) {
     css_classes["selected-branch"],
     css_classes["tagged-branch"]
   ].reduce(function(p, c, i, a) {
-    return (p += "path." + c + (i < a.length - 1 ? "," : ""));
+    return p + "path." + c + (i < a.length - 1 ? "," : "");
   }, "");
 }
 

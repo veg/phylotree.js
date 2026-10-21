@@ -156,7 +156,7 @@ export default function neighborJoining(distanceMatrixArr, n, nodeList) {
       let highestNum = _.max(
         _.map(internalNodes, (label) => _.split(label, "InternalNode")[1])
       );
-      m = "InternalNode" + ++highestNum;
+      m = "InternalNode" + (Number(highestNum) + 1);
     }
 
     nodeList.unshift(m);
