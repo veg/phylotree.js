@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('underscore'), require('lodash')) :
-  typeof define === 'function' && define.amd ? define(['exports', 'underscore', 'lodash'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.phylotree = global.phylotree || {}, global._, global._$1));
-})(this, (function (exports, _, _$1) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('underscore')) :
+  typeof define === 'function' && define.amd ? define(['exports', 'underscore'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.phylotree = global.phylotree || {}, global._));
+})(this, (function (exports, _) { 'use strict';
 
   function _interopNamespaceDefault(e) {
     var n = Object.create(null);
@@ -22,7 +22,6 @@
   }
 
   var ___namespace = /*#__PURE__*/_interopNamespaceDefault(_);
-  var ___namespace$1 = /*#__PURE__*/_interopNamespaceDefault(_$1);
 
   function ascending$1(a, b) {
     return a == null || b == null ? NaN : a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
@@ -13185,7 +13184,7 @@
     postOrder(root, declareTrueParent);
 
     // return edge list
-    let edge_list = ___namespace$1.map(root.descendants(), n => { 
+    let edge_list = root.descendants().map(n => { 
 
       let source = n.data.multiway_parent; 
       let name = "unknown";
@@ -18661,29 +18660,28 @@
   }
 
   function parseFasta(fastaData) {
+    let sfasta = String(fastaData).split("\n");
 
-
-    let sfasta = ___namespace$1.split(fastaData, "\n");
-
-    let seqs = ___namespace$1.chain(sfasta)
+    let starts = sfasta
       .map((d, i) => (d.startsWith(">") ? i : -1))
-      .filter((d) => d != -1)
-      .map((d, i, c) => ___namespace$1.slice(sfasta, c[i], c[i + 1]))
-      .keyBy((d) => ___namespace$1.trim(d[0], ">"))
-      .mapValues((d) => ___namespace$1.tail(d).join(""))
-      .value();
+      .filter((d) => d != -1);
+
+    let seqs = {};
+    starts.forEach((start, k) => {
+      let record = sfasta.slice(start, starts[k + 1]);
+      seqs[record[0].replace(/^>+|>+$/g, "")] = record.slice(1).join("");
+    });
 
     return seqs;
-
   }
 
   function remove(i, D) {
     let dNew = [];
 
-    for (let j of ___namespace$1.range(D.length)) {
+    for (let j = 0; j < D.length; j++) {
       if (j != i) {
         let dNewRow = [];
-        for (let k of ___namespace$1.range(D[j].length)) {
+        for (let k = 0; k < D[j].length; k++) {
           if (k != i) {
             dNewRow.push(D[j][k]);
           }
@@ -18696,9 +18694,9 @@
   }
 
   function getDPrime(distanceMatrix, totalDistances, N) {
-    let DPrime = ___namespace$1.chunk(___namespace$1.fill(Array(N * N), 0), N);
-    for (let i of ___namespace$1.range(N)) {
-      for (let j of ___namespace$1.range(___namespace$1.parseInt(i) + 1, N)) {
+    let DPrime = Array.from({ length: N }, () => Array(N).fill(0));
+    for (let i = 0; i < N; i++) {
+      for (let j = i + 1; j < N; j++) {
         DPrime[i][j] =
           (N - 2) * distanceMatrix[i][j] - totalDistances[i] - totalDistances[j];
         DPrime[j][i] = DPrime[i][j];
@@ -18711,8 +18709,8 @@
     let i = -1;
     let j = -1;
     let minD = Infinity;
-    for (let ii of ___namespace$1.range(N)) {
-      for (let jj of ___namespace$1.range(i, N)) {
+    for (let ii = 0; ii < N; ii++) {
+      for (let jj = i; jj < N; jj++) {
         if (dPrime[ii][jj] < minD) {
           i = ii;
           j = jj;
@@ -18724,10 +18722,10 @@
   }
 
   function createDelta(totalDistances, N) {
-    let deltaMatrix = ___namespace$1.chunk(Array(N * N), N);
+    let deltaMatrix = Array.from({ length: N }, () => Array(N));
 
-    for (let i of ___namespace$1.range(N)) {
-      for (let j of ___namespace$1.range(parseInt(i) + 1, N)) {
+    for (let i = 0; i < N; i++) {
+      for (let j = i + 1; j < N; j++) {
         deltaMatrix[i][j] = (totalDistances[i] - totalDistances[j]) / (N - 2);
         deltaMatrix[j][i] = deltaMatrix[i][j];
       }
@@ -18739,23 +18737,26 @@
   function getDistanceMatrix(seqs) {
     // Gaps are masked
 
-    let initKey = ___namespace$1.keys(seqs)[0];
+    let initKey = Object.keys(seqs)[0];
     let seqLength = seqs[initKey].length;
 
-    return ___namespace$1.mapValues(seqs, (seq) =>
-      ___namespace$1.map(seqs, (seq2) =>
-        ___namespace$1.sum(
-          ___namespace$1.map(
-            ___namespace$1.range(seqLength),
-            (i) => seq[i] != seq2[i] && seq[i] != "-" && seq2[i] != "-"
-          )
-        )
-      )
-    );
+    const matrix = {};
+    for (const [key, seq] of Object.entries(seqs)) {
+      matrix[key] = Object.values(seqs).map((seq2) => {
+        let differences = 0;
+        for (let i = 0; i < seqLength; i++) {
+          if (seq[i] != seq2[i] && seq[i] != "-" && seq2[i] != "-") {
+            differences++;
+          }
+        }
+        return differences;
+      });
+    }
+    return matrix;
   }
 
   function getTotalDistances(distanceMatrix) {
-    return ___namespace$1.map(distanceMatrix, ___namespace$1.sum);
+    return distanceMatrix.map((row) => row.reduce((total, d) => total + d, 0));
   }
 
   /**
@@ -18801,22 +18802,17 @@
       let deltaMatrix = createDelta(totalDistances, N);
       let limbLengthI = (distanceMatrixArr[i][j] + deltaMatrix[i][j]) / 2;
       let limbLengthJ = (distanceMatrixArr[i][j] - deltaMatrix[i][j]) / 2;
-      let newRow = ___namespace$1.concat(
-        0,
-        ___namespace$1.filter(
-          ___namespace$1.map(___namespace$1.range(n), (k) => {
-            if (k != i && k != j) {
-              return (
-                0.5 *
-                (distanceMatrixArr[k][i] +
-                  distanceMatrixArr[k][j] -
-                  distanceMatrixArr[i][j])
-              );
-            }
-          }),
-          ___namespace$1.isNumber
-        )
-      );
+      let newRow = [0];
+      for (let k = 0; k < n; k++) {
+        if (k != i && k != j) {
+          newRow.push(
+            0.5 *
+              (distanceMatrixArr[k][i] +
+                distanceMatrixArr[k][j] -
+                distanceMatrixArr[i][j])
+          );
+        }
+      }
 
       let nodeI = nodeList[i];
       let nodeJ = nodeList[j];
@@ -18824,28 +18820,33 @@
       // Get all nodes of type InternalNode{x} and increment number.
       // If there are none, start with InternalNode0
       let m = "InternalNode0";
-      let internalNodes = ___namespace$1.filter(nodeList, (x) =>
-        ___namespace$1.includes(x, "InternalNode")
-      );
+      let internalNodes = nodeList.filter((x) => x.includes("InternalNode"));
 
       if (internalNodes.length) {
-        let highestNum = ___namespace$1.max(
-          ___namespace$1.map(internalNodes, (label) => ___namespace$1.split(label, "InternalNode")[1])
+        // Compare as numbers: as strings, "9" > "10" and the label would repeat.
+        let highestNum = Math.max(
+          ...internalNodes.map((label) => Number(label.split("InternalNode")[1]))
         );
-        m = "InternalNode" + (Number(highestNum) + 1);
+        m = "InternalNode" + (highestNum + 1);
       }
 
       nodeList.unshift(m);
 
-      distanceMatrixArr = remove(___namespace$1.max([i, j]), distanceMatrixArr);
-      distanceMatrixArr = remove(___namespace$1.min([i, j]), distanceMatrixArr);
+      distanceMatrixArr = remove(Math.max(i, j), distanceMatrixArr);
+      distanceMatrixArr = remove(Math.min(i, j), distanceMatrixArr);
 
       distanceMatrixArr.unshift(newRow);
 
-      ___namespace$1.each(___namespace$1.range(1, n - 1), (l) => distanceMatrixArr[l].unshift(newRow[l]));
+      for (let l = 1; l < n - 1; l++) {
+        distanceMatrixArr[l].unshift(newRow[l]);
+      }
 
       // Remove from nodeList
-      ___namespace$1.remove(nodeList, (n) => n == nodeI || n == nodeJ);
+      for (let k = nodeList.length - 1; k >= 0; k--) {
+        if (nodeList[k] == nodeI || nodeList[k] == nodeJ) {
+          nodeList.splice(k, 1);
+        }
+      }
       let tree = neighborJoining(distanceMatrixArr, N - 1, nodeList);
 
       let treeNodeI = tree.createNode(nodeI, [null, [limbLengthI]]);
