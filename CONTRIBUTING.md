@@ -3,16 +3,19 @@
 ## Requirements
 
 - Node.js 22.12 or newer (jsdom, used by the tests, needs 22.22 or newer).
-- Yarn 1 (classic). The repository uses a Yarn 1 `yarn.lock`; Yarn 2+ will
-  not read it. If your global `yarn` is a newer major version, run the
+- Yarn 1 (classic). If your global `yarn` is a newer major version, run the
   commands below as `npx yarn@1 <command>`.
+
+There is no committed lockfile. Like the people who install phylotree from
+npm, CI and contributors get the newest versions `package.json` allows, so
+problems with a new dependency release show up here first.
 
 ## Development workflow
 
 ```
 git clone https://github.com/veg/phylotree.js phylotree.js
 cd phylotree.js
-yarn install --frozen-lockfile
+yarn install
 yarn serve
 ```
 
