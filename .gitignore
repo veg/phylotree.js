@@ -30,6 +30,11 @@ dist
 
 # Dependency directories
 node_modules
+
+# No lockfile: this is a library, and consumers resolve from package.json
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
 jspm_packages
 
 # Optional npm cache directory
