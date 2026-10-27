@@ -17,6 +17,7 @@ export { default as neighborJoining, getDistanceMatrix } from "./neighbor-join";
 export { loadAnnotations, parseAnnotations } from "./formats/nexus";
 
 export { default as newickParser, getNewick } from "./formats/newick";
+export { addCustomMenu } from "./render/menus";
 
 export {
   default as inOrder,

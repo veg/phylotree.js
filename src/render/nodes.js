@@ -49,7 +49,10 @@ export function drawNode(container, node, transitions) {
       .merge(labels)
       .on("click", (event, d) => {
         this.emit('nodeClick', node, event);
-        this.handle_node_click(node, event);
+        if (this.menuOpensOn("click")) this.openNodeMenu(node, event);
+      })
+      .on("contextmenu", (event) => {
+        if (this.menuOpensOn("contextmenu")) this.openNodeMenu(node, event);
       })
       .on("mouseenter", (event) => {
         this.emit('nodeHover', node, event);
@@ -200,7 +203,10 @@ export function drawNode(container, node, transitions) {
         })
         .on("click", (event, d) => {
           this.emit('nodeClick', node, event);
-          this.handle_node_click(node, event);
+          if (this.menuOpensOn("click")) this.openNodeMenu(node, event);
+        })
+        .on("contextmenu", (event) => {
+          if (this.menuOpensOn("contextmenu")) this.openNodeMenu(node, event);
         })
         .on("mouseenter", (event) => {
           this.emit('nodeHover', node, event);
