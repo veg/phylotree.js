@@ -244,6 +244,52 @@ The following are a list of possible options, along with their types, meanings, 
 ### minimum-per-level-spacing
   `(Number)` Determines minimum node spacing allocated when laying out top to bottom. Defaults to 10.
 
+### show-menu
+  `(Boolean)` Whether or not the node menu is shown. Defaults to ``true``.
+
+### menu-trigger
+  `(String)` Which mouse action opens the node menu. Defaults to ``"click"``.
+
+  * ``"click"`` - Left click.
+  * ``"contextmenu"`` - Right-click; the browser's own context menu is suppressed on nodes.
+  * ``"both"`` - Either.
+
+## Node menu
+
+Clicking a node (or right-clicking it, see [menu-trigger](#menu-trigger)) opens a menu with
+the built-in actions enabled by the options above. Add your own items with `addCustomMenu`,
+typically from a node styler:
+
+```javascript
+import { phylotree, addCustomMenu } from "phylotree";
+
+const tree = new phylotree(newick);
+tree.render({
+  container: "#tree",
+  "menu-trigger": "contextmenu",
+  "node-styler": (element, node) => {
+    addCustomMenu(
+      node,
+      n => "Show details for " + n.data.name, // label
+      (n, event) => showDetails(n),            // called when clicked
+      n => !n.children                         // optional: only on leaves
+    );
+  }
+});
+```
+
+Just before the menu opens, the tree emits `contextMenu` with `(node, event)`. Call
+`event.preventDefault()` in a listener to show your own menu instead of the built-in one:
+
+```javascript
+tree.display.on("contextMenu", (node, event) => {
+  event.preventDefault();
+  showMyMenu(node, event.clientX, event.clientY);
+});
+```
+
+`tree.display.openNodeMenu(node, event)` opens a node's menu from code.
+
 ## API Reference
 A complete list of available functions can be found at [API.md](API.md)
 

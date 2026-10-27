@@ -13914,7 +13914,10 @@
         .merge(labels)
         .on("click", (event, d) => {
           this.emit('nodeClick', node, event);
-          this.handle_node_click(node, event);
+          if (this.menuOpensOn("click")) this.openNodeMenu(node, event);
+        })
+        .on("contextmenu", (event) => {
+          if (this.menuOpensOn("contextmenu")) this.openNodeMenu(node, event);
         })
         .on("mouseenter", (event) => {
           this.emit('nodeHover', node, event);
@@ -14065,7 +14068,10 @@
           })
           .on("click", (event, d) => {
             this.emit('nodeClick', node, event);
-            this.handle_node_click(node, event);
+            if (this.menuOpensOn("click")) this.openNodeMenu(node, event);
+          })
+          .on("contextmenu", (event) => {
+            if (this.menuOpensOn("contextmenu")) this.openNodeMenu(node, event);
           })
           .on("mouseenter", (event) => {
             this.emit('nodeHover', node, event);
@@ -14925,6 +14931,41 @@
 
   let d3_layout_phylotree_context_menu_id = "d3_layout_phylotree_context_menu";
 
+  /**
+   * Whether the node menu opens on events of `type` ("click" or
+   * "contextmenu"), per the `menu-trigger` option.
+   * @private
+   */
+  function menuOpensOn(type) {
+    const trigger = this.options["menu-trigger"] || "click";
+    return trigger === "both" || trigger === type;
+  }
+
+  /**
+   * Open the menu for `node` at the position of `event`.
+   *
+   * Emits `contextMenu` with `(node, event)` first; a listener that calls
+   * `event.preventDefault()` replaces the built-in menu with its own. For a
+   * right-click, the browser's own context menu is suppressed.
+   *
+   * @param {Object} node The node whose menu to open.
+   * @param {Event} event The triggering mouse event; its `clientX`/`clientY`
+   *   position the menu.
+   * @returns The current ``this``.
+   * @example
+   * tree.display.on("contextMenu", (node, event) => {
+   *   event.preventDefault(); // skip the built-in menu
+   *   showMyMenu(node, event.clientX, event.clientY);
+   * });
+   */
+  function openNodeMenu(node, event) {
+    this.emit("contextMenu", node, event);
+    if (event.defaultPrevented) return this;
+    if (event.type === "contextmenu") event.preventDefault();
+    this.handle_node_click(node, event);
+    return this;
+  }
+
   function nodeDropdownMenu(node, container, phylotree, options, event) {
     let menu_object = select(container)
       .select("#" + d3_layout_phylotree_context_menu_id);
@@ -15165,6 +15206,38 @@
 
   }
 
+  /**
+   * Add a custom menu item to a node's menu.
+   *
+   * It is easy to add the menu items inside the `node-styler` function in tree.render(), which gets (element, node) as
+   * its two arguments -- that `node` can be passed to addCustomMenu() as its first argument. You may want to set
+   * `node.menu_items = []` to avoid adding the same menu item multiple times.
+   *
+   * The custom item will be added in addition to the default items: "Collapse Subtree", the "Toggle selection" submenu,
+   * "Reroot on this node" and "Hide this subtree". It will be added at the end of the menu after a menu divider.
+   *
+   * Available both as a package export and as a method on the rendered tree.
+   *
+   * @param {Object} node The node to add the custom menu item to.
+   * @param {Function} name Given a node, returns the name of the menu item.
+   * @param {Function} callback Called as `callback(node, event)` when the menu item is clicked.
+   * @param {Function} [condition] Given a node, returns whether the menu item should be shown. Always shown if omitted.
+   * @example
+   * import { phylotree, addCustomMenu } from "phylotree";
+   *
+   * const tree = new phylotree(newick);
+   * tree.render({
+   *   container: "#tree",
+   *   "node-styler": (element, node) => {
+   *     addCustomMenu(
+   *       node,
+   *       n => "Show details for " + n.data.name,
+   *       n => showDetails(n),
+   *       n => !n.children
+   *     );
+   *   }
+   * });
+   */
   function addCustomMenu(node, name, callback, condition) {
     if (!("menu_items" in node)) {
       node["menu_items"] = [];
@@ -15485,8 +15558,10 @@
     clearSelection: clearSelection,
     deselectNodes: deselectNodes,
     getSelection: getSelection,
+    menuOpensOn: menuOpensOn,
     modifySelection: modifySelection,
     nodeDropdownMenu: nodeDropdownMenu,
+    openNodeMenu: openNodeMenu,
     selectAllDescendants: selectAllDescendants,
     selectNodes: selectNodes,
     selectionCallback: selectionCallback
@@ -15923,6 +15998,7 @@
         "label-nodes-with-name": false,
         zoom: false,
         "show-menu": true,
+        "menu-trigger": "click",
         "show-labels": true,
         "node-styler": null,
         "edge-styler": null,
@@ -16100,13 +16176,21 @@
           this.svg.append("defs");
         }
 
-        select(this.container).on(
-          "click",
-          d => {
-            this.handle_node_click(null);
-          },
-          true
-        );
+        select(this.container)
+          .on(
+            "click",
+            d => {
+              this.handle_node_click(null);
+            },
+            true
+          )
+          .on(
+            "contextmenu",
+            d => {
+              if (this.menuOpensOn("contextmenu")) this.handle_node_click(null);
+            },
+            true
+          );
       }
 
       return this;
@@ -18785,6 +18869,7 @@
     }
   }
 
+  exports.addCustomMenu = addCustomMenu;
   exports.centerOfTree = centerOfTree;
   exports.clusterPicker = clusterPicker;
   exports.computeMidpoint = computeMidpoint;
