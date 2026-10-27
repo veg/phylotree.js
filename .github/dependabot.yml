@@ -1,14 +1,15 @@
 # Keep dependencies current with as few pull requests as possible.
 # Security fixes and routine minor/patch updates each arrive as one grouped PR
-# per ecosystem; major version bumps still come one per package, since they
-# may need code changes.
+# per ecosystem, and dependabot-auto-merge.yml merges them once CI passes;
+# major version bumps still come one per package for review, since they may
+# need code changes. Version updates are checked monthly; security fixes open
+# as soon as an advisory is published.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
     open-pull-requests-limit: 5
     groups:
       npm-security:
@@ -22,8 +23,7 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: weekly
-      day: monday
+      interval: monthly
     groups:
       github-actions:
         patterns: ["*"]
