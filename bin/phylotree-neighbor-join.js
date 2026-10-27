@@ -2,8 +2,7 @@
 
 const fs = require("fs"),
   phylotree = require("../dist/phylotree.js"),
-  { program } = require("commander"),
-  _ = require("lodash");
+  { program } = require("commander");
 
 program
   .arguments("<fasta>", "Input fasta file")
@@ -17,11 +16,11 @@ program
 fs.readFile(program.args[0], ( err, fastaData ) => {
 
   let fasta = phylotree.parseFasta(fastaData);
-  let nodeList = _.keys(fasta);
+  let nodeList = Object.keys(fasta);
   let distanceMatrix = phylotree.getDistanceMatrix(fasta);
-  let distanceMatrixArr = _.values(distanceMatrix);
+  let distanceMatrixArr = Object.values(distanceMatrix);
 
-  let nj = phylotree.neighborJoining(distanceMatrixArr, _.keys(fasta).length, nodeList);
+  let nj = phylotree.neighborJoining(distanceMatrixArr, Object.keys(fasta).length, nodeList);
   console.log(nj.getNewick());
 
 });

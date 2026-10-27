@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 
 export function postOrder(node, callback, backtrack) {
 
@@ -91,7 +90,7 @@ export function leftChildRightSibling(root) {
   postOrder(root, declareTrueParent);
 
   // return edge list
-  let edge_list = _.map(root.descendants(), n => { 
+  let edge_list = root.descendants().map(n => { 
 
     let source = n.data.multiway_parent; 
     let name = "unknown";
