@@ -1,13 +1,12 @@
-import * as _ from "lodash";
 import { default as phylotree } from "./main";
 
 function remove(i, D) {
   let dNew = [];
 
-  for (let j of _.range(D.length)) {
+  for (let j = 0; j < D.length; j++) {
     if (j != i) {
       let dNewRow = [];
-      for (let k of _.range(D[j].length)) {
+      for (let k = 0; k < D[j].length; k++) {
         if (k != i) {
           dNewRow.push(D[j][k]);
         }
@@ -20,9 +19,9 @@ function remove(i, D) {
 }
 
 function getDPrime(distanceMatrix, totalDistances, N) {
-  let DPrime = _.chunk(_.fill(Array(N * N), 0), N);
-  for (let i of _.range(N)) {
-    for (let j of _.range(_.parseInt(i) + 1, N)) {
+  let DPrime = Array.from({ length: N }, () => Array(N).fill(0));
+  for (let i = 0; i < N; i++) {
+    for (let j = i + 1; j < N; j++) {
       DPrime[i][j] =
         (N - 2) * distanceMatrix[i][j] - totalDistances[i] - totalDistances[j];
       DPrime[j][i] = DPrime[i][j];
@@ -35,8 +34,8 @@ function ijMinDPrime(dPrime, N) {
   let i = -1;
   let j = -1;
   let minD = Infinity;
-  for (let ii of _.range(N)) {
-    for (let jj of _.range(i, N)) {
+  for (let ii = 0; ii < N; ii++) {
+    for (let jj = i; jj < N; jj++) {
       if (dPrime[ii][jj] < minD) {
         i = ii;
         j = jj;
@@ -48,10 +47,10 @@ function ijMinDPrime(dPrime, N) {
 }
 
 function createDelta(totalDistances, N) {
-  let deltaMatrix = _.chunk(Array(N * N), N);
+  let deltaMatrix = Array.from({ length: N }, () => Array(N));
 
-  for (let i of _.range(N)) {
-    for (let j of _.range(parseInt(i) + 1, N)) {
+  for (let i = 0; i < N; i++) {
+    for (let j = i + 1; j < N; j++) {
       deltaMatrix[i][j] = (totalDistances[i] - totalDistances[j]) / (N - 2);
       deltaMatrix[j][i] = deltaMatrix[i][j];
     }
@@ -63,23 +62,26 @@ function createDelta(totalDistances, N) {
 export function getDistanceMatrix(seqs) {
   // Gaps are masked
 
-  let initKey = _.keys(seqs)[0];
+  let initKey = Object.keys(seqs)[0];
   let seqLength = seqs[initKey].length;
 
-  return _.mapValues(seqs, (seq) =>
-    _.map(seqs, (seq2) =>
-      _.sum(
-        _.map(
-          _.range(seqLength),
-          (i) => seq[i] != seq2[i] && seq[i] != "-" && seq2[i] != "-"
-        )
-      )
-    )
-  );
+  const matrix = {};
+  for (const [key, seq] of Object.entries(seqs)) {
+    matrix[key] = Object.values(seqs).map((seq2) => {
+      let differences = 0;
+      for (let i = 0; i < seqLength; i++) {
+        if (seq[i] != seq2[i] && seq[i] != "-" && seq2[i] != "-") {
+          differences++;
+        }
+      }
+      return differences;
+    });
+  }
+  return matrix;
 }
 
 function getTotalDistances(distanceMatrix) {
-  return _.map(distanceMatrix, _.sum);
+  return distanceMatrix.map((row) => row.reduce((total, d) => total + d, 0));
 }
 
 /**
@@ -125,22 +127,17 @@ export default function neighborJoining(distanceMatrixArr, n, nodeList) {
     let deltaMatrix = createDelta(totalDistances, N);
     let limbLengthI = (distanceMatrixArr[i][j] + deltaMatrix[i][j]) / 2;
     let limbLengthJ = (distanceMatrixArr[i][j] - deltaMatrix[i][j]) / 2;
-    let newRow = _.concat(
-      0,
-      _.filter(
-        _.map(_.range(n), (k) => {
-          if (k != i && k != j) {
-            return (
-              0.5 *
-              (distanceMatrixArr[k][i] +
-                distanceMatrixArr[k][j] -
-                distanceMatrixArr[i][j])
-            );
-          }
-        }),
-        _.isNumber
-      )
-    );
+    let newRow = [0];
+    for (let k = 0; k < n; k++) {
+      if (k != i && k != j) {
+        newRow.push(
+          0.5 *
+            (distanceMatrixArr[k][i] +
+              distanceMatrixArr[k][j] -
+              distanceMatrixArr[i][j])
+        );
+      }
+    }
 
     let nodeI = nodeList[i];
     let nodeJ = nodeList[j];
@@ -148,28 +145,33 @@ export default function neighborJoining(distanceMatrixArr, n, nodeList) {
     // Get all nodes of type InternalNode{x} and increment number.
     // If there are none, start with InternalNode0
     let m = "InternalNode0";
-    let internalNodes = _.filter(nodeList, (x) =>
-      _.includes(x, "InternalNode")
-    );
+    let internalNodes = nodeList.filter((x) => x.includes("InternalNode"));
 
     if (internalNodes.length) {
-      let highestNum = _.max(
-        _.map(internalNodes, (label) => _.split(label, "InternalNode")[1])
+      // Compare as numbers: as strings, "9" > "10" and the label would repeat.
+      let highestNum = Math.max(
+        ...internalNodes.map((label) => Number(label.split("InternalNode")[1]))
       );
-      m = "InternalNode" + (Number(highestNum) + 1);
+      m = "InternalNode" + (highestNum + 1);
     }
 
     nodeList.unshift(m);
 
-    distanceMatrixArr = remove(_.max([i, j]), distanceMatrixArr);
-    distanceMatrixArr = remove(_.min([i, j]), distanceMatrixArr);
+    distanceMatrixArr = remove(Math.max(i, j), distanceMatrixArr);
+    distanceMatrixArr = remove(Math.min(i, j), distanceMatrixArr);
 
     distanceMatrixArr.unshift(newRow);
 
-    _.each(_.range(1, n - 1), (l) => distanceMatrixArr[l].unshift(newRow[l]));
+    for (let l = 1; l < n - 1; l++) {
+      distanceMatrixArr[l].unshift(newRow[l]);
+    }
 
     // Remove from nodeList
-    _.remove(nodeList, (n) => n == nodeI || n == nodeJ);
+    for (let k = nodeList.length - 1; k >= 0; k--) {
+      if (nodeList[k] == nodeI || nodeList[k] == nodeJ) {
+        nodeList.splice(k, 1);
+      }
+    }
     let tree = neighborJoining(distanceMatrixArr, N - 1, nodeList);
 
     let treeNodeI = tree.createNode(nodeI, [null, [limbLengthI]]);

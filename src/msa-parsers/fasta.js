@@ -1,18 +1,15 @@
-import * as _ from "lodash";
-
 export default function parseFasta(fastaData) {
+  let sfasta = String(fastaData).split("\n");
 
-
-  let sfasta = _.split(fastaData, "\n");
-
-  let seqs = _.chain(sfasta)
+  let starts = sfasta
     .map((d, i) => (d.startsWith(">") ? i : -1))
-    .filter((d) => d != -1)
-    .map((d, i, c) => _.slice(sfasta, c[i], c[i + 1]))
-    .keyBy((d) => _.trim(d[0], ">"))
-    .mapValues((d) => _.tail(d).join(""))
-    .value();
+    .filter((d) => d != -1);
+
+  let seqs = {};
+  starts.forEach((start, k) => {
+    let record = sfasta.slice(start, starts[k + 1]);
+    seqs[record[0].replace(/^>+|>+$/g, "")] = record.slice(1).join("");
+  });
 
   return seqs;
-
 }

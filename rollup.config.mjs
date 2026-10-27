@@ -1,10 +1,20 @@
 import terser from "@rollup/plugin-terser";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import copy from "rollup-plugin-copy";
-import { readFileSync } from "fs";
+import { copyFileSync, mkdirSync, readFileSync } from "fs";
+import { basename } from "path";
 
 const meta = JSON.parse(readFileSync("./package.json", "utf8"));
+
+// Ship the stylesheets, demo page and type declarations next to the bundle.
+function copyStatic(files, dest) {
+  return {
+    name: "copy-static",
+    buildEnd() {
+      mkdirSync(dest, { recursive: true });
+      files.forEach(file => copyFileSync(file, `${dest}/${basename(file)}`));
+    }
+  };
+}
 
 const config = {
   input: "src/index.js",
@@ -16,7 +26,7 @@ const config = {
     indent: true,
     sourcemap: true,
     extend: true,
-    globals: {underscore:'_', lodash: '_$1'}
+    globals: {underscore:'_'}
   },
   plugins: [
     nodeResolve({
@@ -24,17 +34,12 @@ const config = {
       preferBuiltins: false,
       mainFields: ['browser', 'module', 'main']
     }), 
-    commonjs({
-      include: 'node_modules/**'
-    }),
-    copy({
-      targets: [
-        { src: 'phylotree.css', dest: 'dist/' },
-        { src: 'src/render/styles/phylotree-menus.css', dest: 'dist/' },
-        { src: 'index.html', dest: 'dist/' },
-        { src: 'types/phylotree.d.ts', dest: 'dist/' }
-      ]
-    })
+    copyStatic([
+      'phylotree.css',
+      'src/render/styles/phylotree-menus.css',
+      'index.html',
+      'types/phylotree.d.ts'
+    ], 'dist')
   ]
 };
 

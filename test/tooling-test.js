@@ -73,13 +73,8 @@ tape("every built stylesheet is shipped", function(t) {
   t.end();
 });
 
-tape("modules required by the test script are declared", function(t) {
-  const required = pkg.scripts.test.match(/-r\s+([^\s/]+)/g) || [];
-  t.ok(required.length > 0, "test script preloads a module");
-  required.forEach(function(flag) {
-    const name = flag.replace(/^-r\s+/, "");
-    t.ok(pkg.devDependencies[name], name + " is a devDependency");
-  });
+tape("test script maps stack traces back to src", function(t) {
+  t.match(pkg.scripts.test, /--enable-source-maps/, "node runs tape with source maps");
   t.end();
 });
 
