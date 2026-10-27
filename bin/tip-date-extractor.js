@@ -4,18 +4,26 @@ const fs = require("fs"),
   phylotree = require("../dist/phylotree.js"),
   { program } = require("commander"),
   _ = require("underscore"),
-  moment = require("moment"),
-  winston = require("winston"),
-  { stringify } = require("csv-stringify");
+  moment = require("moment");
 
-const logger = winston.createLogger({
-  level: "warn",
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.simple()
-    })
-  ]
+// Logs go to stderr so they don't end up in the CSV on stdout.
+const log_levels = { error: 0, warn: 1, info: 2, http: 3, verbose: 4, debug: 5, silly: 6 };
+
+const logger = { level: "warn" };
+
+_.each(_.keys(log_levels), name => {
+  logger[name] = message => {
+    const threshold = _.has(log_levels, logger.level) ? log_levels[logger.level] : log_levels.warn;
+    if (log_levels[name] <= threshold) {
+      console.error(name + ": " + message);
+    }
+  };
 });
+
+function csv_field(value) {
+  const text = value == null ? "" : String(value);
+  return /[",\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+}
 
 /*
  * Computes root-to-tip distance and fits linear regression
@@ -201,10 +209,10 @@ fs.readFile(options.newick, (err, newick_data) => {
     return !_.isNull(d.decimal_date_value);
   });
 
-  stringify(date_and_distances, function(err, output) {
-    // Pretty print table
-    console.log("name, date");
-    console.log(output);
-  });
+  const rows = _.map(date_and_distances, row => _.map(row, csv_field).join(",") + "\n");
+
+  // Pretty print table
+  console.log("name, date");
+  console.log(rows.join(""));
 
 });

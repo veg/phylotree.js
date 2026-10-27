@@ -18,3 +18,14 @@ tape("neighbor joining", function(test) {
   test.end();
 
 });
+
+tape("neighbor joining gives every internal node its own label past InternalNode9", function(test) {
+
+  const n = 14;
+  const nodeList = Array.from({ length: n }, (d, i) => "T" + i);
+  const D = nodeList.map((d, i) => nodeList.map((e, j) => i == j ? 0 : Math.abs(i - j) + ((i * 7 + j * 7) % 5)));
+  const labels = phylotree.neighborJoining(D, n, nodeList).getNewick().match(/InternalNode\d+/g);
+  test.equal(new Set(labels).size, labels.length);
+  test.end();
+
+});
