@@ -11,7 +11,13 @@ export function computeMidpoint(tree) {
     throw "Center of tree calculation cannot be performed on trees that do not have fully specified branch lengths";
   }
 
-  var bl = tree.branch_length;
+  var bl = tree.branch_length_accessor;
+
+  // clear values left over from any previous call
+  tree.traverse_and_compute(function(node) {
+    delete node.max_path;
+    delete node.max_path_terminus;
+  });
 
   tree.traverse_and_compute(function(node) {
     if (node.parent) {

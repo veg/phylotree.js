@@ -39,8 +39,7 @@ function computePairwiseDistances(tree) {
   tree.traverse_and_compute(function(n) {
     n.cot_computed_length = bl(n);
 
- 
-    if (n.parent && _.isUndefined(n.cot_computed_length)) {
+    if (n.parent && !_.isFinite(n.cot_computed_length)) {
       throw "Non-null branch lengths are required for this operation: missing branch length at node " + n.data.name;
     }
 
@@ -70,6 +69,9 @@ function computePairwiseDistances(tree) {
   var root_node = tree.getRootNode();
 
   function CopyFromSiblings(a_node) {
+    if (!a_node.children) {
+      return;
+    }
     for (var this_node = 0; this_node < a_node.children.length; this_node++) {
       for (
         var other_node = 0;
