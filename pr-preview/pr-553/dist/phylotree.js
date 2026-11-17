@@ -13364,7 +13364,12 @@
               return a;
             }, {}),
             roots = node_list.filter(d => d.root),
-            root_id = roots.length > 0 ? roots[0].id : node_list[0].id;
+            targets = new Set(edge_list.map(edge => edge.target)),
+            // without a root flag, the one node no edge points at is the root
+            unreferenced = node_list.filter(d => !targets.has(d.id)),
+            root_id = roots.length > 0
+              ? roots[0].id
+              : unreferenced.length === 1 ? unreferenced[0].id : node_list[0].id;
           node_hash[root_id].name = "root";
 
           edge_list.forEach(function(edge) {
@@ -14230,6 +14235,35 @@
     return token.replace(/^(['"])(.*)\1$/, '$2');
   }
 
+  // Split on `sep` wherever it is not inside a 'quoted label' ('' escapes a
+  // quote) or a [comment].
+  function splitOutside(str, sep) {
+    let parts = [], current = '', quoted = false, comment = 0;
+    for (let i = 0; i < str.length; i++) {
+      let c = str[i];
+      if (quoted) {
+        if (c === "'") {
+          if (str[i + 1] === "'") { current += c; i++; }
+          else { quoted = false; }
+        }
+      } else if (comment) {
+        if (c === ']') comment--;
+        else if (c === '[') comment++;
+      } else if (c === "'") {
+        quoted = true;
+      } else if (c === '[') {
+        comment = 1;
+      } else if (c === sep) {
+        parts.push(current);
+        current = '';
+        continue;
+      }
+      current += c;
+    }
+    parts.push(current);
+    return parts;
+  }
+
   function loadTree(buf, options) {
 
     // if filename, then load from filesystem
@@ -14248,8 +14282,11 @@
     index = split.toUpperCase().indexOf('END;');
     let tree_str = index < 0 ? split : split.slice(0, index);
 
-    // Statements are separated by semicolons
-    let statements = ___namespace.map(tree_str.split(';'), d => { return d.trim() });
+    // Statements are separated by semicolons outside quotes and [comments]
+    let statements = ___namespace.map(splitOutside(tree_str, ';'), d => {
+      // a statement may be preceded by [comments]
+      return d.replace(/^(\s*\[[^\]]*\])+/, '').trim();
+    });
 
     let tree = ___namespace.find(statements, d => { return /^TREE\s/i.test(d) });
 
@@ -14262,7 +14299,7 @@
     let translate_statement = ___namespace.find(statements, d => { return /^TRANSLATE\s/i.test(d) });
 
     if(translate_statement) {
-      ___namespace.each(translate_statement.replace(/^TRANSLATE\s+/i, '').split(','), d => {
+      ___namespace.each(splitOutside(translate_statement.replace(/^TRANSLATE\s+/i, ''), ','), d => {
         let tokens = d.trim().split(/\s+/);
         if(tokens.length > 1) {
           translate[tokens[0]] = unquote(tokens.slice(1).join(' '));
@@ -14367,7 +14404,8 @@
   var phyloxml_parser = function(xml, options) {
 
     function parsePhyloxml(node, index) {
-      if (node.clade) {
+      // a lone self-closing <clade/> parses as "", which is still a child
+      if (node.clade !== undefined && node.clade !== null) {
         if (!Array.isArray(node.clade)) {
           node.clade = [node.clade];
         }
@@ -14771,8 +14809,8 @@
 
     }
 
-    // Allow for empty branch length at root
-    if(_node_data.name == "root") {
+    // Allow for empty branch length at the root, which has no branch
+    if(!_node.parent) {
       return 0;
     }
 
@@ -17297,6 +17335,9 @@
     this._selectionSets = {};
     this._activeSetName = null;
 
+    // ignore malformed entries such as null or {} rather than throwing
+    sets = sets.filter(set => set && typeof set.name === "string");
+
     sets.forEach(set => {
       this._selectionSets[set.name] = {
         name: set.name,
@@ -17737,6 +17778,7 @@
           this.options["initial-sets"] &&
           typeof this.options["initial-sets"] === "object" &&
           !Array.isArray(this.options["initial-sets"]) &&
+          this._selectionSets && Object.keys(this._selectionSets).length > 0 &&
           !this.phylotree.__initialSetsApplied) {
         this.phylotree.__initialSetsApplied = true;
         Object.entries(this.options["initial-sets"]).forEach(([setName, nodeNames]) => {
@@ -19216,8 +19258,8 @@
           if (typeof nwk != "object") {
             throw new Error("Unable to parse tree: expected a string or an object");
           }
-          // a parser result, or hierarchical JSON
-          _node_data = "json" in nwk && "error" in nwk ? nwk : { json: nwk, error: null };
+          // a parser result ({json, error}), or hierarchical JSON
+          _node_data = "json" in nwk ? { json: nwk.json, error: nwk.error || null } : { json: nwk, error: null };
         } else if (
           /^\s*<(\?xml|phyloxml|phylogeny)/i.test(nwk)
         ) {
@@ -19881,7 +19923,7 @@
 
     // To return if best node is the root already
     tree.traverse_and_compute(function(node) {
-      if (tree.isLeafNode(node) && !___namespace.isNull(node.data.decimal_date_value)) {
+      if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
         linear_data.push([node.data.decimal_date_value, node.data.rtta, node.data.copy_number]);
       }
     });
@@ -19892,16 +19934,20 @@
 
     let best_fit = linearFit(linear_data);
 
+    if (!best_fit) {
+      return { root: best_node, fit: null };
+    }
+
     tree.traverse_and_compute(function(node) {
 
-      if (tree.isLeafNode(node) && !___namespace.isNull(node.data.decimal_date_value)) {
+      if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
 
         computeRootToTipOtherRoot(tree, node, null, 0, 0);
 
         linear_data = [];
 
         tree.traverse_and_compute(function(node) {
-          if (tree.isLeafNode(node) && !___namespace.isNull(node.data.decimal_date_value)) {
+          if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
             linear_data.push([
               node.data.decimal_date_value,
               node.data.rtta,
@@ -19915,7 +19961,7 @@
         }
 
         var fit = linearFit(linear_data),
-          r2 = fit["r2"];
+          r2 = fit ? fit["r2"] : NaN;
 
         if (isFinite(r2) && r2 > max_r2) {
           max_r2 = r2;
@@ -19955,6 +20001,11 @@
       fitB += point[2] * t * point[1];
       vary += point[2] * (point[1] - syoss) * (point[1] - syoss);
     });
+
+    // no spread in the dates: the slope is undefined
+    if (!(st2 > 0)) {
+      return null;
+    }
 
     fitB /= st2;
 
@@ -20131,10 +20182,11 @@
     bootstrap_threshold = +bootstrap_threshold;
     diameter_threshold = +diameter_threshold;
 
-    if (!isFinite(bootstrap_threshold)) {
+    // Infinity is a valid "no limit" diameter
+    if (Number.isNaN(bootstrap_threshold)) {
       throw "clusterPicker requires a numeric bootstrap threshold";
     }
-    if (!isFinite(diameter_threshold) || diameter_threshold < 0) {
+    if (Number.isNaN(diameter_threshold) || diameter_threshold < 0) {
       throw "clusterPicker requires a numeric diameter threshold >= 0";
     }
 
