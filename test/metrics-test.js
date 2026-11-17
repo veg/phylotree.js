@@ -224,3 +224,14 @@ tape("fitRootToTip keeps a perfect current root and ignores non-date values", fu
   test.end();
 
 });
+
+tape("fitRootToTip still searches other roots when the current root has no fit", function(test) {
+  let flat = new phylotree.phylotree("(A:1,B:1,C:1);");
+  [["A", 2020], ["B", 2021], ["C", 2022]].forEach(function(d) {
+    flat.getNodeByName(d[0]).data.decimal_date_value = d[1];
+  });
+  let result = phylotree.fitRootToTip(flat);
+  test.ok(result.fit && Number.isFinite(result.fit.r2), "an alternative root gives a real fit");
+  test.notEqual(result.root, flat.getRootNode());
+  test.end();
+});

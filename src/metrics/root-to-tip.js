@@ -84,12 +84,9 @@ export function fitRootToTip(tree) {
 
   let best_fit = linearFit(linear_data);
 
-  if (!best_fit) {
-    return { root: best_node, fit: null };
-  }
-
-  // a candidate root has to beat the current one
-  max_r2 = best_fit["r2"];
+  // a candidate root has to beat the current one; when the current root has
+  // no usable fit (e.g. identical distances) any finite fit will do
+  max_r2 = best_fit ? best_fit["r2"] : -Infinity;
 
   tree.traverse_and_compute(function(node) {
 

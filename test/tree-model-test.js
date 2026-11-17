@@ -213,3 +213,9 @@ tape("constructor unwraps a parser result even when it carries a name", function
   test.deepEqual(tree.getTips().map((n) => n.data.name), ["A"]);
   test.end();
 });
+
+tape("constructor: an object with children is a tree even with json and error fields", function (test) {
+  const tree = new Phylotree({ name: "R", json: null, error: null, children: [{ name: "A", attribute: "1" }] });
+  test.deepEqual(tree.getTips().map((n) => n.data.name), ["A"]);
+  test.end();
+});
