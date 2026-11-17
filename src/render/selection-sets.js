@@ -41,14 +41,6 @@ export function initializeSelectionSets(sets) {
     }
   });
 
-  // applyInitialSelection() runs right after this and applies "initial-sets";
-  // it must do so only on the first render, not again after a reroot.
-  if (this.phylotree.__initialSetsApplied) {
-    this.options = Object.assign({}, this.options, { "initial-sets": {} });
-  } else {
-    this.phylotree.__initialSetsApplied = true;
-  }
-
   // Inject CSS for set colors
   this._injectSetStyles(sets);
 }

@@ -182,7 +182,9 @@ class TreeRender {
 
     // Multi-set mode
     if (this.options["selection-mode"] === "multi-set" &&
-        this.options["initial-sets"]) {
+        this.options["initial-sets"] &&
+        !this.phylotree.__initialSetsApplied) {
+      this.phylotree.__initialSetsApplied = true;
       Object.entries(this.options["initial-sets"]).forEach(([setName, nodeNames]) => {
         nodeNames.forEach(nodeName => {
           this.addToSet(nodeName, setName);

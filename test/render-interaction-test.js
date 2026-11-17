@@ -46,20 +46,28 @@ function renderTree(tree, options) {
 
 const NEWICK = "((A:1,B:1)X1:1,(C:1,D:1)Y1:1)R;";
 
-tape("attribute-list: assigning b to one node keeps a on another", function(t) {
+tape("attribute-list: assigning b elsewhere keeps a; same node is exclusive", function(t) {
   const restore = setupDom();
   try {
-    const tree = new phylotree.phylotree(NEWICK);
-    const display = renderTree(tree, {
-      "binary-selectable": true,
-      "attribute-list": ["a", "b"]
+    [false, true].forEach(function(useFn) {
+      const tree = new phylotree.phylotree(NEWICK);
+      const display = renderTree(tree, {
+        "binary-selectable": true,
+        "attribute-list": ["a", "b"]
+      });
+      const A = tree.getNodeByName("A"), B = tree.getNodeByName("B");
+      const sel = function(node) {
+        return useFn ? function(d) { return d.target === node; } : [node];
+      };
+      display.modifySelection(sel(A), "a", false, true, "true");
+      display.modifySelection(sel(B), "b", false, true, "true");
+      const label = useFn ? " (function)" : " (array)";
+      t.equal(A.a, true, "A.a kept when b assigned to B" + label);
+      t.equal(B.b, true, "B.b set" + label);
+      display.modifySelection(sel(A), "b", false, true, "true");
+      t.equal(A.b, true, "A.b set" + label);
+      t.notEqual(A.a, true, "A.a cleared when b assigned to A" + label);
     });
-    const A = tree.getNodeByName("A"), B = tree.getNodeByName("B");
-    display.modifySelection([A], "a", false, true, "true");
-    display.modifySelection([A], "b", false, true, "true");
-    display.modifySelection([B], "a", false, true, "true");
-    t.equal(A.b, true, "A.b is still true");
-    t.equal(B.a, true, "B.a is true");
   } finally {
     restore();
   }
