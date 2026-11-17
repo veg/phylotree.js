@@ -19,7 +19,7 @@ export function updateCollapsedClades(transitions) {
       // a hidden clade is not laid out, so do not draw its stale polygon
       this.phylotree.nodes
         .descendants()
-        .filter(d => isNodeCollapsed(d) && !nodeOrAncestorNotshown(d)),
+        .filter(d => isNodeCollapsed(d) && !d.hidden && !nodeOrAncestorNotshown(d)),
       function(d) {
         return d.id || (d.id = ++node_id);
       }
@@ -113,7 +113,9 @@ export function updateCollapsedClades(transitions) {
       .attr("class", this.css_classes["clade"])
       .merge(collapsed_clades)
       .attr("d", function(d) {
-        return (d.collapsed_clade ? d.collapsed_clade : d.collapsed_clade = spline(d.collapsed));
+        // always draw from the current layout: a cached outline goes stale as
+        // soon as another clade is collapsed, expanded, hidden or shown
+        return (d.collapsed_clade = spline(d.collapsed));
       });
   }
 }

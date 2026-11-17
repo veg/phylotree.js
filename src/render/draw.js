@@ -1081,11 +1081,15 @@ class TreeRender {
           );
         }
 
-        if (d.collapsed) {
+        // a clade nested in a collapsed clade is not laid out: its flag is
+        // `true` or an outline left from an earlier layout
+        if (Array.isArray(d.collapsed) && !d.hidden) {
           d.collapsed = d.collapsed.map(p => {
             let z = {};
             z.x = p[0];
             z.y = p[1];
+            // same radius the nodes get above: d.radius = d.y * scales[1] / size[1]
+            z.radius = (p[1] * this.scales[1]) / this.size[1];
             z = cartesianToPolar(
               z,
               this.radius,
@@ -1146,7 +1150,7 @@ class TreeRender {
           );
         }
 
-        if (d.collapsed) {
+        if (Array.isArray(d.collapsed) && !d.hidden) {
           d.collapsed.forEach(p => {
             p[0] *= this.scales[0];
             p[1] *= this.scales[1]*.8;
