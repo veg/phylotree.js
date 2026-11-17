@@ -44,6 +44,30 @@ function xmlToJson(xml) {
   return obj;
 }
 
+// Converts the output of fast-xml-parser (attributes prefixed with "@_") to
+// the same shape as xmlToJson, so both XML paths can share the code below.
+function normalizeParsed(value) {
+  if (Array.isArray(value)) {
+    return value.map(normalizeParsed);
+  }
+  if (value !== null && typeof value === "object") {
+    var obj = {};
+    Object.keys(value).forEach(function(key) {
+      if (key.indexOf("@_") === 0) {
+        obj["@attributes"] = obj["@attributes"] || {};
+        obj["@attributes"][key.slice(2)] = String(value[key]);
+      } else {
+        obj[key] = normalizeParsed(value[key]);
+      }
+    });
+    if (Object.keys(obj).length === 1 && "#text" in obj) {
+      return obj["#text"];
+    }
+    return obj;
+  }
+  return value === null || value === undefined ? "" : String(value);
+}
+
 var phyloxml_parser = function(xml, options) {
 
   function parsePhyloxml(node, index) {
@@ -51,19 +75,34 @@ var phyloxml_parser = function(xml, options) {
       if (!Array.isArray(node.clade)) {
         node.clade = [node.clade];
       }
+      node.clade = node.clade.map(function(child) {
+        return child !== null && typeof child === "object" ? child : {};
+      });
       node.clade.forEach(parsePhyloxml);
       node.children = node.clade;
       delete node.clade;
     }
 
     node.annotation = 1;
-    node.attribute = "0.01";
-    if (node.branch_length) {
-      node.attribute = node.branch_length;
+
+    var attributes = node["@attributes"] || {},
+      branch_length = attributes.branch_length;
+    if (branch_length === undefined) {
+      branch_length = node.branch_length;
     }
-    if (node.taxonomy) {
-      node.name = node.taxonomy.scientific_name;
+    if (typeof branch_length === "string" && branch_length.trim().length) {
+      node.attribute = branch_length.trim();
     }
+
+    var name = typeof node.name === "string" ? node.name : "";
+    if (
+      node.taxonomy &&
+      typeof node.taxonomy === "object" &&
+      typeof node.taxonomy.scientific_name === "string"
+    ) {
+      name = node.taxonomy.scientific_name;
+    }
+    node.name = name;
 
     node.annotation = "";
 
@@ -71,25 +110,44 @@ var phyloxml_parser = function(xml, options) {
 
   var tree_json;
 
-  if (typeof xml === "string") {
-    if (DOMParser) {
-      const parser = new DOMParser();
-      xml = parser.parseFromString(xml, "text/xml");
+  try {
+    if (typeof xml === "string") {
+      if (typeof DOMParser !== "undefined") {
+        const parser = new DOMParser();
+        xml = xmlToJson(parser.parseFromString(xml, "text/xml"));
+      } else {
+        const parser = new XMLParser({
+          ignoreAttributes: false,
+          attributeNamePrefix: "@_",
+          parseTagValue: false,
+          parseAttributeValue: false
+        });
+        xml = normalizeParsed(parser.parse(xml));
+      }
     } else {
-      const parser = new XMLParser();
-      xml = parser.parse(xml);
+      xml = xmlToJson(xml);
     }
+  } catch (e) {
+    return { json: null, error: "could not parse phyloxml" };
   }
 
-  xml = xmlToJson(xml);
-  var phylogeny = xml.phyloxml.phylogeny;
+  var phylogeny = xml && xml.phyloxml && xml.phyloxml.phylogeny;
   if (Array.isArray(phylogeny)) {
     phylogeny = phylogeny[0];
     console.warn("PhyloXML files with multiple phylogenies are not currently supported. Only the first phylogeny will be loaded.")
   }
+  if (!phylogeny || typeof phylogeny !== "object") {
+    return { json: null, error: "no phylogeny" };
+  }
   tree_json = phylogeny.clade;
-  tree_json.name = "root";
+  if (Array.isArray(tree_json)) {
+    tree_json = tree_json[0];
+  }
+  if (!tree_json || typeof tree_json !== "object") {
+    return { json: null, error: "no clade" };
+  }
   parsePhyloxml(tree_json, 0);
+  tree_json.name = "root";
 
   return {
     json: tree_json,
