@@ -81,7 +81,9 @@ export function leftChildRightSibling(root) {
       n.children[0].data.multiway_parent = n;
 
       // right child is the sibling
-      n.children[1].data.multiway_parent = n.parent;
+      if (n.children[1]) {
+        n.children[1].data.multiway_parent = n.parent;
+      }
     }
 
   }

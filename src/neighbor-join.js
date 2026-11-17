@@ -35,7 +35,7 @@ function ijMinDPrime(dPrime, N) {
   let j = -1;
   let minD = Infinity;
   for (let ii = 0; ii < N; ii++) {
-    for (let jj = i; jj < N; jj++) {
+    for (let jj = ii + 1; jj < N; jj++) {
       if (dPrime[ii][jj] < minD) {
         i = ii;
         j = jj;
@@ -62,8 +62,12 @@ function createDelta(totalDistances, N) {
 export function getDistanceMatrix(seqs) {
   // Gaps are masked
 
-  let initKey = Object.keys(seqs)[0];
-  let seqLength = seqs[initKey].length;
+  const lengths = Object.values(seqs).map((seq) => seq.length);
+  if (!lengths.length) {
+    return {};
+  }
+  // Compare only the positions present in every sequence
+  let seqLength = Math.min(...lengths);
 
   const matrix = {};
   for (const [key, seq] of Object.entries(seqs)) {
@@ -102,23 +106,50 @@ function getTotalDistances(distanceMatrix) {
  * @returns The neighbor joining new tree.
  */
 export default function neighborJoining(distanceMatrixArr, n, nodeList) {
+  let json = neighborJoiningJson(distanceMatrixArr, n, nodeList);
+
+  return new phylotree(jsonToNewick(json) + ":0;");
+}
+
+function jsonToNewick(node) {
+  // Quote names containing non-alphanumeric characters
+  let name = /\W/.test(node.name)
+    ? "'" + node.name.replaceAll("'", "''") + "'"
+    : node.name;
+  let label = node.children
+    ? "(" + node.children.map(jsonToNewick).join(",") + ")" + name
+    : name;
+
+  return node.attribute === undefined
+    ? label
+    : label + ":" + node.attribute;
+}
+
+function findByName(node, name) {
+  if (node.name == name) {
+    return node;
+  }
+  for (const child of node.children || []) {
+    let found = findByName(child, name);
+    if (found) {
+      return found;
+    }
+  }
+  return null;
+}
+
+function neighborJoiningJson(distanceMatrixArr, n, nodeList) {
   if (n <= 2) {
-    let tree = new phylotree("");
-
-    //T.link(nodeList[0],nodeList[1],D[0][1])
-
-    let newNode = tree.getNodes();
     // Get root
     let distance = distanceMatrixArr[0][1] / 2;
 
-    let nodeA = tree.createNode(nodeList[0], [null, [distance]]);
-    let nodeB = tree.createNode(nodeList[1], [null, [distance]]);
-
-    //// Add the children to the newly created node
-    tree.addChild(newNode, nodeA);
-    tree.addChild(newNode, nodeB);
-
-    return tree;
+    return {
+      name: "",
+      children: [
+        { name: nodeList[0], attribute: distance },
+        { name: nodeList[1], attribute: distance },
+      ],
+    };
   } else {
     let N = n;
     let totalDistances = getTotalDistances(distanceMatrixArr);
@@ -172,22 +203,21 @@ export default function neighborJoining(distanceMatrixArr, n, nodeList) {
         nodeList.splice(k, 1);
       }
     }
-    let tree = neighborJoining(distanceMatrixArr, N - 1, nodeList);
+    let tree = neighborJoiningJson(distanceMatrixArr, N - 1, nodeList);
 
-    let treeNodeI = tree.createNode(nodeI, [null, [limbLengthI]]);
-    let treeNodeJ = tree.createNode(nodeJ, [null, [limbLengthJ]]);
+    let treeNodeI = { name: nodeI, attribute: limbLengthI };
+    let treeNodeJ = { name: nodeJ, attribute: limbLengthJ };
 
     // If the node doesn't exist, create. Otherwise, reassign the length
-    if (tree.getNodeByName(m)) {
-      let internalNode = tree.getNodeByName(m);
-      tree.addChild(internalNode, treeNodeI);
-      tree.addChild(internalNode, treeNodeJ);
+    let internalNode = findByName(tree, m);
+    if (internalNode) {
+      internalNode.children = [treeNodeI, treeNodeJ];
     } else {
-      let newNode = tree.createNode(m, [null, [0]]);
-      tree.addChild(tree.getNodes(), newNode);
-      // Add the children to the newly created node
-      tree.addChild(newNode, treeNodeI);
-      tree.addChild(newNode, treeNodeJ);
+      tree.children.push({
+        name: m,
+        attribute: 0,
+        children: [treeNodeI, treeNodeJ],
+      });
     }
 
     // Set negative to 0 and add distance to other limblength
