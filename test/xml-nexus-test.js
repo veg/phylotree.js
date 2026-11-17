@@ -211,3 +211,10 @@ tape("NEXUS quoted labels may contain END; and doubled quotes", function(test) {
   test.deepEqual(tipNames(tree), ["O'Brien", "B", "AEND;Z"]);
   test.end();
 });
+
+tape("NEXUS unquoting strips one layer of quotes", function(test) {
+  const nex = "#NEXUS\nBEGIN TREES;\nTRANSLATE 1 '\"A\"', 2 B;\nTREE t = (1:1,2:2);\nEND;";
+  const tree = new phylotree.phylotree(nex, { type: "nexus" });
+  test.deepEqual(tipNames(tree), ['"A"', "B"]);
+  test.end();
+});

@@ -88,6 +88,9 @@ export function fitRootToTip(tree) {
     return { root: best_node, fit: null };
   }
 
+  // a candidate root has to beat the current one
+  max_r2 = best_fit["r2"];
+
   tree.traverse_and_compute(function(node) {
 
     if (tree.isLeafNode(node) && tipDate(node) !== null) {
@@ -130,11 +133,10 @@ export function fitRootToTip(tree) {
 // hand may be numeric strings.
 function tipDate(node) {
   let value = node.data.decimal_date_value;
-  if (value === null || value === undefined || value === "") {
-    return null;
+  if (typeof value === "string" && value.trim() !== "") {
+    value = Number(value);
   }
-  let date = Number(value);
-  return Number.isFinite(date) ? date : null;
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 // linear fit of root to tip distances
@@ -179,8 +181,8 @@ function linearFit(data) {
     varres += point[2] * t * t;
   });
 
-  // zero or infinite distances leave no finite line to report
-  if (!Number.isFinite(a) || !Number.isFinite(fitB)) {
+  // zero or infinite distances, or identical distances, leave no finite line
+  if (!Number.isFinite(a) || !Number.isFinite(fitB) || !(vary > 0)) {
     return null;
   }
 

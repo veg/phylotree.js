@@ -207,3 +207,9 @@ tape("constructor keeps a hierarchy object that happens to have a json field", f
   test.deepEqual(tree.getTips().map((n) => n.data.name), ["A"]);
   test.end();
 });
+
+tape("constructor unwraps a parser result even when it carries a name", function (test) {
+  const tree = new Phylotree({ name: "parser result", json: { name: "R", children: [{ name: "A", attribute: "1" }] }, error: null });
+  test.deepEqual(tree.getTips().map((n) => n.data.name), ["A"]);
+  test.end();
+});

@@ -167,10 +167,10 @@ let Phylotree = class {
         if (typeof nwk != "object") {
           throw new Error("Unable to parse tree: expected a string or an object");
         }
-        // a parser result ({json, error}), or hierarchical JSON (which has a
-        // name or children of its own)
+        // a parser result ({json, error}, or a bare {json} with no name or
+        // children of its own), otherwise hierarchical JSON
         _node_data =
-          "json" in nwk && !("name" in nwk) && !("children" in nwk)
+          "json" in nwk && ("error" in nwk || (!("name" in nwk) && !("children" in nwk)))
             ? { json: nwk.json, error: nwk.error || null }
             : { json: nwk, error: null };
       } else if (

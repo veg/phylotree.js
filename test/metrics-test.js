@@ -199,3 +199,28 @@ tape("fitRootToTip accepts numeric-string dates and rejects degenerate distances
   test.end();
 
 });
+
+tape("fitRootToTip keeps a perfect current root and ignores non-date values", function(test) {
+
+  let perfect = new phylotree.phylotree("(A:1,B:2,C:3);");
+  [["A", 2020], ["B", 2021], ["C", 2022]].forEach(function(d) {
+    perfect.getNodeByName(d[0]).data.decimal_date_value = d[1];
+  });
+  let result = phylotree.fitRootToTip(perfect);
+  test.equal(result.root, perfect.getRootNode(), "the current root is already the best");
+  test.equal(result.fit.slope, 1);
+
+  let zeros = new phylotree.phylotree("(A:0,B:0);");
+  zeros.getNodeByName("A").data.decimal_date_value = 2019;
+  zeros.getNodeByName("B").data.decimal_date_value = 2020;
+  test.equal(phylotree.fitRootToTip(zeros).fit, null, "identical distances give no fit");
+
+  [" ", false, true].forEach(function(bad) {
+    let one = new phylotree.phylotree("(A:1,B:2);");
+    one.getNodeByName("A").data.decimal_date_value = 2019;
+    one.getNodeByName("B").data.decimal_date_value = bad;
+    test.equal(phylotree.fitRootToTip(one).fit, null, JSON.stringify(bad) + " is not a date");
+  });
+  test.end();
+
+});

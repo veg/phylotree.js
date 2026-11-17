@@ -75,9 +75,11 @@ export function loadAnnotations(tree, label, annotations) {
 
 // Removes surrounding single or double quotes from a NEXUS token
 function unquote(token) {
-  // a single-quoted label escapes a quote by doubling it
-  return token.replace(/^'(.*)'$/, (m, inner) => inner.replace(/''/g, "'"))
-    .replace(/^"(.*)"$/, '$1');
+  // a single-quoted label escapes a quote by doubling it; strip one layer only
+  if (/^'.*'$/.test(token)) {
+    return token.slice(1, -1).replace(/''/g, "'");
+  }
+  return token.replace(/^"(.*)"$/, '$1');
 }
 
 // Split on `sep` wherever it is not inside a 'quoted label' ('' escapes a
