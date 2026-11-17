@@ -17,7 +17,7 @@ function computeRootToTipOtherRoot(
   distance_to_new_root
 ) {
 
-  var my_bl = tree.branch_length(node);
+  var my_bl = tree.branch_length_accessor(node);
 
   var go_up = false;
 
@@ -65,7 +65,7 @@ export function fitRootToTip(tree) {
 
   var linear_data = [],
     max_r2 = 0,
-    best_node = 0;
+    best_node = tree.getRootNode();
 
   annotateCopyNumber(tree);
   rootToTip(tree);
@@ -76,6 +76,10 @@ export function fitRootToTip(tree) {
       linear_data.push([node.data.decimal_date_value, node.data.rtta, node.data.copy_number]);
     }
   });
+
+  if (linear_data.length < 2) {
+    return { root: best_node, fit: null };
+  }
 
   let best_fit = linearFit(linear_data);
 
@@ -97,10 +101,14 @@ export function fitRootToTip(tree) {
         }
       });
 
+      if (linear_data.length < 2) {
+        return;
+      }
+
       var fit = linearFit(linear_data),
         r2 = fit["r2"];
 
-      if (r2 > max_r2) {
+      if (isFinite(r2) && r2 > max_r2) {
         max_r2 = r2;
         best_node = node;
         best_fit = fit;
@@ -205,7 +213,7 @@ export default function rootToTip(tree) {
     }
   });
 
-  var r2t = tree.getRootNode().data.r2t;
+  var r2t = tree.getRootNode().data.r2t || {};
 
   tree.traverse_and_compute(n => {
     if (tree.isLeafNode(n)) {

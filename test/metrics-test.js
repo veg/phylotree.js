@@ -70,3 +70,95 @@ tape("slatkin-maddison test", function(test) {
 
 });
 
+
+tape("computeMidpoint resets state and honors the branch length accessor", function(test) {
+
+  let phylo = new phylotree.phylotree("((A:1,B:2):3,(C:4,D:5):1,E:0.5);");
+  phylo.normalizeBranchLengths();
+  test.doesNotThrow(function() { phylotree.computeMidpoint(phylo); });
+
+  let fresh = new phylotree.phylotree("((A:1,B:2):3,(C:4,D:5):1,E:0.5);");
+  let first = phylotree.computeMidpoint(fresh);
+  let second = phylotree.computeMidpoint(fresh);
+  test.equal(first.location, second.location);
+  test.equal(first.breakpoint, second.breakpoint);
+
+  let t = new phylotree.phylotree("(A:1,B:1,C:1);");
+  t.setBranchLength(function(n) { return n.data.name === "A" ? 10 : 1; });
+  test.equal(phylotree.computeMidpoint(t).location.data.name, "A");
+
+  // stale state: long lengths first, then shrink them and recompute
+  let nwk = "((A:1,B:2):3,(C:4,D:5):1,E:0.5);";
+  let scale = function(k) { return function(n) { return (n.data.attribute ? +n.data.attribute : 0) * k; }; };
+  let stale = new phylotree.phylotree(nwk);
+  stale.setBranchLength(scale(100));
+  phylotree.computeMidpoint(stale);
+  stale.setBranchLength(function(n) { return n.data.name === "E" ? 50 : (n.data.attribute ? +n.data.attribute : 0); });
+  let got = phylotree.computeMidpoint(stale);
+  let ref = new phylotree.phylotree(nwk);
+  ref.setBranchLength(function(n) { return n.data.name === "E" ? 50 : (n.data.attribute ? +n.data.attribute : 0); });
+  let want = phylotree.computeMidpoint(ref);
+  test.equal(got.location.data.name || got.location.data.attribute, want.location.data.name || want.location.data.attribute);
+  test.equal(got.breakpoint, want.breakpoint);
+  test.end();
+
+});
+
+tape("centerOfTree on zero-length tree is not NaN", function(test) {
+
+  let phylo = new phylotree.phylotree("(A:0,B:0);");
+  let c = phylotree.centerOfTree(phylo);
+  test.notOk(isNaN(c.breakpoint));
+  test.end();
+
+});
+
+tape("pairwise distances guard bad input", function(test) {
+
+  test.doesNotThrow(function() { phylotree.pairwise_distances(new phylotree.phylotree("A:1;")); });
+  let phylo = new phylotree.phylotree("(A:1,B:2);");
+  phylo.setBranchLength(function() { return NaN; });
+  test.throws(function() { phylotree.pairwise_distances(phylo); });
+  test.end();
+
+});
+
+tape("root to tip uses accessor and handles degenerate input", function(test) {
+
+  let phylo = new phylotree.phylotree("(A:1,B:1);");
+  phylo.setBranchLength(function(n) { return n.data.name === "A" ? 5 : 1; });
+  phylotree.rootToTip(phylo);
+  test.equal(phylo.getNodeByName("A").data.rootToTip, 5);
+
+  let one = new phylotree.phylotree("(A_2020-01-01:1,B:1);");
+  phylotree.extractDates(one);
+  let fit;
+  test.doesNotThrow(function() { fit = phylotree.fitRootToTip(one); });
+  test.equal(fit.root, one.getRootNode());
+
+  let none = new phylotree.phylotree("A:1;");
+  test.doesNotThrow(function() { phylotree.rootToTip(none); });
+  test.end();
+
+});
+
+tape("sackin uses current depth after reroot", function(test) {
+
+  let phylo = new phylotree.phylotree("((a,b),(c,(d,e)))");
+  test.equal(phylotree.sackin(phylo), 12);
+  phylo.reroot(phylo.getNodeByName("d"));
+  test.equal(phylotree.sackin(phylo), 14);
+  test.end();
+
+});
+
+tape("extractDates default getter", function(test) {
+
+  let phylo = new phylotree.phylotree("(A_2020-03-15:1,B_2019-01-02:1,C:1);");
+  phylotree.extractDates(phylo);
+  test.ok(phylo.getNodeByName("A_2020-03-15").data.decimal_date_value > 2020);
+  test.ok(phylo.getNodeByName("B_2019-01-02").data.decimal_date_value > 2019);
+  test.equal(phylo.getNodeByName("C").data.date_value, null);
+  test.end();
+
+});
