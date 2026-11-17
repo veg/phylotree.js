@@ -75,7 +75,9 @@ export function loadAnnotations(tree, label, annotations) {
 
 // Removes surrounding single or double quotes from a NEXUS token
 function unquote(token) {
-  return token.replace(/^(['"])(.*)\1$/, '$2');
+  // a single-quoted label escapes a quote by doubling it
+  return token.replace(/^'(.*)'$/, (m, inner) => inner.replace(/''/g, "'"))
+    .replace(/^"(.*)"$/, '$1');
 }
 
 // Split on `sep` wherever it is not inside a 'quoted label' ('' escapes a
@@ -121,15 +123,17 @@ export default function loadTree(buf, options) {
     return { json: null, error: 'no TREES block' };
   }
 
-  let split = str.slice(index);
-  index = split.toUpperCase().indexOf('END;');
-  let tree_str = index < 0 ? split : split.slice(0, index);
-
-  // Statements are separated by semicolons outside quotes and [comments]
-  let statements = _.map(splitOutside(tree_str, ';'), d => {
+  // Statements are separated by semicolons outside quotes and [comments];
+  // the block ends at the END statement
+  let statements = [];
+  for (let statement of splitOutside(str.slice(index), ';')) {
     // a statement may be preceded by [comments]
-    return d.replace(/^(\s*\[[^\]]*\])+/, '').trim();
-  });
+    statement = statement.replace(/^(\s*\[[^\]]*\])+/, '').trim();
+    if (/^END(BLOCK)?$/i.test(statement)) {
+      break;
+    }
+    statements.push(statement);
+  }
 
   let tree = _.find(statements, d => { return /^TREE\s/i.test(d) });
 

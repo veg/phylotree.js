@@ -201,3 +201,9 @@ tape("constructor unwraps a parser result with or without an error field", funct
   test.throws(() => new Phylotree({ json: null, error: "bad input" }), /bad input/);
   test.end();
 });
+
+tape("constructor keeps a hierarchy object that happens to have a json field", function (test) {
+  const tree = new Phylotree({ name: "R", json: null, children: [{ name: "A", attribute: "1" }] });
+  test.deepEqual(tree.getTips().map((n) => n.data.name), ["A"]);
+  test.end();
+});

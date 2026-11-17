@@ -182,3 +182,20 @@ tape("fitRootToTip returns a null fit when the dates cannot support one", functi
   test.end();
 
 });
+
+tape("fitRootToTip accepts numeric-string dates and rejects degenerate distances", function(test) {
+
+  let strings = new phylotree.phylotree("(A:1,B:2);");
+  strings.getNodeByName("A").data.decimal_date_value = "2019";
+  strings.getNodeByName("B").data.decimal_date_value = "2020";
+  let fit = phylotree.fitRootToTip(strings).fit;
+  test.ok(fit && Number.isFinite(fit.slope), "string dates are coerced");
+
+  let zeros = new phylotree.phylotree("(A:0,B:0);");
+  zeros.getNodeByName("A").data.decimal_date_value = 2019;
+  zeros.getNodeByName("B").data.decimal_date_value = 2020;
+  let result = phylotree.fitRootToTip(zeros);
+  test.ok(result.fit === null || Number.isFinite(result.fit.slope), "no non-finite fit is reported");
+  test.end();
+
+});

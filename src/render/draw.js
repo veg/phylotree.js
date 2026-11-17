@@ -184,11 +184,12 @@ class TreeRender {
         this.options["initial-sets"] &&
         typeof this.options["initial-sets"] === "object" &&
         !Array.isArray(this.options["initial-sets"]) &&
-        this._selectionSets && Object.keys(this._selectionSets).length > 0 &&
+        this._selectionSets &&
         !this.phylotree.__initialSetsApplied) {
-      this.phylotree.__initialSetsApplied = true;
+      // applied once per tree, and only once a requested set is defined
       Object.entries(this.options["initial-sets"]).forEach(([setName, nodeNames]) => {
-        if (!Array.isArray(nodeNames)) return;
+        if (!Array.isArray(nodeNames) || !this._selectionSets[setName]) return;
+        this.phylotree.__initialSetsApplied = true;
         nodeNames.forEach(nodeName => {
           this.addToSet(nodeName, setName);
         });

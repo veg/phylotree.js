@@ -72,8 +72,9 @@ export function fitRootToTip(tree) {
 
   // To return if best node is the root already
   tree.traverse_and_compute(function(node) {
-    if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
-      linear_data.push([node.data.decimal_date_value, node.data.rtta, node.data.copy_number]);
+    if (tree.isLeafNode(node) && tipDate(node) !== null) {
+      // distances from the current root; rtta is only set when trying other roots
+      linear_data.push([tipDate(node), node.data.rootToTip, node.data.copy_number]);
     }
   });
 
@@ -89,16 +90,16 @@ export function fitRootToTip(tree) {
 
   tree.traverse_and_compute(function(node) {
 
-    if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
+    if (tree.isLeafNode(node) && tipDate(node) !== null) {
 
       computeRootToTipOtherRoot(tree, node, null, 0, 0);
 
       linear_data = [];
 
       tree.traverse_and_compute(function(node) {
-        if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
+        if (tree.isLeafNode(node) && tipDate(node) !== null) {
           linear_data.push([
-            node.data.decimal_date_value,
+            tipDate(node),
             node.data.rtta,
             node.data.copy_number
           ]);
@@ -123,6 +124,17 @@ export function fitRootToTip(tree) {
 
   return { root: best_node, fit: best_fit };
 
+}
+
+// A tip's decimal date as a number, or null when it has none. Dates set by
+// hand may be numeric strings.
+function tipDate(node) {
+  let value = node.data.decimal_date_value;
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+  let date = Number(value);
+  return Number.isFinite(date) ? date : null;
 }
 
 // linear fit of root to tip distances
@@ -166,6 +178,11 @@ function linearFit(data) {
     var t = point[1] - a - fitB * point[0];
     varres += point[2] * t * t;
   });
+
+  // zero or infinite distances leave no finite line to report
+  if (!Number.isFinite(a) || !Number.isFinite(fitB)) {
+    return null;
+  }
 
   return {
     intercept: a,

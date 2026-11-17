@@ -227,3 +227,24 @@ tape("initial-sets wait for set definitions", function(t) {
   }
   t.end();
 });
+
+tape("initial-sets wait for the requested set, not just any set", function(t) {
+  const restore = setupDom();
+  try {
+    const tree = new phylotree.phylotree(NEWICK);
+    renderTree(tree, {
+      "selection-mode": "multi-set",
+      "selection-sets": [{ name: "other", color: "blue" }],
+      "initial-sets": { fg: ["A"] }
+    });
+    const display = renderTree(tree, {
+      "selection-mode": "multi-set",
+      "selection-sets": [{ name: "fg", color: "red" }],
+      "initial-sets": { fg: ["A"] }
+    });
+    t.deepEqual(display.getSetMembers("fg").map(n => n.data.name), ["A"]);
+  } finally {
+    restore();
+  }
+  t.end();
+});

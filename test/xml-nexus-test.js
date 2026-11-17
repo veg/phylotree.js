@@ -204,3 +204,10 @@ tape("phyloxml keeps a lone self-closing clade child", function(test) {
   test.equal(tree.nodes.descendants().length, 2);
   test.end();
 });
+
+tape("NEXUS quoted labels may contain END; and doubled quotes", function(test) {
+  const nex = "#NEXUS\nBEGIN TREES;\nTRANSLATE 1 'O''Brien', 2 B;\nTREE t = (1:1,2:2,'AEND;Z':3);\nEND;\nBEGIN X; ignored; END;";
+  const tree = new phylotree.phylotree(nex, { type: "nexus" });
+  test.deepEqual(tipNames(tree), ["O'Brien", "B", "AEND;Z"]);
+  test.end();
+});
