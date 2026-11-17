@@ -26,6 +26,17 @@ function clusterPicker(
   root_node,
   missing_bootstrap_value
 ) {
+  if (!_.isNumber(bootstrap_threshold) || !isFinite(bootstrap_threshold)) {
+    throw "clusterPicker requires a numeric bootstrap threshold";
+  }
+  if (
+    !_.isNumber(diameter_threshold) ||
+    !isFinite(diameter_threshold) ||
+    diameter_threshold < 0
+  ) {
+    throw "clusterPicker requires a numeric diameter threshold >= 0";
+  }
+
   root_node = root_node || tree.getRootNode();
   missing_bootstrap_value = _.isNumber(missing_bootstrap_value)
     ? missing_bootstrap_value
@@ -35,7 +46,7 @@ function clusterPicker(
   // where each internal node will receive a floating point value
   // that stores the longest path from the internal node to any of its descendants,
   // the diameter of the cluster,  is then the sum of longest paths of all of its children
-  let bl = tree.branch_length;
+  let bl = tree.branch_length_accessor;
 
   // initialize member variables
   tree.traverse_and_compute(function(n) {
@@ -63,7 +74,11 @@ function clusterPicker(
     if (!tree.isLeafNode(n)) {
       var bs = _.isString(n.data.bootstrap_values)
         ? +n.data.bootstrap_values
-        : missing_bootstrap_value;
+        : NaN;
+      // unlabeled ('' or NaN) support is treated as missing
+      if (n.data.bootstrap_values === "" || _.isNaN(bs)) {
+        bs = missing_bootstrap_value;
+      }
 
       if (bs >= bootstrap_threshold) {
         var my_diameter = _.reduce(
