@@ -9,9 +9,14 @@ tape("graftANode creates hierarchy nodes", function (test) {
   const x = t.getNodeByName("X");
   test.ok(x, "grafted node is found");
   test.equal(x.parent.data.name, "Y");
-  test.equal(x.data.attribute, 0.2);
-  test.equal(t.getNodeByName("A").data.attribute, 0.1);
-  test.equal(t.getNodeByName("Y").data.attribute, 0.3);
+  test.equal(x.data.attribute, "0.2");
+  test.equal(t.getNodeByName("A").data.attribute, "0.1");
+  test.equal(t.getNodeByName("Y").data.attribute, "0.3");
+  test.equal(t.branch_length_accessor(x), 0.2, "length visible via accessor");
+  test.ok(/X:0\.2/.test(t.getNewick()), "length in newick");
+  test.equal(x.depth, 2);
+  test.equal(t.getNodeByName("A").depth, 2);
+  test.equal(t.getNodeByName("Y").depth, 1);
   test.equal(typeof x.descendants, "function", "is a d3 hierarchy node");
   test.end();
 });
@@ -89,5 +94,13 @@ tape("getDistanceMatrix handles empty input and unequal lengths", function (test
   test.deepEqual(m.s2, [0, 0]);
   const m2 = phylotree.getDistanceMatrix({ s1: "AC", s2: "ACGT" });
   test.deepEqual(m2.s1, [0, 0]);
+  test.end();
+});
+
+tape("deleteANode refreshes depth", function (test) {
+  const t = tree("((A,B),C);");
+  t.deleteANode(t.getNodeByName("C"));
+  test.equal(t.getNodeByName("A").depth, 1);
+  test.equal(t.getNodeByName("B").depth, 1);
   test.end();
 });

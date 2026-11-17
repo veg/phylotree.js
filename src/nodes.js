@@ -3,6 +3,21 @@ import * as _ from "underscore";
 
 // These methods are part of the Phylotree object
 
+function refreshHierarchy(root) {
+  root.eachBefore(n => {
+    n.depth = n.parent ? n.parent.depth + 1 : 0;
+  });
+  root.eachAfter(n => {
+    n.height = n.children
+      ? 1 + Math.max(...n.children.map(c => c.height))
+      : 0;
+  });
+}
+
+function lengthAttr(l) {
+  return l === null || l === undefined ? null : String(l);
+}
+
 export function graftANode(graftAt, newChild, newParent, lengths) {
 
   let nodes = this.nodes.descendants();
@@ -17,12 +32,12 @@ export function graftANode(graftAt, newChild, newParent, lengths) {
 
       let newSplit = d3.hierarchy({
           name: newParent,
-          attribute: lengths ? lengths[2] : null,
+          attribute: lengths ? lengthAttr(lengths[2]) : null,
           original_child_order: graftAt.data["original_child_order"]
         }),
         newNode = d3.hierarchy({
           name: newChild,
-          attribute: lengths ? lengths[1] : null,
+          attribute: lengths ? lengthAttr(lengths[1]) : null,
           original_child_order: 2
         });
 
@@ -31,10 +46,11 @@ export function graftANode(graftAt, newChild, newParent, lengths) {
       newSplit["children"] = [graftAt, newNode];
       graftAt["parent"].children[parentIndex] = newSplit;
       graftAt.parent = newSplit;
-      graftAt.data["attribute"] = lengths ? lengths[0] : null;
+      graftAt.data["attribute"] = lengths ? lengthAttr(lengths[0]) : null;
       graftAt.data["original_child_order"] = 1;
 
       this.update(this.nodes);
+      refreshHierarchy(this.nodes);
     }
   }
 
@@ -122,6 +138,7 @@ export function deleteANode(index) {
         }
 
         this.update(this.nodes);
+        refreshHierarchy(this.nodes);
       }
     }
   }
