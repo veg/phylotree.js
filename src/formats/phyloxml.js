@@ -71,7 +71,8 @@ function normalizeParsed(value) {
 var phyloxml_parser = function(xml, options) {
 
   function parsePhyloxml(node, index) {
-    if (node.clade) {
+    // a lone self-closing <clade/> parses as "", which is still a child
+    if (node.clade !== undefined && node.clade !== null) {
       if (!Array.isArray(node.clade)) {
         node.clade = [node.clade];
       }

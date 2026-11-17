@@ -191,3 +191,39 @@ tape("internal-names with unnamed internal nodes does not throw", function(t) {
   }
   t.end();
 });
+
+tape("selection sets ignore malformed definitions", function(t) {
+  const restore = setupDom();
+  try {
+    const tree = new phylotree.phylotree(NEWICK);
+    let display;
+    t.doesNotThrow(function() {
+      display = renderTree(tree, {
+        "selection-mode": "multi-set",
+        "selection-sets": [null, {}, { name: "fg", color: "red" }],
+        "initial-sets": { fg: ["A"] }
+      });
+    });
+    t.deepEqual(display.getSetMembers("fg").map(n => n.data.name), ["A"]);
+  } finally {
+    restore();
+  }
+  t.end();
+});
+
+tape("initial-sets wait for set definitions", function(t) {
+  const restore = setupDom();
+  try {
+    const tree = new phylotree.phylotree(NEWICK);
+    renderTree(tree, { "selection-mode": "multi-set", "initial-sets": { fg: ["A"] } });
+    const display = renderTree(tree, {
+      "selection-mode": "multi-set",
+      "selection-sets": [{ name: "fg", color: "red" }],
+      "initial-sets": { fg: ["A"] }
+    });
+    t.deepEqual(display.getSetMembers("fg").map(n => n.data.name), ["A"], "applied on the first render that has sets");
+  } finally {
+    restore();
+  }
+  t.end();
+});

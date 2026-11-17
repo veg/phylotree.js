@@ -14,6 +14,9 @@ export function initializeSelectionSets(sets) {
   this._selectionSets = {};
   this._activeSetName = null;
 
+  // ignore malformed entries such as null or {} rather than throwing
+  sets = sets.filter(set => set && typeof set.name === "string");
+
   sets.forEach(set => {
     this._selectionSets[set.name] = {
       name: set.name,

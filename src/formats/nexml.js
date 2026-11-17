@@ -59,7 +59,12 @@ var nexml_parser = function(xml_string, options) {
             return a;
           }, {}),
           roots = node_list.filter(d => d.root),
-          root_id = roots.length > 0 ? roots[0].id : node_list[0].id;
+          targets = new Set(edge_list.map(edge => edge.target)),
+          // without a root flag, the one node no edge points at is the root
+          unreferenced = node_list.filter(d => !targets.has(d.id)),
+          root_id = roots.length > 0
+            ? roots[0].id
+            : unreferenced.length === 1 ? unreferenced[0].id : node_list[0].id;
         node_hash[root_id].name = "root";
 
         edge_list.forEach(function(edge) {

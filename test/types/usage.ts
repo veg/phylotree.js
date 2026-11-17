@@ -205,7 +205,7 @@ const midpoint = computeMidpoint(tree);
 const midpointBreak: number = midpoint.breakpoint;
 const r2t: phylotree = rootToTip(tree);
 const fit = fitRootToTip(tree);
-const r2: number = fit.fit.r2;
+const r2: number | undefined = fit.fit?.r2; // fit is null when the tips have no usable dates
 const dated: phylotree = extractDates(tree, (n) => n.data.name.slice(-8));
 const clusters = clusterPicker(tree, 0.7, 0.05);
 const clusterMembers: PhylotreeNode[] = clusters[0].members;

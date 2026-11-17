@@ -30,10 +30,11 @@ function clusterPicker(
   bootstrap_threshold = +bootstrap_threshold;
   diameter_threshold = +diameter_threshold;
 
-  if (!isFinite(bootstrap_threshold)) {
+  // Infinity is a valid "no limit" diameter
+  if (Number.isNaN(bootstrap_threshold)) {
     throw "clusterPicker requires a numeric bootstrap threshold";
   }
-  if (!isFinite(diameter_threshold) || diameter_threshold < 0) {
+  if (Number.isNaN(diameter_threshold) || diameter_threshold < 0) {
     throw "clusterPicker requires a numeric diameter threshold >= 0";
   }
 

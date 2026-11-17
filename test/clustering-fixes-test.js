@@ -66,3 +66,11 @@ tape("phylopart includes all root path segments", function(test) {
   test.equal(phylotree.phylopart(eu, 0.9, 0.045).length, 300);
   test.end();
 });
+
+tape("clusterPicker accepts an unbounded diameter", function(test) {
+  let tree = new phylotree.phylotree("((A:1,B:1):1,(C:1,D:1):1);");
+  test.doesNotThrow(function() {
+    phylotree.clusterPicker(tree, 0, Infinity);
+  });
+  test.end();
+});

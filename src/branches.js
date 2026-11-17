@@ -66,8 +66,8 @@ export function defBranchLengthAccessor(_node, new_length) {
 
   }
 
-  // Allow for empty branch length at root
-  if(_node_data.name == "root") {
+  // Allow for empty branch length at the root, which has no branch
+  if(!_node.parent) {
     return 0;
   }
 

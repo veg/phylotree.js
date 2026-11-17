@@ -162,3 +162,23 @@ tape("extractDates default getter", function(test) {
   test.end();
 
 });
+
+tape("fitRootToTip returns a null fit when the dates cannot support one", function(test) {
+
+  let undated = new phylotree.phylotree("(A:1,B:2);");
+  let result = phylotree.fitRootToTip(undated);
+  test.equal(result.root, undated.getRootNode());
+  test.equal(result.fit, null, "no dates");
+
+  let same = new phylotree.phylotree("(A:1,B:2);");
+  same.getTips().forEach(function(tip) { tip.data.decimal_date_value = 2020; });
+  test.equal(phylotree.fitRootToTip(same).fit, null, "identical dates");
+
+  let dated = new phylotree.phylotree("(A:1,B:2);");
+  dated.getNodeByName("A").data.decimal_date_value = 2019;
+  dated.getNodeByName("B").data.decimal_date_value = 2020;
+  let fit = phylotree.fitRootToTip(dated).fit;
+  test.ok(fit && Number.isFinite(fit.slope), "a real fit has a finite slope");
+  test.end();
+
+});

@@ -194,3 +194,10 @@ tape("scaleBranchLengths applies the transform with the default accessor", funct
   test.equal(logged.getNodeByName("A").data.attribute, String(Math.log(2)));
   test.end();
 });
+
+tape("constructor unwraps a parser result with or without an error field", function (test) {
+  const wrapped = new Phylotree({ json: { name: "R", children: [{ name: "A", attribute: "1" }] } });
+  test.deepEqual(wrapped.getTips().map((n) => n.data.name), ["A"]);
+  test.throws(() => new Phylotree({ json: null, error: "bad input" }), /bad input/);
+  test.end();
+});

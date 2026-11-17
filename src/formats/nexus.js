@@ -78,6 +78,35 @@ function unquote(token) {
   return token.replace(/^(['"])(.*)\1$/, '$2');
 }
 
+// Split on `sep` wherever it is not inside a 'quoted label' ('' escapes a
+// quote) or a [comment].
+function splitOutside(str, sep) {
+  let parts = [], current = '', quoted = false, comment = 0;
+  for (let i = 0; i < str.length; i++) {
+    let c = str[i];
+    if (quoted) {
+      if (c === "'") {
+        if (str[i + 1] === "'") { current += c; i++; }
+        else { quoted = false; }
+      }
+    } else if (comment) {
+      if (c === ']') comment--;
+      else if (c === '[') comment++;
+    } else if (c === "'") {
+      quoted = true;
+    } else if (c === '[') {
+      comment = 1;
+    } else if (c === sep) {
+      parts.push(current);
+      current = '';
+      continue;
+    }
+    current += c;
+  }
+  parts.push(current);
+  return parts;
+}
+
 export default function loadTree(buf, options) {
 
   // if filename, then load from filesystem
@@ -96,8 +125,11 @@ export default function loadTree(buf, options) {
   index = split.toUpperCase().indexOf('END;');
   let tree_str = index < 0 ? split : split.slice(0, index);
 
-  // Statements are separated by semicolons
-  let statements = _.map(tree_str.split(';'), d => { return d.trim() });
+  // Statements are separated by semicolons outside quotes and [comments]
+  let statements = _.map(splitOutside(tree_str, ';'), d => {
+    // a statement may be preceded by [comments]
+    return d.replace(/^(\s*\[[^\]]*\])+/, '').trim();
+  });
 
   let tree = _.find(statements, d => { return /^TREE\s/i.test(d) });
 
@@ -110,7 +142,7 @@ export default function loadTree(buf, options) {
   let translate_statement = _.find(statements, d => { return /^TRANSLATE\s/i.test(d) });
 
   if(translate_statement) {
-    _.each(translate_statement.replace(/^TRANSLATE\s+/i, '').split(','), d => {
+    _.each(splitOutside(translate_statement.replace(/^TRANSLATE\s+/i, ''), ','), d => {
       let tokens = d.trim().split(/\s+/);
       if(tokens.length > 1) {
         translate[tokens[0]] = unquote(tokens.slice(1).join(' '));

@@ -181,3 +181,26 @@ tape("NEXUS annotations: lowercase keywords and the label", function(test) {
   test.deepEqual(empty, { dimensions: {}, format: { symbols: [] }, matrix: {} });
   test.end();
 });
+
+tape("NEXUS statements split outside quotes and comments", function(test) {
+  const nex = "#NEXUS\nBEGIN TREES;\n[a; comment]\nTRANSLATE 1 'A, one', 2 B;\nTREE t = (1:1,2:2,'C;D':3);\nEND;";
+  const tree = new phylotree.phylotree(nex, { type: "nexus" });
+  test.deepEqual(tipNames(tree), ["A, one", "B", "C;D"]);
+  test.end();
+});
+
+tape("nexml finds the root from the edges when no node is flagged", function(test) {
+  const nodes = `<nex:node id="n2" otu="ot1"/><nex:node id="n1"/><nex:node id="n3" otu="ot2"/>`;
+  const edges = `<nex:edge id="e1" source="n1" target="n2" length="0.1"/>
+<nex:edge id="e2" source="n1" target="n3" length="0.2"/>`;
+  const tree = new phylotree.phylotree(nexml("nex", edges, nodes), { type: "nexml" });
+  test.deepEqual(tipNames(tree), ["Alpha", "Beta"]);
+  test.end();
+});
+
+tape("phyloxml keeps a lone self-closing clade child", function(test) {
+  const xml = `<phyloxml><phylogeny><clade><name>R</name><clade/></clade></phylogeny></phyloxml>`;
+  const tree = new phylotree.phylotree(xml, { type: "phyloxml" });
+  test.equal(tree.nodes.descendants().length, 2);
+  test.end();
+});

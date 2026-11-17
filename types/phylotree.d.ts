@@ -541,7 +541,7 @@ export class phylotree {
   get_parsed_tags(): string[];
 
   /** Replace the hierarchy */
-  update(json: PhylotreeNode): void;
+  update(json: PhylotreeNode): this;
 
   /** Check if every non-root node has a branch length */
   hasBranchLengths(): boolean;
@@ -616,7 +616,7 @@ export class phylotree {
   graftANode(graftAt: PhylotreeNode, newChild: string, newParent: string, lengths?: string[]): this;
 
   /** Create a node stub for `addChild` */
-  createNode(name: string, lengths?: unknown[]): { data: { name: string; attribute: unknown }; parent: string };
+  createNode(name: string, lengths?: unknown[]): PhylotreeNode;
 
   /** Add a child to a node; returns the parent */
   addChild<T extends object>(parent: T, child: object): T;
@@ -714,7 +714,7 @@ export function rootToTip(tree: phylotree): phylotree;
  * Find the root that maximises the root-to-tip regression r2 (needs dates;
  * see extractDates). `root` is 0 if the current root is best.
  */
-export function fitRootToTip(tree: phylotree): { root: PhylotreeNode | 0; fit: LinearFit };
+export function fitRootToTip(tree: phylotree): { root: PhylotreeNode; fit: LinearFit | null };
 
 /**
  * Extract dates from nodes and store `date_value` / `decimal_date_value` in their data

@@ -72,7 +72,7 @@ export function fitRootToTip(tree) {
 
   // To return if best node is the root already
   tree.traverse_and_compute(function(node) {
-    if (tree.isLeafNode(node) && !_.isNull(node.data.decimal_date_value)) {
+    if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
       linear_data.push([node.data.decimal_date_value, node.data.rtta, node.data.copy_number]);
     }
   });
@@ -83,16 +83,20 @@ export function fitRootToTip(tree) {
 
   let best_fit = linearFit(linear_data);
 
+  if (!best_fit) {
+    return { root: best_node, fit: null };
+  }
+
   tree.traverse_and_compute(function(node) {
 
-    if (tree.isLeafNode(node) && !_.isNull(node.data.decimal_date_value)) {
+    if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
 
       computeRootToTipOtherRoot(tree, node, null, 0, 0);
 
       linear_data = [];
 
       tree.traverse_and_compute(function(node) {
-        if (tree.isLeafNode(node) && !_.isNull(node.data.decimal_date_value)) {
+        if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
           linear_data.push([
             node.data.decimal_date_value,
             node.data.rtta,
@@ -106,7 +110,7 @@ export function fitRootToTip(tree) {
       }
 
       var fit = linearFit(linear_data),
-        r2 = fit["r2"];
+        r2 = fit ? fit["r2"] : NaN;
 
       if (isFinite(r2) && r2 > max_r2) {
         max_r2 = r2;
@@ -146,6 +150,11 @@ function linearFit(data) {
     fitB += point[2] * t * point[1];
     vary += point[2] * (point[1] - syoss) * (point[1] - syoss);
   });
+
+  // no spread in the dates: the slope is undefined
+  if (!(st2 > 0)) {
+    return null;
+  }
 
   fitB /= st2;
 
