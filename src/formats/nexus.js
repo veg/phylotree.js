@@ -4,45 +4,52 @@ import {default as newickParser} from "./newick";
 export function parseAnnotations (buf) {
 
   let str = buf;
-  let index = str.toUpperCase().indexOf('BEGIN DATA;');
-  let data = str.slice(index);
+  let index = str.search(/BEGIN\s+DATA\s*;/i);
 
-  if(data.length < 2) {
-    return '';
+  if(index < 0) {
+    return { 'dimensions' : {}, 'format' : { symbols : [] }, 'matrix' : {} };
   }
 
+  let data = str.slice(index);
+
   index = data.toUpperCase().indexOf('END;');
-  let data_str = data.slice(0, index);
+  let data_str = index < 0 ? data : data.slice(0, index);
 
   // split on semicolon
   data = _.map(data_str.split(';'), d => { return d.trim() } );
 
+  // turn "KEY=value KEY=value" into an object with lower case keys
+  const toObject = line => {
+    return _.object(_.map(_.compact(_.rest(line.split(/\s+/))), d => {
+      let pair = d.split('=');
+      return [pair[0].toLowerCase(), pair[1]];
+    }));
+  };
+
   // get dimensions
-  let dimensions = _.filter(data, d => {return d.toUpperCase().startsWith('DIMENSION')}); 
-  dimensions = dimensions[0].split(' ');
-  dimensions = _.object(_.map(_.rest(dimensions), d => { return d.split('=') }));
+  let dimensions = _.filter(data, d => {return d.toUpperCase().startsWith('DIMENSION')});
+  dimensions = dimensions.length ? toObject(dimensions[0]) : {};
 
   // get formats
-  let format = _.filter(data, d => {return d.toUpperCase().startsWith('FORMAT')}); 
-  format = format[0].split(' ');
-  format = _.object(_.map(_.rest(format), d => { return d.split('=') }));
-  format.symbols = _.reject(format.symbols.split(""), d => d=='"');
+  let format = _.filter(data, d => {return d.toUpperCase().startsWith('FORMAT')});
+  format = format.length ? toObject(format[0]) : {};
+  format.symbols = _.reject((format.symbols || '').split(""), d => d=='"');
 
   // get character matrix
-  let matrix = _.filter(data, d => {return d.toUpperCase().startsWith('MATRIX')}); 
-  matrix = matrix[0].split('\n')
-  matrix = _.object(_.map(_.rest(matrix), d=> { return _.compact(d.split(' ')) }));
+  let matrix = _.filter(data, d => {return d.toUpperCase().startsWith('MATRIX')});
+  matrix = matrix.length ? matrix[0].split('\n') : [];
+  matrix = _.object(_.filter(_.map(_.rest(matrix), d=> { return _.compact(d.split(/\s+/)) }), d => d.length > 1));
 
   // create all possible states for matrix
-  matrix = _.mapObject(matrix, (v,k) => { 
+  matrix = _.mapObject(matrix, (v,k) => {
 
     if(v == '?') {
       return format.symbols
     }
-    else { 
+    else {
       return Array(v)
     }
-  
+
   });
 
   return { 'dimensions' : dimensions, 'format' : format, 'matrix' : matrix }
@@ -60,37 +67,72 @@ export function parseAnnotations (buf) {
 export function loadAnnotations(tree, label, annotations) {
 
   // if filename, then load from filesystem
-  _.each(tree.getTips(), d => { d.data["test"] = annotations.matrix[d.data.name] });
+  _.each(tree.getTips(), d => { d.data[label] = annotations.matrix[d.data.name] });
 
   // decorate nodes with annotations
 
 }
 
-export default function loadTree(buf) {
+// Removes surrounding single or double quotes from a NEXUS token
+function unquote(token) {
+  return token.replace(/^(['"])(.*)\1$/, '$2');
+}
+
+export default function loadTree(buf, options) {
 
   // if filename, then load from filesystem
   // Parse first tree from NEXUS file and send to newickParser
 
-  // Make all upper case
   let str = buf;
 
   // Get TREE block
-  let index = str.toUpperCase().indexOf('BEGIN TREES;');
-  let split = str.slice(index);
+  let index = str.search(/BEGIN\s+TREES\s*;/i);
 
-  if(split.length < 2) {
-    return '';
+  if(index < 0) {
+    return { json: null, error: 'no TREES block' };
   }
 
+  let split = str.slice(index);
   index = split.toUpperCase().indexOf('END;');
-  let tree_str = split.slice(0, index);
+  let tree_str = index < 0 ? split : split.slice(0, index);
 
-  // Filter lines that start with TREE
-  let trees = tree_str.split('\n');
-  trees = _.filter(trees, d => { return d.trim().toUpperCase().startsWith('TREE') });
+  // Statements are separated by semicolons
+  let statements = _.map(tree_str.split(';'), d => { return d.trim() });
+
+  let tree = _.find(statements, d => { return /^TREE\s/i.test(d) });
+
+  if(!tree) {
+    return { json: null, error: 'no tree in TREES block' };
+  }
+
+  // Map translate tokens to names
+  let translate = {};
+  let translate_statement = _.find(statements, d => { return /^TRANSLATE\s/i.test(d) });
+
+  if(translate_statement) {
+    _.each(translate_statement.replace(/^TRANSLATE\s+/i, '').split(','), d => {
+      let tokens = d.trim().split(/\s+/);
+      if(tokens.length > 1) {
+        translate[tokens[0]] = unquote(tokens.slice(1).join(' '));
+      }
+    });
+  }
 
   // Identify start of newick string
-  return newickParser(trees[0]);
+  let result = newickParser(tree + ';', options);
+
+  if(result.json && !_.isEmpty(translate)) {
+    let translateTips = node => {
+      if(node.children && node.children.length) {
+        _.each(node.children, translateTips);
+      }
+      else if(_.has(translate, node.name)) {
+        node.name = translate[node.name];
+      }
+    };
+    translateTips(result.json);
+  }
+
+  return result;
 
 }
-
