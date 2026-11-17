@@ -1,6 +1,22 @@
+import * as d3 from "d3";
 import * as _ from "underscore";
 
 // These methods are part of the Phylotree object
+
+function refreshHierarchy(root) {
+  root.eachBefore(n => {
+    n.depth = n.parent ? n.parent.depth + 1 : 0;
+  });
+  root.eachAfter(n => {
+    n.height = n.children
+      ? 1 + Math.max(...n.children.map(c => c.height))
+      : 0;
+  });
+}
+
+function lengthAttr(l) {
+  return l === null || l === undefined ? null : String(l);
+}
 
 export function graftANode(graftAt, newChild, newParent, lengths) {
 
@@ -14,24 +30,27 @@ export function graftANode(graftAt, newChild, newParent, lengths) {
 
       let parentIndex = graftAt.parent.children.indexOf(graftAt);
 
-      let newSplit = {
+      let newSplit = d3.hierarchy({
           name: newParent,
-          parent: graftAt.parent,
-          attribute: lengths ? lengths[2] : null,
-          original_child_order: graftAt["original_child_order"]
-        },
-        newNode = {
+          attribute: lengths ? lengthAttr(lengths[2]) : null,
+          original_child_order: graftAt.data["original_child_order"]
+        }),
+        newNode = d3.hierarchy({
           name: newChild,
-          parent: newSplit,
-          attribute: lengths ? lengths[1] : null,
+          attribute: lengths ? lengthAttr(lengths[1]) : null,
           original_child_order: 2
-        };
+        });
 
+      newSplit.parent = graftAt.parent;
+      newNode.parent = newSplit;
       newSplit["children"] = [graftAt, newNode];
       graftAt["parent"].children[parentIndex] = newSplit;
       graftAt.parent = newSplit;
-      graftAt["attribute"] = lengths ? lengths[0] : null;
-      graftAt["original_child_order"] = 1;
+      graftAt.data["attribute"] = lengths ? lengthAttr(lengths[0]) : null;
+      graftAt.data["original_child_order"] = 1;
+
+      this.update(this.nodes);
+      refreshHierarchy(this.nodes);
     }
   }
 
@@ -40,6 +59,8 @@ export function graftANode(graftAt, newChild, newParent, lengths) {
 }
 
 export function addChild(parent, child) {
+
+  child.parent = parent;
 
   if(parent.children) {
     parent.children.push(child);
@@ -53,13 +74,10 @@ export function addChild(parent, child) {
 
 export function createNode(name, lengths) {
 
-  return {
-    data: {
-      name: name,
-      attribute: lengths ? lengths[1] : null
-    },
-    parent: '',
-  };
+  return d3.hierarchy({
+    name: name,
+    attribute: lengths ? lengths[1] : null
+  });
 
 }
 
@@ -84,8 +102,6 @@ export function deleteANode(index) {
       let delete_me_idx = node.parent.children.indexOf(node);
 
       if (delete_me_idx >= 0) {
-        nodes.splice(index, 1);
-
         if (node.children) {
           node.children.forEach(function(d) {
             d["original_child_order"] = node.parent.children.length;
@@ -97,23 +113,32 @@ export function deleteANode(index) {
         if (node.parent.children.length > 2) {
           node.parent.children.splice(delete_me_idx, 1);
         } else {
+          let sibling = node.parent.children[1 - delete_me_idx];
+
           if (node.parent.parent) {
             node.parent.parent.children[
               node.parent.parent.children.indexOf(node.parent)
-            ] =
-              node.parent.children[1 - delete_me_idx];
-            node.parent.children[1 - delete_me_idx].parent = node.parent.parent;
-            nodes.splice(nodes.indexOf(node.parent), 1);
+            ] = sibling;
+            sibling.parent = node.parent.parent;
           } else {
-            nodes.splice(0, 1);
-            nodes.parent = null;
-            delete nodes.data["attribute"];
-            delete nodes.data["annotation"];
-            delete nodes.data["original_child_order"];
-            nodes.name = "root";
-            nodes.data.name = "root";
+            // the parent is the root: lift the sibling's children, or keep a
+            // leaf sibling as the sole child
+            let root = node.parent;
+            if (!sibling) {
+              delete root.children;
+            } else if (sibling.children) {
+              root.children = sibling.children;
+              root.children.forEach(function(d) {
+                d.parent = root;
+              });
+            } else {
+              root.children = [sibling];
+            }
           }
         }
+
+        this.update(this.nodes);
+        refreshHierarchy(this.nodes);
       }
     }
   }
