@@ -14232,7 +14232,9 @@
 
   // Removes surrounding single or double quotes from a NEXUS token
   function unquote(token) {
-    return token.replace(/^(['"])(.*)\1$/, '$2');
+    // a single-quoted label escapes a quote by doubling it
+    return token.replace(/^'(.*)'$/, (m, inner) => inner.replace(/''/g, "'"))
+      .replace(/^"(.*)"$/, '$1');
   }
 
   // Split on `sep` wherever it is not inside a 'quoted label' ('' escapes a
@@ -14278,15 +14280,17 @@
       return { json: null, error: 'no TREES block' };
     }
 
-    let split = str.slice(index);
-    index = split.toUpperCase().indexOf('END;');
-    let tree_str = index < 0 ? split : split.slice(0, index);
-
-    // Statements are separated by semicolons outside quotes and [comments]
-    let statements = ___namespace.map(splitOutside(tree_str, ';'), d => {
+    // Statements are separated by semicolons outside quotes and [comments];
+    // the block ends at the END statement
+    let statements = [];
+    for (let statement of splitOutside(str.slice(index), ';')) {
       // a statement may be preceded by [comments]
-      return d.replace(/^(\s*\[[^\]]*\])+/, '').trim();
-    });
+      statement = statement.replace(/^(\s*\[[^\]]*\])+/, '').trim();
+      if (/^END(BLOCK)?$/i.test(statement)) {
+        break;
+      }
+      statements.push(statement);
+    }
 
     let tree = ___namespace.find(statements, d => { return /^TREE\s/i.test(d) });
 
@@ -17778,11 +17782,12 @@
           this.options["initial-sets"] &&
           typeof this.options["initial-sets"] === "object" &&
           !Array.isArray(this.options["initial-sets"]) &&
-          this._selectionSets && Object.keys(this._selectionSets).length > 0 &&
+          this._selectionSets &&
           !this.phylotree.__initialSetsApplied) {
-        this.phylotree.__initialSetsApplied = true;
+        // applied once per tree, and only once a requested set is defined
         Object.entries(this.options["initial-sets"]).forEach(([setName, nodeNames]) => {
-          if (!Array.isArray(nodeNames)) return;
+          if (!Array.isArray(nodeNames) || !this._selectionSets[setName]) return;
+          this.phylotree.__initialSetsApplied = true;
           nodeNames.forEach(nodeName => {
             this.addToSet(nodeName, setName);
           });
@@ -19258,8 +19263,12 @@
           if (typeof nwk != "object") {
             throw new Error("Unable to parse tree: expected a string or an object");
           }
-          // a parser result ({json, error}), or hierarchical JSON
-          _node_data = "json" in nwk ? { json: nwk.json, error: nwk.error || null } : { json: nwk, error: null };
+          // a parser result ({json, error}), or hierarchical JSON (which has a
+          // name or children of its own)
+          _node_data =
+            "json" in nwk && !("name" in nwk) && !("children" in nwk)
+              ? { json: nwk.json, error: nwk.error || null }
+              : { json: nwk, error: null };
         } else if (
           /^\s*<(\?xml|phyloxml|phylogeny)/i.test(nwk)
         ) {
@@ -19923,8 +19932,9 @@
 
     // To return if best node is the root already
     tree.traverse_and_compute(function(node) {
-      if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
-        linear_data.push([node.data.decimal_date_value, node.data.rtta, node.data.copy_number]);
+      if (tree.isLeafNode(node) && tipDate(node) !== null) {
+        // distances from the current root; rtta is only set when trying other roots
+        linear_data.push([tipDate(node), node.data.rootToTip, node.data.copy_number]);
       }
     });
 
@@ -19940,16 +19950,16 @@
 
     tree.traverse_and_compute(function(node) {
 
-      if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
+      if (tree.isLeafNode(node) && tipDate(node) !== null) {
 
         computeRootToTipOtherRoot(tree, node, null, 0, 0);
 
         linear_data = [];
 
         tree.traverse_and_compute(function(node) {
-          if (tree.isLeafNode(node) && Number.isFinite(node.data.decimal_date_value)) {
+          if (tree.isLeafNode(node) && tipDate(node) !== null) {
             linear_data.push([
-              node.data.decimal_date_value,
+              tipDate(node),
               node.data.rtta,
               node.data.copy_number
             ]);
@@ -19974,6 +19984,17 @@
 
     return { root: best_node, fit: best_fit };
 
+  }
+
+  // A tip's decimal date as a number, or null when it has none. Dates set by
+  // hand may be numeric strings.
+  function tipDate(node) {
+    let value = node.data.decimal_date_value;
+    if (value === null || value === undefined || value === "") {
+      return null;
+    }
+    let date = Number(value);
+    return Number.isFinite(date) ? date : null;
   }
 
   // linear fit of root to tip distances
@@ -20017,6 +20038,11 @@
       var t = point[1] - a - fitB * point[0];
       varres += point[2] * t * t;
     });
+
+    // zero or infinite distances leave no finite line to report
+    if (!Number.isFinite(a) || !Number.isFinite(fitB)) {
+      return null;
+    }
 
     return {
       intercept: a,
