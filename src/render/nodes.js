@@ -370,14 +370,14 @@ export function internalLabel(callback, respect_existing) {
 
 export function defNodeLabel(_node) {
 
-  _node = _node.data;
+  const data = _node.data;
 
-  if (isLeafNode(_node)) {
-    return _node.name || "";
+  if (isLeafNode(data)) {
+    return data.name || "";
   }
 
   if (this.showInternalName(_node)) {
-    return _node.name;
+    return data.name || "";
   }
 
   return "";

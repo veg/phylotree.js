@@ -82,13 +82,22 @@ export function reclassEdge(edge) {
 
 }
 
+const reserved_annotations = [
+  "children", "data", "parent", "depth", "height", "x", "y", "collapsed",
+  "hidden", "notshown", "id", "selected", "text_angle", "text_align",
+  "radius", "angle"
+];
+
 export function initializeEdgeLabels() {
 
   this.links.forEach(d => {
 
     // TODO: Move away from storing attribute data as root (BREAKS occasionally with d3>3)
-    if(d.target.data.annotation) {
-      d.target[d.target.data.annotation] = d.target.data.annotation;
+    // Annotations named like internal hierarchy fields must not overwrite them.
+    const annotation = d.target.data.annotation;
+    if(annotation && !reserved_annotations.includes(annotation) &&
+       !(annotation in d.target && d.target[annotation] !== annotation)) {
+      d.target[annotation] = annotation;
     }
 
   });
