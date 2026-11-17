@@ -97,6 +97,21 @@ tape("reroot on the root is a no-op", function (test) {
   test.end();
 });
 
+tape("reroot keeps lengths finite when the remaining child has no length", function (test) {
+  const tree = new Phylotree({
+    name: "root",
+    children: [
+      { name: "X", len: 1, children: [{ name: "A", len: 1 }, { name: "B", len: 1 }] },
+      { name: "Y", children: [{ name: "C", len: 1 }, { name: "D", len: 1 }] },
+    ],
+  });
+  tree.setBranchLength((n) => n.data.len);
+  tree.reroot(tree.getNodeByName("A"));
+  test.notOk(/NaN/.test(tree.getNewick()), "newick has no NaN");
+  tree.getBranchLengths().forEach((l) => test.ok(l === undefined || !isNaN(l)));
+  test.end();
+});
+
 tape("reroot never produces NaN branch lengths", function (test) {
   const tree = new Phylotree("(((A:1,B:1):1,C:1):1,(D:1,E:1):1);");
   tree.reroot(tree.getNodeByName("A"));
