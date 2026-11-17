@@ -37,7 +37,7 @@ edit it by hand.
 | `yarn lint`          | Run ESLint over the repository.                                  |
 | `yarn typecheck`     | Type-check `types/phylotree.d.ts` against `test/types/usage.ts` (run in CI). |
 | `yarn docs:generate` | Regenerate `API.md` from the JSDoc comments in `src/`.           |
-| `yarn docs:validate` | Local check: fail if `API.md` is out of date with the JSDoc comments (not run in CI). |
+| `yarn docs:validate` | Fail if `API.md` is out of date with the JSDoc comments (also run in CI). |
 | `yarn docs:watch`    | Regenerate `API.md` whenever a file in `src/` changes.           |
 
 Before opening a pull request, run:
@@ -52,10 +52,10 @@ yarn typecheck
 CI runs the build and tests on both Linux and Windows, so keep package
 scripts portable (quote globs with double quotes, avoid POSIX-only tools).
 
-`API.md` is regenerated and committed automatically after changes reach
-`master`, so CI does not require it to be current in pull requests. If you
-change JSDoc comments you can still run `yarn docs:generate` and commit the
-result yourself, and `yarn docs:validate` tells you whether that is needed.
+`API.md` is generated from the JSDoc comments in `src/` and committed. If you
+change a JSDoc comment, run `yarn docs:generate` and commit the updated
+`API.md` with your change; CI fails when it is out of date, and
+`yarn docs:validate` tells you locally whether that is needed.
 
 ## Previews
 

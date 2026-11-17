@@ -13,7 +13,7 @@ on:
       - '.github/workflows/docs.yml'
 
 permissions:
-  contents: write
+  contents: read
   pull-requests: write
 
 jobs:
@@ -32,30 +32,29 @@ jobs:
     - name: Install dependencies
       run: yarn install
 
-    - name: Generate API documentation
-      run: yarn docs:generate
-      
-    - name: Check if API.md changed
-      id: verify-changed-files
+    # API.md is committed alongside the JSDoc changes that affect it. The
+    # branch ruleset that gates Dependabot auto-merge also blocks pushes from
+    # this workflow, so it checks rather than commits.
+    - name: Check that API.md matches the JSDoc comments
       run: |
-        if git diff --quiet HEAD -- API.md; then
+        if ! yarn docs:validate; then
+          echo "::error::API.md is out of date. Run 'yarn docs:generate' and commit the result."
+          exit 1
+        fi
+
+    - name: Check if API.md changed in this pull request
+      id: verify-changed-files
+      if: github.event_name == 'pull_request'
+      run: |
+        git fetch --depth=1 origin "${{ github.base_ref }}"
+        if git diff --quiet "origin/${{ github.base_ref }}" -- API.md; then
           echo "changed=false" >> $GITHUB_OUTPUT
         else
           echo "changed=true" >> $GITHUB_OUTPUT
         fi
-        
-    - name: Commit updated API documentation
-      if: steps.verify-changed-files.outputs.changed == 'true' && github.event_name == 'push'
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add API.md
-        git commit -m "Auto-update API documentation 🤖"
-        git push
-        
+
     # The site (including API.md) is deployed to gh-pages by docs-site.yml,
-    # which runs on every push to master. Deploying here as well made the
-    # two workflows force-push over each other.
+    # which runs on every push to master.
 
     - name: Comment on PR with documentation preview
       if: github.event_name == 'pull_request' && steps.verify-changed-files.outputs.changed == 'true' && github.event.pull_request.head.repo.full_name == github.repository

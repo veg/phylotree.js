@@ -57,8 +57,8 @@ as well as tagged trees such as
 <dd><p>Loads annotations from a nexus-formatted buffer and annotates existing tree
  nodes appropriately.</p>
 </dd>
-<dt><a href="#mrca">mrca()</a> ⇒</dt>
-<dd><p>Return most recent common ancestor of a pair of nodes.</p>
+<dt><a href="#mrca">mrca(mrca_nodes)</a> ⇒</dt>
+<dd><p>Return most recent common ancestor of a set of nodes.</p>
 </dd>
 <dt><a href="#computeMidpoint">computeMidpoint(tree)</a> ⇒ <code>Object</code></dt>
 <dd><p>Compute midpoint of a phylogenetic tree</p>
@@ -167,7 +167,8 @@ every time the current selection is modified, and its argument is
 an array of nodes that make up the current selection.</p>
 </dd>
 <dt><a href="#countLeaves">countLeaves(node)</a> ⇒ <code>Number</code></dt>
-<dd><p>Count the number of leaf nodes in a subtree.</p>
+<dd><p>Count the number of leaf nodes in a subtree. A hidden (notshown) subtree
+has no leaves and a collapsed clade counts as one.</p>
 </dd>
 <dt><a href="#computeUnrootedLayout">computeUnrootedLayout(root, scales, width, height, labelPad)</a></dt>
 <dd><p>Compute unrooted (equal-angle) layout coordinates for all nodes.</p>
@@ -176,6 +177,9 @@ assigns each child subtree angular space proportional to its leaf count.
 Each node is placed at parent_position + branch_length * (cos(angle), sin(angle)).</p>
 <p>After computing raw positions, coordinates are normalized to fit within
 the given width × height.</p>
+</dd>
+<dt><a href="#maxDescendantDistance">maxDescendantDistance(node, baseY)</a> ⇒ <code>Number</code></dt>
+<dd><p>Largest distance from a node to any of its shown descendants.</p>
 </dd>
 <dt><a href="#equalAngle">equalAngle(node, startAngle, arcSize)</a></dt>
 <dd><p>Recursive equal-angle layout.</p>
@@ -757,11 +761,17 @@ Loads annotations from a nexus-formatted buffer and annotates existing tree
 
 <a name="mrca"></a>
 
-## mrca() ⇒
-Return most recent common ancestor of a pair of nodes.
+## mrca(mrca_nodes) ⇒
+Return most recent common ancestor of a set of nodes.
 
 **Kind**: global function  
-**Returns**: An array of strings, comprising each tag that was read.  
+**Returns**: The deepest node whose descendants include all of the given nodes,
+or undefined if there is none.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| mrca_nodes | <code>Array</code> | Node names, or nodes. |
+
 <a name="computeMidpoint"></a>
 
 ## computeMidpoint(tree) ⇒ <code>Object</code>
@@ -1202,7 +1212,8 @@ an array of nodes that make up the current selection.
 <a name="countLeaves"></a>
 
 ## countLeaves(node) ⇒ <code>Number</code>
-Count the number of leaf nodes in a subtree.
+Count the number of leaf nodes in a subtree. A hidden (notshown) subtree
+has no leaves and a collapsed clade counts as one.
 
 **Kind**: global function  
 **Returns**: <code>Number</code> - The number of leaves  
@@ -1232,6 +1243,19 @@ the given width × height.
 | width | <code>Number</code> | Available width in pixels |
 | height | <code>Number</code> | Available height in pixels |
 | labelPad | <code>Number</code> | Pixel padding to reserve for labels on all sides |
+
+<a name="maxDescendantDistance"></a>
+
+## maxDescendantDistance(node, baseY) ⇒ <code>Number</code>
+Largest distance from a node to any of its shown descendants.
+
+**Kind**: global function  
+**Returns**: <code>Number</code> - The distance, never negative  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| node | <code>Object</code> | The clade root |
+| baseY | <code>Number</code> | Cumulative branch length at the clade root |
 
 <a name="equalAngle"></a>
 
