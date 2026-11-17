@@ -157,12 +157,13 @@ tape("normalizeBranchLengths maps shortest to 0 and longest to 1", function (tes
 tape("normalizeBranchLengths handles equal lengths", function (test) {
   const tree = new Phylotree("(A:1,B:1,C:1);");
   tree.normalizeBranchLengths();
-  tree.getBranchLengths().forEach((l) => test.ok(Number.isFinite(l)));
+  // the first entry is the root, which has no branch
+  tree.getBranchLengths().slice(1).forEach((l) => test.ok(Number.isFinite(l)));
   test.equal(tree.branch_length_accessor(tree.getNodeByName("A")), 1);
 
   const zeros = new Phylotree("(A:0,B:0,C:0);");
   zeros.normalizeBranchLengths();
-  zeros.getBranchLengths().forEach((l) => test.equal(l, 0));
+  zeros.getBranchLengths().slice(1).forEach((l) => test.equal(l, 0));
   test.end();
 });
 

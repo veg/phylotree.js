@@ -37,7 +37,8 @@ export default function hasBranchLengths() {
 export function getBranchLengths() {
 
   let bl = this.branch_length_accessor;
-  return _.map(this.nodes.descendants(), node => { return bl(node)});
+  // the root has no branch; its parsed length, if any, is not a branch length
+  return _.map(this.nodes.descendants(), node => { return node.parent ? bl(node) : undefined});
 
 }
 

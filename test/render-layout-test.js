@@ -131,15 +131,15 @@ tape("render-layout: unary node with hidden child and internal names", function(
   const x = function(name) { return node(r.tree, name).x; };
   const xs = { B: x("B"), D: x("D") };
   test.ok(
-    [x("B"), x("C"), x("root"), x("D")].every(Number.isFinite),
+    [x("B"), x("C"), x("r"), x("D")].every(Number.isFinite),
     "finite"
   );
-  // the unary node is not shown: B, C, r and D take consecutive rows
-  test.ok(x("B") < x("C") && x("C") < x("root") && x("root") < x("D"), "tips in order");
+  // the unary node is not shown: B, C, r (the root) and D take consecutive rows
+  test.ok(x("B") < x("C") && x("C") < x("r") && x("r") < x("D"), "tips in order");
   test.ok(
-    Math.abs(x("C") - x("B") - (x("root") - x("C"))) < 1e-6 &&
-      Math.abs(x("root") - x("C") - (x("D") - x("root"))) < 1e-6,
-    "evenly spaced rows: " + [x("B"), x("C"), x("root"), x("D")].join(",")
+    Math.abs(x("C") - x("B") - (x("r") - x("C"))) < 1e-6 &&
+      Math.abs(x("r") - x("C") - (x("D") - x("r"))) < 1e-6,
+    "evenly spaced rows: " + [x("B"), x("C"), x("r"), x("D")].join(",")
   );
   restore();
   // the hidden unary node takes no row: same rows as a tree without it
