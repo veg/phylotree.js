@@ -19,7 +19,14 @@ export function updateCollapsedClades(transitions) {
       // a hidden clade is not laid out, so do not draw its stale polygon
       this.phylotree.nodes
         .descendants()
-        .filter(d => isNodeCollapsed(d) && !d.hidden && !nodeOrAncestorNotshown(d)),
+        .filter(
+          d =>
+            isNodeCollapsed(d) &&
+            Array.isArray(d.collapsed) &&
+            d.collapsed.length > 0 &&
+            !d.hidden &&
+            !nodeOrAncestorNotshown(d)
+        ),
       function(d) {
         return d.id || (d.id = ++node_id);
       }
