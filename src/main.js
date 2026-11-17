@@ -46,34 +46,44 @@ function resortChildren(comparator, start_node, filter) {
 }
 
 /**
- * Return most recent common ancestor of a pair of nodes.
- * @returns An array of strings, comprising each tag that was read.
+ * Return most recent common ancestor of a set of nodes.
+ * @param {Array} mrca_nodes Node names, or nodes.
+ * @returns The deepest node whose descendants include all of the given nodes,
+ * or undefined if there is none.
  */
 function mrca(mrca_nodes) {
-  var mrca;
+  let wanted = new Set(
+    mrca_nodes.map(function (mrca_node) {
+      return typeof mrca_node == "string" ? mrca_node : mrca_node.data.name;
+    })
+  );
 
-  mrca_nodes = mrca_nodes.map(function (mrca_node) {
-    return typeof mrca_node == "string" ? mrca_node : mrca_node.data.name;
-  });
+  let found = new Map(),
+    result;
 
   this.traverse_and_compute(function (node) {
+    let names = new Set();
+
     if (!node.children) {
-      node.data.mrca = _.intersection([node.data.name], mrca_nodes);
-    } else if (!node.parent) {
-      if (!mrca) {
-        mrca = node;
+      if (wanted.has(node.data.name)) {
+        names.add(node.data.name);
       }
     } else {
-      node.data.mrca = _.union(
-        ...node.descendants().map((child) => child.data.mrca)
-      );
-      if (!mrca && node.data.mrca.length == mrca_nodes.length) {
-        mrca = node;
-      }
+      node.children.forEach(function (child) {
+        found.get(child).forEach(function (name) {
+          names.add(name);
+        });
+      });
+    }
+
+    found.set(node, names);
+
+    if (!result && wanted.size && names.size == wanted.size) {
+      result = node;
     }
   });
 
-  return mrca;
+  return result;
 }
 
 /**
@@ -116,8 +126,7 @@ let Phylotree = class {
     this.links = [];
     this.parsed_tags = [];
     this.partitions = [];
-    this.branch_length_accessor = defBranchLengthAccessor;
-    this.branch_length = defBranchLengthAccessor;
+    this.setBranchLength(defBranchLengthAccessor);
     this.logger = options.logger || console;
     this.selection_attribute_name = "selected";
 
@@ -149,13 +158,24 @@ let Phylotree = class {
       }
     } else {
       // this builds children and links;
-      if (nwk.name == "root") {
+      if (nwk === null || nwk === undefined) {
+        throw new Error("Unable to parse tree: no tree was supplied");
+      } else if (nwk.name == "root") {
         // already parsed by phylotree.js
         _node_data = { json: nwk, error: null };
       } else if (typeof nwk != "string") {
-        // old default
-        _node_data = nwk;
-      } else if (nwk.contentType == "application/xml") {
+        if (typeof nwk != "object") {
+          throw new Error("Unable to parse tree: expected a string or an object");
+        }
+        // a parser result ({json, error}) unless the object has children of
+        // its own, in which case it is hierarchical JSON
+        _node_data =
+          "json" in nwk && !Array.isArray(nwk.children)
+            ? { json: nwk.json, error: nwk.error || null }
+            : { json: nwk, error: null };
+      } else if (
+        /^\s*<(\?xml|phyloxml|phylogeny)/i.test(nwk)
+      ) {
         // xml
         _node_data = phyloxml_parser(nwk);
       } else {
@@ -165,8 +185,10 @@ let Phylotree = class {
       }
     }
 
-    if (!_node_data["json"]) {
-      self.nodes = [];
+    if (!_node_data || !_node_data["json"]) {
+      throw new Error(
+        (_node_data && _node_data.error) || "Unable to parse tree"
+      );
     } else {
       self.nodes = d3.hierarchy(_node_data.json);
 
@@ -174,6 +196,14 @@ let Phylotree = class {
       let _parsed_tags = {};
 
       self.nodes.each((node) => {
+        if (typeof node.data.name === "number") {
+          node.data.name = String(node.data.name);
+        } else if (node.data.name === undefined || node.data.name === null) {
+          node.data.name = "";
+        }
+        if (node.data.bootstrap_values === "") {
+          node.data.bootstrap_values = undefined;
+        }
         if (node.data.annotation) {
           _parsed_tags[node.data.annotation] = true;
         }
@@ -312,6 +342,27 @@ let Phylotree = class {
   update(json) {
     // update with new hiearchy layout
     this.nodes = json;
+
+    this.nodes.eachBefore((node) => {
+      _.each(node.children, (child) => {
+        child.parent = node;
+      });
+      node.depth = node.parent ? node.parent.depth + 1 : 0;
+    });
+
+    this.nodes.eachAfter((node) => {
+      node.height = node.children
+        ? 1 + Math.max(...node.children.map((child) => child.height))
+        : 0;
+    });
+
+    this.links = this.nodes.links();
+
+    if (this.display) {
+      this.display.links = this.links;
+    }
+
+    return this;
   }
 
   /**

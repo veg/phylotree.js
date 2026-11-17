@@ -14,7 +14,13 @@ export default function sackin(tree) {
   let tips = tree.getTips();
 
   // Count number of ancestors to root for each tree
-  let depths = _.map(tips, d => { return d.depth });
+  let depths = _.map(tips, d => {
+    let depth = 0;
+    for (let n = d; n.parent; n = n.parent) {
+      depth++;
+    }
+    return depth;
+  });
 
   return _.reduce(depths, function(memo, num){ return memo + num; }, 0);
 

@@ -309,13 +309,22 @@ declare class TreeRender {
   nodeLabel(): (node: PhylotreeNode) => string;
   nodeLabel(accessor: ((node: PhylotreeNode) => string) | null | undefined): this;
 
+  /** Get the label font size */
+  fontSize(): number;
+  /** Set the label font size (`undefined` resets it to 12) */
+  fontSize(size: number | undefined): this;
+  /** Get the scale bar font size */
+  scaleBarFontSize(): number;
+  /** Set the scale bar font size (`undefined` resets it to 12) */
+  scaleBarFontSize(size: number | undefined): this;
+
   /** Get/set node styler function */
   style_nodes(): NodeStyler | null | undefined;
   style_nodes(styler: NodeStyler | null): this;
 
   /** Get/set edge styler function */
   style_edges(): EdgeStyler | null | undefined;
-  style_edges(styler: EdgeStyler): this;
+  style_edges(styler: EdgeStyler | null): this;
 
   /** Mark a node as collapsed (call `update()` to redraw) */
   collapse_node(node: PhylotreeNode): void;
@@ -532,7 +541,7 @@ export class phylotree {
   get_parsed_tags(): string[];
 
   /** Replace the hierarchy */
-  update(json: PhylotreeNode): void;
+  update(json: PhylotreeNode): this;
 
   /** Check if every non-root node has a branch length */
   hasBranchLengths(): boolean;
@@ -607,7 +616,7 @@ export class phylotree {
   graftANode(graftAt: PhylotreeNode, newChild: string, newParent: string, lengths?: string[]): this;
 
   /** Create a node stub for `addChild` */
-  createNode(name: string, lengths?: unknown[]): { data: { name: string; attribute: unknown }; parent: string };
+  createNode(name: string, lengths?: unknown[]): PhylotreeNode;
 
   /** Add a child to a node; returns the parent */
   addChild<T extends object>(parent: T, child: object): T;
@@ -705,7 +714,7 @@ export function rootToTip(tree: phylotree): phylotree;
  * Find the root that maximises the root-to-tip regression r2 (needs dates;
  * see extractDates). `root` is 0 if the current root is best.
  */
-export function fitRootToTip(tree: phylotree): { root: PhylotreeNode | 0; fit: LinearFit };
+export function fitRootToTip(tree: phylotree): { root: PhylotreeNode; fit: LinearFit | null };
 
 /**
  * Extract dates from nodes and store `date_value` / `decimal_date_value` in their data

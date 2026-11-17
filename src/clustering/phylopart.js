@@ -110,10 +110,9 @@ function phylopart(
 
   root_node.paths_to_leaves = new Array(leaf_count);
 
-  _.each(root_node.children, function(cn) {
-    _.each(root_node.cot_path_to_leaves_below, function(v, i) {
-      root_node.paths_to_leaves[i] = v + cn.cot_computed_length;
-    });
+  // the paths below the root already include the lengths of the root's child branches
+  _.each(root_node.cot_path_to_leaves_below, function(v, i) {
+    root_node.paths_to_leaves[i] = v;
   });
 
   tree.traverse_and_compute(function(n) {
@@ -146,7 +145,12 @@ function phylopart(
       for (var n1 = 0; n1 < n.paths_to_leaves.length; n1++) {
         for (var n2 = n1 + 1; n2 < n.paths_to_leaves.length; n2++) {
           var sum = n.paths_to_leaves[n1] + n.paths_to_leaves[n2];
-          n.histogram[((sum - min_bl) / resolution) >> 0]++;
+          // clamp so that sums outside of [min_bl, max_path_length] stay in range
+          var bin = Math.min(
+            Math.max(((sum - min_bl) / resolution) >> 0, 0),
+            number_of_bins - 1
+          );
+          n.histogram[bin]++;
         }
       }
       n.leaf_count = n.paths_to_leaves.length;
@@ -182,7 +186,11 @@ function phylopart(
     if (!tree.isLeafNode(n)) {
       var bs = _.isString(n.data.bootstrap_values)
         ? +n.data.bootstrap_values
-        : missing_bootstrap_value;
+        : NaN;
+      // unlabeled ('' or NaN) support is treated as missing
+      if (n.data.bootstrap_values === "" || _.isNaN(bs)) {
+        bs = missing_bootstrap_value;
+      }
       if (bs >= bootstrap_threshold) {
         var total_comparisons = n.leaf_count * (n.leaf_count - 1) * 0.25;
 

@@ -17,7 +17,7 @@ export function getPartitions(attributes) {
  */
 export default function hasBranchLengths() {
 
-  let bl = this.branch_length;
+  let bl = this.branch_length_accessor;
 
   if (bl) {
     return _.every(this.nodes.descendants(), function(node) {
@@ -36,7 +36,7 @@ export default function hasBranchLengths() {
  */
 export function getBranchLengths() {
 
-  let bl = this.branch_length;
+  let bl = this.branch_length_accessor;
   return _.map(this.nodes.descendants(), node => { return bl(node)});
 
 }
@@ -46,13 +46,15 @@ export function defBranchLengthAccessor(_node, new_length) {
 
   let _node_data = _node.data;
 
+  let attribute = _node_data["attribute"];
+
   if (
-    "attribute" in _node_data &&
-    _node_data["attribute"] &&
-    _node_data["attribute"].length
+    typeof attribute === "number" ||
+    ((typeof attribute === "string" || Array.isArray(attribute)) &&
+      attribute.length)
   ) {
 
-    if(new_length > 0) {
+    if(new_length !== undefined && new_length !== null && isFinite(new_length)) {
       _node_data["attribute"] = String(new_length);
     }
 
@@ -64,8 +66,8 @@ export function defBranchLengthAccessor(_node, new_length) {
 
   }
 
-  // Allow for empty branch length at root
-  if(_node_data.name == "root") {
+  // Allow for empty branch length at the root, which has no branch
+  if(!_node.parent) {
     return 0;
   }
 
@@ -101,6 +103,7 @@ export function defBranchLengthAccessor(_node, new_length) {
 export function setBranchLength(attr) {
   if (!arguments.length) return this.branch_length_accessor;
   this.branch_length_accessor = attr ? attr : defBranchLengthAccessor;
+  this.branch_length = this.branch_length_accessor;
   return this;
 }
 
@@ -121,29 +124,59 @@ export function setBranchLength(attr) {
  */
 export function normalize(attr) {
 
-  let bl = this.branch_length;
+  let lengths = finiteBranchLengths.call(this);
 
-  let branch_lengths = _.map(this.nodes.descendants(), function(node) {
-    if(bl(node)) {
-    return bl(node);
-    } else {
-      return null;
-    }
-  });
-
-  const max_bl = _.max(branch_lengths);
-  const min_bl = _.min(branch_lengths);
+  const values = _.map(lengths, (d) => d[1]);
+  const max_bl = _.max(values);
+  const min_bl = _.min(values);
 
   let scaler = function (x) {
+    if (max_bl === min_bl) {
+      return max_bl === 0 ? 0 : 1;
+    }
     return (x - min_bl)/(max_bl - min_bl);
   }
 
-  _.each(this.nodes.descendants(), (node) => {
-      let len = bl(node);
-      if(len) {
-        bl(node, scaler(len));
-      }     
+  return writeBranchLengths.call(this, lengths, scaler);
+
+}
+
+// [node, length] for every node with a finite branch length. The root only
+// counts when the input gave it an explicit length, since the accessor
+// reports 0 for a root without one.
+function finiteBranchLengths() {
+
+  let bl = this.branch_length_accessor;
+
+  return _.filter(
+    _.map(this.nodes.descendants(), (node) => [node, bl(node)]),
+    (d) => (d[0].parent || hasOwnLength(d[0])) && Number.isFinite(d[1])
+  );
+
+}
+
+function hasOwnLength(node) {
+  let attribute = node.data.attribute;
+  return typeof attribute === "number" ||
+    (typeof attribute === "string" && attribute.length > 0);
+
+}
+
+// Store scaler(length) in each node's attribute. Lengths a custom accessor
+// reads cannot be written back through it, so they are materialised and the
+// default accessor is restored.
+function writeBranchLengths(lengths, scaler) {
+
+  let custom = this.branch_length_accessor !== defBranchLengthAccessor;
+
+  _.each(lengths, (d) => {
+    let len = scaler(d[1]);
+    d[0].data.attribute = String(Number.isFinite(len) ? len : d[1]);
   });
+
+  if (custom) {
+    this.setBranchLength(defBranchLengthAccessor);
+  }
 
   return this;
 
@@ -177,16 +210,7 @@ export function normalize(attr) {
  */
 export function scale(scale_by) {
 
-  let bl = this.branch_length;
-
-  _.each(this.nodes.descendants(), (node) => {
-      let len = bl(node);
-      if(len) {
-        bl(node, scale_by(len));
-      }     
-  });
-
-  return this;
+  return writeBranchLengths.call(this, finiteBranchLengths.call(this), scale_by);
 
 }
 

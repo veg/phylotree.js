@@ -88,7 +88,8 @@ export function centerOfTree(tree, power) {
 
         if (score < current_min) {
           current_location = n;
-          current_split = tt / n.cot_computed_length; //n.cot_computed_length-tt;//1 - tt / n.cot_computed_length;
+          current_split =
+            n.cot_computed_length > 0 ? tt / n.cot_computed_length : 0; //n.cot_computed_length-tt;//1 - tt / n.cot_computed_length;
           current_min = score;
         }
 
@@ -121,7 +122,8 @@ export function centerOfTree(tree, power) {
 
           if (score < current_min) {
             current_location = n;
-            current_split = current_t / n.cot_computed_length; //n.cot_computed_length-tt;//1 - tt / n.cot_computed_length;
+            current_split =
+              n.cot_computed_length > 0 ? current_t / n.cot_computed_length : 0; //n.cot_computed_length-tt;//1 - tt / n.cot_computed_length;
             current_min = score;
           }
           current_t += optimization_step;

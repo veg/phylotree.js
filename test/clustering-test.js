@@ -27,7 +27,7 @@ tape("phylopart", function(test) {
   let diameter_threshold = 0.045;
 
   let clusters = phylotree.phylopart(phylo, bootstrap_threshold, diameter_threshold)
-  test.equal(clusters.length, 297);
+  test.equal(clusters.length, 300);
   test.end();
 
 });

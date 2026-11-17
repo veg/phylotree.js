@@ -17,7 +17,7 @@ function computeRootToTipOtherRoot(
   distance_to_new_root
 ) {
 
-  var my_bl = tree.branch_length(node);
+  var my_bl = tree.branch_length_accessor(node);
 
   var go_up = false;
 
@@ -65,42 +65,55 @@ export function fitRootToTip(tree) {
 
   var linear_data = [],
     max_r2 = 0,
-    best_node = 0;
+    best_node = tree.getRootNode();
 
   annotateCopyNumber(tree);
   rootToTip(tree);
 
   // To return if best node is the root already
   tree.traverse_and_compute(function(node) {
-    if (tree.isLeafNode(node) && !_.isNull(node.data.decimal_date_value)) {
-      linear_data.push([node.data.decimal_date_value, node.data.rtta, node.data.copy_number]);
+    if (tree.isLeafNode(node) && tipDate(node) !== null) {
+      // distances from the current root; rtta is only set when trying other roots
+      linear_data.push([tipDate(node), node.data.rootToTip, node.data.copy_number]);
     }
   });
 
+  if (linear_data.length < 2) {
+    return { root: best_node, fit: null };
+  }
+
   let best_fit = linearFit(linear_data);
+
+  // a candidate root has to beat the current one; when the current root has
+  // no usable fit (e.g. identical distances) any finite fit will do
+  max_r2 = best_fit ? best_fit["r2"] : -Infinity;
 
   tree.traverse_and_compute(function(node) {
 
-    if (tree.isLeafNode(node) && !_.isNull(node.data.decimal_date_value)) {
+    if (tree.isLeafNode(node) && tipDate(node) !== null) {
 
       computeRootToTipOtherRoot(tree, node, null, 0, 0);
 
       linear_data = [];
 
       tree.traverse_and_compute(function(node) {
-        if (tree.isLeafNode(node) && !_.isNull(node.data.decimal_date_value)) {
+        if (tree.isLeafNode(node) && tipDate(node) !== null) {
           linear_data.push([
-            node.data.decimal_date_value,
+            tipDate(node),
             node.data.rtta,
             node.data.copy_number
           ]);
         }
       });
 
-      var fit = linearFit(linear_data),
-        r2 = fit["r2"];
+      if (linear_data.length < 2) {
+        return;
+      }
 
-      if (r2 > max_r2) {
+      var fit = linearFit(linear_data),
+        r2 = fit ? fit["r2"] : NaN;
+
+      if (isFinite(r2) && r2 > max_r2) {
         max_r2 = r2;
         best_node = node;
         best_fit = fit;
@@ -111,6 +124,16 @@ export function fitRootToTip(tree) {
 
   return { root: best_node, fit: best_fit };
 
+}
+
+// A tip's decimal date as a number, or null when it has none. Dates set by
+// hand may be numeric strings.
+function tipDate(node) {
+  let value = node.data.decimal_date_value;
+  if (typeof value === "string" && value.trim() !== "") {
+    value = Number(value);
+  }
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 // linear fit of root to tip distances
@@ -139,6 +162,11 @@ function linearFit(data) {
     vary += point[2] * (point[1] - syoss) * (point[1] - syoss);
   });
 
+  // no spread in the dates: the slope is undefined
+  if (!(st2 > 0)) {
+    return null;
+  }
+
   fitB /= st2;
 
   var a = (sy - sx * fitB) / ss;
@@ -149,6 +177,11 @@ function linearFit(data) {
     var t = point[1] - a - fitB * point[0];
     varres += point[2] * t * t;
   });
+
+  // zero or infinite distances, or identical distances, leave no finite line
+  if (!Number.isFinite(a) || !Number.isFinite(fitB) || !(vary > 0)) {
+    return null;
+  }
 
   return {
     intercept: a,
@@ -205,7 +238,7 @@ export default function rootToTip(tree) {
     }
   });
 
-  var r2t = tree.getRootNode().data.r2t;
+  var r2t = tree.getRootNode().data.r2t || {};
 
   tree.traverse_and_compute(n => {
     if (tree.isLeafNode(n)) {
