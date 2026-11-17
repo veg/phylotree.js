@@ -136,10 +136,8 @@ import {
 } from "phylotree";
 
 // Example: Identify clusters
-const clusters = clusterPicker(tree, {
-  bootstrap_threshold: 0.9,
-  distance_threshold: 0.045
-});
+// clusterPicker(tree, bootstrap_threshold, diameter_threshold)
+const clusters = clusterPicker(tree, 0.9, 0.045);
 ```
 
 ### Tree Construction

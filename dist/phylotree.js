@@ -13305,49 +13305,111 @@
       }
   }
 
+  // Returns the values of all keys whose local name (the part after any
+  // namespace prefix) is ``name``, as a flat array of objects.
+  function childrenByLocalName(obj, name) {
+    var result = [];
+    if (obj === null || typeof obj !== "object") {
+      return result;
+    }
+    Object.keys(obj).forEach(function(key) {
+      if (key.split(":").pop() === name) {
+        result = result.concat(obj[key]);
+      }
+    });
+    return result.filter(d => d !== null && typeof d === "object");
+  }
+
   var nexml_parser = function(xml_string, options) {
     const parser = new XMLParser({
       ignoreAttributes: false,
       attributeNamePrefix: "",
       parseAttributeValue: true
     });
-    
-    const xml = parser.parse(xml_string);
-    var trees = xml["nex:nexml"].trees.tree.map(function(nexml_tree) {
-        var node_list = nexml_tree.node.map(d => d),
-          node_hash = node_list.reduce(function(a, b) {
-            b.edges = [];
-            b.name = b.id;
-            a[b.id] = b;
-            return a;
-          }, {}),
-          roots = node_list.filter(d => d.root),
-          root_id = roots > 0 ? roots[0].id : node_list[0].id;
-        node_hash[root_id].name = "root";
 
-        nexml_tree.edge.map(d => d).forEach(function(edge) {
-          node_hash[edge.source].edges.push(edge);
-        });
+    var trees = [];
 
-        function parseNexml(node, index) {
-          if (node.edges) {
-            var targets = ___namespace.pluck(node.edges, "target");
-            node.children = ___namespace.values(___namespace.pick(node_hash, targets));
-            node.children.forEach(function(child, i) {
-              child.attribute = node.edges[i].length || "";
-            });
-            node.children.forEach(parseNexml);
-            node.annotation = "";
+    try {
+      const xml = parser.parse(xml_string);
+
+      var nexml = childrenByLocalName(xml, "nexml")[0];
+      if (!nexml) {
+        return { json: null, error: "no nexml element" };
+      }
+
+      // OTU id -> label
+      var otu_labels = {};
+      childrenByLocalName(nexml, "otus").forEach(function(otus) {
+        childrenByLocalName(otus, "otu").forEach(function(otu) {
+          if (otu.label !== undefined) {
+            otu_labels[otu.id] = String(otu.label);
           }
-        }
-
-        parseNexml(node_hash[root_id]);
-        return node_hash[root_id];
+        });
       });
-    return trees;
+
+      childrenByLocalName(nexml, "trees").forEach(function(trees_block) {
+        childrenByLocalName(trees_block, "tree").forEach(function(nexml_tree) {
+          var node_list = childrenByLocalName(nexml_tree, "node"),
+            edge_list = childrenByLocalName(nexml_tree, "edge");
+          if (node_list.length === 0) {
+            return;
+          }
+          var node_hash = node_list.reduce(function(a, b) {
+              b.edges = [];
+              b.name =
+                b.otu !== undefined && b.otu in otu_labels
+                  ? otu_labels[b.otu]
+                  : String(b.id);
+              a[b.id] = b;
+              return a;
+            }, {}),
+            roots = node_list.filter(d => d.root),
+            targets = new Set(edge_list.map(edge => edge.target)),
+            // without a root flag, the one node no edge points at is the root
+            unreferenced = node_list.filter(d => !targets.has(d.id)),
+            root_id = roots.length > 0
+              ? roots[0].id
+              : unreferenced.length === 1 ? unreferenced[0].id : node_list[0].id;
+          node_hash[root_id].name = "root";
+
+          edge_list.forEach(function(edge) {
+            node_hash[edge.source].edges.push(edge);
+          });
+
+          function parseNexml(node, index) {
+            if (node.edges) {
+              node.children = node.edges
+                .filter(edge => edge.target in node_hash)
+                .map(function(edge) {
+                  var child = node_hash[edge.target];
+                  child.attribute =
+                    edge.length === undefined ? "" : String(edge.length);
+                  return child;
+                });
+              node.children.forEach(parseNexml);
+              node.annotation = "";
+            }
+          }
+
+          parseNexml(node_hash[root_id]);
+          trees.push(node_hash[root_id]);
+        });
+      });
+    } catch {
+      return { json: null, error: "could not parse nexml" };
+    }
+
+    return {
+      json: trees[0] || null,
+      error: trees.length > 0 ? null : "no trees"
+    };
   };
 
   // These methods are part of the Phylotree object
+
+  function lengthAttr(l) {
+    return l === null || l === undefined ? null : String(l);
+  }
 
   function graftANode(graftAt, newChild, newParent, lengths) {
 
@@ -13361,24 +13423,26 @@
 
         let parentIndex = graftAt.parent.children.indexOf(graftAt);
 
-        let newSplit = {
+        let newSplit = hierarchy({
             name: newParent,
-            parent: graftAt.parent,
-            attribute: lengths ? lengths[2] : null,
-            original_child_order: graftAt["original_child_order"]
-          },
-          newNode = {
+            attribute: lengths ? lengthAttr(lengths[2]) : null,
+            original_child_order: graftAt.data["original_child_order"]
+          }),
+          newNode = hierarchy({
             name: newChild,
-            parent: newSplit,
-            attribute: lengths ? lengths[1] : null,
+            attribute: lengths ? lengthAttr(lengths[1]) : null,
             original_child_order: 2
-          };
+          });
 
+        newSplit.parent = graftAt.parent;
+        newNode.parent = newSplit;
         newSplit["children"] = [graftAt, newNode];
         graftAt["parent"].children[parentIndex] = newSplit;
         graftAt.parent = newSplit;
-        graftAt["attribute"] = lengths ? lengths[0] : null;
-        graftAt["original_child_order"] = 1;
+        graftAt.data["attribute"] = lengths ? lengthAttr(lengths[0]) : null;
+        graftAt.data["original_child_order"] = 1;
+
+        this.update(this.nodes);
       }
     }
 
@@ -13387,6 +13451,8 @@
   }
 
   function addChild(parent, child) {
+
+    child.parent = parent;
 
     if(parent.children) {
       parent.children.push(child);
@@ -13400,13 +13466,10 @@
 
   function createNode(name, lengths) {
 
-    return {
-      data: {
-        name: name,
-        attribute: lengths ? lengths[1] : null
-      },
-      parent: '',
-    };
+    return hierarchy({
+      name: name,
+      attribute: lengths ? lengths[1] : null
+    });
 
   }
 
@@ -13431,8 +13494,6 @@
         let delete_me_idx = node.parent.children.indexOf(node);
 
         if (delete_me_idx >= 0) {
-          nodes.splice(index, 1);
-
           if (node.children) {
             node.children.forEach(function(d) {
               d["original_child_order"] = node.parent.children.length;
@@ -13444,23 +13505,31 @@
           if (node.parent.children.length > 2) {
             node.parent.children.splice(delete_me_idx, 1);
           } else {
+            let sibling = node.parent.children[1 - delete_me_idx];
+
             if (node.parent.parent) {
               node.parent.parent.children[
                 node.parent.parent.children.indexOf(node.parent)
-              ] =
-                node.parent.children[1 - delete_me_idx];
-              node.parent.children[1 - delete_me_idx].parent = node.parent.parent;
-              nodes.splice(nodes.indexOf(node.parent), 1);
+              ] = sibling;
+              sibling.parent = node.parent.parent;
             } else {
-              nodes.splice(0, 1);
-              nodes.parent = null;
-              delete nodes.data["attribute"];
-              delete nodes.data["annotation"];
-              delete nodes.data["original_child_order"];
-              nodes.name = "root";
-              nodes.data.name = "root";
+              // the parent is the root: lift the sibling's children, or keep a
+              // leaf sibling as the sole child
+              let root = node.parent;
+              if (!sibling) {
+                delete root.children;
+              } else if (sibling.children) {
+                root.children = sibling.children;
+                root.children.forEach(function(d) {
+                  d.parent = root;
+                });
+              } else {
+                root.children = [sibling];
+              }
             }
           }
+
+          this.update(this.nodes);
         }
       }
     }
@@ -13724,7 +13793,19 @@
 
   function newickParser(nwk_str, options={}) {
 
-    const int_or_float = /^-?\d+(\.\d+)?$/;
+    if (typeof nwk_str !== "string" || !nwk_str.trim().length) {
+      return { json: null, error: "empty or non-string newick" };
+    }
+
+    const int_or_float = /^-?\d+(\.\d+)?$/,
+      reserved_keys = [
+        "name",
+        "attribute",
+        "children",
+        "annotation",
+        "bootstrap_values",
+        "original_child_order"
+      ];
     let left_delimiter = options.left_delimiter ||  '{',
       right_delimiter = options.right_delimiter ||  '}';
     let clade_stack = [];
@@ -13755,7 +13836,9 @@
       this_node["name"] = current_node_name;
 
       if ("children" in this_node) {
-        this_node["bootstrap_values"] = current_node_name;
+        if (current_node_name.length) {
+          this_node["bootstrap_values"] = current_node_name;
+        }
       } else {
         this_node["name"] = current_node_name;
       }
@@ -13767,8 +13850,10 @@
           .slice(1)
           .forEach(annotation => {
             const [key, value] = annotation.split('=');
-            this_node[key] = int_or_float.test(value) ? +value : value;
+            const node_key = reserved_keys.includes(key) ? "nhx_" + key : key;
+            this_node[node_key] = int_or_float.test(value) ? +value : value;
           });
+        this_node["annotation"] = "";
       } else {
         this_node["annotation"] = current_node_annotation;
       }
@@ -13866,6 +13951,11 @@
                 }
               } else {
                 if (automaton_state == 3) {
+                  if (current_char == ";") {
+                    // semicolon terminates tree definition
+                    char_index = nwk_str.length;
+                    break;
+                  }
                   current_node_attribute += current_char;
                 } else {
                   if (space.test(current_char)) {
@@ -13923,6 +14013,14 @@
       return generateError(nwk_str.length - 1);
     }
 
+    // label and length following the final ')' belong to the root
+    if (current_node_name.length) {
+      tree_json["name"] = current_node_name;
+    }
+    if (current_node_attribute.length) {
+      tree_json["attribute"] = current_node_attribute;
+    }
+
     return {
       json: tree_json,
       error: null
@@ -13963,13 +14061,20 @@
 
     if (!annotator) annotator = d => '';
 
+    // A node is written if it is shown and is either a leaf or has at least
+    // one written descendant.
+    function isWritten(n) {
+      if (n.notshown) return false;
+      return isLeafNode(n) || n.children.some(isWritten);
+    }
+
     function nodeDisplay(n) {
       // Skip the node if it is hidden
-      if (n.notshown) return;
+      if (!isWritten(n)) return;
 
       if (!isLeafNode(n)) {
         element_array.push("(");
-        n.children.forEach(function(d, i) {
+        n.children.filter(isWritten).forEach(function(d, i) {
           if (i) {
             element_array.push(",");
           }
@@ -13978,8 +14083,8 @@
         element_array.push(")");
       }
 
-      if(n.data.name !== 'root') {
-        const node_label = n.data.name.replaceAll("'", "''");
+      if(n.data.name !== 'root' || n.parent) {
+        const node_label = String(n.data.name ?? '').replaceAll("'", "''");
 
         // Surround the entire string with single quotes if it contains any
         // non-alphanumeric characters.
@@ -14056,45 +14161,52 @@
   function parseAnnotations (buf) {
 
     let str = buf;
-    let index = str.toUpperCase().indexOf('BEGIN DATA;');
-    let data = str.slice(index);
+    let index = str.search(/BEGIN\s+DATA\s*;/i);
 
-    if(data.length < 2) {
-      return '';
+    if(index < 0) {
+      return { 'dimensions' : {}, 'format' : { symbols : [] }, 'matrix' : {} };
     }
 
+    let data = str.slice(index);
+
     index = data.toUpperCase().indexOf('END;');
-    let data_str = data.slice(0, index);
+    let data_str = index < 0 ? data : data.slice(0, index);
 
     // split on semicolon
     data = ___namespace.map(data_str.split(';'), d => { return d.trim() } );
 
+    // turn "KEY=value KEY=value" into an object with lower case keys
+    const toObject = line => {
+      return ___namespace.object(___namespace.map(___namespace.compact(___namespace.rest(line.split(/\s+/))), d => {
+        let pair = d.split('=');
+        return [pair[0].toLowerCase(), pair[1]];
+      }));
+    };
+
     // get dimensions
-    let dimensions = ___namespace.filter(data, d => {return d.toUpperCase().startsWith('DIMENSION')}); 
-    dimensions = dimensions[0].split(' ');
-    dimensions = ___namespace.object(___namespace.map(___namespace.rest(dimensions), d => { return d.split('=') }));
+    let dimensions = ___namespace.filter(data, d => {return d.toUpperCase().startsWith('DIMENSION')});
+    dimensions = dimensions.length ? toObject(dimensions[0]) : {};
 
     // get formats
-    let format = ___namespace.filter(data, d => {return d.toUpperCase().startsWith('FORMAT')}); 
-    format = format[0].split(' ');
-    format = ___namespace.object(___namespace.map(___namespace.rest(format), d => { return d.split('=') }));
-    format.symbols = ___namespace.reject(format.symbols.split(""), d => d=='"');
+    let format = ___namespace.filter(data, d => {return d.toUpperCase().startsWith('FORMAT')});
+    format = format.length ? toObject(format[0]) : {};
+    format.symbols = ___namespace.reject((format.symbols || '').split(""), d => d=='"');
 
     // get character matrix
-    let matrix = ___namespace.filter(data, d => {return d.toUpperCase().startsWith('MATRIX')}); 
-    matrix = matrix[0].split('\n');
-    matrix = ___namespace.object(___namespace.map(___namespace.rest(matrix), d=> { return ___namespace.compact(d.split(' ')) }));
+    let matrix = ___namespace.filter(data, d => {return d.toUpperCase().startsWith('MATRIX')});
+    matrix = matrix.length ? matrix[0].split('\n') : [];
+    matrix = ___namespace.object(___namespace.filter(___namespace.map(___namespace.rest(matrix), d=> { return ___namespace.compact(d.split(/\s+/)) }), d => d.length > 1));
 
     // create all possible states for matrix
-    matrix = ___namespace.mapObject(matrix, (v,k) => { 
+    matrix = ___namespace.mapObject(matrix, (v,k) => {
 
       if(v == '?') {
         return format.symbols
       }
-      else { 
+      else {
         return Array(v)
       }
-    
+
     });
 
     return { 'dimensions' : dimensions, 'format' : format, 'matrix' : matrix }
@@ -14112,37 +14224,111 @@
   function loadAnnotations(tree, label, annotations) {
 
     // if filename, then load from filesystem
-    ___namespace.each(tree.getTips(), d => { d.data["test"] = annotations.matrix[d.data.name]; });
+    ___namespace.each(tree.getTips(), d => { d.data[label] = annotations.matrix[d.data.name]; });
 
     // decorate nodes with annotations
 
   }
 
-  function loadTree(buf) {
+  // Removes surrounding single or double quotes from a NEXUS token
+  function unquote(token) {
+    // a single-quoted label escapes a quote by doubling it; strip one layer only
+    if (/^'.*'$/.test(token)) {
+      return token.slice(1, -1).replace(/''/g, "'");
+    }
+    return token.replace(/^"(.*)"$/, '$1');
+  }
+
+  // Split on `sep` wherever it is not inside a 'quoted label' ('' escapes a
+  // quote) or a [comment].
+  function splitOutside(str, sep) {
+    let parts = [], current = '', quoted = false, comment = 0;
+    for (let i = 0; i < str.length; i++) {
+      let c = str[i];
+      if (quoted) {
+        if (c === "'") {
+          if (str[i + 1] === "'") { current += c; i++; }
+          else { quoted = false; }
+        }
+      } else if (comment) {
+        if (c === ']') comment--;
+        else if (c === '[') comment++;
+      } else if (c === "'") {
+        quoted = true;
+      } else if (c === '[') {
+        comment = 1;
+      } else if (c === sep) {
+        parts.push(current);
+        current = '';
+        continue;
+      }
+      current += c;
+    }
+    parts.push(current);
+    return parts;
+  }
+
+  function loadTree(buf, options) {
 
     // if filename, then load from filesystem
     // Parse first tree from NEXUS file and send to newickParser
 
-    // Make all upper case
     let str = buf;
 
     // Get TREE block
-    let index = str.toUpperCase().indexOf('BEGIN TREES;');
-    let split = str.slice(index);
+    let index = str.search(/BEGIN\s+TREES\s*;/i);
 
-    if(split.length < 2) {
-      return '';
+    if(index < 0) {
+      return { json: null, error: 'no TREES block' };
     }
 
-    index = split.toUpperCase().indexOf('END;');
-    let tree_str = split.slice(0, index);
+    // Statements are separated by semicolons outside quotes and [comments];
+    // the block ends at the END statement
+    let statements = [];
+    for (let statement of splitOutside(str.slice(index), ';')) {
+      // a statement may be preceded by [comments]
+      statement = statement.replace(/^(\s*\[[^\]]*\])+/, '').trim();
+      if (/^END(BLOCK)?$/i.test(statement)) {
+        break;
+      }
+      statements.push(statement);
+    }
 
-    // Filter lines that start with TREE
-    let trees = tree_str.split('\n');
-    trees = ___namespace.filter(trees, d => { return d.trim().toUpperCase().startsWith('TREE') });
+    let tree = ___namespace.find(statements, d => { return /^TREE\s/i.test(d) });
+
+    if(!tree) {
+      return { json: null, error: 'no tree in TREES block' };
+    }
+
+    // Map translate tokens to names
+    let translate = {};
+    let translate_statement = ___namespace.find(statements, d => { return /^TRANSLATE\s/i.test(d) });
+
+    if(translate_statement) {
+      ___namespace.each(splitOutside(translate_statement.replace(/^TRANSLATE\s+/i, ''), ','), d => {
+        let tokens = d.trim().split(/\s+/);
+        if(tokens.length > 1) {
+          translate[tokens[0]] = unquote(tokens.slice(1).join(' '));
+        }
+      });
+    }
 
     // Identify start of newick string
-    return newickParser(trees[0]);
+    let result = newickParser(tree + ';', options);
+
+    if(result.json && !___namespace.isEmpty(translate)) {
+      let translateTips = node => {
+        if(node.children && node.children.length) {
+          ___namespace.each(node.children, translateTips);
+        }
+        else if(___namespace.has(translate, node.name)) {
+          node.name = translate[node.name];
+        }
+      };
+      translateTips(result.json);
+    }
+
+    return result;
 
   }
 
@@ -14197,26 +14383,66 @@
     return obj;
   }
 
+  // Converts the output of fast-xml-parser (attributes prefixed with "@_") to
+  // the same shape as xmlToJson, so both XML paths can share the code below.
+  function normalizeParsed(value) {
+    if (Array.isArray(value)) {
+      return value.map(normalizeParsed);
+    }
+    if (value !== null && typeof value === "object") {
+      var obj = {};
+      Object.keys(value).forEach(function(key) {
+        if (key.indexOf("@_") === 0) {
+          obj["@attributes"] = obj["@attributes"] || {};
+          obj["@attributes"][key.slice(2)] = String(value[key]);
+        } else {
+          obj[key] = normalizeParsed(value[key]);
+        }
+      });
+      if (Object.keys(obj).length === 1 && "#text" in obj) {
+        return obj["#text"];
+      }
+      return obj;
+    }
+    return value === null || value === undefined ? "" : String(value);
+  }
+
   var phyloxml_parser = function(xml, options) {
 
     function parsePhyloxml(node, index) {
-      if (node.clade) {
+      // a lone self-closing <clade/> parses as "", which is still a child
+      if (node.clade !== undefined && node.clade !== null) {
         if (!Array.isArray(node.clade)) {
           node.clade = [node.clade];
         }
+        node.clade = node.clade.map(function(child) {
+          return child !== null && typeof child === "object" ? child : {};
+        });
         node.clade.forEach(parsePhyloxml);
         node.children = node.clade;
         delete node.clade;
       }
 
       node.annotation = 1;
-      node.attribute = "0.01";
-      if (node.branch_length) {
-        node.attribute = node.branch_length;
+
+      var attributes = node["@attributes"] || {},
+        branch_length = attributes.branch_length;
+      if (branch_length === undefined) {
+        branch_length = node.branch_length;
       }
-      if (node.taxonomy) {
-        node.name = node.taxonomy.scientific_name;
+      if (typeof branch_length === "string" && branch_length.trim().length) {
+        node.attribute = branch_length.trim();
       }
+
+      var name = typeof node.name === "string" ? node.name : "";
+      if (
+        node.taxonomy &&
+        typeof node.taxonomy === "object" &&
+        typeof node.taxonomy.scientific_name === "string"
+      ) {
+        name = node.taxonomy.scientific_name;
+      }
+      node.name = name;
 
       node.annotation = "";
 
@@ -14224,25 +14450,44 @@
 
     var tree_json;
 
-    if (typeof xml === "string") {
-      if (DOMParser) {
-        const parser = new DOMParser();
-        xml = parser.parseFromString(xml, "text/xml");
+    try {
+      if (typeof xml === "string") {
+        if (typeof DOMParser !== "undefined") {
+          const parser = new DOMParser();
+          xml = xmlToJson(parser.parseFromString(xml, "text/xml"));
+        } else {
+          const parser = new XMLParser({
+            ignoreAttributes: false,
+            attributeNamePrefix: "@_",
+            parseTagValue: false,
+            parseAttributeValue: false
+          });
+          xml = normalizeParsed(parser.parse(xml));
+        }
       } else {
-        const parser = new XMLParser();
-        xml = parser.parse(xml);
+        xml = xmlToJson(xml);
       }
+    } catch {
+      return { json: null, error: "could not parse phyloxml" };
     }
 
-    xml = xmlToJson(xml);
-    var phylogeny = xml.phyloxml.phylogeny;
+    var phylogeny = xml && xml.phyloxml && xml.phyloxml.phylogeny;
     if (Array.isArray(phylogeny)) {
       phylogeny = phylogeny[0];
       console.warn("PhyloXML files with multiple phylogenies are not currently supported. Only the first phylogeny will be loaded.");
     }
+    if (!phylogeny || typeof phylogeny !== "object") {
+      return { json: null, error: "no phylogeny" };
+    }
     tree_json = phylogeny.clade;
-    tree_json.name = "root";
+    if (Array.isArray(tree_json)) {
+      tree_json = tree_json[0];
+    }
+    if (!tree_json || typeof tree_json !== "object") {
+      return { json: null, error: "no clade" };
+    }
     parsePhyloxml(tree_json);
+    tree_json.name = "root";
 
     return {
       json: tree_json,
@@ -14250,10 +14495,14 @@
     };
   };
 
-  function beast_parser(newick, options) {
+  function beast_parser(newick, options = {}) {
+    options = Object.assign({}, options);
     options.left_delimiter = '[';
     options.right_delimiter = ']';
     const parsed_newick = newickParser(newick, options);
+    if (!parsed_newick.json) {
+      return parsed_newick;
+    }
     function parseBeastNode(node) {
       if(node.annotation) {
         node.beast = {};
@@ -14287,7 +14536,11 @@
     phyloxml: phyloxml_parser,
     nexus : loadTree,
     nwk: newickParser,
-    nhx: newickParser,
+    nhx: (nwk, options) =>
+      newickParser(
+        nwk,
+        Object.assign({ left_delimiter: "[", right_delimiter: "]" }, options)
+      ),
     beast: beast_parser
   };
 
@@ -14308,7 +14561,7 @@
     let tips = self.getTips();
 
     // Transform to name, attribute key-pair and sort by attribute length, descending
-    let toExport = ___namespace.map(tips, d => { return {'name' : d.data.name, 'length' : parseFloat(d.data.attribute) } });
+    let toExport = ___namespace.map(tips, d => { return {'name' : d.data.name, 'length' : parseFloat(self.branch_length_accessor(d)) } });
     toExport = ___namespace.sortBy(toExport, d=> -d.length);
     return toExport;
     
@@ -14476,7 +14729,9 @@
         n.children[0].data.multiway_parent = n;
 
         // right child is the sibling
-        n.children[1].data.multiway_parent = n.parent;
+        if (n.children[1]) {
+          n.children[1].data.multiway_parent = n.parent;
+        }
       }
 
     };
@@ -14511,7 +14766,7 @@
    */
   function hasBranchLengths() {
 
-    let bl = this.branch_length;
+    let bl = this.branch_length_accessor;
 
     if (bl) {
       return ___namespace.every(this.nodes.descendants(), function(node) {
@@ -14530,7 +14785,7 @@
    */
   function getBranchLengths() {
 
-    let bl = this.branch_length;
+    let bl = this.branch_length_accessor;
     return ___namespace.map(this.nodes.descendants(), node => { return bl(node)});
 
   }
@@ -14540,13 +14795,15 @@
 
     let _node_data = _node.data;
 
+    let attribute = _node_data["attribute"];
+
     if (
-      "attribute" in _node_data &&
-      _node_data["attribute"] &&
-      _node_data["attribute"].length
+      typeof attribute === "number" ||
+      ((typeof attribute === "string" || Array.isArray(attribute)) &&
+        attribute.length)
     ) {
 
-      if(new_length > 0) {
+      if(new_length !== undefined && new_length !== null && isFinite(new_length)) {
         _node_data["attribute"] = String(new_length);
       }
 
@@ -14558,8 +14815,8 @@
 
     }
 
-    // Allow for empty branch length at root
-    if(_node_data.name == "root") {
+    // Allow for empty branch length at the root, which has no branch
+    if(!_node.parent) {
       return 0;
     }
 
@@ -14595,6 +14852,7 @@
   function setBranchLength(attr) {
     if (!arguments.length) return this.branch_length_accessor;
     this.branch_length_accessor = attr ? attr : defBranchLengthAccessor;
+    this.branch_length = this.branch_length_accessor;
     return this;
   }
 
@@ -14615,29 +14873,59 @@
    */
   function normalize(attr) {
 
-    let bl = this.branch_length;
+    let lengths = finiteBranchLengths.call(this);
 
-    let branch_lengths = ___namespace.map(this.nodes.descendants(), function(node) {
-      if(bl(node)) {
-      return bl(node);
-      } else {
-        return null;
-      }
-    });
-
-    const max_bl = ___namespace.max(branch_lengths);
-    const min_bl = ___namespace.min(branch_lengths);
+    const values = ___namespace.map(lengths, (d) => d[1]);
+    const max_bl = ___namespace.max(values);
+    const min_bl = ___namespace.min(values);
 
     let scaler = function (x) {
+      if (max_bl === min_bl) {
+        return max_bl === 0 ? 0 : 1;
+      }
       return (x - min_bl)/(max_bl - min_bl);
     };
 
-    ___namespace.each(this.nodes.descendants(), (node) => {
-        let len = bl(node);
-        if(len) {
-          bl(node, scaler(len));
-        }     
+    return writeBranchLengths.call(this, lengths, scaler);
+
+  }
+
+  // [node, length] for every node with a finite branch length. The root only
+  // counts when the input gave it an explicit length, since the accessor
+  // reports 0 for a root without one.
+  function finiteBranchLengths() {
+
+    let bl = this.branch_length_accessor;
+
+    return ___namespace.filter(
+      ___namespace.map(this.nodes.descendants(), (node) => [node, bl(node)]),
+      (d) => (d[0].parent || hasOwnLength(d[0])) && Number.isFinite(d[1])
+    );
+
+  }
+
+  function hasOwnLength(node) {
+    let attribute = node.data.attribute;
+    return typeof attribute === "number" ||
+      (typeof attribute === "string" && attribute.length > 0);
+
+  }
+
+  // Store scaler(length) in each node's attribute. Lengths a custom accessor
+  // reads cannot be written back through it, so they are materialised and the
+  // default accessor is restored.
+  function writeBranchLengths(lengths, scaler) {
+
+    let custom = this.branch_length_accessor !== defBranchLengthAccessor;
+
+    ___namespace.each(lengths, (d) => {
+      let len = scaler(d[1]);
+      d[0].data.attribute = String(Number.isFinite(len) ? len : d[1]);
     });
+
+    if (custom) {
+      this.setBranchLength(defBranchLengthAccessor);
+    }
 
     return this;
 
@@ -14671,16 +14959,7 @@
    */
   function scale(scale_by) {
 
-    let bl = this.branch_length;
-
-    ___namespace.each(this.nodes.descendants(), (node) => {
-        let len = bl(node);
-        if(len) {
-          bl(node, scale_by(len));
-        }     
-    });
-
-    return this;
+    return writeBranchLengths.call(this, finiteBranchLengths.call(this), scale_by);
 
   }
 
@@ -14728,6 +15007,11 @@
     /** TODO add the option to root in the middle of a branch */
     if(!(node instanceof hierarchy)) {
      throw new Error('node needs to be an instance of a d3.hierarchy node!');
+    }
+
+    // rerooting on the root is a no-op
+    if (!node.parent) {
+      return this;
     }
 
     let nodes = this.nodes.copy();
@@ -14810,8 +15094,9 @@
       // the tree through
       if (current_node.children.length == 1) {
 
-        if (stashed_bl) {
-          current_node.children[0].data.__mapped_bl += stashed_bl;
+        if (Number.isFinite(stashed_bl)) {
+          current_node.children[0].data.__mapped_bl =
+            (current_node.children[0].data.__mapped_bl || 0) + stashed_bl;
         }
 
         remove_me.children = remove_me.children.concat(current_node.children);
@@ -15001,162 +15286,6 @@
         xCoord(edge.target) +
         (xCoord(edge.source) - xCoord(edge.target)) * where,
       y: yCoord(edge.target)
-    };
-  }
-
-  /**
-   * Count the number of leaf nodes in a subtree.
-   * @param {Object} node - A D3 hierarchy node
-   * @returns {Number} The number of leaves
-   */
-  function countLeaves(node) {
-    if (!node.children || node.children.length === 0) {
-      return 1;
-    }
-    return node.children.reduce((sum, child) => sum + countLeaves(child), 0);
-  }
-
-  /**
-   * Compute unrooted (equal-angle) layout coordinates for all nodes.
-   *
-   * The algorithm allocates 2π of angular space at the root, then recursively
-   * assigns each child subtree angular space proportional to its leaf count.
-   * Each node is placed at parent_position + branch_length * (cos(angle), sin(angle)).
-   *
-   * After computing raw positions, coordinates are normalized to fit within
-   * the given width × height.
-   *
-   * @param {Object} root - The root node of the D3 hierarchy
-   * @param {Array} scales - [scale_x, scale_y] from placenodes
-   * @param {Number} width - Available width in pixels
-   * @param {Number} height - Available height in pixels
-   * @param {Number} labelPad - Pixel padding to reserve for labels on all sides
-   */
-  function computeUnrootedLayout(root, scales, width, height, labelPad) {
-    labelPad = labelPad || 0;
-
-    // Assign raw (x, y) using equal-angle algorithm
-    // Root is at the origin
-    root._unrooted_x = 0;
-    root._unrooted_y = 0;
-
-    equalAngle(root, 0, 2 * Math.PI);
-
-    // Find bounding box of all raw positions
-    let minX = Infinity, maxX = -Infinity;
-    let minY = Infinity, maxY = -Infinity;
-
-    root.each(d => {
-      if (d._unrooted_x < minX) minX = d._unrooted_x;
-      if (d._unrooted_x > maxX) maxX = d._unrooted_x;
-      if (d._unrooted_y < minY) minY = d._unrooted_y;
-      if (d._unrooted_y > maxY) maxY = d._unrooted_y;
-    });
-
-    let rawWidth = maxX - minX || 1;
-    let rawHeight = maxY - minY || 1;
-
-    // Reserve pixel-based padding for labels on all sides
-    let drawWidth = width - 2 * labelPad;
-    let drawHeight = height - 2 * labelPad;
-    if (drawWidth < 100) drawWidth = 100;
-    if (drawHeight < 100) drawHeight = 100;
-
-    let scaleX = drawWidth / rawWidth;
-    let scaleY = drawHeight / rawHeight;
-    let scale = Math.min(scaleX, scaleY);
-
-    let offsetX = labelPad + drawWidth / 2 - (minX + maxX) / 2 * scale;
-    let offsetY = labelPad + drawHeight / 2 - (minY + maxY) / 2 * scale;
-
-    // Map to screen coordinates
-    // Note: the coordinate system uses d.y for screen-x and d.x for screen-y
-    // (xCoord returns d.y, yCoord returns d.x)
-    root.each(d => {
-      d.y = d._unrooted_x * scale + offsetX;
-      d.x = d._unrooted_y * scale + offsetY;
-
-      // Compute text angle for labels (angle from parent to this node in degrees)
-      if (d.parent) {
-        let dx = d._unrooted_x - d.parent._unrooted_x;
-        let dy = d._unrooted_y - d.parent._unrooted_y;
-        let angleDeg = Math.atan2(dy, dx) * 180 / Math.PI;
-
-        // Flip text on the left hemisphere so it reads left-to-right
-        let isLeftHalf = angleDeg > 90 || angleDeg < -90;
-        d.text_angle = isLeftHalf ? angleDeg + 180 : angleDeg;
-        d.text_align = isLeftHalf ? "end" : "start";
-      } else {
-        d.text_angle = 0;
-        d.text_align = "start";
-      }
-
-      // Store the angle (in radians) for compatibility with radial code paths
-      d.angle = d.parent
-        ? Math.atan2(d._unrooted_y - d.parent._unrooted_y,
-                      d._unrooted_x - d.parent._unrooted_x)
-        : 0;
-      d.radius = null;
-    });
-  }
-
-  /**
-   * Recursive equal-angle layout.
-   *
-   * @param {Object} node - Current node
-   * @param {Number} startAngle - Start of the angular arc allocated to this node
-   * @param {Number} arcSize - Total angular arc allocated to this node
-   */
-  function equalAngle(node, startAngle, arcSize) {
-    let totalLeaves = countLeaves(node);
-
-    if (!node.children || node.children.length === 0) {
-      return;
-    }
-
-    let currentAngle = startAngle;
-
-    node.children.forEach(child => {
-      let childLeaves = countLeaves(child);
-      let childArc = arcSize * (childLeaves / totalLeaves);
-      let midAngle = currentAngle + childArc / 2;
-
-      // Use the node's y value (cumulative branch length / depth) for distance
-      let branchLen = child.y !== undefined ? child.y - (node.y || 0) : 1;
-      if (branchLen <= 0) branchLen = 1;
-
-      child._unrooted_x = node._unrooted_x + branchLen * Math.cos(midAngle);
-      child._unrooted_y = node._unrooted_y + branchLen * Math.sin(midAngle);
-
-      equalAngle(child, currentAngle, childArc);
-      currentAngle += childArc;
-    });
-  }
-
-  /**
-   * Draw a straight line edge between two nodes (for unrooted layout).
-   *
-   * @param {Array} points - Array of [source, target] node objects
-   * @returns {String} SVG path string
-   */
-  function drawUnrootedEdge(points) {
-    return (
-      "M " + xCoord(points[0]) + "," + yCoord(points[0]) +
-      " L " + xCoord(points[1]) + "," + yCoord(points[1])
-    );
-  }
-
-  /**
-   * Place a label along an unrooted edge via linear interpolation.
-   *
-   * @param {Object} edge - Edge object with source and target
-   * @param {Number} where - Interpolation factor (0 = target, 1 = source)
-   * @returns {Object} {x, y} screen coordinates
-   */
-  function unrootedSegmentPlacer(edge, where) {
-    return {
-      x: xCoord(edge.target) + (xCoord(edge.source) - xCoord(edge.target)) * where,
-      y: yCoord(edge.target) + (yCoord(edge.source) - yCoord(edge.target)) * where
     };
   }
 
@@ -15535,14 +15664,14 @@
 
   function defNodeLabel(_node) {
 
-    _node = _node.data;
+    const data = _node.data;
 
-    if (isLeafNode(_node)) {
-      return _node.name || "";
+    if (isLeafNode(data)) {
+      return data.name || "";
     }
 
     if (this.showInternalName(_node)) {
-      return _node.name;
+      return data.name || "";
     }
 
     return "";
@@ -15583,6 +15712,235 @@
     updateHasHiddenNodes: updateHasHiddenNodes
   });
 
+  /**
+   * Count the number of leaf nodes in a subtree. A hidden (notshown) subtree
+   * has no leaves and a collapsed clade counts as one.
+   * @param {Object} node - A D3 hierarchy node
+   * @returns {Number} The number of leaves
+   */
+  function countLeaves(node) {
+    if (nodeNotshown(node)) {
+      return 0;
+    }
+    if (!node.children || node.children.length === 0 || isNodeCollapsed(node)) {
+      return 1;
+    }
+    return node.children.reduce((sum, child) => sum + countLeaves(child), 0);
+  }
+
+  /**
+   * Compute unrooted (equal-angle) layout coordinates for all nodes.
+   *
+   * The algorithm allocates 2π of angular space at the root, then recursively
+   * assigns each child subtree angular space proportional to its leaf count.
+   * Each node is placed at parent_position + branch_length * (cos(angle), sin(angle)).
+   *
+   * After computing raw positions, coordinates are normalized to fit within
+   * the given width × height.
+   *
+   * @param {Object} root - The root node of the D3 hierarchy
+   * @param {Array} scales - [scale_x, scale_y] from placenodes
+   * @param {Number} width - Available width in pixels
+   * @param {Number} height - Available height in pixels
+   * @param {Number} labelPad - Pixel padding to reserve for labels on all sides
+   */
+  function computeUnrootedLayout(root, scales, width, height, labelPad) {
+    labelPad = labelPad || 0;
+
+    // Assign raw (x, y) using equal-angle algorithm
+    // Root is at the origin
+    root._unrooted_x = 0;
+    root._unrooted_y = 0;
+
+    root._unrooted_collapsed = null;
+    equalAngle(root, 0, 2 * Math.PI);
+
+    // Hidden nodes and clades are not laid out: they must not take up space
+    let isSkipped = d => nodeOrAncestorNotshown(d) || d.hidden;
+
+    // Find bounding box of all raw positions (and collapsed clade outlines)
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    let extend = (x, y) => {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    };
+
+    root.each(d => {
+      if (isSkipped(d)) return;
+      extend(d._unrooted_x, d._unrooted_y);
+      if (d._unrooted_collapsed) {
+        d._unrooted_collapsed.forEach(p => extend(p[0], p[1]));
+      }
+    });
+
+    if (minX === Infinity) {
+      minX = maxX = minY = maxY = 0;
+    }
+
+    let rawWidth = maxX - minX || 1;
+    let rawHeight = maxY - minY || 1;
+
+    // Reserve pixel-based padding for labels on all sides
+    let drawWidth = width - 2 * labelPad;
+    let drawHeight = height - 2 * labelPad;
+    if (drawWidth < 100) drawWidth = 100;
+    if (drawHeight < 100) drawHeight = 100;
+
+    let scaleX = drawWidth / rawWidth;
+    let scaleY = drawHeight / rawHeight;
+    let scale = Math.min(scaleX, scaleY);
+
+    let offsetX = labelPad + drawWidth / 2 - (minX + maxX) / 2 * scale;
+    let offsetY = labelPad + drawHeight / 2 - (minY + maxY) / 2 * scale;
+
+    // Map to screen coordinates
+    // Note: the coordinate system uses d.y for screen-x and d.x for screen-y
+    // (xCoord returns d.y, yCoord returns d.x)
+    root.each(d => {
+      if (isSkipped(d)) return;
+
+      d.y = d._unrooted_x * scale + offsetX;
+      d.x = d._unrooted_y * scale + offsetY;
+
+      // Collapsed clade outline, as [vertical, horizontal] = [d.x, d.y] points
+      // starting at the node (draw.js stores layout-space points otherwise)
+      if (d._unrooted_collapsed) {
+        d.collapsed = d._unrooted_collapsed.map(p => [
+          p[1] * scale + offsetY,
+          p[0] * scale + offsetX
+        ]);
+      } else if (Array.isArray(d.collapsed)) {
+        // no outline to draw (the root): drop the layout-space points
+        d.collapsed = [];
+      }
+
+      // Compute text angle for labels (angle from parent to this node in degrees)
+      if (d.parent) {
+        let dx = d._unrooted_x - d.parent._unrooted_x;
+        let dy = d._unrooted_y - d.parent._unrooted_y;
+        let angleDeg = Math.atan2(dy, dx) * 180 / Math.PI;
+
+        // Flip text on the left hemisphere so it reads left-to-right
+        let isLeftHalf = angleDeg > 90 || angleDeg < -90;
+        d.text_angle = isLeftHalf ? angleDeg + 180 : angleDeg;
+        d.text_align = isLeftHalf ? "end" : "start";
+      } else {
+        d.text_angle = 0;
+        d.text_align = "start";
+      }
+
+      // Store the angle (in radians) for compatibility with radial code paths
+      d.angle = d.parent
+        ? Math.atan2(d._unrooted_y - d.parent._unrooted_y,
+                      d._unrooted_x - d.parent._unrooted_x)
+        : 0;
+      d.radius = null;
+    });
+  }
+
+  /**
+   * Largest distance from a node to any of its shown descendants.
+   *
+   * @param {Object} node - The clade root
+   * @param {Number} baseY - Cumulative branch length at the clade root
+   * @returns {Number} The distance, never negative
+   */
+  function maxDescendantDistance(node, baseY) {
+    let dist = 0;
+    (node.children || []).forEach(child => {
+      if (nodeNotshown(child)) return;
+      let len = child.y - baseY;
+      if (isFinite(len)) dist = Math.max(dist, len);
+      dist = Math.max(dist, maxDescendantDistance(child, baseY));
+    });
+    return dist;
+  }
+
+  /**
+   * Recursive equal-angle layout.
+   *
+   * @param {Object} node - Current node
+   * @param {Number} startAngle - Start of the angular arc allocated to this node
+   * @param {Number} arcSize - Total angular arc allocated to this node
+   */
+  function equalAngle(node, startAngle, arcSize) {
+    let totalLeaves = countLeaves(node);
+
+    if (!node.children || node.children.length === 0 || totalLeaves === 0) {
+      return;
+    }
+
+    let currentAngle = startAngle;
+
+    node.children.forEach(child => {
+      let childLeaves = countLeaves(child);
+      if (childLeaves === 0) {
+        // hidden subtree: no angle, no position
+        return;
+      }
+      let childArc = arcSize * (childLeaves / totalLeaves);
+      let midAngle = currentAngle + childArc / 2;
+
+      // Use the node's y value (cumulative branch length / depth) for distance
+      let branchLen = child.y - node.y;
+      branchLen = isFinite(branchLen) ? Math.max(0, branchLen) : 0;
+
+      child._unrooted_x = node._unrooted_x + branchLen * Math.cos(midAngle);
+      child._unrooted_y = node._unrooted_y + branchLen * Math.sin(midAngle);
+      child._unrooted_collapsed = null;
+
+      if (isNodeCollapsed(child)) {
+        // a collapsed clade is one wedge; its descendants are not placed
+        if (child.children && child.children.length) {
+          let r = maxDescendantDistance(child, child.y);
+          let cx = child._unrooted_x, cy = child._unrooted_y;
+          let at = angle => [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+          child._unrooted_collapsed = [
+            [cx, cy],
+            at(currentAngle),
+            at(midAngle),
+            at(currentAngle + childArc),
+            [cx, cy]
+          ];
+        }
+      } else {
+        equalAngle(child, currentAngle, childArc);
+      }
+      currentAngle += childArc;
+    });
+  }
+
+  /**
+   * Draw a straight line edge between two nodes (for unrooted layout).
+   *
+   * @param {Array} points - Array of [source, target] node objects
+   * @returns {String} SVG path string
+   */
+  function drawUnrootedEdge(points) {
+    return (
+      "M " + xCoord(points[0]) + "," + yCoord(points[0]) +
+      " L " + xCoord(points[1]) + "," + yCoord(points[1])
+    );
+  }
+
+  /**
+   * Place a label along an unrooted edge via linear interpolation.
+   *
+   * @param {Object} edge - Edge object with source and target
+   * @param {Number} where - Interpolation factor (0 = target, 1 = source)
+   * @returns {Object} {x, y} screen coordinates
+   */
+  function unrootedSegmentPlacer(edge, where) {
+    return {
+      x: xCoord(edge.target) + (xCoord(edge.source) - xCoord(edge.target)) * where,
+      y: yCoord(edge.target) + (yCoord(edge.source) - yCoord(edge.target)) * where
+    };
+  }
+
   function cladeCssSelectors(css_classes) {
     return [css_classes["clade"]].reduce(function(p, c, i, a) {
       return p + "path." + c + (i < a.length - 1 ? "," : "");
@@ -15600,7 +15958,14 @@
         // a hidden clade is not laid out, so do not draw its stale polygon
         this.phylotree.nodes
           .descendants()
-          .filter(d => isNodeCollapsed(d) && !d.hidden && !nodeOrAncestorNotshown(d)),
+          .filter(
+            d =>
+              isNodeCollapsed(d) &&
+              Array.isArray(d.collapsed) &&
+              d.collapsed.length > 0 &&
+              !d.hidden &&
+              !nodeOrAncestorNotshown(d)
+          ),
         function(d) {
           return d.id || (d.id = ++node_id);
         }
@@ -15785,13 +16150,22 @@
 
   }
 
+  const reserved_annotations = [
+    "children", "data", "parent", "depth", "height", "x", "y", "collapsed",
+    "hidden", "notshown", "id", "selected", "text_angle", "text_align",
+    "radius", "angle"
+  ];
+
   function initializeEdgeLabels() {
 
     this.links.forEach(d => {
 
       // TODO: Move away from storing attribute data as root (BREAKS occasionally with d3>3)
-      if(d.target.data.annotation) {
-        d.target[d.target.data.annotation] = d.target.data.annotation;
+      // Annotations named like internal hierarchy fields must not overwrite them.
+      const annotation = d.target.data.annotation;
+      if(annotation && !reserved_annotations.includes(annotation) &&
+         !(annotation in d.target && d.target[annotation] !== annotation)) {
+        d.target[annotation] = annotation;
       }
 
     });
@@ -16489,12 +16863,12 @@
             .append("a")
             .attr("class", "phylotree-menu-item dropdown-item")
             .attr("tabindex", "-1")
-            .text((d[0])(node)) // eslint-disable-line
+            .text((d[0])(node))
             .on("click", ___namespace.partial(d[1], node));
         });
       }
 
-      let tree_container = document.querySelector(container); // eslint-disable-line
+      let tree_container = select(container).node();
       let rect = tree_container.getBoundingClientRect();
      
       menu_object
@@ -16581,17 +16955,27 @@
 
     // check if node_selecter is a value of pre-defined selecters
 
-    if (this.options["restricted-selectable"].length) {
+    // Hiding ("notshown") and brushing ("tag") are not selections, so they are
+    // not subject to the selectable / restricted-selectable options.
+    const is_selection = attr != "notshown" && attr != "tag";
+
+    if (
+      is_selection &&
+      Array.isArray(this.options["restricted-selectable"]) &&
+      this.options["restricted-selectable"].length
+    ) {
       // the selection must be from a list of pre-determined selections
       if (___namespace.contains(___namespace.keys(predefined_selecters), node_selecter)) {
         node_selecter = predefined_selecters[node_selecter];
       } else {
-        return;
+        return this;
       }
     }
 
     if (
-      (this.options["restricted-selectable"] || this.options["selectable"]) &&
+      (!is_selection ||
+        this.options["restricted-selectable"] ||
+        this.options["selectable"]) &&
       !this.options["binary-selectable"]
     ) {
       var do_refresh = false;
@@ -16699,7 +17083,7 @@
           d[attr] = d.target[attr];
           if (!exclusive) return;
           this.options["attribute-list"].forEach(function(type) {
-            if (type != attr && d[attr] !== true) {
+            if (type != attr && d[attr] === true) {
               d[type] = false;
               d.target[type] = false;
             }
@@ -16957,6 +17341,9 @@
     this._selectionSets = {};
     this._activeSetName = null;
 
+    // ignore malformed entries such as null or {} rather than throwing
+    sets = sets.filter(set => set && typeof set.name === "string");
+
     sets.forEach(set => {
       this._selectionSets[set.name] = {
         name: set.name,
@@ -16969,6 +17356,20 @@
     if (sets.length > 0) {
       this._activeSetName = sets[0].name;
     }
+
+    // On re-render (e.g. after reroot) restore the active set and rebuild the
+    // members from the flags that persist on the nodes.
+    const remembered = this.phylotree.__activeSelectionSet;
+    if (remembered && this._selectionSets[remembered]) {
+      this._activeSetName = remembered;
+    }
+    this.phylotree.__activeSelectionSet = this._activeSetName;
+
+    this.phylotree.nodes.descendants().forEach(node => {
+      if (node._selectionSet && this._selectionSets[node._selectionSet]) {
+        this._selectionSets[node._selectionSet].members.add(node);
+      }
+    });
 
     // Inject CSS for set colors
     this._injectSetStyles(sets);
@@ -17019,6 +17420,7 @@
   function setActiveSet(name) {
     if (this._selectionSets && this._selectionSets[name]) {
       this._activeSetName = name;
+      this.phylotree.__activeSelectionSet = name;
     } else {
       console.warn(`Selection set '${name}' not found`);
     }
@@ -17341,16 +17743,14 @@
         };
       }
 
-      this.rescale_nodeSpan =
-        this.phylotree.nodes.children
-          .map(d => {
-            if (isLeafNode(d) || this.showInternalName(d))
-              return this.nodeSpan(d);
-          })
-          .reduce(function(p, c) {
-            return Math.min(c, p || 1e200);
-          }, null) || 1;
+      const spans = this.phylotree.nodes
+        .descendants()
+        .filter(d => isLeafNode(d) || this.showInternalName(d))
+        .map(d => this.nodeSpan(d))
+        .filter(v => typeof v === "number" && isFinite(v) && v > 0);
+      this.rescale_nodeSpan = spans.length ? Math.min(...spans) : 1;
 
+      this.undef_BL = false;
       this.initialize_svg(this.container);
       this.links = this.phylotree.nodes.links();
       this.initializeEdgeLabels();
@@ -17359,6 +17759,7 @@
 
       // Initialize multi-set selection if configured
       if (this.options["selection-mode"] === "multi-set" &&
+          Array.isArray(this.options["selection-sets"]) &&
           this.options["selection-sets"].length > 0) {
         this.initializeSelectionSets(this.options["selection-sets"]);
       }
@@ -17373,15 +17774,22 @@
      */
     applyInitialSelection() {
       // Single selection mode
-      if (this.options["initial-selection"] &&
+      if (Array.isArray(this.options["initial-selection"]) &&
           this.options["initial-selection"].length > 0) {
         this.selectNodes(this.options["initial-selection"]);
       }
 
       // Multi-set mode
       if (this.options["selection-mode"] === "multi-set" &&
-          this.options["initial-sets"]) {
+          this.options["initial-sets"] &&
+          typeof this.options["initial-sets"] === "object" &&
+          !Array.isArray(this.options["initial-sets"]) &&
+          this._selectionSets &&
+          !this.phylotree.__initialSetsApplied) {
+        // applied once per tree, and only once a requested set is defined
         Object.entries(this.options["initial-sets"]).forEach(([setName, nodeNames]) => {
+          if (!Array.isArray(nodeNames) || !this._selectionSets[setName]) return;
+          this.phylotree.__initialSetsApplied = true;
           nodeNames.forEach(nodeName => {
             this.addToSet(nodeName, setName);
           });
@@ -17522,6 +17930,9 @@
       var self = this;
 
       //if (!this.svg) return this;
+
+      // the topology may have changed since the last update
+      this.links = this.phylotree.nodes.links();
 
       this.placenodes();
 
@@ -17686,7 +18097,7 @@
 
             this.modifySelection(
 
-              this.phylotree.links.map(d => {
+              this.links.map(d => {
                 return d.target;
               }),
               "tag",
@@ -17826,8 +18237,6 @@
           
       */
 
-      let undef_BL = false;
-
       /** _extents computes a bounding box for the tree (initially NOT in screen 
               coordinates)
 
@@ -17845,17 +18254,15 @@
 
       if (a_node["parent"]) {
         if (this.do_scaling) {
-          if (undef_BL) {
+          if (this.undef_BL) {
             return 0;
           }
 
           a_node.y = this.phylotree.branch_length_accessor(a_node);
 
-          if (typeof a_node.y === "undefined") {
-            // Never read: placenodes() has its own undef_BL, so the no-branch-length
-            // fallback there does not fire.
-            // eslint-disable-next-line no-useless-assignment
-            undef_BL = true;
+          if (typeof a_node.y !== "number" || !isFinite(a_node.y)) {
+            // placenodes() falls back to an unscaled layout
+            this.undef_BL = true;
             return 0;
           }
           a_node.y += a_node.parent.y;
@@ -17902,15 +18309,20 @@
             a_node.collapsed = [[a_node.x, a_node.y]];
 
             var map_me = n => {
+              // hidden tips have no (or stale) coordinates
+              if (nodeNotshown(n)) return;
+
               n.hidden = true;
 
-              if (isLeafNode(n)) {            
+              if (isLeafNode(n)) {
+                if (typeof n.x !== "number" || typeof n.y !== "number") return;
+
                 this.x = n.x =
                   this.save_x +
                   (n.x - this.save_x) * this.options["compression"] +
                   this.save_span;
 
-                a_node.collapsed.push([n.x, n.y]);             
+                a_node.collapsed.push([n.x, n.y]);
               } else {
                 n.children.map(map_me);
               }
@@ -17956,7 +18368,7 @@
             displayed_children++;
           }
 
-          if (displayed_children >= half_way && !managed_to_display) {
+          if (displayed_children > 0 && displayed_children >= half_way && !managed_to_display) {
             this._handle_single_node_layout(a_node);
             managed_to_display = true;
           }
@@ -17999,7 +18411,7 @@
 
         this.scales[1] = 
           (this.size[1] - this.offsets[1] - this.options["left-offset"]) /
-          this._extents[1][1];
+          (this._extents[1][1] || 1);
 
         this.label_width = this._label_width(this.shown_font_size);
 
@@ -18026,7 +18438,7 @@
             this.offsets[1] -
             this.options["left-offset"] -
             this.label_width) /
-          this._extents[1][1];
+          (this._extents[1][1] || 1);
       }
     }
 
@@ -18055,22 +18467,26 @@
       (this.save_x = this.x), (this.save_span = this.last_span * 0.5);
 
       this.do_scaling = this.options["scaling"];
-      let undef_BL = false;
+      this.undef_BL = false;
 
       this.is_under_collapsed_parent = false;
-      this.max_depth = 1;
-      
+      // tree_layout() places the nodes by depth when scaling is off
+      this.max_depth = max$1(this.phylotree.nodes.descendants(), n => {
+        return n.depth;
+      });
+
       // Set initial x
       this.phylotree.nodes.x = this.tree_layout(
         this.phylotree.nodes,
         this.do_scaling
       );
 
-      this.max_depth = max$1(this.phylotree.nodes.descendants(), n => {
-        return n.depth;
-      });
-
-      if (this.do_scaling && undef_BL) ;
+      if (this.do_scaling && this.undef_BL) {
+        // requested scaling, but some branches had no branch lengths
+        // redo layout without branch lengths
+        this.do_scaling = false;
+        this.phylotree.nodes.x = this.tree_layout(this.phylotree.nodes);
+      }
 
       let at_least_one_dimension_fixed = false;
 
@@ -18086,7 +18502,7 @@
         this.size[0] = this._extents[0][1] * this.fixed_width[0];
         this.scales[0] = this.fixed_width[0];
       } else {
-        this.scales[0] = (this.size[0] - this.pad_height()) / this._extents[0][1];
+        this.scales[0] = (this.size[0] - this.pad_height()) / (this._extents[0][1] || 1);
         at_least_one_dimension_fixed = true;
       }
 
@@ -18136,7 +18552,7 @@
           last_circ_position = null,
           last_child_radius = null,
           min_radius = 0,
-          effective_span = this._extents[0][1] * this.scales[0];
+          effective_span = (this._extents[0][1] || 1) * this.scales[0];
 
         let compute_distance = function(r1, r2, a1, a2, annular_shift) {
           annular_shift = annular_shift || 0;
@@ -18345,6 +18761,11 @@
             d.collapsed.forEach(p => {
               p[0] *= this.scales[0];
               p[1] *= this.scales[1]*.8;
+
+              if (this.options["layout"] == "right-to-left") {
+                // same mirroring as d.y above
+                p[1] = this._extents[1][1] * this.scales[1] - p[1] + this.label_width;
+              }
             });
 
             let last_x = d.collapsed[1][0];
@@ -18369,13 +18790,13 @@
           domain_limit = Math.pow(
             10,
             Math.ceil(
-              Math.log((this._extents[1][1] * range_limit) / this.radius) /
+              Math.log(((this._extents[1][1] || 1) * range_limit) / this.radius) /
                 Math.log(10)
             )
           );
           
 
-          range_limit = domain_limit * (this.radius / this._extents[1][1]);
+          range_limit = domain_limit * (this.radius / (this._extents[1][1] || 1));
 
           if (range_limit < 30) {
             let stretch = Math.ceil(30 / range_limit);
@@ -18383,7 +18804,7 @@
             domain_limit *= stretch;
           }
         } else {
-          domain_limit = this._extents[1][1];
+          domain_limit = this._extents[1][1] || 1;
 
           range_limit =
             this.size[1] - this.offsets[1] - this.options["left-offset"] - this.shown_font_size;
@@ -18502,18 +18923,26 @@
     }
 
     /**
-     * Get or set font size.
+     * Get or set the label font size.
      *
-     * @param {Function} attr Empty if getting, or new font size if setting.
-     * @returns The current ``font_size`` accessor if getting, or the current ``phylotree`` if setting.
+     * @param {Number} attr (Optional) The new font size; ``undefined`` resets it to 12.
+     * @returns The current ``font_size`` if getting, or the current ``phylotree`` if setting.
      */
-    font_size(attr) {
+    fontSize(attr) {
       if (!arguments.length) return this.font_size;
       this.font_size = attr === undefined ? 12 : attr;
+      this.shown_font_size = this.font_size;
+      this.offsets = [0, this.font_size / 2];
       return this;
     }
 
-    scale_bar_font_size(attr) {
+    /**
+     * Get or set the scale bar font size.
+     *
+     * @param {Number} attr (Optional) The new font size; ``undefined`` resets it to 12.
+     * @returns The current ``scale_bar_font_size`` if getting, or the current ``phylotree`` if setting.
+     */
+    scaleBarFontSize(attr) {
       if (!arguments.length) return this.scale_bar_font_size;
       this.scale_bar_font_size = attr === undefined ? 12 : attr;
       return this;
@@ -18674,7 +19103,7 @@
      */
     style_edges(attr) {
       if (!arguments.length) return this.edge_styler;
-      this.edge_styler = attr.bind(this);
+      this.edge_styler = typeof attr === "function" ? attr.bind(this) : attr;
       return this;
     }
 
@@ -18715,34 +19144,44 @@
   }
 
   /**
-   * Return most recent common ancestor of a pair of nodes.
-   * @returns An array of strings, comprising each tag that was read.
+   * Return most recent common ancestor of a set of nodes.
+   * @param {Array} mrca_nodes Node names, or nodes.
+   * @returns The deepest node whose descendants include all of the given nodes,
+   * or undefined if there is none.
    */
   function mrca(mrca_nodes) {
-    var mrca;
+    let wanted = new Set(
+      mrca_nodes.map(function (mrca_node) {
+        return typeof mrca_node == "string" ? mrca_node : mrca_node.data.name;
+      })
+    );
 
-    mrca_nodes = mrca_nodes.map(function (mrca_node) {
-      return typeof mrca_node == "string" ? mrca_node : mrca_node.data.name;
-    });
+    let found = new Map(),
+      result;
 
     this.traverse_and_compute(function (node) {
+      let names = new Set();
+
       if (!node.children) {
-        node.data.mrca = ___namespace.intersection([node.data.name], mrca_nodes);
-      } else if (!node.parent) {
-        if (!mrca) {
-          mrca = node;
+        if (wanted.has(node.data.name)) {
+          names.add(node.data.name);
         }
       } else {
-        node.data.mrca = ___namespace.union(
-          ...node.descendants().map((child) => child.data.mrca)
-        );
-        if (!mrca && node.data.mrca.length == mrca_nodes.length) {
-          mrca = node;
-        }
+        node.children.forEach(function (child) {
+          found.get(child).forEach(function (name) {
+            names.add(name);
+          });
+        });
+      }
+
+      found.set(node, names);
+
+      if (!result && wanted.size && names.size == wanted.size) {
+        result = node;
       }
     });
 
-    return mrca;
+    return result;
   }
 
   /**
@@ -18785,8 +19224,7 @@
       this.links = [];
       this.parsed_tags = [];
       this.partitions = [];
-      this.branch_length_accessor = defBranchLengthAccessor;
-      this.branch_length = defBranchLengthAccessor;
+      this.setBranchLength(defBranchLengthAccessor);
       this.logger = options.logger || console;
       this.selection_attribute_name = "selected";
 
@@ -18818,13 +19256,24 @@
         }
       } else {
         // this builds children and links;
-        if (nwk.name == "root") {
+        if (nwk === null || nwk === undefined) {
+          throw new Error("Unable to parse tree: no tree was supplied");
+        } else if (nwk.name == "root") {
           // already parsed by phylotree.js
           _node_data = { json: nwk, error: null };
         } else if (typeof nwk != "string") {
-          // old default
-          _node_data = nwk;
-        } else if (nwk.contentType == "application/xml") {
+          if (typeof nwk != "object") {
+            throw new Error("Unable to parse tree: expected a string or an object");
+          }
+          // a parser result ({json, error}) unless the object has children of
+          // its own, in which case it is hierarchical JSON
+          _node_data =
+            "json" in nwk && !Array.isArray(nwk.children)
+              ? { json: nwk.json, error: nwk.error || null }
+              : { json: nwk, error: null };
+        } else if (
+          /^\s*<(\?xml|phyloxml|phylogeny)/i.test(nwk)
+        ) {
           // xml
           _node_data = phyloxml_parser(nwk);
         } else {
@@ -18834,8 +19283,10 @@
         }
       }
 
-      if (!_node_data["json"]) {
-        self.nodes = [];
+      if (!_node_data || !_node_data["json"]) {
+        throw new Error(
+          (_node_data && _node_data.error) || "Unable to parse tree"
+        );
       } else {
         self.nodes = hierarchy(_node_data.json);
 
@@ -18843,6 +19294,14 @@
         let _parsed_tags = {};
 
         self.nodes.each((node) => {
+          if (typeof node.data.name === "number") {
+            node.data.name = String(node.data.name);
+          } else if (node.data.name === undefined || node.data.name === null) {
+            node.data.name = "";
+          }
+          if (node.data.bootstrap_values === "") {
+            node.data.bootstrap_values = undefined;
+          }
           if (node.data.annotation) {
             _parsed_tags[node.data.annotation] = true;
           }
@@ -18981,6 +19440,27 @@
     update(json) {
       // update with new hiearchy layout
       this.nodes = json;
+
+      this.nodes.eachBefore((node) => {
+        ___namespace.each(node.children, (child) => {
+          child.parent = node;
+        });
+        node.depth = node.parent ? node.parent.depth + 1 : 0;
+      });
+
+      this.nodes.eachAfter((node) => {
+        node.height = node.children
+          ? 1 + Math.max(...node.children.map((child) => child.height))
+          : 0;
+      });
+
+      this.links = this.nodes.links();
+
+      if (this.display) {
+        this.display.links = this.links;
+      }
+
+      return this;
     }
 
     /**
@@ -19085,8 +19565,7 @@
     tree.traverse_and_compute(function(n) {
       n.cot_computed_length = bl(n);
 
-   
-      if (n.parent && ___namespace.isUndefined(n.cot_computed_length)) {
+      if (n.parent && !___namespace.isFinite(n.cot_computed_length)) {
         throw "Non-null branch lengths are required for this operation: missing branch length at node " + n.data.name;
       }
 
@@ -19116,6 +19595,9 @@
     var root_node = tree.getRootNode();
 
     function CopyFromSiblings(a_node) {
+      if (!a_node.children) {
+        return;
+      }
       for (var this_node = 0; this_node < a_node.children.length; this_node++) {
         for (
           var other_node = 0;
@@ -19176,7 +19658,13 @@
     let tips = tree.getTips();
 
     // Count number of ancestors to root for each tree
-    let depths = ___namespace.map(tips, d => { return d.depth });
+    let depths = ___namespace.map(tips, d => {
+      let depth = 0;
+      for (let n = d; n.parent; n = n.parent) {
+        depth++;
+      }
+      return depth;
+    });
 
     return ___namespace.reduce(depths, function(memo, num){ return memo + num; }, 0);
 
@@ -19235,7 +19723,8 @@
 
           if (score < current_min) {
             current_location = n;
-            current_split = tt / n.cot_computed_length; //n.cot_computed_length-tt;//1 - tt / n.cot_computed_length;
+            current_split =
+              n.cot_computed_length > 0 ? tt / n.cot_computed_length : 0; //n.cot_computed_length-tt;//1 - tt / n.cot_computed_length;
             current_min = score;
           }
 
@@ -19268,7 +19757,8 @@
 
             if (score < current_min) {
               current_location = n;
-              current_split = current_t / n.cot_computed_length; //n.cot_computed_length-tt;//1 - tt / n.cot_computed_length;
+              current_split =
+                n.cot_computed_length > 0 ? current_t / n.cot_computed_length : 0; //n.cot_computed_length-tt;//1 - tt / n.cot_computed_length;
               current_min = score;
             }
             current_t += optimization_step;
@@ -19297,7 +19787,13 @@
       throw "Center of tree calculation cannot be performed on trees that do not have fully specified branch lengths";
     }
 
-    var bl = tree.branch_length;
+    var bl = tree.branch_length_accessor;
+
+    // clear values left over from any previous call
+    tree.traverse_and_compute(function(node) {
+      delete node.max_path;
+      delete node.max_path_terminus;
+    });
 
     tree.traverse_and_compute(function(node) {
       if (node.parent) {
@@ -19383,7 +19879,7 @@
     distance_to_new_root
   ) {
 
-    var my_bl = tree.branch_length(node);
+    var my_bl = tree.branch_length_accessor(node);
 
     var go_up = false;
 
@@ -19431,42 +19927,55 @@
 
     var linear_data = [],
       max_r2 = 0,
-      best_node = 0;
+      best_node = tree.getRootNode();
 
     annotateCopyNumber(tree);
     rootToTip(tree);
 
     // To return if best node is the root already
     tree.traverse_and_compute(function(node) {
-      if (tree.isLeafNode(node) && !___namespace.isNull(node.data.decimal_date_value)) {
-        linear_data.push([node.data.decimal_date_value, node.data.rtta, node.data.copy_number]);
+      if (tree.isLeafNode(node) && tipDate(node) !== null) {
+        // distances from the current root; rtta is only set when trying other roots
+        linear_data.push([tipDate(node), node.data.rootToTip, node.data.copy_number]);
       }
     });
 
+    if (linear_data.length < 2) {
+      return { root: best_node, fit: null };
+    }
+
     let best_fit = linearFit(linear_data);
+
+    // a candidate root has to beat the current one; when the current root has
+    // no usable fit (e.g. identical distances) any finite fit will do
+    max_r2 = best_fit ? best_fit["r2"] : -Infinity;
 
     tree.traverse_and_compute(function(node) {
 
-      if (tree.isLeafNode(node) && !___namespace.isNull(node.data.decimal_date_value)) {
+      if (tree.isLeafNode(node) && tipDate(node) !== null) {
 
         computeRootToTipOtherRoot(tree, node, null, 0, 0);
 
         linear_data = [];
 
         tree.traverse_and_compute(function(node) {
-          if (tree.isLeafNode(node) && !___namespace.isNull(node.data.decimal_date_value)) {
+          if (tree.isLeafNode(node) && tipDate(node) !== null) {
             linear_data.push([
-              node.data.decimal_date_value,
+              tipDate(node),
               node.data.rtta,
               node.data.copy_number
             ]);
           }
         });
 
-        var fit = linearFit(linear_data),
-          r2 = fit["r2"];
+        if (linear_data.length < 2) {
+          return;
+        }
 
-        if (r2 > max_r2) {
+        var fit = linearFit(linear_data),
+          r2 = fit ? fit["r2"] : NaN;
+
+        if (isFinite(r2) && r2 > max_r2) {
           max_r2 = r2;
           best_node = node;
           best_fit = fit;
@@ -19477,6 +19986,16 @@
 
     return { root: best_node, fit: best_fit };
 
+  }
+
+  // A tip's decimal date as a number, or null when it has none. Dates set by
+  // hand may be numeric strings.
+  function tipDate(node) {
+    let value = node.data.decimal_date_value;
+    if (typeof value === "string" && value.trim() !== "") {
+      value = Number(value);
+    }
+    return typeof value === "number" && Number.isFinite(value) ? value : null;
   }
 
   // linear fit of root to tip distances
@@ -19505,6 +20024,11 @@
       vary += point[2] * (point[1] - syoss) * (point[1] - syoss);
     });
 
+    // no spread in the dates: the slope is undefined
+    if (!(st2 > 0)) {
+      return null;
+    }
+
     fitB /= st2;
 
     var a = (sy - sx * fitB) / ss;
@@ -19515,6 +20039,11 @@
       var t = point[1] - a - fitB * point[0];
       varres += point[2] * t * t;
     });
+
+    // zero or infinite distances, or identical distances, leave no finite line
+    if (!Number.isFinite(a) || !Number.isFinite(fitB) || !(vary > 0)) {
+      return null;
+    }
 
     return {
       intercept: a,
@@ -19571,7 +20100,7 @@
       }
     });
 
-    var r2t = tree.getRootNode().data.r2t;
+    var r2t = tree.getRootNode().data.r2t || {};
 
     tree.traverse_and_compute(n => {
       if (tree.isLeafNode(n)) {
@@ -19587,12 +20116,12 @@
 
   const default_date_converter = timeParse("%Y%m%d");
 
-  const default_regexp = /([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/g;
+  const default_regexp = /([0-9]{4}).?([0-9]{2}).?([0-9]{2})$/;
 
   const default_date_getter = function(node) {
     if (isLeafNode(node)) {
-      if ("name" in node) {
-        let location = default_regexp.exec(node.name);
+      if (node.data && node.data.name) {
+        let location = default_regexp.exec(node.data.name);
         if (location) {
           return location[1] + location[2] + location[3];
         }
@@ -19676,6 +20205,18 @@
     root_node,
     missing_bootstrap_value
   ) {
+    // numeric strings are accepted, as before
+    bootstrap_threshold = +bootstrap_threshold;
+    diameter_threshold = +diameter_threshold;
+
+    // Infinity is a valid "no limit" diameter
+    if (Number.isNaN(bootstrap_threshold)) {
+      throw "clusterPicker requires a numeric bootstrap threshold";
+    }
+    if (Number.isNaN(diameter_threshold) || diameter_threshold < 0) {
+      throw "clusterPicker requires a numeric diameter threshold >= 0";
+    }
+
     root_node = root_node || tree.getRootNode();
     missing_bootstrap_value = ___namespace.isNumber(missing_bootstrap_value)
       ? missing_bootstrap_value
@@ -19685,7 +20226,7 @@
     // where each internal node will receive a floating point value
     // that stores the longest path from the internal node to any of its descendants,
     // the diameter of the cluster,  is then the sum of longest paths of all of its children
-    let bl = tree.branch_length;
+    let bl = tree.branch_length_accessor;
 
     // initialize member variables
     tree.traverse_and_compute(function(n) {
@@ -19713,7 +20254,11 @@
       if (!tree.isLeafNode(n)) {
         var bs = ___namespace.isString(n.data.bootstrap_values)
           ? +n.data.bootstrap_values
-          : missing_bootstrap_value;
+          : NaN;
+        // unlabeled ('' or NaN) support is treated as missing
+        if (n.data.bootstrap_values === "" || ___namespace.isNaN(bs)) {
+          bs = missing_bootstrap_value;
+        }
 
         if (bs >= bootstrap_threshold) {
           var my_diameter = ___namespace.reduce(
@@ -19841,10 +20386,9 @@
 
     root_node.paths_to_leaves = new Array(leaf_count);
 
-    ___namespace.each(root_node.children, function(cn) {
-      ___namespace.each(root_node.cot_path_to_leaves_below, function(v, i) {
-        root_node.paths_to_leaves[i] = v + cn.cot_computed_length;
-      });
+    // the paths below the root already include the lengths of the root's child branches
+    ___namespace.each(root_node.cot_path_to_leaves_below, function(v, i) {
+      root_node.paths_to_leaves[i] = v;
     });
 
     tree.traverse_and_compute(function(n) {
@@ -19877,7 +20421,12 @@
         for (var n1 = 0; n1 < n.paths_to_leaves.length; n1++) {
           for (var n2 = n1 + 1; n2 < n.paths_to_leaves.length; n2++) {
             var sum = n.paths_to_leaves[n1] + n.paths_to_leaves[n2];
-            n.histogram[((sum - min_bl) / resolution) >> 0]++;
+            // clamp so that sums outside of [min_bl, max_path_length] stay in range
+            var bin = Math.min(
+              Math.max(((sum - min_bl) / resolution) >> 0, 0),
+              number_of_bins - 1
+            );
+            n.histogram[bin]++;
           }
         }
         n.leaf_count = n.paths_to_leaves.length;
@@ -19913,7 +20462,11 @@
       if (!tree.isLeafNode(n)) {
         var bs = ___namespace.isString(n.data.bootstrap_values)
           ? +n.data.bootstrap_values
-          : missing_bootstrap_value;
+          : NaN;
+        // unlabeled ('' or NaN) support is treated as missing
+        if (n.data.bootstrap_values === "" || ___namespace.isNaN(bs)) {
+          bs = missing_bootstrap_value;
+        }
         if (bs >= bootstrap_threshold) {
           var total_comparisons = n.leaf_count * (n.leaf_count - 1) * 0.25;
 
@@ -20017,7 +20570,7 @@
     let j = -1;
     let minD = Infinity;
     for (let ii = 0; ii < N; ii++) {
-      for (let jj = i; jj < N; jj++) {
+      for (let jj = ii + 1; jj < N; jj++) {
         if (dPrime[ii][jj] < minD) {
           i = ii;
           j = jj;
@@ -20044,8 +20597,12 @@
   function getDistanceMatrix(seqs) {
     // Gaps are masked
 
-    let initKey = Object.keys(seqs)[0];
-    let seqLength = seqs[initKey].length;
+    const lengths = Object.values(seqs).map((seq) => seq.length);
+    if (!lengths.length) {
+      return {};
+    }
+    // Compare only the positions present in every sequence
+    let seqLength = Math.min(...lengths);
 
     const matrix = {};
     for (const [key, seq] of Object.entries(seqs)) {
@@ -20084,23 +20641,50 @@
    * @returns The neighbor joining new tree.
    */
   function neighborJoining(distanceMatrixArr, n, nodeList) {
+    let json = neighborJoiningJson(distanceMatrixArr, n, nodeList);
+
+    return new Phylotree(jsonToNewick(json) + ":0;");
+  }
+
+  function jsonToNewick(node) {
+    // Quote names containing non-alphanumeric characters
+    let name = /\W/.test(node.name)
+      ? "'" + node.name.replaceAll("'", "''") + "'"
+      : node.name;
+    let label = node.children
+      ? "(" + node.children.map(jsonToNewick).join(",") + ")" + name
+      : name;
+
+    return node.attribute === undefined
+      ? label
+      : label + ":" + node.attribute;
+  }
+
+  function findByName(node, name) {
+    if (node.name == name) {
+      return node;
+    }
+    for (const child of node.children || []) {
+      let found = findByName(child, name);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
+  }
+
+  function neighborJoiningJson(distanceMatrixArr, n, nodeList) {
     if (n <= 2) {
-      let tree = new Phylotree("");
-
-      //T.link(nodeList[0],nodeList[1],D[0][1])
-
-      let newNode = tree.getNodes();
       // Get root
       let distance = distanceMatrixArr[0][1] / 2;
 
-      let nodeA = tree.createNode(nodeList[0], [null, [distance]]);
-      let nodeB = tree.createNode(nodeList[1], [null, [distance]]);
-
-      //// Add the children to the newly created node
-      tree.addChild(newNode, nodeA);
-      tree.addChild(newNode, nodeB);
-
-      return tree;
+      return {
+        name: "",
+        children: [
+          { name: nodeList[0], attribute: distance },
+          { name: nodeList[1], attribute: distance },
+        ],
+      };
     } else {
       let N = n;
       let totalDistances = getTotalDistances(distanceMatrixArr);
@@ -20154,22 +20738,21 @@
           nodeList.splice(k, 1);
         }
       }
-      let tree = neighborJoining(distanceMatrixArr, N - 1, nodeList);
+      let tree = neighborJoiningJson(distanceMatrixArr, N - 1, nodeList);
 
-      let treeNodeI = tree.createNode(nodeI, [null, [limbLengthI]]);
-      let treeNodeJ = tree.createNode(nodeJ, [null, [limbLengthJ]]);
+      let treeNodeI = { name: nodeI, attribute: limbLengthI };
+      let treeNodeJ = { name: nodeJ, attribute: limbLengthJ };
 
       // If the node doesn't exist, create. Otherwise, reassign the length
-      if (tree.getNodeByName(m)) {
-        let internalNode = tree.getNodeByName(m);
-        tree.addChild(internalNode, treeNodeI);
-        tree.addChild(internalNode, treeNodeJ);
+      let internalNode = findByName(tree, m);
+      if (internalNode) {
+        internalNode.children = [treeNodeI, treeNodeJ];
       } else {
-        let newNode = tree.createNode(m, [null, [0]]);
-        tree.addChild(tree.getNodes(), newNode);
-        // Add the children to the newly created node
-        tree.addChild(newNode, treeNodeI);
-        tree.addChild(newNode, treeNodeJ);
+        tree.children.push({
+          name: m,
+          attribute: 0,
+          children: [treeNodeI, treeNodeJ],
+        });
       }
 
       // Set negative to 0 and add distance to other limblength
