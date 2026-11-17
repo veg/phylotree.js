@@ -86,6 +86,20 @@ tape("computeMidpoint resets state and honors the branch length accessor", funct
   let t = new phylotree.phylotree("(A:1,B:1,C:1);");
   t.setBranchLength(function(n) { return n.data.name === "A" ? 10 : 1; });
   test.equal(phylotree.computeMidpoint(t).location.data.name, "A");
+
+  // stale state: long lengths first, then shrink them and recompute
+  let nwk = "((A:1,B:2):3,(C:4,D:5):1,E:0.5);";
+  let scale = function(k) { return function(n) { return (n.data.attribute ? +n.data.attribute : 0) * k; }; };
+  let stale = new phylotree.phylotree(nwk);
+  stale.setBranchLength(scale(100));
+  phylotree.computeMidpoint(stale);
+  stale.setBranchLength(function(n) { return n.data.name === "E" ? 50 : (n.data.attribute ? +n.data.attribute : 0); });
+  let got = phylotree.computeMidpoint(stale);
+  let ref = new phylotree.phylotree(nwk);
+  ref.setBranchLength(function(n) { return n.data.name === "E" ? 50 : (n.data.attribute ? +n.data.attribute : 0); });
+  let want = phylotree.computeMidpoint(ref);
+  test.equal(got.location.data.name || got.location.data.attribute, want.location.data.name || want.location.data.attribute);
+  test.equal(got.breakpoint, want.breakpoint);
   test.end();
 
 });
