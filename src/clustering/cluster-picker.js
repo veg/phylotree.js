@@ -26,14 +26,14 @@ function clusterPicker(
   root_node,
   missing_bootstrap_value
 ) {
-  if (!_.isNumber(bootstrap_threshold) || !isFinite(bootstrap_threshold)) {
+  // numeric strings are accepted, as before
+  bootstrap_threshold = +bootstrap_threshold;
+  diameter_threshold = +diameter_threshold;
+
+  if (!isFinite(bootstrap_threshold)) {
     throw "clusterPicker requires a numeric bootstrap threshold";
   }
-  if (
-    !_.isNumber(diameter_threshold) ||
-    !isFinite(diameter_threshold) ||
-    diameter_threshold < 0
-  ) {
+  if (!isFinite(diameter_threshold) || diameter_threshold < 0) {
     throw "clusterPicker requires a numeric diameter threshold >= 0";
   }
 

@@ -164,10 +164,13 @@ let Phylotree = class {
         // already parsed by phylotree.js
         _node_data = { json: nwk, error: null };
       } else if (typeof nwk != "string") {
+        if (typeof nwk != "object") {
+          throw new Error("Unable to parse tree: expected a string or an object");
+        }
         // a parser result, or hierarchical JSON
-        _node_data = nwk.json ? nwk : { json: nwk, error: null };
+        _node_data = "json" in nwk && "error" in nwk ? nwk : { json: nwk, error: null };
       } else if (
-        /^\s*<(\?xml|phyloxml)/i.test(nwk)
+        /^\s*<(\?xml|phyloxml|phylogeny)/i.test(nwk)
       ) {
         // xml
         _node_data = phyloxml_parser(nwk);

@@ -37,8 +37,7 @@ export default function hasBranchLengths() {
 export function getBranchLengths() {
 
   let bl = this.branch_length_accessor;
-  // the root has no branch; its parsed length, if any, is not a branch length
-  return _.map(this.nodes.descendants(), node => { return node.parent ? bl(node) : undefined});
+  return _.map(this.nodes.descendants(), node => { return bl(node)});
 
 }
 
@@ -142,15 +141,24 @@ export function normalize(attr) {
 
 }
 
-// [node, length] for every non-root node with a finite branch length
+// [node, length] for every node with a finite branch length. The root only
+// counts when the input gave it an explicit length, since the accessor
+// reports 0 for a root without one.
 function finiteBranchLengths() {
 
   let bl = this.branch_length_accessor;
 
   return _.filter(
-    _.map(this.nodes.descendants(), (node) => [node, node.parent ? bl(node) : undefined]),
-    (d) => d[0].parent && Number.isFinite(d[1])
+    _.map(this.nodes.descendants(), (node) => [node, bl(node)]),
+    (d) => (d[0].parent || hasOwnLength(d[0])) && Number.isFinite(d[1])
   );
+
+}
+
+function hasOwnLength(node) {
+  let attribute = node.data.attribute;
+  return typeof attribute === "number" ||
+    (typeof attribute === "string" && attribute.length > 0);
 
 }
 

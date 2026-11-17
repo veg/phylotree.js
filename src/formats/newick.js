@@ -38,10 +38,7 @@ import { isLeafNode } from "../nodes";
 
 function newickParser(nwk_str, options={}) {
 
-  // NOTE: only non-strings are rejected. An empty string is deliberately still
-  // accepted (yielding a bare root) because neighbor-join.js builds its seed
-  // tree with `new phylotree("")`; rejecting it requires changing that caller.
-  if (typeof nwk_str !== "string") {
+  if (typeof nwk_str !== "string" || !nwk_str.trim().length) {
     return { json: null, error: "empty or non-string newick" };
   }
 

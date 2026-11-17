@@ -85,7 +85,7 @@ var nexml_parser = function(xml_string, options) {
         trees.push(node_hash[root_id]);
       });
     });
-  } catch (e) {
+  } catch {
     return { json: null, error: "could not parse nexml" };
   }
 

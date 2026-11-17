@@ -265,7 +265,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
           .append("a")
           .attr("class", "phylotree-menu-item dropdown-item")
           .attr("tabindex", "-1")
-          .text((d[0])(node)) // eslint-disable-line
+          .text((d[0])(node))
           .on("click", _.partial(d[1], node));
       });
     }

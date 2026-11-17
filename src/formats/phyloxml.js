@@ -127,7 +127,7 @@ var phyloxml_parser = function(xml, options) {
     } else {
       xml = xmlToJson(xml);
     }
-  } catch (e) {
+  } catch {
     return { json: null, error: "could not parse phyloxml" };
   }
 

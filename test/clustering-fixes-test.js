@@ -33,7 +33,10 @@ tape("clusterPicker validates thresholds", function(test) {
     });
   });
   test.throws(function() {
-    phylotree.clusterPicker(tree, 0.9, "0.5");
+    phylotree.clusterPicker(tree, 0.9, "wide");
+  });
+  test.doesNotThrow(function() {
+    phylotree.clusterPicker(tree, "0.9", "0.5"); // numeric strings are coerced
   });
   test.throws(function() {
     phylotree.clusterPicker(tree, 0.9, -1);
