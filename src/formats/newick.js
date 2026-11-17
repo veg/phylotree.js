@@ -38,8 +38,9 @@ import { isLeafNode } from "../nodes";
 
 function newickParser(nwk_str, options={}) {
 
-  // NOTE: an empty string is still accepted (yielding a bare root) because
-  // neighbor-join.js builds its seed tree with `new phylotree("")`.
+  // NOTE: only non-strings are rejected. An empty string is deliberately still
+  // accepted (yielding a bare root) because neighbor-join.js builds its seed
+  // tree with `new phylotree("")`; rejecting it requires changing that caller.
   if (typeof nwk_str !== "string") {
     return { json: null, error: "empty or non-string newick" };
   }
@@ -264,9 +265,6 @@ function newickParser(nwk_str, options={}) {
   // label and length following the final ')' belong to the root
   if (current_node_name.length) {
     tree_json["name"] = current_node_name;
-    if (bootstrap_values) {
-      tree_json["bootstrap_values"] = current_node_name;
-    }
   }
   if (current_node_attribute.length) {
     tree_json["attribute"] = current_node_attribute;
