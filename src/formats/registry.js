@@ -13,7 +13,11 @@ var format_registry = {
   phyloxml: phyloxml_parser,
   nexus : nexus_parser,
   nwk: newickParser,
-  nhx: newickParser,
+  nhx: (nwk, options) =>
+    newickParser(
+      nwk,
+      Object.assign({ left_delimiter: "[", right_delimiter: "]" }, options)
+    ),
   beast: beast_parser
 };
 
