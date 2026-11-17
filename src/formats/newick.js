@@ -38,8 +38,23 @@ import { isLeafNode } from "../nodes";
 
 function newickParser(nwk_str, options={}) {
 
+  // NOTE: only non-strings are rejected. An empty string is deliberately still
+  // accepted (yielding a bare root) because neighbor-join.js builds its seed
+  // tree with `new phylotree("")`; rejecting it requires changing that caller.
+  if (typeof nwk_str !== "string") {
+    return { json: null, error: "empty or non-string newick" };
+  }
+
   const bootstrap_values = true,
-    int_or_float = /^-?\d+(\.\d+)?$/;
+    int_or_float = /^-?\d+(\.\d+)?$/,
+    reserved_keys = [
+      "name",
+      "attribute",
+      "children",
+      "annotation",
+      "bootstrap_values",
+      "original_child_order"
+    ];
   let left_delimiter = options.left_delimiter ||  '{',
     right_delimiter = options.right_delimiter ||  '}';
   let clade_stack = [];
@@ -70,7 +85,9 @@ function newickParser(nwk_str, options={}) {
     this_node["name"] = current_node_name;
 
     if (bootstrap_values && "children" in this_node) {
-      this_node["bootstrap_values"] = current_node_name;
+      if (current_node_name.length) {
+        this_node["bootstrap_values"] = current_node_name;
+      }
     } else {
       this_node["name"] = current_node_name;
     }
@@ -82,8 +99,10 @@ function newickParser(nwk_str, options={}) {
         .slice(1)
         .forEach(annotation => {
           const [key, value] = annotation.split('=');
-          this_node[key] = int_or_float.test(value) ? +value : value;
+          const node_key = reserved_keys.includes(key) ? "nhx_" + key : key;
+          this_node[node_key] = int_or_float.test(value) ? +value : value;
         });
+      this_node["annotation"] = "";
     } else {
       this_node["annotation"] = current_node_annotation;
     }
@@ -181,6 +200,11 @@ function newickParser(nwk_str, options={}) {
               }
             } else {
               if (automaton_state == 3) {
+                if (current_char == ";") {
+                  // semicolon terminates tree definition
+                  char_index = nwk_str.length;
+                  break;
+                }
                 current_node_attribute += current_char;
               } else {
                 if (space.test(current_char)) {
@@ -238,6 +262,14 @@ function newickParser(nwk_str, options={}) {
     return generateError(nwk_str.length - 1);
   }
 
+  // label and length following the final ')' belong to the root
+  if (current_node_name.length) {
+    tree_json["name"] = current_node_name;
+  }
+  if (current_node_attribute.length) {
+    tree_json["attribute"] = current_node_attribute;
+  }
+
   return {
     json: tree_json,
     error: null
@@ -278,13 +310,20 @@ export function getNewick(annotator, root) {
 
   if (!annotator) annotator = d => '';
 
+  // A node is written if it is shown and is either a leaf or has at least
+  // one written descendant.
+  function isWritten(n) {
+    if (n.notshown) return false;
+    return isLeafNode(n) || n.children.some(isWritten);
+  }
+
   function nodeDisplay(n) {
     // Skip the node if it is hidden
-    if (n.notshown) return;
+    if (!isWritten(n)) return;
 
     if (!isLeafNode(n)) {
       element_array.push("(");
-      n.children.forEach(function(d, i) {
+      n.children.filter(isWritten).forEach(function(d, i) {
         if (i) {
           element_array.push(",");
         }
@@ -293,8 +332,8 @@ export function getNewick(annotator, root) {
       element_array.push(")");
     }
 
-    if(n.data.name !== 'root') {
-      const node_label = n.data.name.replaceAll("'", "''");
+    if(n.data.name !== 'root' || n.parent) {
+      const node_label = String(n.data.name ?? '').replaceAll("'", "''");
 
       // Surround the entire string with single quotes if it contains any
       // non-alphanumeric characters.
