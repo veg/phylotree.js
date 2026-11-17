@@ -14232,9 +14232,11 @@
 
   // Removes surrounding single or double quotes from a NEXUS token
   function unquote(token) {
-    // a single-quoted label escapes a quote by doubling it
-    return token.replace(/^'(.*)'$/, (m, inner) => inner.replace(/''/g, "'"))
-      .replace(/^"(.*)"$/, '$1');
+    // a single-quoted label escapes a quote by doubling it; strip one layer only
+    if (/^'.*'$/.test(token)) {
+      return token.slice(1, -1).replace(/''/g, "'");
+    }
+    return token.replace(/^"(.*)"$/, '$1');
   }
 
   // Split on `sep` wherever it is not inside a 'quoted label' ('' escapes a
@@ -19263,10 +19265,10 @@
           if (typeof nwk != "object") {
             throw new Error("Unable to parse tree: expected a string or an object");
           }
-          // a parser result ({json, error}), or hierarchical JSON (which has a
-          // name or children of its own)
+          // a parser result ({json, error}, or a bare {json} with no name or
+          // children of its own), otherwise hierarchical JSON
           _node_data =
-            "json" in nwk && !("name" in nwk) && !("children" in nwk)
+            "json" in nwk && ("error" in nwk || (!("name" in nwk) && !("children" in nwk)))
               ? { json: nwk.json, error: nwk.error || null }
               : { json: nwk, error: null };
         } else if (
@@ -19948,6 +19950,9 @@
       return { root: best_node, fit: null };
     }
 
+    // a candidate root has to beat the current one
+    max_r2 = best_fit["r2"];
+
     tree.traverse_and_compute(function(node) {
 
       if (tree.isLeafNode(node) && tipDate(node) !== null) {
@@ -19990,11 +19995,10 @@
   // hand may be numeric strings.
   function tipDate(node) {
     let value = node.data.decimal_date_value;
-    if (value === null || value === undefined || value === "") {
-      return null;
+    if (typeof value === "string" && value.trim() !== "") {
+      value = Number(value);
     }
-    let date = Number(value);
-    return Number.isFinite(date) ? date : null;
+    return typeof value === "number" && Number.isFinite(value) ? value : null;
   }
 
   // linear fit of root to tip distances
@@ -20039,8 +20043,8 @@
       varres += point[2] * t * t;
     });
 
-    // zero or infinite distances leave no finite line to report
-    if (!Number.isFinite(a) || !Number.isFinite(fitB)) {
+    // zero or infinite distances, or identical distances, leave no finite line
+    if (!Number.isFinite(a) || !Number.isFinite(fitB) || !(vary > 0)) {
       return null;
     }
 
