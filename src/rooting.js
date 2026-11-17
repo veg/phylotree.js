@@ -34,6 +34,11 @@ export function reroot(node, fraction) {
    throw new Error('node needs to be an instance of a d3.hierarchy node!');
   }
 
+  // rerooting on the root is a no-op
+  if (!node.parent) {
+    return this;
+  }
+
   let nodes = this.nodes.copy();
 
   fraction = fraction !== undefined ? fraction : 0.5;
@@ -114,8 +119,9 @@ export function reroot(node, fraction) {
     // the tree through
     if (current_node.children.length == 1) {
 
-      if (stashed_bl) {
-        current_node.children[0].data.__mapped_bl += stashed_bl;
+      if (Number.isFinite(stashed_bl)) {
+        current_node.children[0].data.__mapped_bl =
+          (current_node.children[0].data.__mapped_bl || 0) + stashed_bl;
       }
 
       remove_me.children = remove_me.children.concat(current_node.children);
