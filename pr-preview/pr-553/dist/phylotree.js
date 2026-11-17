@@ -19265,10 +19265,10 @@
           if (typeof nwk != "object") {
             throw new Error("Unable to parse tree: expected a string or an object");
           }
-          // a parser result ({json, error}, or a bare {json} with no name or
-          // children of its own), otherwise hierarchical JSON
+          // a parser result ({json, error}) unless the object has children of
+          // its own, in which case it is hierarchical JSON
           _node_data =
-            "json" in nwk && ("error" in nwk || (!("name" in nwk) && !("children" in nwk)))
+            "json" in nwk && !Array.isArray(nwk.children)
               ? { json: nwk.json, error: nwk.error || null }
               : { json: nwk, error: null };
         } else if (
@@ -19946,12 +19946,9 @@
 
     let best_fit = linearFit(linear_data);
 
-    if (!best_fit) {
-      return { root: best_node, fit: null };
-    }
-
-    // a candidate root has to beat the current one
-    max_r2 = best_fit["r2"];
+    // a candidate root has to beat the current one; when the current root has
+    // no usable fit (e.g. identical distances) any finite fit will do
+    max_r2 = best_fit ? best_fit["r2"] : -Infinity;
 
     tree.traverse_and_compute(function(node) {
 
