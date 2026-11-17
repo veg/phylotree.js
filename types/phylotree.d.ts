@@ -309,13 +309,22 @@ declare class TreeRender {
   nodeLabel(): (node: PhylotreeNode) => string;
   nodeLabel(accessor: ((node: PhylotreeNode) => string) | null | undefined): this;
 
+  /** Get the label font size */
+  fontSize(): number;
+  /** Set the label font size (`undefined` resets it to 12) */
+  fontSize(size: number | undefined): this;
+  /** Get the scale bar font size */
+  scaleBarFontSize(): number;
+  /** Set the scale bar font size (`undefined` resets it to 12) */
+  scaleBarFontSize(size: number | undefined): this;
+
   /** Get/set node styler function */
   style_nodes(): NodeStyler | null | undefined;
   style_nodes(styler: NodeStyler | null): this;
 
   /** Get/set edge styler function */
   style_edges(): EdgeStyler | null | undefined;
-  style_edges(styler: EdgeStyler): this;
+  style_edges(styler: EdgeStyler | null): this;
 
   /** Mark a node as collapsed (call `update()` to redraw) */
   collapse_node(node: PhylotreeNode): void;

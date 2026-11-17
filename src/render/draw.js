@@ -143,16 +143,14 @@ class TreeRender {
       };
     }
 
-    this.rescale_nodeSpan =
-      this.phylotree.nodes.children
-        .map(d => {
-          if (isLeafNode(d) || this.showInternalName(d))
-            return this.nodeSpan(d);
-        })
-        .reduce(function(p, c) {
-          return Math.min(c, p || 1e200);
-        }, null) || 1;
+    const spans = this.phylotree.nodes
+      .descendants()
+      .filter(d => isLeafNode(d) || this.showInternalName(d))
+      .map(d => this.nodeSpan(d))
+      .filter(v => typeof v === "number" && isFinite(v) && v > 0);
+    this.rescale_nodeSpan = spans.length ? Math.min(...spans) : 1;
 
+    this.undef_BL = false;
     this.initialize_svg(this.container);
     this.links = this.phylotree.nodes.links();
     this.initializeEdgeLabels();
@@ -161,6 +159,7 @@ class TreeRender {
 
     // Initialize multi-set selection if configured
     if (this.options["selection-mode"] === "multi-set" &&
+        Array.isArray(this.options["selection-sets"]) &&
         this.options["selection-sets"].length > 0) {
       this.initializeSelectionSets(this.options["selection-sets"]);
     }
@@ -175,15 +174,18 @@ class TreeRender {
    */
   applyInitialSelection() {
     // Single selection mode
-    if (this.options["initial-selection"] &&
+    if (Array.isArray(this.options["initial-selection"]) &&
         this.options["initial-selection"].length > 0) {
       this.selectNodes(this.options["initial-selection"]);
     }
 
     // Multi-set mode
     if (this.options["selection-mode"] === "multi-set" &&
-        this.options["initial-sets"]) {
+        this.options["initial-sets"] &&
+        typeof this.options["initial-sets"] === "object" &&
+        !Array.isArray(this.options["initial-sets"])) {
       Object.entries(this.options["initial-sets"]).forEach(([setName, nodeNames]) => {
+        if (!Array.isArray(nodeNames)) return;
         nodeNames.forEach(nodeName => {
           this.addToSet(nodeName, setName);
         });
@@ -324,6 +326,9 @@ class TreeRender {
     var self = this;
 
     //if (!this.svg) return this;
+
+    // the topology may have changed since the last update
+    this.links = this.phylotree.nodes.links();
 
     this.placenodes();
 
@@ -489,7 +494,7 @@ class TreeRender {
 
           this.modifySelection(
 
-            this.phylotree.links.map(d => {
+            this.links.map(d => {
               return d.target;
             }),
             "tag",
@@ -630,8 +635,6 @@ class TreeRender {
         
     */
 
-    let undef_BL = false;
-
     /** _extents computes a bounding box for the tree (initially NOT in screen 
             coordinates)
 
@@ -649,17 +652,15 @@ class TreeRender {
 
     if (a_node["parent"]) {
       if (this.do_scaling) {
-        if (undef_BL) {
+        if (this.undef_BL) {
           return 0;
         }
 
         a_node.y = this.phylotree.branch_length_accessor(a_node);
 
-        if (typeof a_node.y === "undefined") {
-          // Never read: placenodes() has its own undef_BL, so the no-branch-length
-          // fallback there does not fire.
-          // eslint-disable-next-line no-useless-assignment
-          undef_BL = true;
+        if (typeof a_node.y !== "number" || !isFinite(a_node.y)) {
+          // placenodes() falls back to an unscaled layout
+          this.undef_BL = true;
           return 0;
         }
         a_node.y += a_node.parent.y;
@@ -706,15 +707,20 @@ class TreeRender {
           a_node.collapsed = [[a_node.x, a_node.y]];
 
           var map_me = n => {
+            // hidden tips have no (or stale) coordinates
+            if (render_nodes.nodeNotshown(n)) return;
+
             n.hidden = true;
 
-            if (isLeafNode(n)) {            
+            if (isLeafNode(n)) {
+              if (typeof n.x !== "number" || typeof n.y !== "number") return;
+
               this.x = n.x =
                 this.save_x +
                 (n.x - this.save_x) * this.options["compression"] +
                 this.save_span;
 
-              a_node.collapsed.push([n.x, n.y]);             
+              a_node.collapsed.push([n.x, n.y]);
             } else {
               n.children.map(map_me);
             }
@@ -760,7 +766,7 @@ class TreeRender {
           displayed_children++;
         }
 
-        if (displayed_children >= half_way && !managed_to_display) {
+        if (displayed_children > 0 && displayed_children >= half_way && !managed_to_display) {
           this._handle_single_node_layout(a_node);
           managed_to_display = true;
         }
@@ -803,7 +809,7 @@ class TreeRender {
 
       this.scales[1] = 
         (this.size[1] - this.offsets[1] - this.options["left-offset"]) /
-        this._extents[1][1];
+        (this._extents[1][1] || 1);
 
       this.label_width = this._label_width(this.shown_font_size);
 
@@ -830,7 +836,7 @@ class TreeRender {
           this.offsets[1] -
           this.options["left-offset"] -
           this.label_width) /
-        this._extents[1][1];
+        (this._extents[1][1] || 1);
     }
   }
 
@@ -859,22 +865,21 @@ class TreeRender {
     (this.save_x = this.x), (this.save_span = this.last_span * 0.5);
 
     this.do_scaling = this.options["scaling"];
-    let undef_BL = false;
+    this.undef_BL = false;
 
     this.is_under_collapsed_parent = false;
-    this.max_depth = 1;
-    
+    // tree_layout() places the nodes by depth when scaling is off
+    this.max_depth = d3.max(this.phylotree.nodes.descendants(), n => {
+      return n.depth;
+    });
+
     // Set initial x
     this.phylotree.nodes.x = this.tree_layout(
       this.phylotree.nodes,
       this.do_scaling
     );
 
-    this.max_depth = d3.max(this.phylotree.nodes.descendants(), n => {
-      return n.depth;
-    });
-
-    if (this.do_scaling && undef_BL) {
+    if (this.do_scaling && this.undef_BL) {
       // requested scaling, but some branches had no branch lengths
       // redo layout without branch lengths
       this.do_scaling = false;
@@ -895,7 +900,7 @@ class TreeRender {
       this.size[0] = this._extents[0][1] * this.fixed_width[0];
       this.scales[0] = this.fixed_width[0];
     } else {
-      this.scales[0] = (this.size[0] - this.pad_height()) / this._extents[0][1];
+      this.scales[0] = (this.size[0] - this.pad_height()) / (this._extents[0][1] || 1);
       at_least_one_dimension_fixed = true;
     }
 
@@ -945,7 +950,7 @@ class TreeRender {
         last_circ_position = null,
         last_child_radius = null,
         min_radius = 0,
-        effective_span = this._extents[0][1] * this.scales[0];
+        effective_span = (this._extents[0][1] || 1) * this.scales[0];
 
       let compute_distance = function(r1, r2, a1, a2, annular_shift) {
         annular_shift = annular_shift || 0;
@@ -1154,6 +1159,11 @@ class TreeRender {
           d.collapsed.forEach(p => {
             p[0] *= this.scales[0];
             p[1] *= this.scales[1]*.8;
+
+            if (this.options["layout"] == "right-to-left") {
+              // same mirroring as d.y above
+              p[1] = this._extents[1][1] * this.scales[1] - p[1] + this.label_width;
+            }
           });
 
           let last_x = d.collapsed[1][0];
@@ -1178,13 +1188,13 @@ class TreeRender {
         domain_limit = Math.pow(
           10,
           Math.ceil(
-            Math.log((this._extents[1][1] * range_limit) / this.radius) /
+            Math.log(((this._extents[1][1] || 1) * range_limit) / this.radius) /
               Math.log(10)
           )
         );
         
 
-        range_limit = domain_limit * (this.radius / this._extents[1][1]);
+        range_limit = domain_limit * (this.radius / (this._extents[1][1] || 1));
 
         if (range_limit < 30) {
           let stretch = Math.ceil(30 / range_limit);
@@ -1192,7 +1202,7 @@ class TreeRender {
           domain_limit *= stretch;
         }
       } else {
-        domain_limit = this._extents[1][1];
+        domain_limit = this._extents[1][1] || 1;
 
         range_limit =
           this.size[1] - this.offsets[1] - this.options["left-offset"] - this.shown_font_size;
@@ -1315,18 +1325,26 @@ class TreeRender {
   }
 
   /**
-   * Get or set font size.
+   * Get or set the label font size.
    *
-   * @param {Function} attr Empty if getting, or new font size if setting.
-   * @returns The current ``font_size`` accessor if getting, or the current ``phylotree`` if setting.
+   * @param {Number} attr (Optional) The new font size; ``undefined`` resets it to 12.
+   * @returns The current ``font_size`` if getting, or the current ``phylotree`` if setting.
    */
-  font_size(attr) {
+  fontSize(attr) {
     if (!arguments.length) return this.font_size;
     this.font_size = attr === undefined ? 12 : attr;
+    this.shown_font_size = this.font_size;
+    this.offsets = [0, this.font_size / 2];
     return this;
   }
 
-  scale_bar_font_size(attr) {
+  /**
+   * Get or set the scale bar font size.
+   *
+   * @param {Number} attr (Optional) The new font size; ``undefined`` resets it to 12.
+   * @returns The current ``scale_bar_font_size`` if getting, or the current ``phylotree`` if setting.
+   */
+  scaleBarFontSize(attr) {
     if (!arguments.length) return this.scale_bar_font_size;
     this.scale_bar_font_size = attr === undefined ? 12 : attr;
     return this;
@@ -1487,7 +1505,7 @@ class TreeRender {
    */
   style_edges(attr) {
     if (!arguments.length) return this.edge_styler;
-    this.edge_styler = attr.bind(this);
+    this.edge_styler = typeof attr === "function" ? attr.bind(this) : attr;
     return this;
   }
 
