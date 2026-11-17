@@ -270,7 +270,7 @@ export function nodeDropdownMenu(node, container, phylotree, options, event) {
       });
     }
 
-    let tree_container = document.querySelector(container); // eslint-disable-line
+    let tree_container = d3.select(container).node();
     let rect = tree_container.getBoundingClientRect();
    
     menu_object
@@ -357,17 +357,27 @@ export function modifySelection(
 
   // check if node_selecter is a value of pre-defined selecters
 
-  if (this.options["restricted-selectable"].length) {
+  // Hiding ("notshown") and brushing ("tag") are not selections, so they are
+  // not subject to the selectable / restricted-selectable options.
+  const is_selection = attr != "notshown" && attr != "tag";
+
+  if (
+    is_selection &&
+    Array.isArray(this.options["restricted-selectable"]) &&
+    this.options["restricted-selectable"].length
+  ) {
     // the selection must be from a list of pre-determined selections
     if (_.contains(_.keys(predefined_selecters), node_selecter)) {
       node_selecter = predefined_selecters[node_selecter];
     } else {
-      return;
+      return this;
     }
   }
 
   if (
-    (this.options["restricted-selectable"] || this.options["selectable"]) &&
+    (!is_selection ||
+      this.options["restricted-selectable"] ||
+      this.options["selectable"]) &&
     !this.options["binary-selectable"]
   ) {
     var do_refresh = false;
@@ -475,7 +485,7 @@ export function modifySelection(
         d[attr] = d.target[attr];
         if (!exclusive) return;
         this.options["attribute-list"].forEach(function(type) {
-          if (type != attr && d[attr] !== true) {
+          if (type != attr && d[attr] === true) {
             d[type] = false;
             d.target[type] = false;
           }

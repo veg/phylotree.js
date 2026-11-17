@@ -27,6 +27,20 @@ export function initializeSelectionSets(sets) {
     this._activeSetName = sets[0].name;
   }
 
+  // On re-render (e.g. after reroot) restore the active set and rebuild the
+  // members from the flags that persist on the nodes.
+  const remembered = this.phylotree.__activeSelectionSet;
+  if (remembered && this._selectionSets[remembered]) {
+    this._activeSetName = remembered;
+  }
+  this.phylotree.__activeSelectionSet = this._activeSetName;
+
+  this.phylotree.nodes.descendants().forEach(node => {
+    if (node._selectionSet && this._selectionSets[node._selectionSet]) {
+      this._selectionSets[node._selectionSet].members.add(node);
+    }
+  });
+
   // Inject CSS for set colors
   this._injectSetStyles(sets);
 }
@@ -76,6 +90,7 @@ export function _injectSetStyles(sets) {
 export function setActiveSet(name) {
   if (this._selectionSets && this._selectionSets[name]) {
     this._activeSetName = name;
+    this.phylotree.__activeSelectionSet = name;
   } else {
     console.warn(`Selection set '${name}' not found`);
   }
